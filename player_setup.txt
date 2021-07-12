@@ -169,15 +169,16 @@ PYTHON:
 		sudo apt-get install python3-pip
 		python3-pipdeptree: ??
 
-		$ pip3 install --upgrade setuptools
-		$ pip3 install --upgrade pip
+		pip3 install --upgrade setuptools
+		pip3 install --upgrade pip
 	VENV:
 		https://www.techcoil.com/blog/how-to-use-python-3-virtual-environments-to-run-python-3-applications-on-your-raspberry-pi/
 
 		sudo apt-get install python3-venv
 	CREATE VENV:
 		# mkdir /home/pi/venv
-		python3 -m venv ~/venv
+		# python3 -m venv ~/venv
+		python3 -m venv /data/venv
 
 	PIMORONI:
 		https://shop.pimoroni.com/products/inky-impression
@@ -214,7 +215,7 @@ GDRIVE:
 
 	rclone config
 
-	sudo mkdir -P /data/googledrive
+	sudo mkdir -p /data/googledrive
 	sudo chown -R pi:pi /data/
 
 
@@ -224,6 +225,14 @@ GDRIVE:
 
 FFMPEG:
 	sudo apt-get install ffmpeg
+
+
+GIT:
+    sudo apt-get install git
+    cd /data;
+    git clone https://github.com/michimussato/JukeOroni.git;
+    cd /data/JukeOroni;
+    git checkout develop;
 
 
 PIMORONI REQS:
@@ -250,7 +259,7 @@ PIMORONI REQS:
 
 
 SIGNAL CLEAR ERROR:
-	nano /home/pi/venv/lib/python3.7/site-packages/inky/inky_uc8159.py:309:
+	nano /data/venv/lib/python3.7/site-packages/inky/inky_uc8159.py:309:
 	def _busy_wait(self, timeout=15.0) => def _busy_wait(self, timeout=60.0)
 
 
@@ -283,9 +292,9 @@ SERVICE:
 		WantedBy=multi-user.target
 
 	PLAYER:
-		pi@raspberrypiz:~ $ sudo nano /etc/systemd/system/player.service 
+		pi@raspberrypiz:~ $ sudo nano /etc/systemd/system/jukeoroni.service
 		[Unit]
-		Description=Player Service
+		Description=JukeOroni Service
 		After=googledrive.serivce
 		StartLimitIntervalSec=0
 
@@ -295,7 +304,7 @@ SERVICE:
 		RestartSec=1
 		User=pi
 		ExecStartPre=/bin/sleep 15
-		ExecStart=/home/pi/venv/bin/python /home/pi/player/player.py
+		ExecStart=/data/venv/bin/python /data/JukeOroniy/player.py
 
 		[Install]
 		WantedBy=multi-user.target
