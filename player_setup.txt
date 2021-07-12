@@ -316,7 +316,7 @@ SERVICE:
 
 
 ALSAMIXER:
-	set digital to 90
+	set analogue to 0
 
 
 
