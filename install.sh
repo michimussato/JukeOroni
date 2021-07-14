@@ -2,7 +2,7 @@
 
 
 # run this script:
-#curl https://raw.githubusercontent.com/michimussato/JukeOroni/develop/player.py | bash
+#curl https://raw.githubusercontent.com/michimussato/JukeOroni/develop/install.sh | bash
 printf "hello"
 
 
