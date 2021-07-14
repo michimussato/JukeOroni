@@ -2,7 +2,7 @@
 
 JukeOroni is a simple HiRes audio player that plays music at
 up to 24bit/192kHz stored in your Google Drive. The player can be
-controlled by the four Pimoroni Inky Impressions buttons.
+controlled by the four Pimoroni Inky Impression buttons.
 
 ## Requirements
 
