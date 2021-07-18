@@ -894,24 +894,6 @@ p.update_track_list()
         # TODO: maybe kill a specific process is more elegant
         os.system('killall ffplay')
 
-    # def get_cover(self, track_name):
-    #     cover_root = os.path.dirname(track_name)
-    #     jpg_path = os.path.join(cover_root, 'cover.jpg')
-    #     png_path = os.path.join(cover_root, 'cover.png')
-    #     if os.path.exists(jpg_path):
-    #         img_path = jpg_path
-    #     elif os.path.exists(png_path):
-    #         img_path = png_path
-    #     else:
-    #         # TODO: put to file to fill in the covers later
-    #         # print(cover_root)
-    #         with open(MISSING_COVERS_FILE, 'a+') as f:
-    #             f.write(cover_root + '\n')
-    #         logging.debug('cover is None')
-    #         return None
-    #     logging.debug('cover is {0}'.format(img_path))
-    #     return img_path
-
     def set_image(self, image_file, media_info):
         thread = threading.Thread(target=self.task_pimoroni_set_image, kwargs={'image_file': image_file, 'media_info': media_info})
         thread.name = 'Set Image Thread'
