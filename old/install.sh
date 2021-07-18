@@ -7,6 +7,7 @@ printf "hello"
 
 
 # # # System
+# https://raspberrypi.stackexchange.com/questions/28907/how-could-one-automate-the-raspbian-raspi-config-setup
 
 # Set password
 #(echo \"raspberry\" ; echo \"pi\" ; echo \"pi\") | passwd
