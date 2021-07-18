@@ -12,26 +12,28 @@ def index(request):
 
     ret = '<body>\n'
     ret += '  <html>\n'
-    ret += '  <table\n>'
+    # ret += '  <table\n>'
     for channel in channels:
         if channel.is_enabled:
-            ret += '      <tr>\n'
-            ret += '      <div>\n'
-            ret += '      <th style=\"width:100%\">\n'
-            ret += '        <button style=\"width:100%\" onclick=\"window.location.href = \'{0}/play\';\">{1}</button>\n'.format(channel.display_name_short, channel.display_name)
+    #         ret += '      <tr>\n'
+    #         ret += '      <div>\n'
+    #         ret += '      <th style=\"width:100%\">\n'
+
             # required to find out if and which channel is playing
             ps = subprocess.Popen(['ps -o cmd -p $(pidof mplayer) | grep -i {0}'.format(channel.url)], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             output = ps.communicate()[0].decode('utf-8').replace('\n', '')
-            ret += '        <th>\n'
+    #         ret += '        <th>\n'
             if output != '':
                 pid = subprocess.Popen(['pidof mplayer'], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                 pid_output = pid.communicate()[0].decode('utf-8').replace('\n', '')
-                ret += '        <button onclick=\"window.location.href = \'stop/{0}\';\">stop</button>\n'.format(pid_output)  # , channel.display_name)
-            ret += '        </th>\n'
-            ret += '      </th>\n'
-            ret += '      </div>\n'
-            ret += '      </tr>\n'
-    ret += '  </table\b>'
+                ret += '        <button style=\"width:100%; background-color:green; \" onclick=\"window.location.href = \'stop/{0}\';\">{1}</button>\n'.format(pid_output, channel.display_name)  # , channel.display_name)
+            else:
+                ret += '        <button style=\"width:100%\" onclick=\"window.location.href = \'{0}/play\';\">{1}</button>\n'.format(channel.display_name_short, channel.display_name)
+    #         ret += '        </th>\n'
+    #         ret += '      </th>\n'
+    #         ret += '      </div>\n'
+    #         ret += '      </tr>\n'
+    # ret += '  </table\b>'
     ret += '  </html>\n'
     ret += '</body>\n'
     return HttpResponse(ret)

@@ -20,6 +20,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
+# For JukeOroni is this probably not a big issue
 SECRET_KEY = 'django-insecure-j9&7qo(#1mg7^-c7j_et6p7mhgok)1x@&2kwu0f=n*gl%us1gp'
 
 # SECURITY WARNING: don't run with debug turned on in production!

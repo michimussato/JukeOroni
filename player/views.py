@@ -934,20 +934,6 @@ Traceback (most recent call last):
 IndexError: index 448 is out of bounds for axis 0 with size 448
 """
 
-
-#def main():
-    # signal.signal(signal.SIGTERM, signal_handler)
-    # signal.signal(signal.SIGINT, signal_handler)
-
-    # p = Player()
-    # # p.generate_track_list()
-    # p.track_list_generator_thread()
-    # p.load_track_list()
-    # p.track_loader_thread()
-    # p.buttons_watcher_thread()
-    # p.pimoroni_watcher_thread()
-    # p.state_watcher_thread()
-
 p = Player(auto_update_tracklist=True)
 p.temp_cleanup()
 p.buttons_watcher_thread()
@@ -957,7 +943,6 @@ p.init_screen()
 p.load_track_list()
 p.track_list_generator_thread(auto_update_tracklist_interval=DEFAULT_TRACKLIST_REGEN_INTERVAL/4)  # effect only if auto_update_tracklist=True
 p.track_loader_thread()
-
 
 
 # Create your views here.
