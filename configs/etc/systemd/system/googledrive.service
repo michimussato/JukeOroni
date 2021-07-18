@@ -1,0 +1,14 @@
+[Unit]
+Description=rclone GDrive Service
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+User=pi
+ExecStart=nice -5 rclone mount googledrive: /data/googledrive --vfs-cache-mode writes
+
+[Install]
+WantedBy=multi-user.target
