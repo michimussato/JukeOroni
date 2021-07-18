@@ -1,0 +1,4 @@
+# run command "mod_wsgi-express module-config"
+# and paste output here (replace existing content)
+LoadModule wsgi_module "/data/venv/lib/python3.7/site-packages/mod_wsgi/server/mod_wsgi-py37.cpython-37m-arm-linux-gnueabihf.so"
+WSGIPythonHome "/data/venv"

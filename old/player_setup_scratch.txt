@@ -41,7 +41,7 @@ SYSTEM:
                 sudo a2enmod wsgi
 
                 sudo systemctl reload apache2
-                sudo chown -R www-data:www-data /data/django/jukeoroni/
+                # sudo chown -R www-data:www-data /data/django/jukeoroni/
                 sudo systemctl restart apache2
                 sudo systemctl enable apache2
 
