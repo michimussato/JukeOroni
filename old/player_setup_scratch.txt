@@ -181,8 +181,8 @@ TRANSMISSION:
 		[Install]
 		WantedBy=multi-user.target
 
-	transmission-daemon??
-	service: /lib/systemd/system/transmission-daemon.service
+	# transmission-daemon??
+	# service: /lib/systemd/system/transmission-daemon.service
 
 	sudo mkdir -p /data/transmission/in_progress
 	sudo chown -R pi:pi /data/transmission/in_progress
@@ -233,20 +233,20 @@ TRANSMISSION:
     "ratio-limit": 2,
     "ratio-limit-enabled": false,
     "rename-partial-files": true,
-    "rpc-authentication-required": true,
+    "rpc-authentication-required": false,
     "rpc-bind-address": "0.0.0.0",
     "rpc-enabled": true,
     "rpc-host-whitelist": "",
     "rpc-host-whitelist-enabled": true,
-    "rpc-password": "transmission",
+    "rpc-password": "",
     "rpc-port": 9091,
     "rpc-url": "/transmission/",
-    "rpc-username": "transmission",
+    "rpc-username": "",
     "rpc-whitelist": "127.0.0.1",
     "rpc-whitelist-enabled": false,
     "scrape-paused-torrents-enabled": true,
     "script-torrent-done-enabled": false,
-    "script-torrent-done-filename": "/data/transmission/script_torrent_done.sh",
+    "script-torrent-done-filename": "",
     "seed-queue-enabled": false,
     "seed-queue-size": 10,
     "speed-limit-down": 512,

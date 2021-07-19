@@ -20,5 +20,6 @@ from django.urls import include, path
 urlpatterns = [
     path('radio/', include('radio.urls')),
     path('player/', include('player.urls')),
+    path('transmission', include('transmission.urls')),
     path('admin/', admin.site.urls),
 ]
