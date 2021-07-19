@@ -72,6 +72,7 @@ def set_image(image_file, media_info):
     thread = threading.Thread(target=task_pimoroni_set_image, kwargs={'image_file': image_file, 'media_info': media_info})
     thread.name = 'Set Image Thread'
     thread.daemon = False
+    thread.start()
     # _pimoroni_thread = thread
 
 
