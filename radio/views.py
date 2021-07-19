@@ -63,7 +63,7 @@ def play(request, display_name_short):
 
 def stop(request, pid):
     os.system('kill {0}'.format(pid))
-    set_image(image_file=None, media_info='')
+    set_image(image_file=SLEEP_IMAGE, media_info='')
     return HttpResponseRedirect('/radio')
 
 
