@@ -28,8 +28,10 @@ MAX_CACHED_FILES = 3
 PIMORONI_SATURATION = 1.0
 PIMORONI_SIZE = 600, 448
 FONT_SIZE = 12
-SLEEP_IMAGE = '/data/JukeOroni/zzz.jpg'
-LOADING_IMAGE = '/data/JukeOroni/loading.jpg'
+SLEEP_IMAGE = '/data/django/jukeoroni/player/static/zzz.jpg'
+LOADING_IMAGE = '/data/django/jukeoroni/player/static/loading.jpg'
+STANDARD_COVER = '/data/django/jukeoroni/player/static/cover_std.png'
+PIMORONI_FONT = '/data/django/jukeoroni/player/static/arial_narrow.ttf'
 DEFAULT_TRACKLIST_REGEN_INTERVAL = 43200
 
 # buttons setup
@@ -676,7 +678,7 @@ p.update_track_list()
 
     def task_pimoroni_set_image(self, **kwargs):
         if kwargs['image_file'] is None:
-            cover = '/data/JukeOroni/cover_std.png'
+            cover = STANDARD_COVER
         else:
             cover = kwargs['image_file']
 
@@ -733,7 +735,7 @@ p.update_track_list()
         text_img = Image.new(mode='RGB', size=(448, 448), color=(0, 0, 0))
         img_draw = ImageDraw.Draw(text_img)
 
-        font_path = "/data/JukeOroni/Arial Narrow.ttf"
+        font_path = PIMORONI_FONT
         font = ImageFont.truetype(font_path, FONT_SIZE)
         #print(kwargs['media_info'])
         #img_draw.text((10, 5), self.wrap_text(kwargs['media_info']['filename']), fill=(255, 255, 255, 255))
