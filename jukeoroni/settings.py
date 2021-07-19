@@ -30,19 +30,28 @@ DEBUG = True
 
 LOGGING = {
     'version': 1,
+    # Version of logging
     'disable_existing_loggers': False,
+    #disable logging
+    # Handlers #############################################################
     'handlers': {
-        'my_log_handler': {
-            'level': 'DEBUG' if DEBUG else 'INFO',
+        'file': {
+            'level': 'DEBUG',
             'class': 'logging.FileHandler',
-            'filename': os.path.join(BASE_DIR, 'django.log'),
+            'filename': 'dataflair-debug.log',
+        },
+########################################################################
+        'console': {
+            'class': 'logging.StreamHandler',
         },
     },
+    # Loggers ####################################################################
     'loggers': {
         'django': {
-            'handlers': ['my_log_handler'],
-            'level': 'DEBUG' if DEBUG else 'INFO',
+            'handlers': ['file', 'console'],
+            'level': 'DEBUG',
             'propagate': True,
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'DEBUG')
         },
     },
 }
