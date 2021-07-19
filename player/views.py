@@ -128,9 +128,9 @@ def get_track_list(txt=CACHE_FILE):
     if track_list is None:
         try:
             with open(txt, 'r') as f:
-                logging.error('loading track list...')
+                logging.info('loading track list...')
                 track_list = f.readlines()
-                logging.error('track list loaded successfully: {0} tracks found'.format(len(track_list)))
+                logging.info('track list loaded successfully: {0} tracks found'.format(len(track_list)))
                 return [line.rstrip('\n') for line in track_list]
         except FileNotFoundError:
             # logging.exception(err)
@@ -166,7 +166,7 @@ class Track(object):
             if i in self.track_list:
                 album_indices.append(self.track_list.index(i))
 
-        logging.error('{0} of albums found.'.format(album_indices))
+        logging.info('{0} of albums found.'.format(album_indices))
         return album_indices
 
     @property
@@ -182,9 +182,9 @@ class Track(object):
             # TODO: put to file to fill in the covers later
             with open(MISSING_COVERS_FILE, 'a+') as f:
                 f.write(cover_root + '\n')
-            logging.error('cover is None')
+            logging.info('cover is None')
             return None
-        logging.error('cover is \"{0}\"'.format(img_path))
+        logging.info('cover is \"{0}\"'.format(img_path))
         return img_path
 
     @property
@@ -193,7 +193,7 @@ class Track(object):
 
     def _cache(self):
         self.cache = tempfile.mkstemp()[1]
-        logging.error('copying to local filesystem: \"{0}\" as \"{1}\"'.format(self.path, self.cache))
+        logging.info('copying to local filesystem: \"{0}\" as \"{1}\"'.format(self.path, self.cache))
         shutil.copy(self.path, self.cache)
 
     @property
@@ -203,9 +203,9 @@ class Track(object):
     def play(self):
         try:
             # ffplay -threads
-            logging.error('starting playback: \"{0}\" from: \"{1}\"'.format(self.path, self.playing_from))
+            logging.info('starting playback: \"{0}\" from: \"{1}\"'.format(self.path, self.playing_from))
             os.system('ffplay -hide_banner -autoexit -vn -nodisp -loglevel error \"{0}\"'.format(self.playing_from))
-            logging.error('playback finished: \"{0}\"'.format(self.path))
+            logging.info('playback finished: \"{0}\"'.format(self.path))
         except Exception:
             logging.exception('playback failed: \"{0}\"'.format(self.path))
             # logging.exception('ERROR:')
@@ -214,7 +214,7 @@ class Track(object):
         if self.cache is not None:
             try:
                 os.remove(self.cache)
-                logging.error('removed from local filesystem: \"{0}\"'.format(self.cache))
+                logging.info('removed from local filesystem: \"{0}\"'.format(self.cache))
             except Exception:
                 logging.exception('deletion failed: \"{0}\"'.format(self.cache))
         else:
