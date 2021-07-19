@@ -31,7 +31,7 @@ DEBUG = True
 LOGGING = {
     'version': 1,
     # Version of logging
-    'disable_existing_loggers': True,
+    'disable_existing_loggers': False,
     # disable logging
     # Handlers #############################################################
     'handlers': {
@@ -54,6 +54,10 @@ LOGGING = {
             'level': os.getenv('DJANGO_LOG_LEVEL', 'DEBUG')
         },
     },
+    'root': {
+        'level': 'DEBUG',
+        'handlers': ['file', 'console']
+}
 }
 
 """
