@@ -32,17 +32,30 @@ LOGGING = {
     'version': 1,
     # Version of logging
     'disable_existing_loggers': False,
+    'root': {
+        'level': 'DEBUG',
+        'handlers': ['file', 'console']
+    },
+    'formatters': {
+        'verbose': {
+            # 'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s',
+            'format': '[%(asctime)s] [%(levelname)s] [%(threadName)s|%(thread)d] [%(name)s]: %(message)s',
+            'datefmt': '%m-%d-%Y %H:%M:%S',
+        },
+    },
     # disable logging
     # Handlers #############################################################
     'handlers': {
         'file': {
             'level': 'DEBUG' if DEBUG else 'INFO',
             'class': 'logging.FileHandler',
-            'filename': os.path.join(BASE_DIR, 'dataflair-debug.log'),
+            'formatter': 'verbose',
+            'filename': os.path.join(BASE_DIR, 'django.log'),
         },
         ########################################################################
         'console': {
             'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
         },
     },
     # Loggers ####################################################################
@@ -54,10 +67,6 @@ LOGGING = {
             'level': os.getenv('DJANGO_LOG_LEVEL', 'DEBUG')
         },
     },
-    'root': {
-        'level': 'DEBUG',
-        'handlers': ['file', 'console']
-}
 }
 
 """
