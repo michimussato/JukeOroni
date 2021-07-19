@@ -366,6 +366,7 @@ PYTHON:
 		# in venv:
 		pip3 install inky
 		pip3 install RPi.GPIO
+		pip3 install requests
 	PYDUB:
 		pip3 install pydub
 	PIL:

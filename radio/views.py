@@ -2,6 +2,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 import subprocess
 import threading
 import requests
+import logging
 from inky.inky_uc8159 import Inky, CLEAN
 import signal
 import RPi.GPIO as GPIO
@@ -67,6 +68,7 @@ def stop(request, pid):
 
 
 def set_image(image_file, media_info):
+    logging.debug('starting setting image task')
     thread = threading.Thread(target=task_pimoroni_set_image, kwargs={'image_file': image_file, 'media_info': media_info})
     thread.name = 'Set Image Thread'
     thread.daemon = False
@@ -74,6 +76,7 @@ def set_image(image_file, media_info):
 
 
 def task_pimoroni_set_image(**kwargs):
+    logging.debug('setting image...')
     # if kwargs['image_file'].startswith('http'):
 
     pimoroni = Inky()
