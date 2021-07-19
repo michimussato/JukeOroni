@@ -32,15 +32,15 @@ LOGGING = {
     'version': 1,
     # Version of logging
     'disable_existing_loggers': False,
-    #disable logging
+    # disable logging
     # Handlers #############################################################
     'handlers': {
         'file': {
-            'level': 'DEBUG',
+            'level': 'DEBUG' if DEBUG else 'INFO',
             'class': 'logging.FileHandler',
-            'filename': 'dataflair-debug.log',
+            'filename': os.path.join(BASE_DIR, 'dataflair-debug.log'),
         },
-########################################################################
+        ########################################################################
         'console': {
             'class': 'logging.StreamHandler',
         },
@@ -49,12 +49,33 @@ LOGGING = {
     'loggers': {
         'django': {
             'handlers': ['file', 'console'],
-            'level': 'DEBUG',
+            'level': 'DEBUG' if DEBUG else 'INFO',
             'propagate': True,
             'level': os.getenv('DJANGO_LOG_LEVEL', 'DEBUG')
         },
     },
 }
+
+"""
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'my_log_handler': {
+            'level': 'DEBUG' if DEBUG else 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'django.log'),
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['my_log_handler'],
+            'level': 'DEBUG' if DEBUG else 'INFO',
+            'propagate': True,
+        },
+    },
+}
+"""
 
 ALLOWED_HOSTS = ['*']
 
