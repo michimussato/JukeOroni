@@ -31,7 +31,7 @@ DEBUG = True
 LOGGING = {
     'version': 1,
     # Version of logging
-    'disable_existing_loggers': False,
+    'disable_existing_loggers': True,
     # disable logging
     # Handlers #############################################################
     'handlers': {
