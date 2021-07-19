@@ -11,15 +11,11 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 from pathlib import Path
-import logging
-
-logging.disable(logging.DEBUG)
+import os
+# import logging.config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
-
-# logging.getLogger(__file__).setLevel(logging.DEBUG)
 
 
 # Quick-start development settings - unsuitable for production
@@ -31,6 +27,25 @@ SECRET_KEY = 'django-insecure-j9&7qo(#1mg7^-c7j_et6p7mhgok)1x@&2kwu0f=n*gl%us1gp
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'my_log_handler': {
+            'level': 'DEBUG' if DEBUG else 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'django.log'),
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['my_log_handler'],
+            'level': 'DEBUG' if DEBUG else 'INFO',
+            'propagate': True,
+        },
+    },
+}
 
 ALLOWED_HOSTS = ['*']
 
