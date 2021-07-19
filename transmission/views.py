@@ -1,3 +1,4 @@
+import platform
 from django.http import HttpResponseRedirect
 # from django.shortcuts import render
 
@@ -5,4 +6,4 @@ from django.http import HttpResponseRedirect
 
 
 def index(request):
-    return HttpResponseRedirect('http://127.0.0.1:9091/transmission/web/')
+    return HttpResponseRedirect('http://{hostname}:9091/transmission/web/'.format(hostname=platform.node()))
