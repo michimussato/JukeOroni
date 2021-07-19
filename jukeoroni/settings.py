@@ -34,7 +34,8 @@ LOGGING = {
     'disable_existing_loggers': False,
     'root': {
         'level': 'DEBUG',
-        'handlers': ['file', 'console']
+        # 'handlers': ['file', 'console']
+        'handlers': ['file']
     },
     'formatters': {
         'verbose': {
@@ -53,15 +54,16 @@ LOGGING = {
             'filename': os.path.join(BASE_DIR, 'django.log'),
         },
         ########################################################################
-        'console': {
-            'class': 'logging.StreamHandler',
-            'formatter': 'verbose',
-        },
+        # 'console': {
+        #     'class': 'logging.StreamHandler',
+        #     'formatter': 'verbose',
+        # },
     },
     # Loggers ####################################################################
     'loggers': {
         'django': {
-            'handlers': ['file', 'console'],
+            # 'handlers': ['file', 'console'],
+            'handlers': ['file'],
             'level': 'DEBUG' if DEBUG else 'INFO',
             'propagate': True,
             'level': os.getenv('DJANGO_LOG_LEVEL', 'DEBUG')
