@@ -11,17 +11,13 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 from pathlib import Path
-import logging.config
+import logging
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-LOGGING = {'root':
-               {'level': 'DEBUG',
-                'handlers': ['console']
-                }
-           }
+logging.getLogger(__file__).setLevel(logging.DEBUG)
 
 
 # Quick-start development settings - unsuitable for production
