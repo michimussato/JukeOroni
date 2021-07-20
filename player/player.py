@@ -100,7 +100,7 @@ class Track(object):
 
     @property
     def cover(self):
-        album = Album.objects.get(id=self.track.album_id)
+        album = Album.objects.get(track=self.track)
         return album.cover
         # cover_root = os.path.dirname(self.path)
         # jpg_path = os.path.join(cover_root, 'cover.jpg')
