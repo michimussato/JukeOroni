@@ -71,24 +71,24 @@ GPIO.setup(BUTTONS, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 AUDIO_FILES = ['.dsf', '.flac', '.wav', '.dff']
 
 
-track_list = None
+# track_list = None
 
 
-def get_track_list(txt=CACHE_FILE):
-    global track_list
-    return [track.audio_source for track in DjangoTrack.objects.all()]
-    # if track_list is None:
-    #     try:
-    #         with open(txt, 'r') as f:
-    #             logging.info('loading track list...')
-    #             track_list = f.readlines()
-    #             logging.info('track list loaded successfully: {0} tracks found'.format(len(track_list)))
-    #             return [line.rstrip('\n') for line in track_list]
-    #     except FileNotFoundError:
-    #         logging.exception(
-    #             'Mount Google Drive and try again. Use: \"rclone mount googledrive: /data/googledrive --vfs-cache-mode writes &\"')
-    # else:
-    #     return track_list
+# def get_track_list(txt=CACHE_FILE):
+#     global track_list
+#     return [track.audio_source for track in DjangoTrack.objects.all()]
+#     # if track_list is None:
+#     #     try:
+#     #         with open(txt, 'r') as f:
+#     #             logging.info('loading track list...')
+#     #             track_list = f.readlines()
+#     #             logging.info('track list loaded successfully: {0} tracks found'.format(len(track_list)))
+#     #             return [line.rstrip('\n') for line in track_list]
+#     #     except FileNotFoundError:
+#     #         logging.exception(
+#     #             'Mount Google Drive and try again. Use: \"rclone mount googledrive: /data/googledrive --vfs-cache-mode writes &\"')
+#     # else:
+#     #     return track_list
 
 
 class Track(object):
@@ -102,7 +102,7 @@ class Track(object):
 
     @property
     def track_list(self):
-        return get_track_list()
+        return [track.audio_source for track in DjangoTrack.objects.all()]
 
     @property
     def media_index(self):
@@ -181,7 +181,7 @@ class Player(object):
         self.button_3_value = BUTTON_3['Next']
         self.button_4_value = BUTTON_4['Quit']
 
-        self.track_list = None
+        # self.track_list = None
         self.auto_update_tracklist = auto_update_tracklist
         # self.played = []
         self.tracks = []
@@ -640,9 +640,13 @@ class Player(object):
     # def load_track_list(self):
     #     self.track_list = get_track_list()
 
+    @property
+    def track_list(self):
+        return [track.audio_source for track in DjangoTrack.objects.all()]
+
     def get_next_track(self):
         if self.button_1_value == 'Rand':
-            tracks = get_track_list()
+            tracks = self.track_list
             if not bool(tracks):
                 return None
             next_track = random.choice(tracks)
