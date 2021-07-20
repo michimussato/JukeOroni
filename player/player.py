@@ -369,6 +369,7 @@ class Player(object):
         logging.debug('starting thread: \"{0}\"'.format(track.audio_source))
 
         try:
+            logging.error(track.audio_source)
             logging.info('loading track ({1} MB): \"{0}\"'.format(track.audio_source, str(round(os.path.getsize(track.audio_source) / (1024*1024), 3))))
             processing_track = Track(track)
             self.tracks.append(processing_track)
