@@ -14,7 +14,7 @@ class Album(models.Model):
     album_title = models.CharField(max_length=200, unique=True, blank=False)
     year = models.CharField(max_length=200, unique=False, blank=True, null=False)
     # audio_format = models.CharField(max_length=200, unique=False)
-    cover = models.CharField(max_length=200, unique=False, blank=True, null=False)
+    cover = models.CharField(max_length=200, unique=False, blank=True, null=True)
 
     def __str__(self):
         return self.album_title
