@@ -332,7 +332,7 @@ class Player(object):
                 if next_track is None:
                     time.sleep(1.0)
                     continue
-                thread = threading.Thread(target=self._load_track_task, kwargs={'path': next_track.audio_source})
+                thread = threading.Thread(target=self._load_track_task, kwargs={'path': next_track})
                 # TODO: maybe this name is not ideal
                 thread.name = 'Track Loader Task Thread'
                 thread.daemon = False
