@@ -298,6 +298,9 @@ class Player(object):
             else:
                 img_path = None
 
+            print(img_path)
+            LOG.debug(img_path)
+
             if bool(query_album):
                 model_album = query_album[0]
                 model_album.cover = img_path
