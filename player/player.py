@@ -653,6 +653,7 @@ class Player(object):
     def get_next_track(self):
         if self.button_1_value == 'Rand':
             tracks = self.track_list
+            logging.error(tracks)
             if not bool(tracks):
                 return None
             next_track = random.choice(tracks)
