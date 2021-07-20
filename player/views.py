@@ -312,12 +312,10 @@ class Player(object):
             if django_track.audio_source not in files:
                 django_track.delete()
 
-
         for file in files:
             # if file not in
             track = DjangoTrack(audio_source=file)
             track.save()
-
 
         # for path, dirs, files in os.walk(MUSIC_DIR):
         #     if bool(files):
@@ -325,7 +323,6 @@ class Player(object):
         #             _path = os.path.join(path, _file)
         #             track = DjangoTrack(audio_source=_path)
         #             track.save()
-
 
         with open(CACHE_FILE, 'w') as f:
             for file in files:
