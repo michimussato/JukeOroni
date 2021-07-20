@@ -310,16 +310,17 @@ class Player(object):
 
             for _file in files:
                 if os.path.splitext(_file)[1] in AUDIO_FILES:
-                    query_track = DjangoTrack.objects.filter(audio_source__exact=_file)
+                    file_path = os.path.join(path, _file)
+                    query_track = DjangoTrack.objects.filter(audio_source__exact=file_path)
                     if bool(query_track):
                         model_track = query_track[0]
                     else:
-                        model_track = DjangoTrack(album_id=model_album, audio_source=_file)
+                        model_track = DjangoTrack(album_id=model_album, audio_source=file_path)
                         model_track.save()
                     #track = DjangoTrack(audio_source=_file)
                     # model_track.save()
 
-                    _files.append(_file)
+                    _files.append(file_path)
                     #break
         #files = [
         #    os.path.join(path, filename)
