@@ -67,26 +67,6 @@ GPIO.setup(BUTTONS, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 AUDIO_FILES = ['.dsf', '.flac', '.wav', '.dff']
 
 
-# track_list = None
-
-
-# def get_track_list(txt=CACHE_FILE):
-#     global track_list
-#     return [track.audio_source for track in DjangoTrack.objects.all()]
-#     # if track_list is None:
-#     #     try:
-#     #         with open(txt, 'r') as f:
-#     #             logging.info('loading track list...')
-#     #             track_list = f.readlines()
-#     #             logging.info('track list loaded successfully: {0} tracks found'.format(len(track_list)))
-#     #             return [line.rstrip('\n') for line in track_list]
-#     #     except FileNotFoundError:
-#     #         logging.exception(
-#     #             'Mount Google Drive and try again. Use: \"rclone mount googledrive: /data/googledrive --vfs-cache-mode writes &\"')
-#     # else:
-#     #     return track_list
-
-
 class Track(object):
     def __init__(self, path, cached=True):
         self.path = path
@@ -177,17 +157,12 @@ class Player(object):
         self.button_3_value = BUTTON_3['Next']
         self.button_4_value = BUTTON_4['Quit']
 
-        # self.track_list = None
         self.auto_update_tracklist = auto_update_tracklist
-        # self.played = []
         self.tracks = []
         self.loading = 0
-        # self.track_list_album = None
         self.playing = False
         self.playing_track = None
         self.sequential = False
-        # self.playing_now = None
-        # self.media_info_now = None
         self._quit = False
         self.pimoroni = Inky()
 
@@ -233,15 +208,15 @@ class Player(object):
         if self.button_3_value == 'Next':  # we only want to switch mode when something is already playing
             if current_label == self.button_1_value:
                 return
-                # empty the cached tracks to create a new list based mode
-                # TODO: also remove from file system
-                self.tracks = []
-                self.button_1_value = BUTTON_1[current_label]
-                if self.button_1_value == 'Albm':
-                    self.next()
-                if self.button_1_value == 'Sequ':
-                    # has to update the buttons on the screen without self.next()
-                    self.set_image(image_file=self.playing_track.cover, media_info=self.playing_track.media_info)
+                # # empty the cached tracks to create a new list based mode
+                # # TODO: also remove from file system
+                # self.tracks = []
+                # self.button_1_value = BUTTON_1[current_label]
+                # if self.button_1_value == 'Albm':
+                #     self.next()
+                # if self.button_1_value == 'Sequ':
+                #     # has to update the buttons on the screen without self.next()
+                #     self.set_image(image_file=self.playing_track.cover, media_info=self.playing_track.media_info)
 
         # Stop button
         if current_label == self.button_2_value:
@@ -254,17 +229,14 @@ class Player(object):
         if current_label == self.button_3_value:
             if current_label == 'Play':
                 self.button_3_value = BUTTON_3[current_label]
-                # self.play()
             elif current_label == 'Next':
                 self.next()
 
         # Quit button
         if current_label == self.button_4_value:
             return
-            self.init_screen()
-            self.quit()
-
-        # print('button layout is now\n\t{0}'.format('\n\t'.join(reversed(self.LABELS))))
+            # self.init_screen()
+            # self.quit()
     ############################################
 
     ############################################
@@ -279,18 +251,12 @@ class Player(object):
         while True and not self._quit:
             if self.auto_update_tracklist:
 
-                self.generate_track_list()
-
-                # this is not a good approach to be able to quit directly, works for testing
-                # is in separate thread already. maybe good enough.
-                # global track_list
-                # track_list = None
-
-                # self.load_track_list()
+                self.create_update_track_list()
 
             time.sleep(kwargs.get('auto_update_tracklist_interval') or DEFAULT_TRACKLIST_REGEN_INTERVAL)  # is 12 hours
 
-    def generate_track_list(self):
+    @staticmethod
+    def create_update_track_list():
         # TODO: filter image files, m3u etc.
         logging.info('generating updated track list...')
         files = [
@@ -339,24 +305,16 @@ class Player(object):
     def _load_track_task(self, **kwargs):
         path = kwargs['path']
         logging.debug('starting thread: \"{0}\"'.format(path))
-        # self.loading += 1
 
         try:
-            # format_name = kwargs['media_info']['format_name']
-            # print(kwargs['media_info'])
-            # print('\n#############\nloading track:\n{0}'.format(path))
-            # self.loading += 1
             logging.info('loading track ({1} MB): \"{0}\"'.format(path, str(round(os.path.getsize(path) / (1024*1024), 3))))
             processing_track = Track(path)
-            # logging.debug('finished thread:\n\t{0}'.format(path))
             self.tracks.append(processing_track)
             logging.info('loading successful: \"{0}\"'.format(path))
         except MemoryError as err:
             logging.exception('loading failed: \"{0}\"'.format(path))
         finally:
             self.loading -= 1
-            # print('-------------\nDone\n#############\n')
-
     ############################################
 
     ############################################
@@ -376,9 +334,8 @@ class Player(object):
                     thread.start()
 
                 while thread.is_alive():
-                    # print('PIMORONI IS WORKING.')
                     time.sleep(1.0)
-            # print('NO PIMORONI JOB')
+
             time.sleep(1.0)
     ############################################
 
@@ -451,9 +408,6 @@ class Player(object):
     def _playback_task(self, **kwargs):
         self.playing_track = kwargs['track']
         logging.debug('starting playback thread: for {0} from {0}'.format(self.playing_track.path, self.playing_track.playing_from))  # TODO add info
-        # media_info = kwargs['media_info']
-        # self.playing_now = self.playing_track.path
-        # self.media_info_now = self.playing_track.media_info
         self.playing_track.play()
 
         # cleanup
@@ -463,12 +417,6 @@ class Player(object):
 
     def quit(self):
         self._quit = True
-        # TODO: also remove from file system
-        # # tracks = self.tracks
-        # while self.tracks:
-        #     track = self.tracks.pop(0)
-        #     del track
-        # # self.tracks = []
 
         self._track_list_generator_thread = None
         self._pimoroni_thread = None
@@ -633,9 +581,6 @@ class Player(object):
 
         return ret
 
-    # def load_track_list(self):
-    #     self.track_list = get_track_list()
-
     @property
     def track_list(self):
         return [track.audio_source for track in DjangoTrack.objects.all()]
@@ -689,7 +634,6 @@ def player():
     p.state_watcher_thread()
     p.pimoroni_watcher_thread()
     p.init_screen()
-    # p.load_track_list()
     p.track_list_generator_thread(
         auto_update_tracklist_interval=DEFAULT_TRACKLIST_REGEN_INTERVAL / 4)  # effect only if auto_update_tracklist=True
     p.track_loader_thread()
