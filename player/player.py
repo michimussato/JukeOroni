@@ -298,8 +298,8 @@ class Player(object):
             else:
                 img_path = None
 
-            print(img_path)
-            LOG.debug(img_path)
+            #print(img_path)
+            #LOG.debug(img_path)
 
             if bool(query_album):
                 model_album = query_album[0]
@@ -370,8 +370,8 @@ class Player(object):
         logging.debug('starting thread: \"{0}\"'.format(track.audio_source))
 
         try:
-            logging.error(track)
-            logging.error(track.audio_source)
+            #logging.error(track)
+            #logging.error(track.audio_source)
             logging.info('loading track ({1} MB): \"{0}\"'.format(track.audio_source, str(round(os.path.getsize(track.audio_source) / (1024*1024), 3))))
             processing_track = Track(track)
             self.tracks.append(processing_track)
@@ -654,7 +654,7 @@ class Player(object):
     def get_next_track(self):
         if self.button_1_value == 'Rand':
             tracks = self.track_list
-            logging.error(tracks)
+            #logging.error(tracks)
             if not bool(tracks):
                 return None
             next_track = random.choice(tracks)
