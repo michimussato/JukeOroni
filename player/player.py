@@ -79,24 +79,24 @@ class Track(object):
         if self.cached:
             self._cache()
 
-    @property
-    def track_list(self):
-        return [track.audio_source for track in DjangoTrack.objects.all()]
+    #@property
+    #def track_list(self):
+    #    return [track.audio_source for track in DjangoTrack.objects.all()]
 
-    @property
-    def media_index(self):
-        return self.track_list.index(self.path)
+    #@property
+    #def media_index(self):
+    #    return self.track_list.index(self.path)
 
-    @property
-    def album_indices(self):
-        album_list = [i for i in self.track_list if os.path.dirname(self.path) in i]
-        album_indices = []
-        for i in album_list:
-            if i in self.track_list:
-                album_indices.append(self.track_list.index(i))
+    #@property
+    #def album_indices(self):
+    #    album_list = [i for i in self.track_list if os.path.dirname(self.path) in i]
+    #    album_indices = []
+    #    for i in album_list:
+    #        if i in self.track_list:
+    #            album_indices.append(self.track_list.index(i))#
 
-        logging.info('{0} of albums found.'.format(album_indices))
-        return album_indices
+    #    logging.info('{0} of albums found.'.format(album_indices))
+    #    return album_indices
 
     @property
     def cover(self):
@@ -461,13 +461,6 @@ class Player(object):
 
         if self.tracks:
             track = self.tracks.pop(0)
-
-            logging.info(track.cover)
-            logging.info(track.cover)
-            logging.info(track.cover)
-            logging.info(track.cover)
-            logging.info(track.cover)
-            logging.info(track.cover)
 
             self._playback_thread = threading.Thread(target=self._playback_task, kwargs={'track': track})
             self._playback_thread.name = 'Playback Thread'
