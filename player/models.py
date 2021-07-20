@@ -13,10 +13,10 @@ from django.db import models
 #     audio_format = models.CharField(max_length=200, unique=False)
 
 
-class DjangoTrack(models.Model):
+class Track(models.Model):
     # album = models.ForeignKey(Album, on_delete=models.PROTECT)
     # track_title = models.CharField(max_length=200, unique=False)
-    audio_source = models.URLField(max_length=200, unique=True, blank=True)
+    audio_source = models.FilePathField(max_length=200, unique=True, blank=False)
 
     # def __str__(self):
     #     return self.audio_source
