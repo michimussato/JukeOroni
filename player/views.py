@@ -306,16 +306,16 @@ class Player(object):
             if os.path.splitext(filename)[1] in AUDIO_FILES
         ]
 
-        # remove obsolete db objects:
-        django_tracks = DjangoTrack.objects.all()
-        for django_track in django_tracks:
-            if django_track.audio_source not in files:
-                django_track.delete()
-
-        for file in files:
-            # if file not in
-            track = DjangoTrack(audio_source=file)
-            track.save()
+        # # remove obsolete db objects:
+        # django_tracks = DjangoTrack.objects.all()
+        # for django_track in django_tracks:
+        #     if django_track.audio_source not in files:
+        #         django_track.delete()
+        #
+        # for _file in files:
+        #     # if file not in
+        #     track = DjangoTrack(audio_source=_file)
+        #     track.save()
 
         # for path, dirs, files in os.walk(MUSIC_DIR):
         #     if bool(files):
@@ -325,8 +325,8 @@ class Player(object):
         #             track.save()
 
         with open(CACHE_FILE, 'w') as f:
-            for file in files:
-                f.write(file + '\n')
+            for _file in files:
+                f.write(_file + '\n')
 
         logging.info('track list generated successfully: {0} tracks found'.format(len(files)))
         # logging.info()
