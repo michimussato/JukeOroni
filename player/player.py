@@ -511,7 +511,7 @@ class Player(object):
 
         if 'track' in kwargs:
             track = kwargs['track']
-            title = os.path.basename(track.audio_source)
+            title = os.path.basename(track.path)
             album = Album.objects.get(track=track)
             artist = Artist.objects.get(album=album)
             text = 'Track: {0}\nArtist: {1}\nAlbum: {2}'.format(
