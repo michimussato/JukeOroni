@@ -24,6 +24,7 @@ class Track(models.Model):
     album_id = models.ForeignKey(Album, on_delete=models.PROTECT, null=True)
     # track_title = models.CharField(max_length=200, unique=False)
     audio_source = models.CharField(max_length=200, unique=True, blank=False, null=False)
+    # title = models.CharField(max_length=200, unique=False, blank=False, null=False)
 
     def __str__(self):
         return self.audio_source

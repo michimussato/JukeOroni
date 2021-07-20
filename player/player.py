@@ -445,7 +445,7 @@ class Player(object):
         _display_loading = False
         while not self.tracks and self.loading:
             if not _display_loading:
-                self.set_image(LOADING_IMAGE, '')
+                self.set_image(image_file=LOADING_IMAGE)
                 _display_loading = True
 
             print('loading 1st track                       ', end='\r')
@@ -468,7 +468,8 @@ class Player(object):
             self._playback_thread.start()
 
             # start playback first, then change image to prevent lag
-            self.set_image(track.cover, track.media_info)
+            # self.set_image(track.cover, track.media_info)
+            self.set_image(track)
 
     def _playback_task(self, **kwargs):
         self.playing_track = kwargs['track']
@@ -498,13 +499,30 @@ class Player(object):
         sys.exit(0)
 
     def task_pimoroni_set_image(self, **kwargs):
-        if kwargs['image_file'] is None:
-            cover = STANDARD_COVER
-        else:
+        if 'track' in kwargs:
+            cover = kwargs['track'].cover
+        elif 'image_file' in kwargs:
             cover = kwargs['image_file']
+        else:
+            cover = STANDARD_COVER
+        #else:
+        #    cover = kwargs['image_file']
 
-        if bool(kwargs['media_info']):
-            text = self.get_text(kwargs['media_info'])
+
+        if 'track' in kwargs:
+            track = kwargs['track']
+            title = os.path.basename(track.audio_source)
+            album = Album.objects.get(track=track)
+            artist = Artist.objects.get(album=album)
+            text = 'Track: {0}\nArtist: {1}\nAlbum: {2}'.format(
+                title,
+                artist,
+                album
+            )
+        elif 'message' in kwargs:
+            text = kwargs['message']
+        #if bool(kwargs['media_info']):
+        #    text = self.get_text(kwargs['media_info'])
         else:
             text = ''
 
@@ -573,7 +591,7 @@ class Player(object):
         self.pimoroni.show()
 
     def init_screen(self):
-        self.set_image(SLEEP_IMAGE, '')
+        self.set_image(image_file=SLEEP_IMAGE)
 
     def buttons_img_overlay(self, bg):
         buttons_img = Image.new(mode='RGB', size=(448, 12), color=(0, 0, 0))
@@ -586,65 +604,65 @@ class Player(object):
         ), fill=(255, 255, 255))
         bg.paste(buttons_img, (0, 0))
 
-    def get_text(self, media_info):
-        if 'TAG' in media_info:
-            TAG = media_info['TAG']
-            if 'ARTIST' in TAG:
-                ARTIST = TAG['ARTIST']
-            else:
-                ARTIST = 'N/A'
-
-            if 'ALBUM' in TAG:
-                ALBUM = TAG['ALBUM']
-            else:
-                ALBUM = 'N/A'
-
-            if 'TITLE' in TAG:
-                TITLE = TAG['TITLE']
-            else:
-                TITLE = 'N/A'
-
-            if 'track' in TAG:
-                track = TAG['track']
-            else:
-                track = 'N/A'
-
-            if 'channels' in media_info:
-                channels = media_info['channels']
-            else:
-                channels = 'N/A'
-
-            if 'bits_per_raw_sample' in media_info:
-                bits_per_raw_sample = media_info['bits_per_raw_sample']
-            else:
-                bits_per_raw_sample = 'N/A'
-
-            if 'sample_rate' in media_info:
-                sample_rate = media_info['sample_rate']
-            else:
-                sample_rate = 'N/A'
-
-            if 'duration' in media_info:
-                duration = time.gmtime(int(float(media_info['duration'])))
-                duration = time.strftime("%H:%M:%S", duration)
-
-            else:
-                duration = 'N/A'
-
-            ret = "Artist: {artist}\nAlbum: {album}\nTitle: {title} ({track})\nDuration: {duration}\n\nChannels: {channels}\nResolution: {bits_per_raw_sample} bits\nSample rate: {sample_rate} Hz".format(
-                artist=ARTIST.upper(),
-                album=ALBUM,
-                track=track,
-                title=TITLE,
-                channels=channels,
-                bits_per_raw_sample=bits_per_raw_sample,
-                sample_rate=sample_rate,
-                duration=duration)
-
-        else:
-            ret = media_info['filename']
-
-        return ret
+    # def get_text(self, media_info):
+    #     if 'TAG' in media_info:
+    #         TAG = media_info['TAG']
+    #         if 'ARTIST' in TAG:
+    #             ARTIST = TAG['ARTIST']
+    #         else:
+    #             ARTIST = 'N/A'
+    #
+    #         if 'ALBUM' in TAG:
+    #             ALBUM = TAG['ALBUM']
+    #         else:
+    #             ALBUM = 'N/A'
+    #
+    #         if 'TITLE' in TAG:
+    #             TITLE = TAG['TITLE']
+    #         else:
+    #             TITLE = 'N/A'
+    #
+    #         if 'track' in TAG:
+    #             track = TAG['track']
+    #         else:
+    #             track = 'N/A'
+    #
+    #         if 'channels' in media_info:
+    #             channels = media_info['channels']
+    #         else:
+    #             channels = 'N/A'
+    #
+    #         if 'bits_per_raw_sample' in media_info:
+    #             bits_per_raw_sample = media_info['bits_per_raw_sample']
+    #         else:
+    #             bits_per_raw_sample = 'N/A'
+    #
+    #         if 'sample_rate' in media_info:
+    #             sample_rate = media_info['sample_rate']
+    #         else:
+    #             sample_rate = 'N/A'
+    #
+    #         if 'duration' in media_info:
+    #             duration = time.gmtime(int(float(media_info['duration'])))
+    #             duration = time.strftime("%H:%M:%S", duration)
+    #
+    #         else:
+    #             duration = 'N/A'
+    #
+    #         ret = "Artist: {artist}\nAlbum: {album}\nTitle: {title} ({track})\nDuration: {duration}\n\nChannels: {channels}\nResolution: {bits_per_raw_sample} bits\nSample rate: {sample_rate} Hz".format(
+    #             artist=ARTIST.upper(),
+    #             album=ALBUM,
+    #             track=track,
+    #             title=TITLE,
+    #             channels=channels,
+    #             bits_per_raw_sample=bits_per_raw_sample,
+    #             sample_rate=sample_rate,
+    #             duration=duration)
+    #
+    #     else:
+    #         ret = media_info['filename']
+    #
+    #     return ret
 
     @property
     def track_list(self):
@@ -687,8 +705,8 @@ class Player(object):
         # TODO: maybe kill a specific process is more elegant
         os.system('killall ffplay')
 
-    def set_image(self, image_file, media_info):
-        thread = threading.Thread(target=self.task_pimoroni_set_image, kwargs={'image_file': image_file, 'media_info': media_info})
+    def set_image(self, **kwargs):
+        thread = threading.Thread(target=self.task_pimoroni_set_image, kwargs=kwargs)
         thread.name = 'Set Image Thread'
         thread.daemon = False
         self._pimoroni_thread = thread
