@@ -67,3 +67,10 @@ channel_list = [
     ("SRF Swiss Pop", "srf_swiss_pop", True, "http://stream.srg-ssr.ch/rsp/aacp_96.m3u", None),
     ("SRF Couleur 3", "couleur_3", True, "http://stream.srg-ssr.ch/couleur3/aacp_96.m3u", None),
 ]
+
+
+def main():
+    from radio.models import Channel
+    for channel in channel_list:
+        c = Channel(display_name=channel[0], display_name_short=channel[1], is_enabled=channel[2], url=channel[3], url_logo=channel[4])
+        c.save()
