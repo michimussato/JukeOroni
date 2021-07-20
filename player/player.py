@@ -22,6 +22,7 @@ LOG = logging.getLogger(__name__)
 MEDIA_ROOT = r'/data/googledrive/media/audio/'
 CACHE_FILE = os.path.join(MEDIA_ROOT, 'music_cache_test.txt')
 MISSING_COVERS_FILE = os.path.join(MEDIA_ROOT, 'missing_covers_test.txt')
+FAULTY_ALBUMS = os.path.join(MEDIA_ROOT, 'faulty_albums_test.txt')
 MUSIC_DIR = os.path.join(MEDIA_ROOT, 'music')
 MAX_CACHED_FILES = 3
 PIMORONI_SATURATION = 1.0
@@ -275,6 +276,8 @@ class Player(object):
             try:
                 artist, year, title = album.split(' - ')
             except ValueError as err:
+                with open(FAULTY_ALBUMS, 'a+') as f:
+                    f.write(album + '\n')
                 # TODO: store this somewhere to fix it
                 LOG.exception('not a valid album path: {0}'.format(album))
                 continue
@@ -719,7 +722,7 @@ def player():
     p.state_watcher_thread()
     p.pimoroni_watcher_thread()
     p.init_screen()
-    #p.track_list_generator_thread(auto_update_tracklist_interval=DEFAULT_TRACKLIST_REGEN_INTERVAL / 4)  # effect only if auto_update_tracklist=True
+    p.track_list_generator_thread(auto_update_tracklist_interval=DEFAULT_TRACKLIST_REGEN_INTERVAL / 4)  # effect only if auto_update_tracklist=True
     p.track_loader_thread()
 
 
