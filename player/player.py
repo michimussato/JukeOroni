@@ -70,8 +70,9 @@ AUDIO_FILES = ['.dsf', '.flac', '.wav', '.dff']
 
 
 class Track(object):
-    def __init__(self, path, cached=True):
-        self.path = path
+    def __init__(self, track, cached=True):
+        self.track = track
+        self.path = self.track.audio_source
         self.cached = cached
         self.cache = None
 
@@ -99,21 +100,23 @@ class Track(object):
 
     @property
     def cover(self):
-        cover_root = os.path.dirname(self.path)
-        jpg_path = os.path.join(cover_root, 'cover.jpg')
-        png_path = os.path.join(cover_root, 'cover.png')
-        if os.path.exists(jpg_path):
-            img_path = jpg_path
-        elif os.path.exists(png_path):
-            img_path = png_path
-        else:
-            # TODO: put to file to fill in the covers later
-            with open(MISSING_COVERS_FILE, 'a+') as f:
-                f.write(cover_root + '\n')
-            logging.info('cover is None')
-            return None
-        logging.info('cover is \"{0}\"'.format(img_path))
-        return img_path
+        album = Album.objects.get(id=self.track.album_id)
+        return album.cover
+        # cover_root = os.path.dirname(self.path)
+        # jpg_path = os.path.join(cover_root, 'cover.jpg')
+        # png_path = os.path.join(cover_root, 'cover.png')
+        # if os.path.exists(jpg_path):
+        #     img_path = jpg_path
+        # elif os.path.exists(png_path):
+        #     img_path = png_path
+        # else:
+        #     # TODO: put to file to fill in the covers later
+        #     with open(MISSING_COVERS_FILE, 'a+') as f:
+        #         f.write(cover_root + '\n')
+        #     logging.info('cover is None')
+        #     return None
+        # logging.info('cover is \"{0}\"'.format(img_path))
+        # return img_path
 
     @property
     def media_info(self):
@@ -272,6 +275,7 @@ class Player(object):
             try:
                 artist, year, title = album.split(' - ')
             except ValueError as err:
+                # TODO: store this somewhere to fix it
                 LOG.exception('not a valid album path: {0}'.format(album))
                 continue
 
@@ -349,7 +353,7 @@ class Player(object):
                 if next_track is None:
                     time.sleep(1.0)
                     continue
-                thread = threading.Thread(target=self._load_track_task, kwargs={'path': next_track})
+                thread = threading.Thread(target=self._load_track_task, kwargs={'track': next_track})
                 # TODO: maybe this name is not ideal
                 thread.name = 'Track Loader Task Thread'
                 thread.daemon = False
@@ -358,16 +362,16 @@ class Player(object):
             time.sleep(1.0)
 
     def _load_track_task(self, **kwargs):
-        path = kwargs['path']
-        logging.debug('starting thread: \"{0}\"'.format(path))
+        track = kwargs['track']
+        logging.debug('starting thread: \"{0}\"'.format(track.audio_source))
 
         try:
-            logging.info('loading track ({1} MB): \"{0}\"'.format(path, str(round(os.path.getsize(path) / (1024*1024), 3))))
-            processing_track = Track(path)
+            logging.info('loading track ({1} MB): \"{0}\"'.format(track.audio_source, str(round(os.path.getsize(track.audio_source) / (1024*1024), 3))))
+            processing_track = Track(track)
             self.tracks.append(processing_track)
-            logging.info('loading successful: \"{0}\"'.format(path))
+            logging.info('loading successful: \"{0}\"'.format(track.audio_source))
         except MemoryError as err:
-            logging.exception('loading failed: \"{0}\"'.format(path))
+            logging.exception('loading failed: \"{0}\"'.format(track.audio_source))
         finally:
             self.loading -= 1
     ############################################
@@ -638,7 +642,8 @@ class Player(object):
 
     @property
     def track_list(self):
-        return [track.audio_source for track in DjangoTrack.objects.all()]
+        # return [track.audio_source for track in DjangoTrack.objects.all()]
+        return DjangoTrack.objects.all()
 
     def get_next_track(self):
         if self.button_1_value == 'Rand':
