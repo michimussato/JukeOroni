@@ -469,7 +469,7 @@ class Player(object):
 
             # start playback first, then change image to prevent lag
             # self.set_image(track.cover, track.media_info)
-            self.set_image(track)
+            self.set_image(track=track)
 
     def _playback_task(self, **kwargs):
         self.playing_track = kwargs['track']
