@@ -288,7 +288,7 @@ class Player(object):
 
             query_album = Album.objects.filter(album_title__exact=title, year__exact=year)
 
-            cover_root = os.path.dirname(path)
+            cover_root = path
             jpg_path = os.path.join(cover_root, 'cover.jpg')
             png_path = os.path.join(cover_root, 'cover.png')
             if os.path.exists(jpg_path):
