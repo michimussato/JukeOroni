@@ -462,6 +462,13 @@ class Player(object):
         if self.tracks:
             track = self.tracks.pop(0)
 
+            logging.info(track.cover)
+            logging.info(track.cover)
+            logging.info(track.cover)
+            logging.info(track.cover)
+            logging.info(track.cover)
+            logging.info(track.cover)
+
             self._playback_thread = threading.Thread(target=self._playback_task, kwargs={'track': track})
             self._playback_thread.name = 'Playback Thread'
             self._playback_thread.daemon = False
