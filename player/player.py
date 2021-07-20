@@ -142,7 +142,6 @@ class Track(object):
             logging.info('playback finished: \"{0}\"'.format(self.path))
         except Exception:
             logging.exception('playback failed: \"{0}\"'.format(self.path))
-            # logging.exception('ERROR:')
 
     def __del__(self):
         if self.cache is not None:
@@ -301,6 +300,9 @@ class Player(object):
             elif os.path.exists(png_path):
                 img_path = png_path
             else:
+                with open(MISSING_COVERS_FILE, 'a+') as f:
+                    f.write(cover_root + '\n')
+                logging.info('cover is None')
                 img_path = None
 
             #print(img_path)
