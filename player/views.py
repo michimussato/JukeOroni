@@ -76,18 +76,19 @@ track_list = None
 
 def get_track_list(txt=CACHE_FILE):
     global track_list
-    if track_list is None:
-        try:
-            with open(txt, 'r') as f:
-                logging.info('loading track list...')
-                track_list = f.readlines()
-                logging.info('track list loaded successfully: {0} tracks found'.format(len(track_list)))
-                return [line.rstrip('\n') for line in track_list]
-        except FileNotFoundError:
-            logging.exception(
-                'Mount Google Drive and try again. Use: \"rclone mount googledrive: /data/googledrive --vfs-cache-mode writes &\"')
-    else:
-        return track_list
+    return [track.audio_source for track in DjangoTrack.objects.all()]
+    # if track_list is None:
+    #     try:
+    #         with open(txt, 'r') as f:
+    #             logging.info('loading track list...')
+    #             track_list = f.readlines()
+    #             logging.info('track list loaded successfully: {0} tracks found'.format(len(track_list)))
+    #             return [line.rstrip('\n') for line in track_list]
+    #     except FileNotFoundError:
+    #         logging.exception(
+    #             'Mount Google Drive and try again. Use: \"rclone mount googledrive: /data/googledrive --vfs-cache-mode writes &\"')
+    # else:
+    #     return track_list
 
 
 class Track(object):
@@ -101,7 +102,7 @@ class Track(object):
 
     @property
     def track_list(self):
-        return get_track_list(txt=CACHE_FILE)
+        return get_track_list()
 
     @property
     def media_index(self):
@@ -279,20 +280,17 @@ class Player(object):
         self._track_list_generator_thread.start()
 
     def track_list_generator_task(self, **kwargs):
-        # self.load_track_list()
         while True and not self._quit:
             if self.auto_update_tracklist:
-                # print('generating new track list...')
 
                 self.generate_track_list()
-                # print('track list generated.')
 
                 # this is not a good approach to be able to quit directly, works for testing
                 # is in separate thread already. maybe good enough.
-                global track_list
-                track_list = None
+                # global track_list
+                # track_list = None
 
-                self.load_track_list()
+                # self.load_track_list()
 
             time.sleep(kwargs.get('auto_update_tracklist_interval') or DEFAULT_TRACKLIST_REGEN_INTERVAL)  # is 12 hours
 
@@ -313,26 +311,10 @@ class Player(object):
                 django_track.delete()
 
         for _file in files:
-            # if file not in
             track = DjangoTrack(audio_source=_file)
             track.save()
 
-        # for path, dirs, files in os.walk(MUSIC_DIR):
-        #     if bool(files):
-        #         for _file in files:
-        #             _path = os.path.join(path, _file)
-        #             track = DjangoTrack(audio_source=_path)
-        #             track.save()
-
-        # with open(CACHE_FILE, 'w') as f:
-        #     for _file in files:
-        #         f.write(_file + '\n')
-
         logging.info('track list generated successfully: {0} tracks found'.format(len(files)))
-        # logging.info()
-
-        # self.load_track_list()
-        # self.generate_new_track_list = False
     ############################################
 
     ############################################
@@ -655,17 +637,15 @@ class Player(object):
 
         return ret
 
-    def load_track_list(self, txt=CACHE_FILE):
-        if os.path.exists(txt):
-            self.track_list = get_track_list(txt)
-        else:
-            logging.info('CACHE_FILE does not exist yet.')
+    # def load_track_list(self):
+    #     self.track_list = get_track_list()
 
     def get_next_track(self):
         if self.button_1_value == 'Rand':
-            if self.track_list is None:
+            tracks = DjangoTrack.objects.all()
+            if not bool(tracks):
                 return None
-            next_track = random.choice(DjangoTrack.objects.all())
+            next_track = random.choice(tracks).audio_source
 
         elif self.button_1_value == 'Sequ':
             pass
@@ -708,7 +688,7 @@ p.buttons_watcher_thread()
 p.state_watcher_thread()
 p.pimoroni_watcher_thread()
 p.init_screen()
-p.load_track_list()
+# p.load_track_list()
 p.track_list_generator_thread(auto_update_tracklist_interval=DEFAULT_TRACKLIST_REGEN_INTERVAL/4)  # effect only if auto_update_tracklist=True
 p.track_loader_thread()
 
