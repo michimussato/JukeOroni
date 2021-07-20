@@ -332,7 +332,7 @@ class Player(object):
                 if next_track is None:
                     time.sleep(1.0)
                     continue
-                thread = threading.Thread(target=self._load_track_task, kwargs={'path': next_track.audio_source})
+                thread = threading.Thread(target=self._load_track_task.audio_source, kwargs={'path': next_track.audio_source})
                 # TODO: maybe this name is not ideal
                 thread.name = 'Track Loader Task Thread'
                 thread.daemon = False
@@ -642,10 +642,10 @@ class Player(object):
 
     def get_next_track(self):
         if self.button_1_value == 'Rand':
-            tracks = DjangoTrack.objects.all()
+            tracks = get_track_list()
             if not bool(tracks):
                 return None
-            next_track = random.choice(tracks).audio_source
+            next_track = random.choice(tracks)
 
         elif self.button_1_value == 'Sequ':
             pass
