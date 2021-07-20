@@ -14,6 +14,6 @@ class Album(models.Model):
 
 
 class Track(models.Model):
-    album = models.ForeignKey(Album)
+    album = models.ForeignKey(Album, on_delete=models.PROTECT)
     track_title = models.CharField(max_length=200, unique=False)
     audio_source = models.FilePathField(max_length=200, unique=True, blank=True)
