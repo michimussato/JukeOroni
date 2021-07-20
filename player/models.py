@@ -12,7 +12,7 @@ from django.db import models
 #     year = models.CharField(max_length=200, unique=False)
 #     audio_format = models.CharField(max_length=200, unique=False)
 
-
+# class Channel(models.Model):
 class Track(models.Model):
     # album = models.ForeignKey(Album, on_delete=models.PROTECT)
     # track_title = models.CharField(max_length=200, unique=False)
