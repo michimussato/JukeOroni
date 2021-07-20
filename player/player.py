@@ -136,6 +136,8 @@ class Track(object):
         try:
             # ffplay -threads
             logging.info('starting playback: \"{0}\" from: \"{1}\"'.format(self.path, self.playing_from))
+            self.track.played += 1
+            self.track.save()
             os.system('ffplay -hide_banner -autoexit -vn -nodisp -loglevel error \"{0}\"'.format(self.playing_from))
             logging.info('playback finished: \"{0}\"'.format(self.path))
         except Exception:

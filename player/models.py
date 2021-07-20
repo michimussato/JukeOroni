@@ -25,6 +25,7 @@ class Track(models.Model):
     # track_title = models.CharField(max_length=200, unique=False)
     audio_source = models.CharField(max_length=200, unique=True, blank=False, null=False)
     # title = models.CharField(max_length=200, unique=False, blank=False, null=False)
+    played = models.IntegerField(default=0, unique=False)
 
     def __str__(self):
         return self.audio_source
