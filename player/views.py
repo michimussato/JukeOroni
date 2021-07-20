@@ -18,7 +18,7 @@ import shutil
 import tempfile
 
 
-LOG = None
+LOG = logging.getLogger(__name__)
 
 MEDIA_ROOT = r'/data/googledrive/media/audio/'
 CACHE_FILE = os.path.join(MEDIA_ROOT, 'music_cache_test.txt')
@@ -70,58 +70,6 @@ GPIO.setup(BUTTONS, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 AUDIO_FILES = ['.dsf', '.flac', '.wav', '.dff']
 
 
-# # https://medium.com/greedygame-engineering/an-elegant-way-to-run-periodic-tasks-in-python-61b7c477b679
-# class Job(threading.Thread):
-#     def __init__(self, interval, execute, *args, **kwargs):
-#         threading.Thread.__init__(self)
-#         self.daemon = False
-#         self.stopped = threading.Event()
-#         self.interval = interval
-#         self.execute = execute
-#         self.args = args
-#         self.kwargs = kwargs
-
-#     def stop(self):
-#         self.stopped.set()
-#         self.join()
-
-#     def run(self):
-#         while not self.stopped.wait(self.interval.total_seconds()):
-#             self.execute(*self.args, **self.kwargs)
-
-
-def init_logging(log_file=None, append=False, console_loglevel=logging.DEBUG):
-    # """Set up logging to file and console."""
-    # if log_file is not None:
-    #     if append:
-    #         filemode_val = 'a'
-    #     else:
-    #         filemode_val = 'w'
-    #     logging.basicConfig(level=logging.DEBUG,
-    #                         format="%(asctime)s %(levelname)s %(threadName)s %(thread)d %(name)s %(message)s",
-    #                         # datefmt='%m-%d %H:%M',
-    #                         filename=log_file,
-    #                         filemode=filemode_val)
-    # # define a Handler which writes INFO messages or higher to the sys.stderr
-    # console = logging.StreamHandler()
-    # console.setLevel(console_loglevel)
-    # # set a format which is simpler for console use
-    # formatter = logging.Formatter("%(message)s")
-    # console.setFormatter(formatter)
-    # # add the handler to the root logger
-    # logging.getLogger('').addHandler(console)
-    # global LOG
-    # LOG = logging.getLogger(__name__)
-
-    # https://docs.python.org/3.9/library/logging.html#logging.basicConfig
-    #logging.basicConfig(level=logging.DEBUG,
-    #                    format="[%(asctime)s] [%(levelname)s] [%(threadName)s|%(thread)d] [%(name)s]: %(message)s",
-    #                    datefmt='%m-%d-%Y %H:%M:%S',
-    #                    )
-    global LOG
-    LOG = logging.getLogger(__name__)
-
-
 track_list = None
 
 
@@ -135,8 +83,6 @@ def get_track_list(txt=CACHE_FILE):
                 logging.info('track list loaded successfully: {0} tracks found'.format(len(track_list)))
                 return [line.rstrip('\n') for line in track_list]
         except FileNotFoundError:
-            # logging.exception(err)
-            # print(err)
             logging.exception(
                 'Mount Google Drive and try again. Use: \"rclone mount googledrive: /data/googledrive --vfs-cache-mode writes &\"')
     else:
@@ -223,124 +169,7 @@ class Track(object):
             pass
 
 
-"""
-
-import time
-
-from inky.inky_uc8159 import Inky, CLEAN
-
-
-inky = Inky()
-
-for _ in range(2):
-    for y in range(inky.height - 1):
-        for x in range(inky.width - 1):
-            inky.set_pixel(x, y, CLEAN)
-
-    inky.show()
-    time.sleep(1.0)
-
-
->>> from inky.inky_uc8159 import Inky
->>> board = Inky()
-from PIL import Image
-saturation = 0.5
-image = Image.open('image.img')
-size = 600, 448
-image_resized = image.resize(size, Image.ANTIALIAS)
-board.set_image(image_resized, saturation=saturation)
-board.show()
-
-"""
-
-"""
-import signal
-import RPi.GPIO as GPIO
-
-print(buttons.py - Detect which button has been pressed
-
-This example should demonstrate how to:
- 1. set up RPi.GPIO to read buttons,
- 2. determine which button has been pressed
-
-Press Ctrl+C to exit!
-
-)
-
-# Gpio pins for each button (from top to bottom)
-BUTTONS = [5, 6, 16, 24]
-
-# These correspond to buttons A, B, C and D respectively
-LABELS = ['A', 'B', 'C', 'D']
-
-# Set up RPi.GPIO with the "BCM" numbering scheme
-GPIO.setmode(GPIO.BCM)
-
-# Buttons connect to ground when pressed, so we should set them up
-# with a "PULL UP", which weakly pulls the input signal to 3.3V.
-GPIO.setup(BUTTONS, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-
-
-# "handle_button" will be called every time a button is pressed
-# It receives one argument: the associated input pin.
-def handle_button(pin):
-    label = LABELS[BUTTONS.index(pin)]
-    print("Button press detected on pin: {} label: {}".format(pin, label))
-
-
-# Loop through out buttons and attach the "handle_button" function to each
-# We're watching the "FALLING" edge (transition from 3.3V to Ground) and
-# picking a generous bouncetime of 250ms to smooth out button presses.
-for pin in BUTTONS:
-    GPIO.add_event_detect(pin, GPIO.FALLING, handle_button, bouncetime=250)
-
-# Finally, since button handlers don't require a "while True" loop,
-# we pause the script to prevent it exiting immediately.
-signal.pause()
-"""
-
-
-"""
-DSF ffplay
-ffplay -vn -nodisp '/data/googledrive/media/audio/music/on_device/The Prodigy - 2008 - Music For The Jilted Generation [DSD64]/Prodigy, The - Music For The Jilted Generation (2008, XLLP 114 - B668457, side 1)_2.8M.dsf'
-
-DFF ffplay
-ffplay -vn -nodisp '/data/googledrive/media/audio/music/new/Michael Jackson - 1982 - Thriller [DSD]/04 - Thriller.dff'
-
-FLAC ffplay
-ffplay -vn -nodisp '/data/googledrive/media/audio/music/on_device/Within Temptation - 2007 - The Heart Of Everything (Special Edition) [FLAC-24:192]/01 The Howling.flac'
-"""
-
-
-# def signal_handler(signum, frame):
-#     raise ProgramKilled
-
-
 class Player(object):
-
-    """
-from player.player import Player
-p = Player()
-p.buttons_watcher_thread()
-p.state_watcher_thread()
-p.pimoroni_watcher_thread()
-p.init_screen()
-
-p.track_list_generator_thread()
-p.load_track_list()
-p.track_loader_thread()
-
-p.update_track_list()
-
-# p.generate_track_list()
-# p.buttons_watcher_thread()
-# p.pimoroni_watcher_thread()
-# p.state_watcher_thread()
-
-# p.play()
-
-# p.quit()
-"""
 
     def __init__(self, auto_update_tracklist=False):
         logging.info('initializing player...')
@@ -373,19 +202,6 @@ p.update_track_list()
         self._track_list_generator_thread = None
 
         logging.info('player initialized.')
-
-    # @property
-    # def playing_now_index(self):
-    #     if self.playing_now is None and len(self.track) == 0:
-    #         return self.track_list.index(random.choice(self.track_list))
-    #     if self.button_1_value == 'Albm':
-    #         return self.album_list.index(self.playing_now)
-    #
-    #     return self.track_list.index(self.playing_now)
-
-    # @property
-    # def album_list(self):
-    #     return [i for i in self.track_list if os.path.dirname(self.playing_now) in i]
 
     def temp_cleanup(self):
         temp_dir = tempfile.gettempdir()
@@ -455,11 +271,6 @@ p.update_track_list()
 
     ############################################
     # track list generator
-    # def update_track_list(self):
-    #     # call this method to initiate track list creation/update
-    #     # self.generate_new_track_list = True
-    #     self.load_track_list()
-
     def track_list_generator_thread(self, **kwargs):
         self._track_list_generator_thread = threading.Thread(target=self.track_list_generator_task, kwargs=kwargs)
         self._track_list_generator_thread.name = 'Track List Generator Thread'
@@ -825,37 +636,6 @@ p.update_track_list()
 
         return ret
 
-#     def task_pimoroni_clean(self):
-#         """
-# Exception in thread Thread-5:
-# Traceback (most recent call last):
-#   File "/usr/lib/python3.7/threading.py", line 917, in _bootstrap_inner
-#     self.run()
-#   File "/usr/lib/python3.7/threading.py", line 865, in run
-#     self._target(*self._args, **self._kwargs)
-#   File "/home/pi/player/player.py", line 250, in task_pimoroni_clean
-#     self.pimoroni.set_pixel(x, y, CLEAN)
-#   File "/home/pi/venv/lib/python3.7/site-packages/inky/inky_uc8159.py", line 343, in set_pixel
-#     self.buf[y][x] = v & 0x07
-# IndexError: index 448 is out of bounds for axis 0 with size 448
-#         """
-#         for _ in range(2):
-#             for y in range(self.pimoroni.height - 1):
-#                 for x in range(self.pimoroni.width - 1):
-#                     self.pimoroni.set_pixel(x, y, CLEAN)
-#             self.pimoroni.show()
-#             time.sleep(1.0)
-
-    # @property
-    # def track_list(self):
-    #     if self._reload_track_list:
-    #         try:
-    #             with open(self.CACHE_FILE, 'r') as f:
-    #                 self.track_list = f.readlines()
-    #         except FileNotFoundError as err:
-    #             print(err)
-    #             print('mount Google Drive and try again.\n\trclone mount googledrive: /data/googledrive &')
-
     def load_track_list(self, txt=CACHE_FILE):
         if os.path.exists(txt):
             self.track_list = get_track_list(txt)
@@ -902,21 +682,6 @@ p.update_track_list()
         thread.daemon = False
         self._pimoroni_thread = thread
 
-
-"""
-playing now: /data/googledrive/media/audio/music/new/Tool - Undertow - Custom Remaster by MC Lurken 24-bit 96kHz flac/Tracks 10-68 silence/32.flac
-Exception in thread Thread-37:
-Traceback (most recent call last):
-  File "/usr/lib/python3.7/threading.py", line 917, in _bootstrap_inner
-    self.run()
-  File "/usr/lib/python3.7/threading.py", line 865, in run
-    self._target(*self._args, **self._kwargs)
-  File "/home/pi/player/player.py", line 121, in task_pimoroni_clean
-    self.pimoroni.set_pixel(x, y, CLEAN)
-  File "/home/pi/venv/lib/python3.7/site-packages/inky/inky_uc8159.py", line 343, in set_pixel
-    self.buf[y][x] = v & 0x07
-IndexError: index 448 is out of bounds for axis 0 with size 448
-"""
 
 p = Player(auto_update_tracklist=True)
 p.temp_cleanup()

@@ -1,9 +1,7 @@
 from django.db import models
 
+
 # Create your models here.
-from django.db import models
-
-
 class Channel(models.Model):
     display_name = models.CharField(max_length=200, unique=True)
     display_name_short = models.CharField(max_length=200, unique=True)
