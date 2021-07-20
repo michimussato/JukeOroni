@@ -260,21 +260,21 @@ class Player(object):
     @staticmethod
     def create_update_track_list():
         # TODO: filter image files, m3u etc.
-        print('hello')
-        all_artists = Artist.objects.all()
-        all_albums = Album.objects.all()
-        all_tracks = DjangoTrack.objects.all()
+        #print('hello')
+        #all_artists = Artist.objects.all()
+        #all_albums = Album.objects.all()
+        #all_tracks = DjangoTrack.objects.all()
         logging.info('generating updated track list...')
         files = []
         for path, dirs, files in os.walk(MUSIC_DIR):
-            print(path)
+            # print(path)
             album = os.path.basename(path)
             try:
                 artist, year, title = album.split(' - ')
             except ValueError as err:
                 LOG.exception('not a valid album path: {0}'.format(album))
                 continue
-            print(artist + year + title)
+            #print(artist + year + title)
             query_artist = Artist.objects.filter(name__exact=artist)
             if bool(query_artist):
                 model_artist = query_artist[0]
@@ -311,10 +311,10 @@ class Player(object):
                         model_track = DjangoTrack(album_id=model_album, audio_source=_file)
                         model_track.save()
                     #track = DjangoTrack(audio_source=_file)
-                    model_track.save()
+                    # model_track.save()
 
                     files.append(_file)
-                    break
+                    #break
         #files = [
         #    os.path.join(path, filename)
         #    for path, dirs, files in os.walk(MUSIC_DIR)
