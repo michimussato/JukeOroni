@@ -265,7 +265,7 @@ class Player(object):
         #all_albums = Album.objects.all()
         #all_tracks = DjangoTrack.objects.all()
         logging.info('generating updated track list...')
-        files = []
+        _files = []
         for path, dirs, files in os.walk(MUSIC_DIR):
             # print(path)
             album = os.path.basename(path)
@@ -274,16 +274,16 @@ class Player(object):
             except ValueError as err:
                 LOG.exception('not a valid album path: {0}'.format(album))
                 continue
-            #print(artist + year + title)
+
             query_artist = Artist.objects.filter(name__exact=artist)
             if bool(query_artist):
                 model_artist = query_artist[0]
-                # all_artists.remove(model_artist)
             else:
                 model_artist = Artist(name=artist)
                 model_artist.save()
 
             query_album = Album.objects.filter(album_title__exact=title, year__exact=year)
+
             cover_root = os.path.dirname(path)
             jpg_path = os.path.join(cover_root, 'cover.jpg')
             png_path = os.path.join(cover_root, 'cover.png')
@@ -303,7 +303,6 @@ class Player(object):
 
             for _file in files:
                 if os.path.splitext(_file)[1] in AUDIO_FILES:
-                    print('\t' + _file)
                     query_track = DjangoTrack.objects.filter(audio_source__exact=_file)
                     if bool(query_track):
                         model_track = query_track[0]
@@ -313,7 +312,7 @@ class Player(object):
                     #track = DjangoTrack(audio_source=_file)
                     # model_track.save()
 
-                    files.append(_file)
+                    _files.append(_file)
                     #break
         #files = [
         #    os.path.join(path, filename)
@@ -325,7 +324,7 @@ class Player(object):
         # remove obsolete db objects:
         django_tracks = DjangoTrack.objects.all()
         for django_track in django_tracks:
-            if django_track.audio_source not in files:
+            if django_track.audio_source not in _files:
                 django_track.delete()
 
         #for _file in files:
