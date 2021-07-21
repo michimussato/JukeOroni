@@ -265,17 +265,18 @@ class Player(object):
     @staticmethod
     def create_update_track_list():
         # TODO: filter image files, m3u etc.
-        #print('hello')
-        #all_artists = Artist.objects.all()
-        #all_albums = Album.objects.all()
-        #all_tracks = DjangoTrack.objects.all()
         logging.info('generating updated track list...')
         _files = []
         for path, dirs, files in os.walk(MUSIC_DIR):
+            print(path)
             # print(path)
             album = os.path.basename(path)
+            print('  ' + album)
             try:
                 artist, year, title = album.split(' - ')
+                print('    ' + artist)
+                print('    ' + year)
+                print('    ' + title)
             except ValueError as err:
                 with open(FAULTY_ALBUMS, 'a+') as f:
                     f.write(album + '\n')
@@ -286,9 +287,11 @@ class Player(object):
             query_artist = Artist.objects.filter(name__exact=artist)
             if bool(query_artist):
                 model_artist = query_artist[0]
+                print('    artist found in db')
             else:
                 model_artist = Artist(name=artist)
                 model_artist.save()
+                print('    artist created in db')
 
             query_album = Album.objects.filter(album_title__exact=title, year__exact=year)
 
@@ -305,46 +308,38 @@ class Player(object):
                 logging.info('cover is None')
                 img_path = None
 
-            #print(img_path)
-            #LOG.debug(img_path)
-
             if bool(query_album):
                 model_album = query_album[0]
                 model_album.cover = img_path
+                print('    album found in db')
             else:
                 model_album = Album(artist_id=model_artist, album_title=title, year=year, cover=img_path)
+                print('    album created in db')
             model_album.save()
 
             for _file in files:
+                print('    file: ' + _file)
                 if os.path.splitext(_file)[1] in AUDIO_FILES:
                     file_path = os.path.join(path, _file)
                     query_track = DjangoTrack.objects.filter(audio_source__exact=file_path)
                     if bool(query_track):
                         model_track = query_track[0]
+
+                        print('    track found in db')
                     else:
                         model_track = DjangoTrack(album_id=model_album, audio_source=file_path)
                         model_track.save()
-                    #track = DjangoTrack(audio_source=_file)
-                    # model_track.save()
+                        print('    track created in db')
 
                     _files.append(file_path)
-                    #break
-        #files = [
-        #    os.path.join(path, filename)
-        #    for path, dirs, files in os.walk(MUSIC_DIR)
-        #    for filename in files
-        #    if os.path.splitext(filename)[1] in AUDIO_FILES
-        #]
+
+        print(len(_files))
 
         # remove obsolete db objects:
         django_tracks = DjangoTrack.objects.all()
         for django_track in django_tracks:
             if django_track.audio_source not in _files:
                 django_track.delete()
-
-        #for _file in files:
-        #    track = DjangoTrack(audio_source=_file)
-        #    track.save()
 
         logging.info('track list generated successfully: {0} tracks found'.format(len(files)))
     ############################################
