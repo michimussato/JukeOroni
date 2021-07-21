@@ -321,6 +321,7 @@ class Player(object):
             try:
                 model_album.save()
             except Exception as err:
+                print(err)
                 import pdb;pdb.set_trace()
 
             for _file in files:
