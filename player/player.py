@@ -268,15 +268,15 @@ class Player(object):
         logging.info('generating updated track list...')
         _files = []
         for path, dirs, files in os.walk(MUSIC_DIR):
-            print(path)
             # print(path)
             album = os.path.basename(path)
-            print('  ' + album)
+            # print('  ' + album)
             try:
+                # TODD: maybe use a better character ‎–
                 artist, year, title = album.split(' - ')
-                print('    ' + artist)
-                print('    ' + year)
-                print('    ' + title)
+                # print('    ' + artist)
+                # print('    ' + year)
+                # print('    ' + title)
             except ValueError as err:
                 with open(FAULTY_ALBUMS, 'a+') as f:
                     f.write(album + '\n')
@@ -287,11 +287,11 @@ class Player(object):
             query_artist = Artist.objects.filter(name__exact=artist)
             if bool(query_artist):
                 model_artist = query_artist[0]
-                print('    artist found in db')
+                # print('    artist found in db')
             else:
                 model_artist = Artist(name=artist)
                 model_artist.save()
-                print('    artist created in db')
+                # print('    artist created in db')
 
             cover_root = path
             jpg_path = os.path.join(cover_root, 'cover.jpg')
@@ -313,34 +313,35 @@ class Player(object):
             if bool(query_album):
                 model_album = query_album[0]
                 model_album.cover = img_path
-                print('    album found in db')
+                # print('    album found in db')
             else:
                 model_album = Album(artist_id=model_artist, album_title=title, year=year, cover=img_path)
-                print('    album created in db')
+                # print('    album created in db')
 
             try:
                 model_album.save()
             except Exception as err:
-                print(err)
-                import pdb;pdb.set_trace()
+                logging.exception()
+                # print(err)
+                # import pdb;pdb.set_trace()
 
             for _file in files:
-                print('      track: ' + _file)
+                # print('      track: ' + _file)
                 if os.path.splitext(_file)[1] in AUDIO_FILES:
                     file_path = os.path.join(path, _file)
                     query_track = DjangoTrack.objects.filter(audio_source__exact=file_path)
                     if bool(query_track):
                         model_track = query_track[0]
 
-                        print('        track found in db')
+                        # print('        track found in db')
                     else:
                         model_track = DjangoTrack(album_id=model_album, audio_source=file_path)
                         model_track.save()
-                        print('        track created in db')
+                        # print('        track created in db')
 
                     _files.append(file_path)
 
-        print(len(_files))
+        # print(len(_files))
 
         # remove obsolete db objects:
         django_tracks = DjangoTrack.objects.all()
