@@ -306,7 +306,9 @@ class Player(object):
                 logging.info('cover is None')
                 img_path = None
 
-            query_album = Album.objects.filter(album_title__exact=title, year__exact=year)
+            # need to add artist too
+            # Album.objects.filter(album_title__exact='Ultimate Wailers Box [FLAC-16:44.1]', year__exact=2016, artist_id='Bob Marley & The Wailers')
+            query_album = Album.objects.filter(artist_id=model_artist, album_title__exact=title, year__exact=year)
 
             if bool(query_album):
                 model_album = query_album[0]
@@ -318,7 +320,7 @@ class Player(object):
 
             try:
                 model_album.save()
-            except Exception:
+            except Exception as err:
                 import pdb;pdb.set_trace()
 
             for _file in files:
