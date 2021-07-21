@@ -293,8 +293,6 @@ class Player(object):
                 model_artist.save()
                 print('    artist created in db')
 
-            query_album = Album.objects.filter(album_title__exact=title, year__exact=year)
-
             cover_root = path
             jpg_path = os.path.join(cover_root, 'cover.jpg')
             png_path = os.path.join(cover_root, 'cover.png')
@@ -308,6 +306,8 @@ class Player(object):
                 logging.info('cover is None')
                 img_path = None
 
+            query_album = Album.objects.filter(album_title__exact=title, year__exact=year)
+
             if bool(query_album):
                 model_album = query_album[0]
                 model_album.cover = img_path
@@ -315,21 +315,25 @@ class Player(object):
             else:
                 model_album = Album(artist_id=model_artist, album_title=title, year=year, cover=img_path)
                 print('    album created in db')
-            model_album.save()
+
+            try:
+                model_album.save()
+            except Exception:
+                import pdb;pdb.set_trace()
 
             for _file in files:
-                print('    file: ' + _file)
+                print('        file: ' + _file)
                 if os.path.splitext(_file)[1] in AUDIO_FILES:
                     file_path = os.path.join(path, _file)
                     query_track = DjangoTrack.objects.filter(audio_source__exact=file_path)
                     if bool(query_track):
                         model_track = query_track[0]
 
-                        print('    track found in db')
+                        print('      track found in db')
                     else:
                         model_track = DjangoTrack(album_id=model_album, audio_source=file_path)
                         model_track.save()
-                        print('    track created in db')
+                        print('      track created in db')
 
                     _files.append(file_path)
 
