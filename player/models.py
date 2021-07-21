@@ -11,13 +11,13 @@ class Artist(models.Model):
 
 class Album(models.Model):
     artist_id = models.ForeignKey(Artist, on_delete=models.PROTECT)
-    album_title = models.CharField(max_length=200, unique=True, blank=False)
+    album_title = models.CharField(max_length=200, unique=False, blank=False)
     year = models.CharField(max_length=200, unique=False, blank=True, null=False)
     # audio_format = models.CharField(max_length=200, unique=False)
     cover = models.CharField(max_length=200, unique=False, blank=True, null=True)
 
     def __str__(self):
-        return self.album_title
+        return '{0} ({1})'.format(self.album_title, self.artist_id.name)
 
 
 class Track(models.Model):
