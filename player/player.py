@@ -322,18 +322,18 @@ class Player(object):
                 import pdb;pdb.set_trace()
 
             for _file in files:
-                print('        file: ' + _file)
+                print('      track: ' + _file)
                 if os.path.splitext(_file)[1] in AUDIO_FILES:
                     file_path = os.path.join(path, _file)
                     query_track = DjangoTrack.objects.filter(audio_source__exact=file_path)
                     if bool(query_track):
                         model_track = query_track[0]
 
-                        print('      track found in db')
+                        print('        track found in db')
                     else:
                         model_track = DjangoTrack(album_id=model_album, audio_source=file_path)
                         model_track.save()
-                        print('      track created in db')
+                        print('        track created in db')
 
                     _files.append(file_path)
 
@@ -345,7 +345,7 @@ class Player(object):
             if django_track.audio_source not in _files:
                 django_track.delete()
 
-        logging.info('track list generated successfully: {0} tracks found'.format(len(files)))
+        logging.info('track list generated successfully: {0} tracks found'.format(len(_files)))
     ############################################
 
     ############################################
