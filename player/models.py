@@ -17,7 +17,8 @@ class Album(models.Model):
     cover = models.CharField(max_length=200, unique=False, blank=True, null=True)
 
     def __str__(self):
-        return '{0} ({1})'.format(self.album_title, self.artist_id.name)
+        # return '{0} ({1})'.format(self.album_title, self.artist_id.name)
+        return self.album_title
 
 
 class Track(models.Model):

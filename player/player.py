@@ -27,7 +27,7 @@ MUSIC_DIR = os.path.join(MEDIA_ROOT, 'music')
 MAX_CACHED_FILES = 3
 PIMORONI_SATURATION = 1.0
 PIMORONI_SIZE = 600, 448
-FONT_SIZE = 12
+FONT_SIZE = 20
 SLEEP_IMAGE = '/data/django/jukeoroni/player/static/zzz.jpg'
 LOADING_IMAGE = '/data/django/jukeoroni/player/static/loading.jpg'
 STANDARD_COVER = '/data/django/jukeoroni/player/static/cover_std.png'
@@ -524,7 +524,7 @@ class Player(object):
             title = os.path.basename(track.path)
             album = Album.objects.get(track=track.track)
             artist = Artist.objects.get(album=album)
-            text = 'Track: {0}\nArtist: {1}\nAlbum: {2}'.format(
+            text = '{0}\n{1}\n{2}'.format(
                 title,
                 artist,
                 album
@@ -560,7 +560,7 @@ class Player(object):
 
         offset = (0, 0)
 
-        #img_font = ImageFont.truetype('FreeMono.ttf', 20)
+        # img_font = ImageFont.truetype(PIMORONI_FONT, 20)
 
         #print(bg.size)
         #bg = bg.rotate(90, expand=False)
