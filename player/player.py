@@ -586,6 +586,7 @@ class Player(object):
 
         font_path = PIMORONI_FONT
         font = ImageFont.truetype(font_path, FONT_SIZE)
+        font.set_variation_by_name('Bold')
         #print(kwargs['media_info'])
         #img_draw.text((10, 5), self.wrap_text(kwargs['media_info']['filename']), fill=(255, 255, 255, 255))
         #img_draw.text((10, 5), self.get_text(kwargs['media_info']), fill=(255, 255, 255))
