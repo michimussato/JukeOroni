@@ -86,44 +86,10 @@ class Track(object):
         if self.cached:
             self._cache()
 
-    #@property
-    #def track_list(self):
-    #    return [track.audio_source for track in DjangoTrack.objects.all()]
-
-    #@property
-    #def media_index(self):
-    #    return self.track_list.index(self.path)
-
-    #@property
-    #def album_indices(self):
-    #    album_list = [i for i in self.track_list if os.path.dirname(self.path) in i]
-    #    album_indices = []
-    #    for i in album_list:
-    #        if i in self.track_list:
-    #            album_indices.append(self.track_list.index(i))#
-
-    #    logging.info('{0} of albums found.'.format(album_indices))
-    #    return album_indices
-
     @property
     def cover(self):
         album = Album.objects.get(track=self.track)
         return album.cover
-        # cover_root = os.path.dirname(self.path)
-        # jpg_path = os.path.join(cover_root, 'cover.jpg')
-        # png_path = os.path.join(cover_root, 'cover.png')
-        # if os.path.exists(jpg_path):
-        #     img_path = jpg_path
-        # elif os.path.exists(png_path):
-        #     img_path = png_path
-        # else:
-        #     # TODO: put to file to fill in the covers later
-        #     with open(MISSING_COVERS_FILE, 'a+') as f:
-        #         f.write(cover_root + '\n')
-        #     logging.info('cover is None')
-        #     return None
-        # logging.info('cover is \"{0}\"'.format(img_path))
-        # return img_path
 
     @property
     def media_info(self):
@@ -156,6 +122,8 @@ class Track(object):
                 logging.info('removed from local filesystem: \"{0}\"'.format(self.cache))
                 print('removed from local filesystem: \"{0}\"'.format(self.cache))
 
+    # # this would be easiest for cleanup, but the way multiprocessing seems to hand
+    # # over objects, this method is not working anymore
     # def __del__(self):
     #     if self.cache is not None:
     #         try:
@@ -183,7 +151,6 @@ class Player(object):
         self.loading = 0
         self.loading_queue = multiprocessing.Queue()
         self.loading_process = None
-        # self.processing_queue = multiprocessing.Queue()
         self.playing = False
         self.playing_track = None
         self.sequential = False
@@ -229,11 +196,12 @@ class Player(object):
             self.loading_process.terminate()
             self.loading_process.join()
         self.loading_process = None
+        # remove all cached tracks from the filesystem except the one
+        # that is currently playing
         for track in self.tracks:
             if track.cached and not track.is_playing:
                 os.remove(track.cache)
         self.tracks = []
-        # self.temp_cleanup()
 
     def _handle_button(self, pin):
         current_label = self.LABELS[BUTTONS.index(pin)]
@@ -242,43 +210,21 @@ class Player(object):
         # Mode button
         if self.button_3_value == 'Next':  # we only want to switch mode when something is already playing
             if current_label == self.button_1_value:
-                # empty cached track list
+                # empty cached track list but leave current track playing
+                # but update the display to reflect current Mode
                 self.kill_loading_process()
-                # for track in self.tracks:
-                #     if track.cached and not track.is_playing:
-                #         os.remove(track.cache)
 
-                #if current_label == 'Rand':
-                    #album_id = self.playing_track.album_id_id
-                    #album_
-                #    self.button_1_value = BUTTON_1[current_label]
-                #elif current_label == 'Sequ':
-                #    self.button_1_value = BUTTON_1[current_label]
-                #elif current_label == 'Albm':
-                #    self.button_1_value = BUTTON_1[current_label]
                 self.button_1_value = BUTTON_1[current_label]
 
                 self.set_image(track=self.playing_track)
-                # delete cached files
-                # set button label to 'Rand'
-                # create sequential playlist of album containing current track
-                #
                 return
-                # # empty the cached tracks to create a new list based mode
-                # # TODO: also remove from file system
-                # self.tracks = []
-                # self.button_1_value = BUTTON_1[current_label]
-                # if self.button_1_value == 'Albm':
-                #     self.next()
-                # if self.button_1_value == 'Sequ':
-                #     # has to update the buttons on the screen without self.next()
-                #     self.set_image(image_file=self.playing_track.cover, media_info=self.playing_track.media_info)
 
         # Stop button
         if current_label == self.button_2_value:
             if self._playback_thread is not None:
                 self.button_3_value = BUTTON_3['Next']  # Switch button back to Play
                 self.stop()
+                self.kill_loading_process()
                 self.init_screen()
 
         # Play/Next button
@@ -291,8 +237,6 @@ class Player(object):
         # Quit button
         if current_label == self.button_4_value:
             return
-            # self.init_screen()
-            # self.quit()
     ############################################
 
     ############################################
@@ -317,15 +261,10 @@ class Player(object):
         logging.info('generating updated track list...')
         _files = []
         for path, dirs, files in os.walk(MUSIC_DIR):
-            # print(path)
             album = os.path.basename(path)
-            # print('  ' + album)
             try:
-                # TODD: maybe use a better character ‎–
+                # TODO: maybe use a better character
                 artist, year, title = album.split(' - ')
-                # print('    ' + artist)
-                # print('    ' + year)
-                # print('    ' + title)
             except ValueError as err:
                 with open(FAULTY_ALBUMS, 'a+') as f:
                     f.write(album + '\n')
@@ -356,7 +295,6 @@ class Player(object):
                 img_path = None
 
             # need to add artist too
-            # Album.objects.filter(album_title__exact='Ultimate Wailers Box [FLAC-16:44.1]', year__exact=2016, artist_id='Bob Marley & The Wailers')
             query_album = Album.objects.filter(artist_id=model_artist, album_title__exact=title, year__exact=year)
 
             if bool(query_album):
@@ -371,8 +309,7 @@ class Player(object):
                 model_album.save()
             except Exception as err:
                 logging.exception()
-                # print(err)
-                # import pdb;pdb.set_trace()
+                print(err)
 
             for _file in files:
                 # print('      track: ' + _file)
@@ -389,8 +326,6 @@ class Player(object):
                         # print('        track created in db')
 
                     _files.append(file_path)
-
-        # print(len(_files))
 
         # remove obsolete db objects:
         django_tracks = DjangoTrack.objects.all()
@@ -411,13 +346,9 @@ class Player(object):
 
     def _track_loader_task(self):
         while True and not self._quit:
-            # print('here')
-            # import pdb;pdb.set_trace()
             if len(self.tracks) + self.loading < MAX_CACHED_FILES and not bool(self.loading):
-                #print('then here')
                 next_track = self.get_next_track()
                 if next_track is None:
-                    #print('there')
                     time.sleep(1.0)
                     continue
 
@@ -430,96 +361,54 @@ class Player(object):
                 # thread.daemon = False
 
                 # multiprocessing approach
-
-                # from multiprocessing import Process, Queue
-                #
-                # def f(q):
-                #     q.put('X' * 1000000)
-                #
-                # if __name__ == '__main__':
-                #     queue = Queue()
-                #     p = Process(target=f, args=(queue,))
-                #     p.start()
-                #     obj = queue.get()
-                #     # p.join()
-
+                # this approach apparently destroys the Track object that it uses to cache
+                # data. when the Queue handles over that cached object, it seems like
+                # it re-creates the Track object (pickle, probably) but the cached data is
+                # gone of course because __del__ was called before that already.
                 self.loading_process = multiprocessing.Process(target=self._load_track_task, kwargs={'track': next_track})
-                # self.loading_process = multiprocessing.Process(target=self._load_track_task, kwargs={'track': next_track})
-                # self.loading_process.daemon = True
                 self.loading_process.start()
-                # self.loading_process.join()
 
                 self.loading += 1
 
                 try:
                     while self.loading_process.is_alive():
-                        #print(self.loading_process)
                         logging.error(self.loading_process)
                         time.sleep(1.0)
 
-                    #print(self.loading_process)
-                    # self.loading -= 1
-                    #print(self.tracks)
                     ret = self.loading_queue.get()
-                    #print(self.tracks)
-                    #print('ret = {0}'.format(ret))
+
                     if ret is not None:
                         self.tracks.append(ret)
 
                     logging.error(self.loading_process)
                     self.loading_process.join()
-                    #print(self.tracks)
 
                 except AttributeError as err:
                     print(err)
+                    logging.exception()
 
                 finally:
                     self.loading -= 1
 
-                #print(self.loading_process)
-                #self.loading -= 1
-                #ret = self.loading_queue.get()
-                #if ret is not None:
-                #    self.tracks.append(ret)
-
-                #logging.error(self.loading_process)
-                #self.loading_process.join()
-                logging.error(self.loading_process)
-
-
-                # thread.start()
             time.sleep(1.0)
 
     def _load_track_task(self, **kwargs):
         track = kwargs['track']
         logging.debug('starting thread: \"{0}\"'.format(track.audio_source))
 
-        logging.error(self.loading_process)
-
-        #print('thread started')
-        #print(self.loading_process)
-
         try:
-            #logging.error(track)
-            #logging.error(track.audio_source)
             logging.info('loading track ({1} MB): \"{0}\"'.format(track.audio_source, str(round(os.path.getsize(track.audio_source) / (1024*1024), 3))))
             processing_track = Track(track)
-            #self.tracks.append(processing_track)
             logging.info('loading successful: \"{0}\"'.format(track.audio_source))
             logging.error(self.loading_process)
-            #self.loading_process.terminate()
-            #self.loading_process.join()
-            #self.loading_process.close()
-            #p.logging.error(self.loading_process)
             ret = processing_track
         except MemoryError as err:
+            print(err)
             logging.exception('loading failed: \"{0}\"'.format(track.audio_source))
             ret = None
-        #finally:
-            # self.loading -= 1
-            #print('thread finished')
-            #print(self.tracks)
-            #self.loading_process = None
+
+        # here, or after that, probably processing_track.__del__() is called but pickled/recreated
+        # in the main process
         self.loading_queue.put(ret)
     ############################################
 
@@ -574,16 +463,9 @@ class Player(object):
 
     def playback_thread(self):
         while not self.tracks and not self.loading:
-            logging.warning('waiting for loading thread to kick in')
-            #print('waiting for loading thread to kick in   ', end='\r')
+            logging.info('waiting for loading thread to kick in')
+            print('waiting for loading thread to kick in')
             time.sleep(1)
-            #time.sleep(0.2)
-            #print('waiting for loading thread to kick in.  ', end='\r')
-            #time.sleep(0.2)
-            #print('waiting for loading thread to kick in.. ', end='\r')
-            #time.sleep(0.2)
-            #print('waiting for loading thread to kick in...', end='\r')
-            #time.sleep(0.2)
 
         _display_loading = False
         while not self.tracks and self.loading:
@@ -591,16 +473,9 @@ class Player(object):
                 self.set_image(image_file=LOADING_IMAGE)
                 _display_loading = True
 
-            #print('loading 1st track                       ', end='\r')
-            logging.warning('loading 1st track')
-            #time.sleep(0.2)
+            print('loading 1st track')
+            logging.info('loading 1st track')
             time.sleep(1.0)
-            #print('loading 1st track.                      ', end='\r')
-            #time.sleep(0.2)
-            #print('loading 1st track..                     ', end='\r')
-            #time.sleep(0.2)
-            #print('loading 1st track...                    ', end='\r')
-            #time.sleep(0.2)
 
         del _display_loading
 
@@ -644,8 +519,7 @@ class Player(object):
         self._state_watcher_thread = None
 
         while self.tracks:
-            track = self.tracks.pop(0)
-            del track
+            self.tracks.pop(0)
 
         sys.exit(0)
 
@@ -656,8 +530,6 @@ class Player(object):
             cover = kwargs['image_file']
         else:
             cover = STANDARD_COVER
-        #else:
-        #    cover = kwargs['image_file']
 
         if 'track' in kwargs:
             track = kwargs['track']
@@ -759,75 +631,13 @@ class Player(object):
         ), fill=(255, 255, 255))
         bg.paste(buttons_img, (0, 0))
 
-    # def get_text(self, media_info):
-    #     if 'TAG' in media_info:
-    #         TAG = media_info['TAG']
-    #         if 'ARTIST' in TAG:
-    #             ARTIST = TAG['ARTIST']
-    #         else:
-    #             ARTIST = 'N/A'
-    #
-    #         if 'ALBUM' in TAG:
-    #             ALBUM = TAG['ALBUM']
-    #         else:
-    #             ALBUM = 'N/A'
-    #
-    #         if 'TITLE' in TAG:
-    #             TITLE = TAG['TITLE']
-    #         else:
-    #             TITLE = 'N/A'
-    #
-    #         if 'track' in TAG:
-    #             track = TAG['track']
-    #         else:
-    #             track = 'N/A'
-    #
-    #         if 'channels' in media_info:
-    #             channels = media_info['channels']
-    #         else:
-    #             channels = 'N/A'
-    #
-    #         if 'bits_per_raw_sample' in media_info:
-    #             bits_per_raw_sample = media_info['bits_per_raw_sample']
-    #         else:
-    #             bits_per_raw_sample = 'N/A'
-    #
-    #         if 'sample_rate' in media_info:
-    #             sample_rate = media_info['sample_rate']
-    #         else:
-    #             sample_rate = 'N/A'
-    #
-    #         if 'duration' in media_info:
-    #             duration = time.gmtime(int(float(media_info['duration'])))
-    #             duration = time.strftime("%H:%M:%S", duration)
-    #
-    #         else:
-    #             duration = 'N/A'
-    #
-    #         ret = "Artist: {artist}\nAlbum: {album}\nTitle: {title} ({track})\nDuration: {duration}\n\nChannels: {channels}\nResolution: {bits_per_raw_sample} bits\nSample rate: {sample_rate} Hz".format(
-    #             artist=ARTIST.upper(),
-    #             album=ALBUM,
-    #             track=track,
-    #             title=TITLE,
-    #             channels=channels,
-    #             bits_per_raw_sample=bits_per_raw_sample,
-    #             sample_rate=sample_rate,
-    #             duration=duration)
-    #
-    #     else:
-    #         ret = media_info['filename']
-    #
-    #     return ret
-
     @property
     def track_list(self):
-        # return [track.audio_source for track in DjangoTrack.objects.all()]
         return DjangoTrack.objects.all()
 
     def get_next_track(self):
         if self.button_1_value == 'Rand -> Sequ':
             tracks = self.track_list
-            # logging.error(tracks)
             if not bool(tracks):
                 return None
             next_track = random.choice(tracks)
@@ -838,40 +648,21 @@ class Player(object):
                 return None
             if bool(self.tracks):
                 previous_track_id = self.tracks[-1].track.id
-                #try:
-                #    next_track = DjangoTrack.objects.get(id=previous_track_id+1)
-                #except Exception as err:
-                #    logging.exception('no next track id found. need to start again at the beginning')
-                #    raise
             else:
                 previous_track_id = self.playing_track.track.id
-                #try:
-                #    next_track = DjangoTrack.objects.get(id=previous_track_id+1)
-                #except Exception as err:
-                #    logging.exception('no next track id found. need to start again at the beginning')
-                #    raise
 
             try:
                 next_track = DjangoTrack.objects.get(id=previous_track_id + 1)
             except Exception as err:
-                logging.exception('no next track id found. need to start again at the beginning')
+                print(err)
+                # TODO: if there is no higher id available in the db, we end up in this exception for now
+                logging.exception('no next track id found (max. reached). need to start again at the beginning')
                 raise
-
-            # # TODO: does not work if is loading and self.tracks is empty
-            # # if not self.tracks and self.loading
-            # print('track index: {0}'.format(self.playing_now_index))
-            # print(len(self.tracks))
-            # print(self.loading)
-            # next_track = self.track_list[self.playing_now_index + len(self.tracks) + 1]  # + self.loading ?
 
         elif self.button_1_value == 'Albm -> Rand':
             pass
-            # next_track = self.album_list[self.playing_now_index + len(self.tracks)]  # play index 0 first, then up
-            #
-            # print(self.album_list)
-            # # TODO: this will throw an error once the album is finished
-            # #  will probably set self.button_1_value == 'Rand'
-        # print('next track: {0}'.format(next_track))
+            # TODO: keep in mind that this is going to throw an error once the album is finished
+            #  will probably set self.button_1_value == 'Rand'
 
         return next_track
 
