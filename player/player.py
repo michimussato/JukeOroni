@@ -214,6 +214,11 @@ class Player(object):
             GPIO.add_event_detect(pin, GPIO.FALLING, self._handle_button, bouncetime=250)
         signal.pause()
 
+    def kill_loading_process(self):
+        if self.loading_process is not None:
+            self.loading_process.kill()
+        self.loading_process = None
+
     def _handle_button(self, pin):
         current_label = self.LABELS[BUTTONS.index(pin)]
         logging.info("Button press detected on pin: {pin} label: {label}".format(pin=pin, label=current_label))
@@ -222,8 +227,7 @@ class Player(object):
         if self.button_3_value == 'Next':  # we only want to switch mode when something is already playing
             if current_label == self.button_1_value:
                 # empty cached track list
-                if self.loading_process is not None:
-                    self.loading_process.kill()
+                self.kill_loading_process()
                 self.tracks = []
                 #if current_label == 'Rand':
                     #album_id = self.playing_track.album_id_id
@@ -420,6 +424,8 @@ class Player(object):
             processing_track = Track(track)
             self.tracks.append(processing_track)
             logging.info('loading successful: \"{0}\"'.format(track.audio_source))
+            self.loading_process.terminate()
+            self.loading_process.join()
         except MemoryError as err:
             logging.exception('loading failed: \"{0}\"'.format(track.audio_source))
         finally:
