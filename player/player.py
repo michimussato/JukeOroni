@@ -405,7 +405,6 @@ class Player(object):
                     time.sleep(1.0)
                     continue
 
-
                 # # threading approach seems causing problems if we actually need to empty
                 # # self.tracks. the thread will finish and add the cached track to self.tracks
                 # # afterwards because we cannot kill the running thread
@@ -445,6 +444,7 @@ class Player(object):
                     print(self.loading_process)
                     # self.loading -= 1
                     ret = self.loading_queue.get()
+                    print('ret = ' + ret)
                     if ret is not None:
                         self.tracks.append(ret)
 
