@@ -308,7 +308,7 @@ class Player(object):
             try:
                 model_album.save()
             except Exception as err:
-                logging.exception()
+                logging.exception(err)
                 print(err)
 
             for _file in files:
@@ -385,7 +385,7 @@ class Player(object):
 
                 except AttributeError as err:
                     print(err)
-                    logging.exception()
+                    logging.exception(err)
 
                 finally:
                     self.loading -= 1
@@ -559,7 +559,7 @@ class Player(object):
             cover = Image.open(cover, 'r')
         except AttributeError as err:
             print(err)
-            logging.exception()
+            logging.exception(err)
         w, h = cover.size
         if w == h:
             cover = cover.resize((448, 448), Image.ANTIALIAS)
