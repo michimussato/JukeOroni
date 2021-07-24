@@ -443,13 +443,16 @@ class Player(object):
 
                     print(self.loading_process)
                     # self.loading -= 1
+                    print(self.tracks)
                     ret = self.loading_queue.get()
+                    print(self.tracks)
                     print('ret = {0}'.format(ret))
                     if ret is not None:
                         self.tracks.append(ret)
 
                     logging.error(self.loading_process)
                     self.loading_process.join()
+                    print(self.tracks)
 
                 except AttributeError as err:
                     print(err)
@@ -491,7 +494,7 @@ class Player(object):
             #self.loading_process.terminate()
             #self.loading_process.join()
             #self.loading_process.close()
-            logging.error(self.loading_process)
+            #p.logging.error(self.loading_process)
             ret = processing_track
         except MemoryError as err:
             logging.exception('loading failed: \"{0}\"'.format(track.audio_source))
@@ -499,6 +502,7 @@ class Player(object):
         finally:
             # self.loading -= 1
             print('thread finished')
+            print(self.tracks)
             #self.loading_process = None
         self.loading_queue.put(ret)
     ############################################
