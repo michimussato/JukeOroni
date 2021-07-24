@@ -225,6 +225,8 @@ class Player(object):
                 #elif current_label == 'Albm':
                 #    self.button_1_value = BUTTON_1[current_label]
                 self.button_1_value = BUTTON_1[current_label]
+
+                self.set_image(track=self.playing_track)
                 # delete cached files
                 # set button label to 'Rand'
                 # create sequential playlist of album containing current track
@@ -509,6 +511,12 @@ class Player(object):
         self.playing_track = None
         self._playback_thread = None
     ############################################
+
+    def __del__(self):
+        # TODO: when we do sudo systemctl restart apache2
+        #  the song stops, but the next one starts to play
+        #  until the running thread gets killed
+        self.quit()
 
     def quit(self):
         self._quit = True
