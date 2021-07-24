@@ -191,18 +191,6 @@ class Player(object):
             GPIO.add_event_detect(pin, GPIO.FALLING, self._handle_button, bouncetime=250)
         signal.pause()
 
-    def kill_loading_process(self):
-        if self.loading_process is not None:
-            self.loading_process.terminate()
-            self.loading_process.join()
-        self.loading_process = None
-        # remove all cached tracks from the filesystem except the one
-        # that is currently playing
-        for track in self.tracks:
-            if track.cached and not track.is_playing:
-                os.remove(track.cache)
-        self.tracks = []
-
     def _handle_button(self, pin):
         current_label = self.LABELS[BUTTONS.index(pin)]
         logging.info("Button press detected on pin: {pin} label: {label}".format(pin=pin, label=current_label))
@@ -224,7 +212,7 @@ class Player(object):
             if self._playback_thread is not None:
                 self.button_3_value = BUTTON_3['Next']  # Switch button back to Play
                 self.stop()
-                self.kill_loading_process()
+                # self.kill_loading_process()
                 self.init_screen()
 
         # Play/Next button
@@ -499,6 +487,18 @@ class Player(object):
         self.playing_track = None
         self._playback_thread = None
     ############################################
+
+    def kill_loading_process(self):
+        if self.loading_process is not None:
+            self.loading_process.terminate()
+            self.loading_process.join()
+        self.loading_process = None
+        # remove all cached tracks from the filesystem except the one
+        # that is currently playing
+        for track in self.tracks:
+            if track.cached and not track.is_playing:
+                os.remove(track.cache)
+        self.tracks = []
 
     def __del__(self):
         # TODO: when we do sudo systemctl restart apache2
