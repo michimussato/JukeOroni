@@ -217,7 +217,8 @@ class Player(object):
 
     def kill_loading_process(self):
         if self.loading_process is not None:
-            self.loading_process.kill()
+            self.loading_process.terminate()
+            self.loading_process.join()
         self.loading_process = None
 
     def _handle_button(self, pin):
