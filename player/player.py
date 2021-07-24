@@ -505,7 +505,7 @@ class Player(object):
         except MemoryError as err:
             logging.exception('loading failed: \"{0}\"'.format(track.audio_source))
             ret = None
-        finally:
+        #finally:
             # self.loading -= 1
             #print('thread finished')
             #print(self.tracks)
