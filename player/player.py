@@ -720,14 +720,14 @@ class Player(object):
             if not bool(tracks):
                 return None
             if bool(self.tracks):
-                previous_track_id = self.tracks[-1].id
+                previous_track_id = self.tracks[-1].track.id
                 #try:
                 #    next_track = DjangoTrack.objects.get(id=previous_track_id+1)
                 #except Exception as err:
                 #    logging.exception('no next track id found. need to start again at the beginning')
                 #    raise
             else:
-                previous_track_id = self.playing_track.id
+                previous_track_id = self.playing_track.track.id
                 #try:
                 #    next_track = DjangoTrack.objects.get(id=previous_track_id+1)
                 #except Exception as err:
