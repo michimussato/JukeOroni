@@ -148,16 +148,16 @@ class Track(object):
         except Exception:
             logging.exception('playback failed: \"{0}\"'.format(self.path))
 
-    def __del__(self):
-        if self.cache is not None:
-            try:
-                os.remove(self.cache)
-                logging.info('removed from local filesystem: \"{0}\"'.format(self.cache))
-                print('removed from local filesystem: \"{0}\"'.format(self.cache))
-            except Exception:
-                logging.exception('deletion failed: \"{0}\"'.format(self.cache))
-        else:
-            pass
+    # def __del__(self):
+    #     if self.cache is not None:
+    #         try:
+    #             os.remove(self.cache)
+    #             logging.info('removed from local filesystem: \"{0}\"'.format(self.cache))
+    #             print('removed from local filesystem: \"{0}\"'.format(self.cache))
+    #         except Exception:
+    #             logging.exception('deletion failed: \"{0}\"'.format(self.cache))
+    #     else:
+    #         pass
 
 
 class Player(object):
