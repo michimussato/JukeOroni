@@ -147,6 +147,11 @@ class Track(object):
             logging.info('playback finished: \"{0}\"'.format(self.path))
         except Exception:
             logging.exception('playback failed: \"{0}\"'.format(self.path))
+        finally:
+            if self.cached:
+                os.remove(self.cache)
+                logging.info('removed from local filesystem: \"{0}\"'.format(self.cache))
+                print('removed from local filesystem: \"{0}\"'.format(self.cache))
 
     # def __del__(self):
     #     if self.cache is not None:
