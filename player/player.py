@@ -393,9 +393,13 @@ class Player(object):
 
     def _track_loader_task(self):
         while True and not self._quit:
+            print('here')
+            # import pdb;pdb.set_trace()
             if len(self.tracks) + self.loading < MAX_CACHED_FILES and not bool(self.loading):
+                print('then here')
                 next_track = self.get_next_track()
                 if next_track is None:
+                    print('there')
                     time.sleep(1.0)
                     continue
 
@@ -422,8 +426,8 @@ class Player(object):
                 #     obj = queue.get()
                 #     # p.join()
 
-                # self.loading_process = multiprocessing.Process(target=self._load_track_task, args=(self.loading_queue,), kwargs={'track': next_track})
                 self.loading_process = multiprocessing.Process(target=self._load_track_task, kwargs={'track': next_track})
+                # self.loading_process = multiprocessing.Process(target=self._load_track_task, kwargs={'track': next_track})
                 # self.loading_process.daemon = True
                 self.loading_process.start()
                 # self.loading_process.join()
@@ -431,10 +435,20 @@ class Player(object):
                 self.loading += 1
 
                 while self.loading_process.is_alive():
+                    print(self.loading_process)
                     logging.error(self.loading_process)
                     time.sleep(1.0)
 
+                print(self.loading_process)
+                self.loading -= 1
+                ret = self.loading_queue.get()
+                if ret is not None:
+                    self.tracks.append(ret)
+
                 logging.error(self.loading_process)
+                self.loading_process.join()
+                logging.error(self.loading_process)
+
 
                 # thread.start()
             time.sleep(1.0)
@@ -445,23 +459,29 @@ class Player(object):
 
         logging.error(self.loading_process)
 
+        print('thread started')
+
         try:
             #logging.error(track)
             #logging.error(track.audio_source)
             logging.info('loading track ({1} MB): \"{0}\"'.format(track.audio_source, str(round(os.path.getsize(track.audio_source) / (1024*1024), 3))))
             processing_track = Track(track)
-            self.tracks.append(processing_track)
+            #self.tracks.append(processing_track)
             logging.info('loading successful: \"{0}\"'.format(track.audio_source))
             logging.error(self.loading_process)
             #self.loading_process.terminate()
             #self.loading_process.join()
             #self.loading_process.close()
             logging.error(self.loading_process)
+            ret = processing_track
         except MemoryError as err:
             logging.exception('loading failed: \"{0}\"'.format(track.audio_source))
+            ret = None
         finally:
-            self.loading -= 1
+            # self.loading -= 1
+            print('thread finished')
             #self.loading_process = None
+        self.loading_queue.put(ret)
     ############################################
 
     ############################################
