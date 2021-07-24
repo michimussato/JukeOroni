@@ -42,9 +42,13 @@ BUTTONS = [5, 6, 16, 24]
 # Toggles:
 # https://stackoverflow.com/questions/8381735/how-to-toggle-a-value
 BUTTON_1 = {
-            'Albm': 'Rand',
-            'Rand': 'Sequ',
-            'Sequ': 'Albm',
+            #'Albm': 'Rand',
+            #'    Albm    ': 'Rand',
+            'Albm -> Rand': 'Rand -> Sequ',
+            #'Rand': 'Sequ',
+            'Rand -> Sequ': 'Sequ -> Albm',
+            #'Sequ': 'Albm',
+            'Sequ -> Albm': 'Albm -> Rand',
             }
 BUTTON_2 = {
             'Stop': 'Stop',
@@ -159,7 +163,7 @@ class Player(object):
     def __init__(self, auto_update_tracklist=False):
         logging.info('initializing player...')
         # assert state in LABELS, "state should be one of {0}".format(LABELS)
-        self.button_1_value = BUTTON_1['Albm']
+        self.button_1_value = BUTTON_1['Albm -> Rand']
         self.button_2_value = BUTTON_2['Stop']
         self.button_3_value = BUTTON_3['Next']
         self.button_4_value = BUTTON_4['Quit']
@@ -441,7 +445,7 @@ class Player(object):
 
     def state_watcher_task(self):
         while True and not self._quit:
-            if self.button_3_value == 'Next':  # Play
+            if self.button_3_value == 'Next':  # equals: in Play mode
                 # TODO implement Play/Next combo
                 if self._playback_thread is None:
                     self.play()
@@ -545,7 +549,6 @@ class Player(object):
         #else:
         #    cover = kwargs['image_file']
 
-
         if 'track' in kwargs:
             track = kwargs['track']
             title = os.path.basename(track.path)
@@ -634,7 +637,7 @@ class Player(object):
     def buttons_img_overlay(self, bg):
         buttons_img = Image.new(mode='RGB', size=(448, 12), color=(0, 0, 0))
         buttons_draw = ImageDraw.Draw(buttons_img)
-        buttons_draw.text((0, 0), '       {0}               {1}               {2}               {3}'.format(
+        buttons_draw.text((0, 0), '       {0}               {1}               {2}           {3}'.format(
             self.button_4_value,
             self.button_3_value,
             self.button_2_value,
