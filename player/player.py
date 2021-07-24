@@ -5,6 +5,7 @@ import random
 import time
 from pydub.utils import mediainfo
 import threading
+import multiprocessing
 import logging
 from inky.inky_uc8159 import Inky, CLEAN
 import signal
@@ -171,6 +172,8 @@ class Player(object):
         self.auto_update_tracklist = auto_update_tracklist
         self.tracks = []
         self.loading = 0
+        self.loading_process = None
+        # self.processing_queue = multiprocessing.Queue()
         self.playing = False
         self.playing_track = None
         self.sequential = False
@@ -219,6 +222,8 @@ class Player(object):
         if self.button_3_value == 'Next':  # we only want to switch mode when something is already playing
             if current_label == self.button_1_value:
                 # empty cached track list
+                if self.loading_process is not None:
+                    self.loading_process.kill()
                 self.tracks = []
                 #if current_label == 'Rand':
                     #album_id = self.playing_track.album_id_id
@@ -388,12 +393,20 @@ class Player(object):
                 if next_track is None:
                     time.sleep(1.0)
                     continue
-                thread = threading.Thread(target=self._load_track_task, kwargs={'track': next_track})
-                # TODO: maybe this name is not ideal
-                thread.name = 'Track Loader Task Thread'
-                thread.daemon = False
+                # # threading approach seems causing problems if we actually need to empty
+                # # self.tracks. the thread will finish and add the cached track to self.tracks
+                # # afterwards because we cannot kill the running thread
+                # thread = threading.Thread(target=self._load_track_task, kwargs={'track': next_track})
+                # # TODO: maybe this name is not ideal
+                # thread.name = 'Track Loader Task Thread'
+                # thread.daemon = False
+
+                # multiprocessing approach
+                self.loading_process = multiprocessing.Process(target=self._load_track_task, kwargs={'track': next_track})
+                self.loading_process.start()
+
                 self.loading += 1
-                thread.start()
+                # thread.start()
             time.sleep(1.0)
 
     def _load_track_task(self, **kwargs):
@@ -411,6 +424,7 @@ class Player(object):
             logging.exception('loading failed: \"{0}\"'.format(track.audio_source))
         finally:
             self.loading -= 1
+            self.loading_process = None
     ############################################
 
     ############################################
