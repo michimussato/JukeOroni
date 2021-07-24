@@ -711,14 +711,14 @@ class Player(object):
         return DjangoTrack.objects.all()
 
     def get_next_track(self):
-        if self.button_1_value == 'Rand':
+        if self.button_1_value == 'Rand -> Sequ':
             tracks = self.track_list
             # logging.error(tracks)
             if not bool(tracks):
                 return None
             next_track = random.choice(tracks)
 
-        elif self.button_1_value == 'Sequ':
+        elif self.button_1_value == 'Sequ -> Albm':
             tracks = self.track_list
             if not bool(tracks):
                 return None
@@ -750,7 +750,7 @@ class Player(object):
             # print(self.loading)
             # next_track = self.track_list[self.playing_now_index + len(self.tracks) + 1]  # + self.loading ?
 
-        elif self.button_1_value == 'Albm':
+        elif self.button_1_value == 'Albm -> Rand':
             pass
             # next_track = self.album_list[self.playing_now_index + len(self.tracks)]  # play index 0 first, then up
             #
