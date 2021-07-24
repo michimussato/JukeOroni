@@ -214,6 +214,21 @@ class Player(object):
         # Mode button
         if self.button_3_value == 'Next':  # we only want to switch mode when something is already playing
             if current_label == self.button_1_value:
+                # empty cached track list
+                self.tracks = []
+                #if current_label == 'Rand':
+                    #album_id = self.playing_track.album_id_id
+                    #album_
+                #    self.button_1_value = BUTTON_1[current_label]
+                #elif current_label == 'Sequ':
+                #    self.button_1_value = BUTTON_1[current_label]
+                #elif current_label == 'Albm':
+                #    self.button_1_value = BUTTON_1[current_label]
+                self.button_1_value = BUTTON_1[current_label]
+                # delete cached files
+                # set button label to 'Rand'
+                # create sequential playlist of album containing current track
+                #
                 return
                 # # empty the cached tracks to create a new list based mode
                 # # TODO: also remove from file system
@@ -443,14 +458,16 @@ class Player(object):
 
     def playback_thread(self):
         while not self.tracks and not self.loading:
-            print('waiting for loading thread to kick in   ', end='\r')
-            time.sleep(0.2)
-            print('waiting for loading thread to kick in.  ', end='\r')
-            time.sleep(0.2)
-            print('waiting for loading thread to kick in.. ', end='\r')
-            time.sleep(0.2)
-            print('waiting for loading thread to kick in...', end='\r')
-            time.sleep(0.2)
+            logging.warning('waiting for loading thread to kick in')
+            #print('waiting for loading thread to kick in   ', end='\r')
+            time.sleep(1)
+            #time.sleep(0.2)
+            #print('waiting for loading thread to kick in.  ', end='\r')
+            #time.sleep(0.2)
+            #print('waiting for loading thread to kick in.. ', end='\r')
+            #time.sleep(0.2)
+            #print('waiting for loading thread to kick in...', end='\r')
+            #time.sleep(0.2)
 
         _display_loading = False
         while not self.tracks and self.loading:
@@ -458,14 +475,16 @@ class Player(object):
                 self.set_image(image_file=LOADING_IMAGE)
                 _display_loading = True
 
-            print('loading 1st track                       ', end='\r')
-            time.sleep(0.2)
-            print('loading 1st track.                      ', end='\r')
-            time.sleep(0.2)
-            print('loading 1st track..                     ', end='\r')
-            time.sleep(0.2)
-            print('loading 1st track...                    ', end='\r')
-            time.sleep(0.2)
+            #print('loading 1st track                       ', end='\r')
+            logging.warning('loading 1st track')
+            #time.sleep(0.2)
+            time.sleep(1.0)
+            #print('loading 1st track.                      ', end='\r')
+            #time.sleep(0.2)
+            #print('loading 1st track..                     ', end='\r')
+            #time.sleep(0.2)
+            #print('loading 1st track...                    ', end='\r')
+            #time.sleep(0.2)
 
         del _display_loading
 
@@ -683,13 +702,36 @@ class Player(object):
     def get_next_track(self):
         if self.button_1_value == 'Rand':
             tracks = self.track_list
-            #logging.error(tracks)
+            # logging.error(tracks)
             if not bool(tracks):
                 return None
             next_track = random.choice(tracks)
 
         elif self.button_1_value == 'Sequ':
-            pass
+            tracks = self.track_list
+            if not bool(tracks):
+                return None
+            if bool(self.tracks):
+                previous_track_id = self.tracks[-1].id
+                #try:
+                #    next_track = DjangoTrack.objects.get(id=previous_track_id+1)
+                #except Exception as err:
+                #    logging.exception('no next track id found. need to start again at the beginning')
+                #    raise
+            else:
+                previous_track_id = self.playing_track.id
+                #try:
+                #    next_track = DjangoTrack.objects.get(id=previous_track_id+1)
+                #except Exception as err:
+                #    logging.exception('no next track id found. need to start again at the beginning')
+                #    raise
+
+            try:
+                next_track = DjangoTrack.objects.get(id=previous_track_id + 1)
+            except Exception as err:
+                logging.exception('no next track id found. need to start again at the beginning')
+                raise
+
             # # TODO: does not work if is loading and self.tracks is empty
             # # if not self.tracks and self.loading
             # print('track index: {0}'.format(self.playing_now_index))
