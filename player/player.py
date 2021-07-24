@@ -226,6 +226,7 @@ class Player(object):
             self.loading_process.terminate()
             self.loading_process.join()
         self.loading_process = None
+        self.temp_cleanup()
 
     def _handle_button(self, pin):
         current_label = self.LABELS[BUTTONS.index(pin)]
@@ -673,7 +674,11 @@ class Player(object):
 
         bg = Image.new(mode='RGBA', size=(600, 448), color=(0, 0, 0, 255))
         # bg_w, bg_h = bg.size
-        cover = Image.open(cover, 'r')
+        try:
+            cover = Image.open(cover, 'r')
+        except AttributeError as err:
+            print(err)
+            logging.exception()
         w, h = cover.size
         if w == h:
             cover = cover.resize((448, 448), Image.ANTIALIAS)
