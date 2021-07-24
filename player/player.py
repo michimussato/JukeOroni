@@ -81,6 +81,7 @@ class Track(object):
         self.path = self.track.audio_source
         self.cached = cached
         self.cache = None
+        self.is_playing = False
 
         if self.cached:
             self._cache()
@@ -143,11 +144,13 @@ class Track(object):
             logging.info('starting playback: \"{0}\" from: \"{1}\"'.format(self.path, self.playing_from))
             self.track.played += 1
             self.track.save()
+            self.is_playing = True
             os.system('ffplay -hide_banner -autoexit -vn -nodisp -loglevel error \"{0}\"'.format(self.playing_from))
             logging.info('playback finished: \"{0}\"'.format(self.path))
         except Exception:
             logging.exception('playback failed: \"{0}\"'.format(self.path))
         finally:
+            self.is_playing = False
             if self.cached:
                 os.remove(self.cache)
                 logging.info('removed from local filesystem: \"{0}\"'.format(self.cache))
@@ -226,7 +229,11 @@ class Player(object):
             self.loading_process.terminate()
             self.loading_process.join()
         self.loading_process = None
-        self.temp_cleanup()
+        for track in self.tracks:
+            if track.cached and not track.is_playing:
+                os.remove(track.cache)
+        self.tracks = []
+        # self.temp_cleanup()
 
     def _handle_button(self, pin):
         current_label = self.LABELS[BUTTONS.index(pin)]
@@ -237,7 +244,10 @@ class Player(object):
             if current_label == self.button_1_value:
                 # empty cached track list
                 self.kill_loading_process()
-                self.tracks = []
+                # for track in self.tracks:
+                #     if track.cached and not track.is_playing:
+                #         os.remove(track.cache)
+
                 #if current_label == 'Rand':
                     #album_id = self.playing_track.album_id_id
                     #album_
