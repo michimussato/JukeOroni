@@ -226,7 +226,7 @@ class Player(object):
                 #    self.button_1_value = BUTTON_1[current_label]
                 self.button_1_value = BUTTON_1[current_label]
 
-                self.set_image(track=self.playing_track)
+                self.set_image(track=self.playing_track.track)
                 # delete cached files
                 # set button label to 'Rand'
                 # create sequential playlist of album containing current track
