@@ -442,7 +442,7 @@ class Player(object):
                         time.sleep(1.0)
 
                     print(self.loading_process)
-                    self.loading -= 1
+                    # self.loading -= 1
                     ret = self.loading_queue.get()
                     if ret is not None:
                         self.tracks.append(ret)
@@ -477,6 +477,7 @@ class Player(object):
         logging.error(self.loading_process)
 
         print('thread started')
+        print(self.loading_process)
 
         try:
             #logging.error(track)
