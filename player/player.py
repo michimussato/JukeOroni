@@ -417,6 +417,8 @@ class Player(object):
         track = kwargs['track']
         logging.debug('starting thread: \"{0}\"'.format(track.audio_source))
 
+        logging.error(self.loading_process)
+
         try:
             #logging.error(track)
             #logging.error(track.audio_source)
@@ -424,9 +426,11 @@ class Player(object):
             processing_track = Track(track)
             self.tracks.append(processing_track)
             logging.info('loading successful: \"{0}\"'.format(track.audio_source))
+            logging.error(self.loading_process)
             #self.loading_process.terminate()
             #self.loading_process.join()
             self.loading_process.close()
+            logging.error(self.loading_process)
         except MemoryError as err:
             logging.exception('loading failed: \"{0}\"'.format(track.audio_source))
         finally:
