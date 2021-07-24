@@ -435,19 +435,35 @@ class Player(object):
 
                 self.loading += 1
 
-                while self.loading_process.is_alive():
+                try:
+                    while self.loading_process.is_alive():
+                        print(self.loading_process)
+                        logging.error(self.loading_process)
+                        time.sleep(1.0)
+
                     print(self.loading_process)
+                    self.loading -= 1
+                    ret = self.loading_queue.get()
+                    if ret is not None:
+                        self.tracks.append(ret)
+
                     logging.error(self.loading_process)
-                    time.sleep(1.0)
+                    self.loading_process.join()
 
-                print(self.loading_process)
-                self.loading -= 1
-                ret = self.loading_queue.get()
-                if ret is not None:
-                    self.tracks.append(ret)
+                except AttributeError as err:
+                    print(err)
 
-                logging.error(self.loading_process)
-                self.loading_process.join()
+                finally:
+                    self.loading -= 1
+
+                #print(self.loading_process)
+                #self.loading -= 1
+                #ret = self.loading_queue.get()
+                #if ret is not None:
+                #    self.tracks.append(ret)
+
+                #logging.error(self.loading_process)
+                #self.loading_process.join()
                 logging.error(self.loading_process)
 
 
