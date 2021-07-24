@@ -172,6 +172,7 @@ class Player(object):
         self.auto_update_tracklist = auto_update_tracklist
         self.tracks = []
         self.loading = 0
+        self.loading_queue = multiprocessing.Queue()
         self.loading_process = None
         # self.processing_queue = multiprocessing.Queue()
         self.playing = False
@@ -397,6 +398,8 @@ class Player(object):
                 if next_track is None:
                     time.sleep(1.0)
                     continue
+
+
                 # # threading approach seems causing problems if we actually need to empty
                 # # self.tracks. the thread will finish and add the cached track to self.tracks
                 # # afterwards because we cannot kill the running thread
@@ -406,12 +409,33 @@ class Player(object):
                 # thread.daemon = False
 
                 # multiprocessing approach
+
+                # from multiprocessing import Process, Queue
+                #
+                # def f(q):
+                #     q.put('X' * 1000000)
+                #
+                # if __name__ == '__main__':
+                #     queue = Queue()
+                #     p = Process(target=f, args=(queue,))
+                #     p.start()
+                #     obj = queue.get()
+                #     # p.join()
+
+                # self.loading_process = multiprocessing.Process(target=self._load_track_task, args=(self.loading_queue,), kwargs={'track': next_track})
                 self.loading_process = multiprocessing.Process(target=self._load_track_task, kwargs={'track': next_track})
-                self.loading_process.daemon = True
+                # self.loading_process.daemon = True
                 self.loading_process.start()
                 # self.loading_process.join()
 
                 self.loading += 1
+
+                while self.loading_process.is_alive():
+                    logging.error(self.loading_process)
+                    time.sleep(1.0)
+
+                logging.error(self.loading_process)
+
                 # thread.start()
             time.sleep(1.0)
 
@@ -431,7 +455,7 @@ class Player(object):
             logging.error(self.loading_process)
             #self.loading_process.terminate()
             #self.loading_process.join()
-            self.loading_process.close()
+            #self.loading_process.close()
             logging.error(self.loading_process)
         except MemoryError as err:
             logging.exception('loading failed: \"{0}\"'.format(track.audio_source))
