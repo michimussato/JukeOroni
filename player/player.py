@@ -424,13 +424,13 @@ class Player(object):
             processing_track = Track(track)
             self.tracks.append(processing_track)
             logging.info('loading successful: \"{0}\"'.format(track.audio_source))
-            self.loading_process.terminate()
-            self.loading_process.join()
+            #self.loading_process.terminate()
+            #self.loading_process.join()
         except MemoryError as err:
             logging.exception('loading failed: \"{0}\"'.format(track.audio_source))
         finally:
             self.loading -= 1
-            self.loading_process = None
+            #self.loading_process = None
     ############################################
 
     ############################################
