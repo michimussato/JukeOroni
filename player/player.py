@@ -444,7 +444,7 @@ class Player(object):
                     print(self.loading_process)
                     # self.loading -= 1
                     ret = self.loading_queue.get()
-                    print('ret = ' + ret)
+                    print('ret = {0}'.format(ret))
                     if ret is not None:
                         self.tracks.append(ret)
 
