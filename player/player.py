@@ -153,6 +153,7 @@ class Track(object):
             try:
                 os.remove(self.cache)
                 logging.info('removed from local filesystem: \"{0}\"'.format(self.cache))
+                print('removed from local filesystem: \"{0}\"'.format(self.cache))
             except Exception:
                 logging.exception('deletion failed: \"{0}\"'.format(self.cache))
         else:
