@@ -426,6 +426,7 @@ class Player(object):
             logging.info('loading successful: \"{0}\"'.format(track.audio_source))
             #self.loading_process.terminate()
             #self.loading_process.join()
+            self.loading_process.close()
         except MemoryError as err:
             logging.exception('loading failed: \"{0}\"'.format(track.audio_source))
         finally:
