@@ -408,6 +408,7 @@ class Player(object):
                 # multiprocessing approach
                 self.loading_process = multiprocessing.Process(target=self._load_track_task, kwargs={'track': next_track})
                 self.loading_process.start()
+                self.loading_process.join()
 
                 self.loading += 1
                 # thread.start()
