@@ -401,13 +401,13 @@ class Player(object):
 
     def _track_loader_task(self):
         while True and not self._quit:
-            print('here')
+            # print('here')
             # import pdb;pdb.set_trace()
             if len(self.tracks) + self.loading < MAX_CACHED_FILES and not bool(self.loading):
-                print('then here')
+                #print('then here')
                 next_track = self.get_next_track()
                 if next_track is None:
-                    print('there')
+                    #print('there')
                     time.sleep(1.0)
                     continue
 
@@ -443,22 +443,22 @@ class Player(object):
 
                 try:
                     while self.loading_process.is_alive():
-                        print(self.loading_process)
+                        #print(self.loading_process)
                         logging.error(self.loading_process)
                         time.sleep(1.0)
 
-                    print(self.loading_process)
+                    #print(self.loading_process)
                     # self.loading -= 1
-                    print(self.tracks)
+                    #print(self.tracks)
                     ret = self.loading_queue.get()
-                    print(self.tracks)
-                    print('ret = {0}'.format(ret))
+                    #print(self.tracks)
+                    #print('ret = {0}'.format(ret))
                     if ret is not None:
                         self.tracks.append(ret)
 
                     logging.error(self.loading_process)
                     self.loading_process.join()
-                    print(self.tracks)
+                    #print(self.tracks)
 
                 except AttributeError as err:
                     print(err)
@@ -486,8 +486,8 @@ class Player(object):
 
         logging.error(self.loading_process)
 
-        print('thread started')
-        print(self.loading_process)
+        #print('thread started')
+        #print(self.loading_process)
 
         try:
             #logging.error(track)
@@ -507,8 +507,8 @@ class Player(object):
             ret = None
         finally:
             # self.loading -= 1
-            print('thread finished')
-            print(self.tracks)
+            #print('thread finished')
+            #print(self.tracks)
             #self.loading_process = None
         self.loading_queue.put(ret)
     ############################################
