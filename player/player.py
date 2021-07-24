@@ -488,7 +488,6 @@ class Player(object):
             self._playback_thread.start()
 
             # start playback first, then change image to prevent lag
-            # self.set_image(track.cover, track.media_info)
             self.set_image(track=track)
 
     def _playback_task(self, **kwargs):
@@ -642,7 +641,8 @@ class Player(object):
                 return None
             next_track = random.choice(tracks)
 
-        elif self.button_1_value == 'Sequ -> Albm':
+        # TODO: a quick fix to prevent ending up in the actual "Album" Mode for now
+        elif self.button_1_value == 'Sequ -> Albm' or self.button_1_value == 'Albm -> Rand':
             tracks = self.track_list
             if not bool(tracks):
                 return None
@@ -659,10 +659,10 @@ class Player(object):
                 logging.exception('no next track id found (max. reached). need to start again at the beginning')
                 raise
 
-        elif self.button_1_value == 'Albm -> Rand':
-            pass
-            # TODO: keep in mind that this is going to throw an error once the album is finished
-            #  will probably set self.button_1_value == 'Rand'
+        # elif self.button_1_value == 'Albm -> Rand':
+        #     pass
+        #     # TODO: keep in mind that this is going to throw an error once the album is finished
+        #     #  will probably set self.button_1_value == 'Rand'
 
         return next_track
 
