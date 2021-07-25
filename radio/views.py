@@ -14,7 +14,7 @@ import os
 
 
 PIMORONI_SATURATION = 1.0
-FONT_SIZE = 12
+FONT_SIZE = 20
 SLEEP_IMAGE = '/data/django/jukeoroni/player/static/zzz.jpg'
 LOADING_IMAGE = '/data/django/jukeoroni/player/static/loading.jpg'
 STANDARD_COVER = '/data/django/jukeoroni/player/static/cover_std.png'
