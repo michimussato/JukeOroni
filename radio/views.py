@@ -14,11 +14,11 @@ import os
 
 
 PIMORONI_SATURATION = 1.0
-FONT_SIZE = 20
+FONT_SIZE = 24
 SLEEP_IMAGE = '/data/django/jukeoroni/player/static/zzz.jpg'
 LOADING_IMAGE = '/data/django/jukeoroni/player/static/loading.jpg'
 STANDARD_COVER = '/data/django/jukeoroni/player/static/cover_std.png'
-PIMORONI_FONT = '/data/django/jukeoroni/player/static/gothamn-black.ttf'
+PIMORONI_FONT = '/data/django/jukeoroni/player/static/gotham-black.ttf'
 
 
 # Create your views here.
