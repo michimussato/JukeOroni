@@ -568,6 +568,7 @@ class Player(object):
             if isinstance(text, datetime.datetime):
                 font_size_override = 40
                 self.current_time = text.strftime('%H:%M')
+                text = self.current_time
 
             # if text == 'show_time':
             #     # from django.utils import timezone
