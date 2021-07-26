@@ -1,3 +1,4 @@
+import datetime
 import os
 import sys
 import glob
@@ -13,6 +14,7 @@ import RPi.GPIO as GPIO
 from PIL import Image, ImageDraw, ImageFont
 import shutil
 import tempfile
+from django.utils.timezone import localtime, now
 from .models import Track as DjangoTrack
 from .models import Artist
 from .models import Album
@@ -157,6 +159,8 @@ class Player(object):
         self._quit = False
         self.pimoroni = Inky()
 
+        self.current_time = None
+
         self._pimoroni_thread = None
         self._playback_thread = None
         self._buttons_watcher_thread = None
@@ -193,7 +197,8 @@ class Player(object):
 
     def _handle_button(self, pin):
         current_label = self.LABELS[BUTTONS.index(pin)]
-        logging.info("Button press detected on pin: {pin} label: {label}".format(pin=pin, label=current_label))
+        logging.info(f"Button press detected on pin: {pin} label: {current_label}")
+        print(f"Button press detected on pin: {pin} label: {current_label}")
 
         # Mode button
         if self.button_3_value == 'Next':  # we only want to switch mode when something is already playing
@@ -432,12 +437,19 @@ class Player(object):
 
     def state_watcher_task(self):
         while True and not self._quit:
+
+            new_time = localtime(now())
+
             if self.button_3_value == 'Next':  # equals: in Play mode
                 # TODO implement Play/Next combo
                 if self._playback_thread is None:
                     self.play()
                 elif self._playback_thread.is_alive():
                     pass
+
+            elif self.current_time != new_time.strftime('%H:%M'):  # in stopped state
+                self.set_image(image_file=LOADING_IMAGE, message=new_time)
+                # self.current_time = new_time
 
             time.sleep(1.0)
 
@@ -538,6 +550,8 @@ class Player(object):
         else:
             cover = STANDARD_COVER
 
+        font_size_override = False
+
         if 'track' in kwargs:
             track = kwargs['track']
             title = os.path.basename(track.path)
@@ -550,6 +564,19 @@ class Player(object):
             )
         elif 'message' in kwargs:
             text = kwargs['message']
+
+            if isinstance(text, datetime.datetime):
+                font_size_override = 40
+                self.current_time = text.strftime('%H:%M')
+
+            # if text == 'show_time':
+            #     # from django.utils import timezone
+            #     new_time = localtime(now()).strftime('HH:MM:SS')
+            #     if new_time == self.current_time:
+            #         pass
+            #     else:
+            #         new_time = self.current_time
+            #     text = new_time
         # if bool(kwargs['media_info']):
         #     text = self.get_text(kwargs['media_info'])
         else:
@@ -608,7 +635,7 @@ class Player(object):
         img_draw = ImageDraw.Draw(text_img)
 
         font_path = PIMORONI_FONT
-        font = ImageFont.truetype(font_path, FONT_SIZE)
+        font = ImageFont.truetype(font_path, font_size_override or FONT_SIZE)
         # font.set_variation_by_name('Bold')
         # print(kwargs['media_info'])
         # img_draw.text((10, 5), self.wrap_text(kwargs['media_info']['filename']), fill=(255, 255, 255, 255))
@@ -683,6 +710,9 @@ class Player(object):
             if not bool(tracks):
                 return None
             if bool(self.tracks):
+                # TODO: if we pressed the Next button too fast,
+                #  self.tracks will be still empty, hence,
+                #  we end up here again unintentionally
                 # we use this case to append the next track
                 # based on the last one in the self.tracks queue
                 # i.e: if playing_track has id 1 and self.tracks
@@ -752,3 +782,22 @@ def player():
 
 if __name__ == '__main__':
     player()
+
+"""
+
+Exception in thread Track Loader Thread:
+Traceback (most recent call last):
+  File "/usr/lib/python3.7/threading.py", line 917, in _bootstrap_inner
+    self.run()
+  File "/usr/lib/python3.7/threading.py", line 865, in run
+    self._target(*self._args, **self._kwargs)
+  File "/data/django/jukeoroni/player/player.py", line 338, in _track_loader_task
+    next_track = self.get_next_track()
+  File "/data/django/jukeoroni/player/player.py", line 711, in get_next_track
+    previous_track_id = self.playing_track.track.id
+AttributeError: 'NoneType' object has no attribute 'track'
+
+waiting for loading thread to kick in
+
+removed from local filesystem: "/tmp/tmpgc4kybmv"
+"""
