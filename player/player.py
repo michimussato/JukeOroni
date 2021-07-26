@@ -8,7 +8,7 @@ from pydub.utils import mediainfo
 import threading
 import multiprocessing
 import logging
-from inky.inky_uc8159 import Inky, CLEAN
+from inky.inky_uc8159 import Inky, BLACK
 import signal
 import RPi.GPIO as GPIO
 from PIL import Image, ImageDraw, ImageFont
