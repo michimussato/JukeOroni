@@ -448,7 +448,8 @@ class Player(object):
                     pass
 
             elif self.current_time != new_time.strftime('%H:%M'):  # in stopped state
-                self.set_image(image_file=SLEEP_IMAGE, message=new_time)
+                if self.current_time is None or new_time.strftime('%H:%M')[-1:] in ['0', '5']:
+                    self.set_image(image_file=SLEEP_IMAGE, message=new_time)
                 # self.current_time = new_time
 
             time.sleep(1.0)
@@ -566,7 +567,7 @@ class Player(object):
             text = kwargs['message']
 
             if isinstance(text, datetime.datetime):
-                font_size_override = 200
+                font_size_override = 160
                 self.current_time = text.strftime('%H:%M')
                 text = self.current_time
 
