@@ -450,9 +450,12 @@ class Player(object):
         self.playback_thread()
 
     def playback_thread(self):
+        printed_waiting_msg = False
         while not self.tracks and not self.loading:
-            logging.info('waiting for loading thread to kick in')
-            print('waiting for loading thread to kick in')
+            if not printed_waiting_msg:
+                logging.info('waiting for loading thread to kick in')
+                print('waiting for loading thread to kick in')
+                printed_waiting_msg = True
             time.sleep(1)
 
         _display_loading = False
@@ -461,8 +464,8 @@ class Player(object):
                 self.set_image(image_file=LOADING_IMAGE)
                 _display_loading = True
 
-            print('loading 1st track')
-            logging.info('loading 1st track')
+                print('loading 1st track')
+                logging.info('loading 1st track')
             time.sleep(1.0)
 
         del _display_loading
@@ -542,16 +545,16 @@ class Player(object):
             )
         elif 'message' in kwargs:
             text = kwargs['message']
-        #if bool(kwargs['media_info']):
-        #    text = self.get_text(kwargs['media_info'])
+        # if bool(kwargs['media_info']):
+        #     text = self.get_text(kwargs['media_info'])
         else:
             text = ''
 
-        #image = Image.open(kwargs['image_file'])
-        #image = image.rotate(90, expand=True)
-        #image_resized = image.resize(self.PIMORONI_SIZE, Image.ANTIALIAS)
-        #self.pimoroni.set_image(image_resized, saturation=self.PIMORONI_SATURATION)
-        #self.pimoroni.show()
+        # image = Image.open(kwargs['image_file'])
+        # image = image.rotate(90, expand=True)
+        # image_resized = image.resize(self.PIMORONI_SIZE, Image.ANTIALIAS)
+        # self.pimoroni.set_image(image_resized, saturation=self.PIMORONI_SATURATION)
+        # self.pimoroni.show()
 
         bg = Image.new(mode='RGBA', size=(600, 448), color=(0, 0, 0, 255))
         # bg_w, bg_h = bg.size
@@ -570,18 +573,18 @@ class Player(object):
             # TODO
             cover = cover.resize((448, 448), Image.ANTIALIAS)
 
-        #offset = ((bg_w - w) // 2, (bg_h - h) // 2)
-        #bg.paste(cover, offset)
+        # offset = ((bg_w - w) // 2, (bg_h - h) // 2)
+        # bg.paste(cover, offset)
 
         offset = (0, 0)
 
         # img_font = ImageFont.truetype(PIMORONI_FONT, 20)
 
-        #print(bg.size)
-        #bg = bg.rotate(90, expand=False)
-        #print(bg.size)
+        # print(bg.size)
+        # bg = bg.rotate(90, expand=False)
+        # print(bg.size)
 
-        #img_draw.text
+        # img_draw.text
 
         self.buttons_img_overlay(cover)
 
@@ -601,10 +604,10 @@ class Player(object):
 
         font_path = PIMORONI_FONT
         font = ImageFont.truetype(font_path, FONT_SIZE)
-        #font.set_variation_by_name('Bold')
-        #print(kwargs['media_info'])
-        #img_draw.text((10, 5), self.wrap_text(kwargs['media_info']['filename']), fill=(255, 255, 255, 255))
-        #img_draw.text((10, 5), self.get_text(kwargs['media_info']), fill=(255, 255, 255))
+        # font.set_variation_by_name('Bold')
+        # print(kwargs['media_info'])
+        # img_draw.text((10, 5), self.wrap_text(kwargs['media_info']['filename']), fill=(255, 255, 255, 255))
+        # img_draw.text((10, 5), self.get_text(kwargs['media_info']), fill=(255, 255, 255))
         img_draw.text((10, 0), text, fill=(255, 255, 255), font=font)
 
         text_img = text_img.rotate(90, expand=False)
