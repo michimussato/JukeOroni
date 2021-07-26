@@ -48,8 +48,8 @@ printf "hello"
 
 # # # Git
 #sudo apt-get install git
-#sudo git clone https://github.com/michimussato/JukeOroni.git /data/
-#cd /data/JukeOroni
+#git clone https://github.com/michimussato/jukeoroni.git /data/django/jukeoroni/
+#cd /data/django/jukeoroni
 #git checkout develop
 
 

@@ -157,6 +157,7 @@ class Player(object):
         self.sequential = False
         self._quit = False
         self.pimoroni = Inky()
+        self.pimoroni.set_border('BLACK')
 
         self.current_time = None
 
@@ -637,7 +638,7 @@ class Player(object):
         bg.paste(cover, offset)
 
         self.pimoroni.set_image(bg, saturation=PIMORONI_SATURATION)
-        self.pimoroni.show()
+        self.pimoroni.show(busy_wait=False)
 
     def init_screen(self):
         self.set_image(image_file=SLEEP_IMAGE, message=localtime(now()))

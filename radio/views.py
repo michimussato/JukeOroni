@@ -92,6 +92,8 @@ def task_pimoroni_set_image(**kwargs):
 
     pimoroni = Inky()
 
+    pimoroni.set_border('BLACK')
+
     if kwargs['image_file'] is None:
         cover = STANDARD_COVER
     else:
