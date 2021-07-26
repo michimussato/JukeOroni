@@ -36,12 +36,10 @@ LOADING_IMAGE = '/data/django/jukeoroni/player/static/loading.jpg'
 STANDARD_COVER = '/data/django/jukeoroni/player/static/cover_std.png'
 PIMORONI_FONT = '/data/django/jukeoroni/player/static/gotham-black.ttf'
 DEFAULT_TRACKLIST_REGEN_INTERVAL = 43200
-CLOCK_UPDATE_INTERVAL = 5  #
+CLOCK_UPDATE_INTERVAL = 5  # in minutes
 
 # buttons setup
 BUTTONS = [5, 6, 16, 24]
-# BUTTONS = [24, 16, 6, 5]
-# LABELS = ['Quit', 'Play', 'Next', 'Stop']
 
 # Toggles:
 # https://stackoverflow.com/questions/8381735/how-to-toggle-a-value
@@ -642,7 +640,7 @@ class Player(object):
         self.pimoroni.show()
 
     def init_screen(self):
-        self.set_image(image_file=SLEEP_IMAGE)
+        self.set_image(image_file=SLEEP_IMAGE, message=localtime(now()))
 
     def buttons_img_overlay(self, bg):
         buttons_img = Image.new(mode='RGB', size=(448, 12), color=(0, 0, 0))
