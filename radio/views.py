@@ -53,36 +53,6 @@ def index(request):
     return HttpResponse(ret)
 
 
-def test(request):
-    ret = """
-<HTML><HEAD><LINK REL="stylesheet" TYPE="text/css" HREF="" TITLE="Standard Style" ><TITLE>Execute </TITLE></HEAD>
-<BODY>
-<SCRIPT LANGUAGE=CACHE RUNAT=SERVER>set t1 = $piece($h,2)</SCRIPT>
-<TABLE>
-<TR><TD></TD><TD><BR>#($zdt($h,2))#</TD></TR>
-<TR><TD></TD><TD>
- <TEXTAREA COLS="110" ROWS="45">
-<SCRIPT LANGUAGE=CACHE RUNAT=SERVER>
-if %request.Get("command") '= "" {
-                  set parens = 0
-                  set cmd = %request.Get("command")
-                  if %request.Get("param1") '= "" set cmd = cmd_"("_%request.Get("param1"), parens=1
-                  if %request.Get("param2") '= "" set cmd = cmd_","_%request.Get("param2")
-                  if %request.Get("param3") '= "" set cmd = cmd_","_%request.Get("param2")
-                  if (parens=1) set cmd = cmd_")"
-                  w "> "_cmd,!
- }
-if %request.Get("command") '= "" {
-                  xecute cmd
-}
-</SCRIPT>                                
-</TEXTAREA></TD></TR> 
-<TR><TD></TD><TD></TD></TR>
-</TABLE></BODY></HTML>
-"""
-    return HttpResponse(ret)
-
-
 def play(request, display_name_short):
 
     # pimoroni = Inky()
