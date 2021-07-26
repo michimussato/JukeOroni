@@ -34,7 +34,7 @@ FONT_SIZE = 20
 SLEEP_IMAGE = '/data/django/jukeoroni/player/static/zzz.jpg'
 LOADING_IMAGE = '/data/django/jukeoroni/player/static/loading.jpg'
 STANDARD_COVER = '/data/django/jukeoroni/player/static/cover_std.png'
-PIMORONI_FONT = '/data/django/jukeoroni/player/static/arial_narrow.ttf'
+PIMORONI_FONT = '/data/django/jukeoroni/player/static/gotham_black.ttf'
 DEFAULT_TRACKLIST_REGEN_INTERVAL = 43200
 
 # buttons setup
@@ -566,7 +566,7 @@ class Player(object):
             text = kwargs['message']
 
             if isinstance(text, datetime.datetime):
-                font_size_override = 40
+                font_size_override = 120
                 self.current_time = text.strftime('%H:%M')
                 text = self.current_time
 
