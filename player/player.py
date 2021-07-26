@@ -458,6 +458,8 @@ class Player(object):
                 printed_waiting_msg = True
             time.sleep(1)
 
+        del printed_waiting_msg
+
         _display_loading = False
         while not self.tracks and self.loading:
             if not _display_loading:
@@ -467,6 +469,9 @@ class Player(object):
                 print('loading 1st track')
                 logging.info('loading 1st track')
             time.sleep(1.0)
+
+        print('loading 1st track finished')
+        logging.info('loading 1st track finished')
 
         del _display_loading
 
@@ -666,9 +671,11 @@ class Player(object):
                 next_track = DjangoTrack.objects.get(id=previous_track_id + 1)
             except Exception as err:
                 print(err)
-                # TODO: if there is no higher id available in the db, we end up in this exception for now
-                logging.exception('no next track id found (max. reached). need to start again at the beginning')
-                raise
+                # if there is no higher id available in the db, we end up in this exception
+                # just start at the beginning again
+                logging.exception('no next track id found (max. reached). start again at the beginning')
+                print('no next track id found (max. reached). start again at the beginning')
+                next_track = DjangoTrack.objects.all()[0]
 
         elif self.button_1_value == 'Albm -> Rand':
 
