@@ -448,7 +448,7 @@ class Player(object):
                     pass
 
             elif self.current_time != new_time.strftime('%H:%M'):  # in stopped state
-                self.set_image(image_file=LOADING_IMAGE, message=new_time)
+                self.set_image(image_file=SLEEP_IMAGE, message=new_time)
                 # self.current_time = new_time
 
             time.sleep(1.0)
