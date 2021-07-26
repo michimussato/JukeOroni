@@ -635,20 +635,28 @@ class Player(object):
         return DjangoTrack.objects.all()
 
     def get_next_track(self):
+        next_track = None
         if self.button_1_value == 'Rand -> Sequ':
             tracks = self.track_list
             if not bool(tracks):
                 return None
             next_track = random.choice(tracks)
 
-        # TODO: a quick fix to prevent ending up in the actual "Album" Mode for now
-        elif self.button_1_value == 'Sequ -> Albm' or self.button_1_value == 'Albm -> Rand':
+        elif self.button_1_value == 'Sequ -> Albm':  # or self.button_1_value == 'Albm -> Rand':
             tracks = self.track_list
             if not bool(tracks):
                 return None
             if bool(self.tracks):
+                # we use this case to append the next track
+                # based on the last one in the self.tracks queue
+                # i.e: if playing_track has id 1 and self.tracks
+                # contains id's [2, 3, 4], we want to append
+                # id 5 once a free spot is available
                 previous_track_id = self.tracks[-1].track.id
             else:
+                # in case self.tracks is empty, we want the next
+                # track id based on the one that is currently
+                # playing
                 previous_track_id = self.playing_track.track.id
 
             try:
@@ -659,10 +667,50 @@ class Player(object):
                 logging.exception('no next track id found (max. reached). need to start again at the beginning')
                 raise
 
-        # elif self.button_1_value == 'Albm -> Rand':
-        #     pass
-        #     # TODO: keep in mind that this is going to throw an error once the album is finished
-        #     #  will probably set self.button_1_value == 'Rand'
+        elif self.button_1_value == 'Albm -> Rand':
+
+            tracks = self.track_list
+            if not bool(tracks):
+                return None
+            if bool(self.tracks):
+                # we use this case to append the next track
+                # based on the last one in the self.tracks queue
+                # i.e: if playing_track has id 1 and self.tracks
+                # contains id's [2, 3, 4], we want to append
+                # id 5 once a free spot is available
+                # in album mode:
+                # get next track of album of current track
+                previous_track_id = self.tracks[-1].track.id
+                album = DjangoTrack.objects.get(id=previous_track_id).album_id
+
+                # album_tracks = Track.objects.filter(album_id=album)
+                next_track = DjangoTrack.objects.get(id=previous_track_id + 1)
+
+                if next_track.album_id != album:
+                    # choose a new random album if next_track is not part
+                    # of current album anymore
+                    random_album = random.choice(Album.objects.all())
+                    album_tracks = DjangoTrack.objects.filter(album_id=random_album)
+                    next_track = album_tracks[0]
+
+            else:
+                # in case self.tracks is empty, we want the next
+                # track id based on the one that is currently
+                # playing
+                # in album mode:
+                # get first track of album of current track
+                # if self.tracks is empty, we assume
+                # that the first track added to self.tracks must
+                # be the first track of the album
+                # but we leave the current track playing until
+                # it has finished (per default; if we want to skip
+                # the currently playing track: "Next" button)
+                previous_track_id = self.playing_track.track.id
+                album = DjangoTrack.objects.get(id=previous_track_id).album_id
+                album_tracks = DjangoTrack.objects.filter(album_id=album)
+                next_track = album_tracks[0]
+
+            return next_track
 
         return next_track
 
