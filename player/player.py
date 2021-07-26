@@ -36,6 +36,7 @@ LOADING_IMAGE = '/data/django/jukeoroni/player/static/loading.jpg'
 STANDARD_COVER = '/data/django/jukeoroni/player/static/cover_std.png'
 PIMORONI_FONT = '/data/django/jukeoroni/player/static/gotham-black.ttf'
 DEFAULT_TRACKLIST_REGEN_INTERVAL = 43200
+CLOCK_UPDATE_INTERVAL = 5  #
 
 # buttons setup
 BUTTONS = [5, 6, 16, 24]
@@ -448,9 +449,8 @@ class Player(object):
                     pass
 
             elif self.current_time != new_time.strftime('%H:%M'):  # in stopped state
-                if self.current_time is None or new_time.strftime('%H:%M')[-1:] in ['0', '5']:
+                if self.current_time is None or (int(new_time.strftime('%H:%M')[-2:])) % CLOCK_UPDATE_INTERVAL == 0:
                     self.set_image(image_file=SLEEP_IMAGE, message=new_time)
-                # self.current_time = new_time
 
             time.sleep(1.0)
 
@@ -565,22 +565,10 @@ class Player(object):
             )
         elif 'message' in kwargs:
             text = kwargs['message']
-
             if isinstance(text, datetime.datetime):
                 font_size_override = 160
                 self.current_time = text.strftime('%H:%M')
                 text = self.current_time
-
-            # if text == 'show_time':
-            #     # from django.utils import timezone
-            #     new_time = localtime(now()).strftime('HH:MM:SS')
-            #     if new_time == self.current_time:
-            #         pass
-            #     else:
-            #         new_time = self.current_time
-            #     text = new_time
-        # if bool(kwargs['media_info']):
-        #     text = self.get_text(kwargs['media_info'])
         else:
             text = ''
 
