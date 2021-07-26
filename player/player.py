@@ -34,7 +34,7 @@ FONT_SIZE = 20
 SLEEP_IMAGE = '/data/django/jukeoroni/player/static/zzz.jpg'
 LOADING_IMAGE = '/data/django/jukeoroni/player/static/loading.jpg'
 STANDARD_COVER = '/data/django/jukeoroni/player/static/cover_std.png'
-PIMORONI_FONT = '/data/django/jukeoroni/player/static/gotham_black.ttf'
+PIMORONI_FONT = '/data/django/jukeoroni/player/static/gotham-black.ttf'
 DEFAULT_TRACKLIST_REGEN_INTERVAL = 43200
 
 # buttons setup
