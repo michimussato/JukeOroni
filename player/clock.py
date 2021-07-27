@@ -1,10 +1,8 @@
 import datetime
 from PIL import Image, ImageDraw, ImageFont
-from .radar import radar_screenshot
 
 
-
-def clock(draw_logo, draw_date, draw_radar):
+def clock(draw_logo, draw_date):
     bg = Image.new(mode='RGB', size=(448, 448), color=(0, 0, 0))
     image = Image.new(mode='RGB', size=(448, 448), color=(0, 0, 0))
     draw = ImageDraw.Draw(image)
@@ -74,31 +72,8 @@ def clock(draw_logo, draw_date, draw_radar):
         length = font.getlength(text)
         draw.text((224 - length / 2, 320), text, fill=white, font=font)
 
-    # if draw_radar:
-    #     factor = 0.3
-    #     radar = radar_screenshot()
-    #     radar = image.radar((int(image.size[0]*factor), int(image.size[1]*factor)))
-    #     bg = bg.resize((600, 448))
-    #     bg.paste(radar)
-
     bg.paste(image.rotate(90, expand=False))
-    # bg.paste(image, )
-
-    # if draw_radar:
-    #     radar_bg = Image.new(mode='RGB', size=(448, 152), color=(0, 0, 0))
-    #     # new_bg.paste(bg)
-    #     # bg = new_bg
-    #     # bg_radar = Image.new(mode='RGB', size=(448, 152), color=(0, 0, 0))
-    #     factor = 0.25
-    #     radar = radar_screenshot()
-    #     radar = radar.resize((int(radar.size[0]*factor), int(radar.size[1]*factor)))
-    #     radar_size = radar.size
-    #     radar_bg.paste(radar, (0, 0))
-    #     radar_bg = radar_bg.rotate(90, expand=False)
-    #     # radar_bg = radar_bg.rotate(90, expand=False)
-    #     bg.paste(radar_bg, (0, 0))
-    #     # bg =
-
+    bg.paste(image)
 
     # bg = bg.resize((448, 448), Image.ANTIALIAS)
 
