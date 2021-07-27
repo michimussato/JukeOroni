@@ -51,8 +51,8 @@ def clock():
     # color = toggle[color]
 
     color = white
-    size_h = [(40, 40), (408, 408)]
-    width = 50
+    size_h = [(50, 50), (398, 398)]
+    width = 60
     draw.arc(size_h, start=arc_twelve, end=(arc_twelve + arc_length_h + 3) % 360, fill=color,
              width=width)
     color = toggle[color]
