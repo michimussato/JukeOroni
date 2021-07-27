@@ -2,9 +2,12 @@ import datetime
 from PIL import Image, ImageDraw, ImageFont
 
 
-def clock(draw_logo, draw_date):
-    bg = Image.new(mode='RGB', size=(448, 448), color=(0, 0, 0))
-    image = Image.new(mode='RGB', size=(448, 448), color=(0, 0, 0))
+def clock(draw_logo, draw_date, size=448):
+
+
+
+    bg = Image.new(mode='RGB', size=(size, size), color=(0, 0, 0))
+    image = Image.new(mode='RGB', size=(size, size), color=(0, 0, 0))
     draw = ImageDraw.Draw(image)
     # draw.ellipse([(0, 0), (448, 448)], fill=None, outline=(255, 255, 0), width=14)  # circle
     # draw.line([(448/2, 448/2), (448/2, 448/3)], fill=(0, 0, 0), width=12, joint=None)  # stundenzeiger x600/y448 ist unten rechts
@@ -17,7 +20,7 @@ def clock(draw_logo, draw_date):
     toggle = {white: black, black: white}
     # colors = {(255, 255, 0): (0, 0, 0)}
 
-    draw.ellipse([(216, 216), (232, 232)], fill=white, outline=None, width=14)
+    draw.ellipse([(int(size*0.482), int(size*0.482)), (int(size-size*0.482), int(size-size*0.482))], fill=white, outline=None, width=14)
 
     ####
     # variante 1
@@ -32,7 +35,7 @@ def clock(draw_logo, draw_date):
     color = white
     for interval in [0.0, 3.0, 29.0, 31.0, 59.0, 61.0, 87.0, 93.0, 119.0, 121.0, 149.0, 151.0, 177.0, 183.0, 209.0,
                      211.0, 239.0, 241.0, 267.0, 273.0, 299.0, 301.0, 329.0, 331.0, 357.0][::-1]:
-        draw.arc([(10, 10), (438, 438)], start=arc_twelve, end=(arc_twelve + interval) % 360, fill=color, width=30)
+        draw.arc([(int(size*0.022), int(*0.022)), (int(size-size*0.022), int(size-size*0.022))], start=arc_twelve, end=(arc_twelve + interval) % 360, fill=color, width=int(size*0.033))
         color = toggle[color]
     ####
 
@@ -51,31 +54,32 @@ def clock(draw_logo, draw_date):
     # color = toggle[color]
 
     color = white
-    size_h = [(50, 50), (398, 398)]
-    width = 60
-    draw.arc(size_h, start=arc_twelve, end=(arc_twelve + arc_length_h + 3) % 360, fill=color,
+    size_h = [(int(size*0.112), int(size*0.112)), (int(size-size*0.112), int(size-size*0.112))]
+    width = int(size*0.134)
+    draw.arc(size_h, start=arc_twelve, end=(arc_twelve + arc_length_h + int(size*0.007)) % 360, fill=color,
              width=width)
     color = toggle[color]
-    draw.arc(size_h, start=arc_twelve, end=(arc_twelve + arc_length_h - 3) % 360, fill=color,
+    draw.arc(size_h, start=arc_twelve, end=(arc_twelve + arc_length_h - int(size*0.007)) % 360, fill=color,
              width=width)
-    color = toggle[color]
+    # color = toggle[color]
     if draw_logo:
-        font = ImageFont.truetype(r'/data/django/jukeoroni/player/static/calligraphia-one.ttf', 60)
+        font = ImageFont.truetype(r'/data/django/jukeoroni/player/static/calligraphia-one.ttf', int(size*1.334))
         text = "JukeOroni"
         length = font.getlength(text)
         # print(length)
-        draw.text((224 - length / 2, 240), text, fill=white, font=font)
+        draw.text((int(size/2) - length / 2, int(size*0.536)), text, fill=white, font=font)
 
     if draw_date:
-        font = ImageFont.truetype(r'/data/django/jukeoroni/player/static/arial_narrow.ttf', 20)
+        font = ImageFont.truetype(r'/data/django/jukeoroni/player/static/arial_narrow.ttf', int(size*0.045))
         text = datetime.datetime.now().strftime('%A, %B %d %Y')
         length = font.getlength(text)
-        draw.text((224 - length / 2, 300), text, fill=white, font=font)
+        draw.text((int(size/2) - length / 2, int(size*0.670)), text, fill=white, font=font)
 
     bg.paste(image.rotate(90, expand=False))
     bg.paste(image)
 
     # bg = bg.resize((448, 448), Image.ANTIALIAS)
+    # bg = bg.resize((int(bg.size[0] * factor), int(bg.size[1] * factor)))
 
     return bg
 

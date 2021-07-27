@@ -16,9 +16,11 @@ def radar_screenshot(factor=1.0):
     service_log_path = os.path.join(tempfile.gettempdir(), 'geckodriver.log')
     with selenium.webdriver.Firefox(options=options, service_log_path=service_log_path) as driver:
         driver.get('https://meteo.search.ch/prognosis')
-        # WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.ID, "onetrust-accept-btn-handler"))).click()
-        WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, "//*[@id=\"onetrust-accept-btn-handler\"]"))).click()
         time.sleep(2.0)
+        # WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.ID, "onetrust-accept-btn-handler"))).click()
+        cookies_ok = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, "//*[@id=\"onetrust-accept-btn-handler\"]"))).click()
+        time.sleep(2.0)
+        cookies_ok.click()
         # root = driver.find_element(By.ID, "mapcontainer")
         root = driver.find_element(By.XPATH, "//*[@id=\"mapcontainer\"]")
         png = root.screenshot_as_png
