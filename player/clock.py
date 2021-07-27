@@ -12,12 +12,12 @@ def clock():
 
     arc_twelve = 270.0
 
-    yellow = (255, 255, 266)
+    white = (255, 255, 255)
     black = (0, 0, 0)
-    toggle = {yellow: black, black: yellow}
+    toggle = {white: black, black: white}
     # colors = {(255, 255, 0): (0, 0, 0)}
 
-    draw.ellipse([(216, 216), (232, 232)], fill=yellow, outline=None, width=14)
+    draw.ellipse([(216, 216), (232, 232)], fill=white, outline=None, width=14)
 
     ####
     # variante 1
@@ -29,18 +29,18 @@ def clock():
 
     ####
     # variante 2
-    color = yellow
+    color = white
     for interval in [0.0, 3.0, 29.0, 31.0, 59.0, 61.0, 87.0, 93.0, 119.0, 121.0, 149.0, 151.0, 177.0, 183.0, 209.0,
                      211.0, 239.0, 241.0, 267.0, 273.0, 299.0, 301.0, 329.0, 331.0, 357.0][::-1]:
-        draw.arc([(70, 70), (378, 378)], start=arc_twelve, end=(arc_twelve + interval) % 360, fill=color, width=20)
+        draw.arc([(10, 10), (438, 438)], start=arc_twelve, end=(arc_twelve + interval) % 360, fill=color, width=30)
         color = toggle[color]
     ####
 
     decimal_h = float(datetime.datetime.now().strftime('%I')) + float(datetime.datetime.now().strftime('%M')) / 60
     arc_length_h = decimal_h / 12.0 * 360.0
 
-    decimal_m = float(datetime.datetime.now().strftime('%M')) / 60
-    arc_length_m = decimal_m * 360
+    # decimal_m = float(datetime.datetime.now().strftime('%M')) / 60
+    # arc_length_m = decimal_m * 360
 
     # color = yellow
     ## for bounding_box in [[(20, 20), (428, 428)], [(100, 100), (348, 348)]]:
@@ -50,20 +50,21 @@ def clock():
     # draw.arc([(40, 40), (428, 428)], start=arc_twelve, end=(arc_twelve+arc_length_m-1.5) % 360, fill=color, width=width)
     # color = toggle[color]
 
-    color = yellow
-    width = 40
-    draw.arc([(100, 100), (348, 348)], start=arc_twelve, end=(arc_twelve + arc_length_h + 3) % 360, fill=color,
+    color = white
+    size_h = [(40, 40), (408, 408)]
+    width = 50
+    draw.arc(size_h, start=arc_twelve, end=(arc_twelve + arc_length_h + 3) % 360, fill=color,
              width=width)
     color = toggle[color]
-    draw.arc([(100, 100), (348, 348)], start=arc_twelve, end=(arc_twelve + arc_length_h - 3) % 360, fill=color,
+    draw.arc(size_h, start=arc_twelve, end=(arc_twelve + arc_length_h - 3) % 360, fill=color,
              width=width)
     color = toggle[color]
 
-    font = ImageFont.truetype(r'/data/django/jukeoroni/calligraphia-one.ttf', 50)
+    font = ImageFont.truetype(r'/data/django/jukeoroni/calligraphia-one.ttf', 60)
     text = "JukeOroni"
     length = font.getlength(text)
     # print(length)
-    draw.text((224 - length / 2, 240), text, fill=yellow, font=font)
+    draw.text((224 - length / 2, 260), text, fill=white, font=font)
 
     bg.paste(image.rotate(90, expand=False))
     bg.paste(image)
