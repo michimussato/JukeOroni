@@ -451,6 +451,7 @@ class Player(object):
             elif self.current_time != new_time.strftime('%H:%M'):  # in stopped state
                 if self.current_time is None or (int(new_time.strftime('%H:%M')[-2:])) % CLOCK_UPDATE_INTERVAL == 0:
                     self.set_image(image_file=clock())
+                    self.current_time = new_time.strftime('%H:%M')
 
             time.sleep(1.0)
 

@@ -1,11 +1,6 @@
 import datetime
-import time
 from PIL import Image, ImageDraw, ImageFont
-# from inky.inky_uc8159 import Inky
 
-
-# inky = Inky()
-# sleep_time = 5 * 60
 
 def clock():
     bg = Image.new(mode='RGB', size=(448, 448), color=(0, 0, 0))
@@ -73,7 +68,7 @@ def clock():
     bg.paste(image.rotate(90, expand=False))
     bg.paste(image)
 
-    bg = bg.resize((448, 448), Image.ANTIALIAS)
+    # bg = bg.resize((448, 448), Image.ANTIALIAS)
 
     return bg
 
