@@ -30,7 +30,8 @@ def radar_screenshot(factor=1.0):
     top = 100
     right = width - left
     botton = height - top
-    im = im.crop((left, top, 0, 0))
+    # im = im.crop((left, top, 0, 0))
+
     # print(im.size)
     # print(im.size)
     # print(im.size)
