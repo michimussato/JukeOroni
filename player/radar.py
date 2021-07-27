@@ -14,7 +14,7 @@ def radar_screenshot():
     # options.log_path = '/tmp/geckodriver.log'
     # options.service_log_path = '/tmp/geckodriver.log'
     service_log_path = os.path.join(tempfile.gettempdir(), 'geckodriver.log')
-    with selenium.webdriver.Firefox(options=options, service_log_path='/tmp/geckodriver.log') as driver:
+    with selenium.webdriver.Firefox(options=options, service_log_path=service_log_path) as driver:
         driver.get('https://meteo.search.ch/prognosis')
         time.sleep(2)
         root = driver.find_element(By.ID, "mapcontainer")
