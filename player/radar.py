@@ -48,7 +48,7 @@ def radar_screenshot(factor=1.0):
     bg = Image.new(mode='RGB', size=im.size, color=(0, 0, 0))
     mask = Image.new("L", im.size, 0)
     draw = ImageDraw.Draw(mask)
-    draw.rounded_rectangle([(0, 0), im.size], 10, fill=255)
+    draw.rounded_rectangle([(0, 0), im.size], 15, fill=255)
     im = Image.composite(im, bg, mask)
 
     return im
