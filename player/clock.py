@@ -71,6 +71,9 @@ def clock():
     draw.text((224 - length / 2, 240), text, fill=yellow, font=font)
 
     bg.paste(image.rotate(90, expand=False))
+    bg.paste(image)
+
+    bg = bg.resize((448, 448), Image.ANTIALIAS)
 
     return bg
 

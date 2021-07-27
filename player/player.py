@@ -565,10 +565,6 @@ class Player(object):
             )
         elif 'message' in kwargs:
             text = kwargs['message']
-            if isinstance(text, datetime.datetime):
-                font_size_override = 150
-                self.current_time = text.strftime('%H:%M')
-                text = self.current_time
         else:
             text = ''
 
