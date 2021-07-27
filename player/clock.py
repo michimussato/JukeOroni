@@ -2,7 +2,7 @@ import datetime
 from PIL import Image, ImageDraw, ImageFont
 
 
-def clock(draw_logo):
+def clock(draw_logo, draw_date):
     bg = Image.new(mode='RGB', size=(448, 448), color=(0, 0, 0))
     image = Image.new(mode='RGB', size=(448, 448), color=(0, 0, 0))
     draw = ImageDraw.Draw(image)
@@ -65,6 +65,12 @@ def clock(draw_logo):
         length = font.getlength(text)
         # print(length)
         draw.text((224 - length / 2, 260), text, fill=white, font=font)
+
+    if draw_date:
+        font = ImageFont.truetype(r'/data/django/jukeoroni/arial_narrow.ttf', 30)
+        text = datetime.datetime.now().strftime('%B %d %Y')
+        length = font.getlength(text)
+        draw.text((224 - length / 2, 300), text, fill=white, font=font)
 
     bg.paste(image.rotate(90, expand=False))
     bg.paste(image)
