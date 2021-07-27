@@ -84,20 +84,20 @@ def clock(draw_logo, draw_date, draw_radar):
     bg.paste(image.rotate(90, expand=False))
     # bg.paste(image, )
 
-    if draw_radar:
-        radar_bg = Image.new(mode='RGB', size=(448, 152), color=(0, 0, 0))
-        # new_bg.paste(bg)
-        # bg = new_bg
-        # bg_radar = Image.new(mode='RGB', size=(448, 152), color=(0, 0, 0))
-        factor = 0.25
-        radar = radar_screenshot()
-        radar = radar.resize((int(radar.size[0]*factor), int(radar.size[1]*factor)))
-        radar_size = radar.size
-        radar_bg.paste(radar, (0, 0))
-        radar_bg = radar_bg.rotate(90, expand=False)
-        # radar_bg = radar_bg.rotate(90, expand=False)
-        bg.paste(radar_bg, (0, 0))
-        # bg =
+    # if draw_radar:
+    #     radar_bg = Image.new(mode='RGB', size=(448, 152), color=(0, 0, 0))
+    #     # new_bg.paste(bg)
+    #     # bg = new_bg
+    #     # bg_radar = Image.new(mode='RGB', size=(448, 152), color=(0, 0, 0))
+    #     factor = 0.25
+    #     radar = radar_screenshot()
+    #     radar = radar.resize((int(radar.size[0]*factor), int(radar.size[1]*factor)))
+    #     radar_size = radar.size
+    #     radar_bg.paste(radar, (0, 0))
+    #     radar_bg = radar_bg.rotate(90, expand=False)
+    #     # radar_bg = radar_bg.rotate(90, expand=False)
+    #     bg.paste(radar_bg, (0, 0))
+    #     # bg =
 
 
     # bg = bg.resize((448, 448), Image.ANTIALIAS)
