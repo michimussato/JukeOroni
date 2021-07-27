@@ -304,8 +304,8 @@ class Player(object):
             else:
                 with open(MISSING_COVERS_FILE, 'a+') as f:
                     f.write(cover_root + '\n')
-                logging.info(f'cover is None for {album}')
-                print(f'cover is None {album}')
+                logging.info(f'cover is None: {album}')
+                print(f'cover is None: {album}')
                 img_path = None
 
             # need to add artist too
