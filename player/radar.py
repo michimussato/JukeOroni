@@ -30,7 +30,7 @@ def radar_screenshot(factor=1.0):
     top = 100
     right = width - left
     botton = height - top
-    im = im.crop((left, top, right, botton))
+    im = im.crop((left, top, 0, 0))
     # print(im.size)
     # print(im.size)
     # print(im.size)
@@ -40,11 +40,11 @@ def radar_screenshot(factor=1.0):
 
     # w, h = im.size
 
-    # bg = Image.new(mode='RGB', size=im.size, color=(0, 0, 0))
-    # mask = Image.new("L", im.size, 0)
-    # draw = ImageDraw.Draw(mask)
-    # draw.rounded_rectangle([(0, 0), im.size], 10, fill=255)
-    # im = Image.composite(im, bg, mask)
+    bg = Image.new(mode='RGB', size=im.size, color=(0, 0, 0))
+    mask = Image.new("L", im.size, 0)
+    draw = ImageDraw.Draw(mask)
+    draw.rounded_rectangle([(0, 0), im.size], 10, fill=255)
+    im = Image.composite(im, bg, mask)
 
     return im
 
