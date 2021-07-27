@@ -671,7 +671,7 @@ class Player(object):
 
         if self.button_3_value != 'Next':
             radar = radar_screenshot(factor=0.5)
-            bg.paste(radar)
+            bg.paste(radar.rotate(90, expand=False))
 
         self.pimoroni.set_image(bg, saturation=PIMORONI_SATURATION)
         self.pimoroni.show(busy_wait=False)
