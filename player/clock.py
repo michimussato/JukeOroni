@@ -8,7 +8,7 @@ from PIL import Image, ImageDraw, ImageFont
 # sleep_time = 5 * 60
 
 def clock():
-    bg = Image.new(mode='RGB', size=(600, 448), color=(0, 0, 0))
+    bg = Image.new(mode='RGB', size=(448, 448), color=(0, 0, 0))
     image = Image.new(mode='RGB', size=(448, 448), color=(0, 0, 0))
     draw = ImageDraw.Draw(image)
     # draw.ellipse([(0, 0), (448, 448)], fill=None, outline=(255, 255, 0), width=14)  # circle
