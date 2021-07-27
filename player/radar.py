@@ -21,7 +21,7 @@ def radar_screenshot(factor=1.0):
         # root = driver.find_element(By.CLASS, "leaflet-pane leaflet-map-pane")
         # root = driver.find_element_by_class_name("leaflet-pane leaflet-map-pane")
         # root = driver.find_element_by_tag_name('html')
-        root.screenshot('screenshot.png')
+        root.screenshot('/home/pi/test_screenshot.png')
         png = root.screenshot_as_png
     im = Image.open(BytesIO(png))
     print(im.size)
