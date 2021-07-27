@@ -10,15 +10,19 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
 
+URL = 'https://meteo.search.ch/prognosis'
+
+
 def radar_screenshot(factor=1.0):
     options = selenium.webdriver.firefox.options.Options()
     options.headless = True
     service_log_path = os.path.join(tempfile.gettempdir(), 'geckodriver.log')
     with selenium.webdriver.Firefox(options=options, service_log_path=service_log_path) as driver:
-        driver.get('https://meteo.search.ch/prognosis')
+        print(f'Opening {URL}')
+        driver.get(URL)
         time.sleep(2.0)
         # WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.ID, "onetrust-accept-btn-handler"))).click()
-        cookies_ok = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, "//*[@id=\"onetrust-accept-btn-handler\"]"))).click()
+        cookies_ok = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, "//*[@id=\"onetrust-accept-btn-handler\"]")))
         time.sleep(2.0)
         cookies_ok.click()
         # root = driver.find_element(By.ID, "mapcontainer")
