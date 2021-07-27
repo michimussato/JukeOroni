@@ -24,6 +24,12 @@ def radar_screenshot(factor=1.0):
         root.screenshot('/home/pi/test_screenshot.png')
         png = root.screenshot_as_png
     im = Image.open(BytesIO(png))
+    width, height = im.size
+    left = 140
+    top = 100
+    right = width - left
+    botton = height - top
+    im = im.crop((left, top, right, botton))
     print(im.size)
     print(im.size)
     print(im.size)
