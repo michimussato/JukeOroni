@@ -94,8 +94,9 @@ def clock(draw_logo, draw_date, draw_radar):
         radar = radar.resize((int(radar.size[0]*factor), int(radar.size[1]*factor)))
         radar_size = radar.size
         radar_bg.paste(radar, (0, 0))
+        radar_bg = radar_bg.rotate(90, expand=False)
         # radar_bg = radar_bg.rotate(90, expand=False)
-        bg.paste(radar_bg, (448, 0))
+        bg.paste(radar_bg, (0, 0))
         # bg =
 
 
