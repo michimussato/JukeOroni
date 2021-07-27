@@ -9,6 +9,7 @@ from io import BytesIO
 def radar_screenshot():
     options = selenium.webdriver.firefox.options.Options()
     options.headless = True
+    options.service_log_path = '/tmp/geckodriver.log'
     with selenium.webdriver.Firefox(options=options) as driver:
         driver.get('https://meteo.search.ch/prognosis')
         time.sleep(2)
