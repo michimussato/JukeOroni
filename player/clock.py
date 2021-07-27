@@ -35,7 +35,7 @@ def clock(draw_logo, draw_date, size=448):
     color = white
     for interval in [0.0, 3.0, 29.0, 31.0, 59.0, 61.0, 87.0, 93.0, 119.0, 121.0, 149.0, 151.0, 177.0, 183.0, 209.0,
                      211.0, 239.0, 241.0, 267.0, 273.0, 299.0, 301.0, 329.0, 331.0, 357.0][::-1]:
-        draw.arc([(int(size*0.022), int(size*0.022)), (int(size-size*0.022), int(size-size*0.022))], start=arc_twelve, end=(arc_twelve + interval) % 360, fill=color, width=int(size*0.067))
+        draw.arc([(int(size*0.022), int(size*0.022)), (int(size-size*0.022), int(size-size*0.022))], start=arc_twelve, end=(arc_twelve + interval) % 360, fill=color, width=int(size*0.060))
         color = toggle[color]
     ####
 
@@ -70,7 +70,7 @@ def clock(draw_logo, draw_date, size=448):
         draw.text((int(size/2) - length / 2, int(size*0.536)), text, fill=white, font=font)
 
     if draw_date:
-        font = ImageFont.truetype(r'/data/django/jukeoroni/player/static/arial_narrow.ttf', int(size*0.040))
+        font = ImageFont.truetype(r'/data/django/jukeoroni/player/static/arial_narrow.ttf', int(size*0.035))
         text = datetime.datetime.now().strftime('%A, %B %d %Y')
         length = font.getlength(text)
         draw.text((int(size/2) - length / 2, int(size*0.690)), text, fill=white, font=font)
