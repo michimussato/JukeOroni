@@ -211,11 +211,13 @@ class Player(object):
                 self.button_1_value = BUTTON_1[current_label]
 
                 self.set_image(track=self.playing_track)
+                print(f'Playback mode is now {self.button_1_value}.')
                 return
 
         # Stop button
         if current_label == self.button_2_value:
             if self._playback_thread is not None:
+                print('Playback stopped.')
                 self.button_3_value = BUTTON_3['Next']  # Switch button back to Play
                 self.stop()
                 # self.kill_loading_process()
@@ -224,8 +226,10 @@ class Player(object):
         # Play/Next button
         if current_label == self.button_3_value:
             if current_label == 'Play':
+                print('Starting playback.')
                 self.button_3_value = BUTTON_3[current_label]
             elif current_label == 'Next':
+                print('Next track.')
                 self.next()
 
         # Quit button
