@@ -4,6 +4,8 @@ from selenium.webdriver.common.by import By
 import time
 from PIL import Image
 from io import BytesIO
+import tempfile
+import os
 
 
 def radar_screenshot():
@@ -11,6 +13,7 @@ def radar_screenshot():
     options.headless = True
     # options.log_path = '/tmp/geckodriver.log'
     # options.service_log_path = '/tmp/geckodriver.log'
+    service_log_path = os.path.join(tempfile.gettempdir(), 'geckodriver.log')
     with selenium.webdriver.Firefox(options=options, service_log_path='/tmp/geckodriver.log') as driver:
         driver.get('https://meteo.search.ch/prognosis')
         time.sleep(2)

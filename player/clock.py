@@ -3,6 +3,7 @@ from PIL import Image, ImageDraw, ImageFont
 from .radar import radar_screenshot
 
 
+
 def clock(draw_logo, draw_date, draw_radar):
     bg = Image.new(mode='RGB', size=(448, 448), color=(0, 0, 0))
     image = Image.new(mode='RGB', size=(448, 448), color=(0, 0, 0))
@@ -90,7 +91,7 @@ def clock(draw_logo, draw_date, draw_radar):
         # bg_radar = Image.new(mode='RGB', size=(448, 152), color=(0, 0, 0))
         factor = 0.25
         radar = radar_screenshot()
-        radar = radar((int(radar.size[0]*factor), int(radar.size[1]*factor)))
+        radar = radar.resize((int(radar.size[0]*factor), int(radar.size[1]*factor)))
         radar_size = radar.size
         bg.paste(radar, (0, 0))
         # bg =
