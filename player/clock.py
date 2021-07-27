@@ -81,19 +81,32 @@ def clock(draw_logo, draw_date, draw_radar):
     #     bg = bg.resize((600, 448))
     #     bg.paste(radar)
 
-    bg.paste(image.rotate(90, expand=False))
-    # bg.paste(image, )
-
     if draw_radar:
-        new_bg = Image.new(mode='RGB', size=(448, 600), color=(0, 0, 0))
-        new_bg.paste(bg)
+        new_bg = Image.new(mode='RGB', size=(600, 600), color=(0, 0, 0))
+        new_bg.paste(bg, (0, -76))
         bg = new_bg
         # bg_radar = Image.new(mode='RGB', size=(448, 152), color=(0, 0, 0))
         factor = 0.25
         radar = radar_screenshot()
         radar = radar.resize((int(radar.size[0]*factor), int(radar.size[1]*factor)))
         radar_size = radar.size
+
         bg.paste(radar, (0, 0))
+
+    bg.paste(image.rotate(90, expand=False))
+    # bg.paste(image, )
+
+    # if draw_radar:
+    #     new_bg = Image.new(mode='RGB', size=(448, 600), color=(0, 0, 0))
+    #     new_bg.paste(bg)
+    #     bg = new_bg
+    #     # bg_radar = Image.new(mode='RGB', size=(448, 152), color=(0, 0, 0))
+    #     factor = 0.25
+    #     radar = radar_screenshot()
+    #     radar = radar.resize((int(radar.size[0]*factor), int(radar.size[1]*factor)))
+    #     radar_size = radar.size
+    #
+    #     bg.paste(radar, (0, 0))
         # bg =
 
 
