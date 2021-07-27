@@ -63,14 +63,14 @@ def clock(draw_logo, draw_date, size=448):
              width=width)
     # color = toggle[color]
     if draw_logo:
-        font = ImageFont.truetype(r'/data/django/jukeoroni/player/static/calligraphia-one.ttf', int(size*0.140))
+        font = ImageFont.truetype(r'/data/django/jukeoroni/player/static/calligraphia-one.ttf', int(size*0.150))
         text = "JukeOroni"
         length = font.getlength(text)
         # print(length)
         draw.text((int(size/2) - length / 2, int(size*0.536)), text, fill=white, font=font)
 
     if draw_date:
-        font = ImageFont.truetype(r'/data/django/jukeoroni/player/static/arial_narrow.ttf', int(size*0.045))
+        font = ImageFont.truetype(r'/data/django/jukeoroni/player/static/arial_narrow.ttf', int(size*0.040))
         text = datetime.datetime.now().strftime('%A, %B %d %Y')
         length = font.getlength(text)
         draw.text((int(size/2) - length / 2, int(size*0.670)), text, fill=white, font=font)
