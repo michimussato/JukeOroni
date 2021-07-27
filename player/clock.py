@@ -67,10 +67,10 @@ def clock(draw_logo, draw_date):
         draw.text((224 - length / 2, 260), text, fill=white, font=font)
 
     if draw_date:
-        font = ImageFont.truetype(r'/data/django/jukeoroni/player/static/arial_narrow.ttf', 30)
+        font = ImageFont.truetype(r'/data/django/jukeoroni/player/static/arial_narrow.ttf', 20)
         text = datetime.datetime.now().strftime('%B %d %Y')
         length = font.getlength(text)
-        draw.text((224 - length / 2, 300), text, fill=white, font=font)
+        draw.text((224 - length / 2, 310), text, fill=white, font=font)
 
     bg.paste(image.rotate(90, expand=False))
     bg.paste(image)
