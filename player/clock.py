@@ -81,7 +81,7 @@ def clock(draw_logo, draw_date, draw_radar):
     #     bg = bg.resize((600, 448))
     #     bg.paste(radar)
 
-    bg.paste(image.rotate(90, expand=False))
+    # bg.paste(image.rotate(90, expand=False))
     # bg.paste(image, )
 
     # if draw_radar:
