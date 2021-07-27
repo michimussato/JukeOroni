@@ -368,6 +368,9 @@ class Player(object):
 
                 self.loading += 1
 
+                print(type(self.loading_process))
+                print(dir(self.loading_process))
+
                 try:
                     while self.loading_process.is_alive():
                         logging.error(self.loading_process)
