@@ -37,8 +37,14 @@ def radar_screenshot(factor=1.0):
     print(im.size)
     im = im.resize((int(im.size[0] * factor), int(im.size[1] * factor)))
     w, h = im.size
-    rect = ImageDraw.Draw(im)
-    rect.rounded_rectangle([(0, 0), (w, h)], 20, fill="#000000ff")
+
+    rect = Image.new(mode='RGBA', size=(w, h), color=(0, 0, 0, 255))
+    rect_mask = Image.new(mode='RGBA', size=(w, h), color=(0, 0, 0, 255))
+
+    mask = ImageDraw.Draw(rect_mask)
+    mask.rounded_rectangle([(0, 0), (w, h)], 20)
+
+    rect.paste(im, mask=mask)
     # w, h = im.size
     # rect = Image.new('RGBA', (w, h))
     return im
