@@ -8,7 +8,7 @@ import tempfile
 import os
 
 
-def radar_screenshot():
+def radar_screenshot(factor=1.0):
     options = selenium.webdriver.firefox.options.Options()
     options.headless = True
     # options.log_path = '/tmp/geckodriver.log'
@@ -25,6 +25,22 @@ def radar_screenshot():
         png = root.screenshot_as_png
     im = Image.open(BytesIO(png))
     print(im.size)
+    im = im.resize((int(im.size[0] * factor), int(im.size[1] * factor)))
     return im
+
+    # if draw_radar:
+    #     radar_bg = Image.new(mode='RGB', size=(448, 152), color=(0, 0, 0))
+    #     # new_bg.paste(bg)
+    #     # bg = new_bg
+    #     # bg_radar = Image.new(mode='RGB', size=(448, 152), color=(0, 0, 0))
+    #     factor = 0.25
+    #     radar = radar_screenshot()
+    #     radar = radar.resize((int(radar.size[0]*factor), int(radar.size[1]*factor)))
+    #     radar_size = radar.size
+    #     radar_bg.paste(radar, (0, 0))
+    #     radar_bg = radar_bg.rotate(90, expand=False)
+    #     # radar_bg = radar_bg.rotate(90, expand=False)
+    #     bg.paste(radar_bg, (0, 0))
+    #     # bg =
 
 # radar_screenshot()

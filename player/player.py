@@ -18,6 +18,7 @@ from .models import Track as DjangoTrack
 from .models import Artist
 from .models import Album
 from .clock import clock
+from .radar import radar_screenshot
 
 
 LOG = logging.getLogger(__name__)
@@ -667,6 +668,10 @@ class Player(object):
         bg.paste(text_img, (448, 0))
 
         bg.paste(cover, offset)
+
+        if self.button_3_value != 'Next':
+            radar = radar_screenshot(factor=0.5)
+            bg.paste(radar)
 
         self.pimoroni.set_image(bg, saturation=PIMORONI_SATURATION)
         self.pimoroni.show(busy_wait=False)
