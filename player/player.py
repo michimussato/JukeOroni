@@ -417,8 +417,9 @@ class Player(object):
         print(f'starting thread: \"{track.audio_source}\"')
 
         try:
-            logging.info(f'loading track ({str(round(os.path.getsize(track.audio_source) / (1024*1024), 3))} MB): \"{track.audio_source}\"')
-            print(f'loading track ({str(round(os.path.getsize(track.audio_source) / (1024*1024), 3))} MB): \"{track.audio_source}\"')
+            size = os.path.getsize(track.audio_source)
+            logging.info(f'loading track ({str(round(size / (1024*1024), 3))} MB): \"{track.audio_source}\"')
+            print(f'loading track ({str(round(size / (1024*1024), 3))} MB): \"{track.audio_source}\"')
             processing_track = Track(track)
             logging.info(f'loading successful: \"{track.audio_source}\"')
             print(f'loading successful: \"{track.audio_source}\"')
