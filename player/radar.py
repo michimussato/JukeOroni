@@ -24,7 +24,11 @@ def radar_screenshot(factor=1.0):
         # root.screenshot('screenshot.png')
         png = root.screenshot_as_png
     im = Image.open(BytesIO(png))
-    # print(im.size)
+    print(im.size)
+    print(im.size)
+    print(im.size)
+    print(im.size)
+    print(im.size)
     im = im.resize((int(im.size[0] * factor), int(im.size[1] * factor)))
     return im
 
