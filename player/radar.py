@@ -40,20 +40,12 @@ def radar_screenshot(factor=1.0):
 
     # w, h = im.size
 
-    bg = Image.new(mode='RGB', size=im.size, color=(0, 0, 0))
-    mask = Image.new("L", im.size, 0)
-    draw = ImageDraw.Draw(mask)
-    draw.rounded_rectangle([(0, 0), im.size], 10, fill=255)
-    im = Image.composite(im, bg, mask)
-    # rect = Image.new(mode='RGBA', size=(w, h), color=(0, 0, 0, 128))
-    # rect_mask = Image.new(mode='RGBA', size=(w, h), color=(0, 0, 0, 128))
-    #
-    # mask = ImageDraw.Draw(rect_mask)
-    # mask.rounded_rectangle([(0, 0), (w, h)], 20, fill=(255, 255, 255, 255))
-    #
-    # rect.paste(im, mask=rect_mask)
-    # w, h = im.size
-    # rect = Image.new('RGBA', (w, h))
+    # bg = Image.new(mode='RGB', size=im.size, color=(0, 0, 0))
+    # mask = Image.new("L", im.size, 0)
+    # draw = ImageDraw.Draw(mask)
+    # draw.rounded_rectangle([(0, 0), im.size], 10, fill=255)
+    # im = Image.composite(im, bg, mask)
+
     return im
 
     # if draw_radar:
