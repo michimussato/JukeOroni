@@ -2,7 +2,7 @@ import datetime
 from PIL import Image, ImageDraw, ImageFont
 
 
-def clock():
+def clock(draw_logo):
     bg = Image.new(mode='RGB', size=(448, 448), color=(0, 0, 0))
     image = Image.new(mode='RGB', size=(448, 448), color=(0, 0, 0))
     draw = ImageDraw.Draw(image)
@@ -59,12 +59,12 @@ def clock():
     draw.arc(size_h, start=arc_twelve, end=(arc_twelve + arc_length_h - 3) % 360, fill=color,
              width=width)
     color = toggle[color]
-
-    font = ImageFont.truetype(r'/data/django/jukeoroni/calligraphia-one.ttf', 60)
-    text = "JukeOroni"
-    length = font.getlength(text)
-    # print(length)
-    draw.text((224 - length / 2, 260), text, fill=white, font=font)
+    if draw_logo:
+        font = ImageFont.truetype(r'/data/django/jukeoroni/calligraphia-one.ttf', 60)
+        text = "JukeOroni"
+        length = font.getlength(text)
+        # print(length)
+        draw.text((224 - length / 2, 260), text, fill=white, font=font)
 
     bg.paste(image.rotate(90, expand=False))
     bg.paste(image)
