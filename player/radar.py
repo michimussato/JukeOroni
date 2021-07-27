@@ -23,7 +23,7 @@ def radar_screenshot(factor=1.0):
         time.sleep(2.0)
         # WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.ID, "onetrust-accept-btn-handler"))).click()
         WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, "//*[@id=\"onetrust-accept-btn-handler\"]"))).click()
-        driver.navigate().refresh()
+        driver.refresh()
         time.sleep(5.0)
         # root = driver.find_element(By.ID, "mapcontainer")
         root = driver.find_element(By.XPATH, "//*[@id=\"mapcontainer\"]")
