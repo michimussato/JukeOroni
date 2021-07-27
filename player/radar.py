@@ -43,7 +43,7 @@ def radar_screenshot(factor=1.0):
     mask = Image.new("L", im.size, 0)
     draw = ImageDraw.Draw(mask)
     draw.rounded_rectangle([(0, 0), im.size], 20, fill=255)
-    im = im.composite(im, bg, mask)
+    im = Image.composite(im, bg, mask)
     # rect = Image.new(mode='RGBA', size=(w, h), color=(0, 0, 0, 128))
     # rect_mask = Image.new(mode='RGBA', size=(w, h), color=(0, 0, 0, 128))
     #
