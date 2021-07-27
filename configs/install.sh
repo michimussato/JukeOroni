@@ -217,3 +217,7 @@ printf "hello"
 #sudo chown -R pi:pi /home/pi/.config/transmission-daemon/
 
 #sudo systemctl enable transmission-daemon
+
+
+
+

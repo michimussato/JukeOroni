@@ -1,8 +1,9 @@
 import datetime
 from PIL import Image, ImageDraw, ImageFont
+from .radar import radar_screenshot
 
 
-def clock(draw_logo, draw_date):
+def clock(draw_logo, draw_date, draw_radar):
     bg = Image.new(mode='RGB', size=(448, 448), color=(0, 0, 0))
     image = Image.new(mode='RGB', size=(448, 448), color=(0, 0, 0))
     draw = ImageDraw.Draw(image)
@@ -72,8 +73,28 @@ def clock(draw_logo, draw_date):
         length = font.getlength(text)
         draw.text((224 - length / 2, 320), text, fill=white, font=font)
 
+    # if draw_radar:
+    #     factor = 0.3
+    #     radar = radar_screenshot()
+    #     radar = image.radar((int(image.size[0]*factor), int(image.size[1]*factor)))
+    #     bg = bg.resize((600, 448))
+    #     bg.paste(radar)
+
     bg.paste(image.rotate(90, expand=False))
-    bg.paste(image)
+    # bg.paste(image, )
+
+    if draw_radar:
+        new_bg = Image.new(mode='RGB', size=(448, 600), color=(0, 0, 0))
+        new_bg.paste(bg)
+        bg = new_bg
+        # bg_radar = Image.new(mode='RGB', size=(448, 152), color=(0, 0, 0))
+        factor = 0.25
+        radar = radar_screenshot()
+        radar = radar((int(radar.size[0]*factor), int(radar.size[1]*factor)))
+        radar_size = radar.size
+        bg.paste(radar, (0, 0))
+        # bg =
+
 
     # bg = bg.resize((448, 448), Image.ANTIALIAS)
 
