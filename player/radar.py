@@ -1,6 +1,8 @@
 import selenium.webdriver
 import selenium.common
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 import time
 from PIL import Image, ImageDraw
 from io import BytesIO
@@ -18,10 +20,12 @@ def radar_screenshot(factor=1.0):
         driver.get('https://meteo.search.ch/prognosis')
         # TODO: wait for element instead of fixed time
         time.sleep(4)
+        WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.ID, "onetrust-accept-btn-handler"))).click()
         root = driver.find_element(By.ID, "mapcontainer")
         # root = driver.find_element(By.CLASS, "leaflet-pane leaflet-map-pane")
         # root = driver.find_element_by_class_name("leaflet-pane leaflet-map-pane")
         # root = driver.find_element_by_tag_name('html')
+        # WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.CSS_SELECTOR, "span.cbot-btn__switch"))).click()
         root.screenshot('/home/pi/test_screenshot.png')
         png = root.screenshot_as_png
     im = Image.open(BytesIO(png))
@@ -30,7 +34,7 @@ def radar_screenshot(factor=1.0):
     top = 100
     right = width - left
     botton = height - top
-    # im = im.crop((left, top, 0, 0))
+    im = im.crop((left, top, right, botton))
 
     # print(im.size)
     # print(im.size)
