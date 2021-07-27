@@ -64,7 +64,7 @@ def clock(draw_logo, draw_date):
         text = "JukeOroni"
         length = font.getlength(text)
         # print(length)
-        draw.text((224 - length / 2, 260), text, fill=white, font=font)
+        draw.text((224 - length / 2, 250), text, fill=white, font=font)
 
     if draw_date:
         font = ImageFont.truetype(r'/data/django/jukeoroni/player/static/arial_narrow.ttf', 20)
