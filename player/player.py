@@ -546,7 +546,10 @@ class Player(object):
 
     def task_pimoroni_set_image(self, **kwargs):
         if 'track' in kwargs:
+            # print(kwargs['track'])
             cover = kwargs['track'].cover
+            if cover is None:
+                cover = STANDARD_COVER
         elif 'image_file' in kwargs:
             cover = kwargs['image_file']
         else:
