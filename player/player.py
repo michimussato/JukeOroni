@@ -1,4 +1,3 @@
-import datetime
 import os
 import sys
 import glob
@@ -99,7 +98,8 @@ class Track(object):
 
     def _cache(self):
         self.cache = tempfile.mkstemp()[1]
-        logging.info('copying to local filesystem: \"{0}\" as \"{1}\"'.format(self.path, self.cache))
+        logging.info(f'copying to local filesystem: \"{self.path}\" as \"{self.cache}\"')
+        print(f'copying to local filesystem: \"{self.path}\" as \"{self.cache}\"')
         shutil.copy(self.path, self.cache)
 
     @property
@@ -109,20 +109,24 @@ class Track(object):
     def play(self):
         try:
             # ffplay -threads
-            logging.info('starting playback: \"{0}\" from: \"{1}\"'.format(self.path, self.playing_from))
+            logging.info(f'starting playback: \"{self.path}\" from: \"{self.playing_from}\"')
+            print(f'starting playback: \"{self.path}\" from: \"{self.playing_from}\"')
             self.track.played += 1
             self.track.save()
             self.is_playing = True
-            os.system('ffplay -hide_banner -autoexit -vn -nodisp -loglevel error \"{0}\"'.format(self.playing_from))
-            logging.info('playback finished: \"{0}\"'.format(self.path))
-        except Exception:
+            os.system(f'ffplay -hide_banner -autoexit -vn -nodisp -loglevel error \"{self.playing_from}\"')
+            logging.info(f'playback finished: \"{self.path}\"')
+            print(f'playback finished: \"{self.path}\"')
+        except Exception as err:
+            print(err)
             logging.exception('playback failed: \"{0}\"'.format(self.path))
+            print('playback failed: \"{0}\"'.format(self.path))
         finally:
             self.is_playing = False
             if self.cached:
                 os.remove(self.cache)
-                logging.info('removed from local filesystem: \"{0}\"'.format(self.cache))
-                print('removed from local filesystem: \"{0}\"'.format(self.cache))
+                logging.info(f'removed from local filesystem: \"{self.cache}\"')
+                print(f'removed from local filesystem: \"{self.cache}\"')
 
     # # this would be easiest for cleanup, but the way multiprocessing seems to hand
     # # over objects, this method is not working anymore
@@ -142,6 +146,7 @@ class Player(object):
 
     def __init__(self, auto_update_tracklist=False):
         logging.info('initializing player...')
+        print('initializing player...')
         # assert state in LABELS, "state should be one of {0}".format(LABELS)
         self.button_1_value = BUTTON_1['Albm -> Rand']
         self.button_2_value = BUTTON_2['Stop']
@@ -171,13 +176,16 @@ class Player(object):
         self._track_list_generator_thread = None
 
         logging.info('player initialized.')
+        print('player initialized.')
 
     def temp_cleanup(self):
         temp_dir = tempfile.gettempdir()
-        logging.info('cleaning up {0}...'.format(temp_dir))
+        logging.info(f'cleaning up {temp_dir}...')
+        print(f'cleaning up {temp_dir}...')
         for filename in glob.glob(os.path.join(temp_dir, 'tmp*')):
             os.remove(filename)
         logging.info('cleanup done.')
+        print('cleanup done.')
 
     @property
     def LABELS(self):
@@ -212,12 +220,14 @@ class Player(object):
 
                 self.set_image(track=self.playing_track)
                 print(f'Playback mode is now {self.button_1_value}.')
+                logging.info(f'Playback mode is now {self.button_1_value}.')
                 return
 
         # Stop button
         if current_label == self.button_2_value:
             if self._playback_thread is not None:
                 print('Playback stopped.')
+                logging.info('Playback stopped.')
                 self.button_3_value = BUTTON_3['Next']  # Switch button back to Play
                 self.stop()
                 # self.kill_loading_process()
@@ -227,9 +237,11 @@ class Player(object):
         if current_label == self.button_3_value:
             if current_label == 'Play':
                 print('Starting playback.')
+                logging.info('Starting playback.')
                 self.button_3_value = BUTTON_3[current_label]
             elif current_label == 'Next':
                 print('Next track.')
+                logging.info('Next track.')
                 self.next()
 
         # Quit button
@@ -257,6 +269,7 @@ class Player(object):
     def create_update_track_list():
         # TODO: filter image files, m3u etc.
         logging.info('generating updated track list...')
+        print('generating updated track list...')
         _files = []
         for path, dirs, files in os.walk(MUSIC_DIR):
             album = os.path.basename(path)
@@ -267,7 +280,9 @@ class Player(object):
                 with open(FAULTY_ALBUMS, 'a+') as f:
                     f.write(album + '\n')
                 # TODO: store this somewhere to fix it
-                LOG.exception('not a valid album path: {0}'.format(album))
+                print(err)
+                LOG.exception(f'not a valid album path: {album}')
+                print(f'not a valid album path: {album}')
                 continue
 
             query_artist = Artist.objects.filter(name__exact=artist)
@@ -290,6 +305,7 @@ class Player(object):
                 with open(MISSING_COVERS_FILE, 'a+') as f:
                     f.write(cover_root + '\n')
                 logging.info('cover is None')
+                print('cover is None')
                 img_path = None
 
             # need to add artist too
@@ -331,7 +347,8 @@ class Player(object):
             if django_track.audio_source not in _files:
                 django_track.delete()
 
-        logging.info('track list generated successfully: {0} tracks found'.format(len(_files)))
+        logging.info(f'track list generated successfully: {len(_files)} tracks found')
+        print(f'track list generated successfully: {len(_files)} tracks found')
     ############################################
 
     ############################################
@@ -373,7 +390,8 @@ class Player(object):
 
                 try:
                     while self.loading_process.is_alive():
-                        logging.error(self.loading_process)
+                        # logging.error(self.loading_process)
+                        # print(self.loading_process)
                         time.sleep(1.0)
 
                     ret = self.loading_queue.get()
@@ -381,7 +399,7 @@ class Player(object):
                     if ret is not None:
                         self.tracks.append(ret)
 
-                    logging.error(self.loading_process)
+                    # logging.error(self.loading_process)
                     self.loading_process.join()
 
                 except AttributeError as err:
@@ -395,17 +413,20 @@ class Player(object):
 
     def _load_track_task(self, **kwargs):
         track = kwargs['track']
-        logging.debug('starting thread: \"{0}\"'.format(track.audio_source))
+        logging.debug(f'starting thread: \"{track.audio_source}\"')
+        print(f'starting thread: \"{track.audio_source}\"')
 
         try:
-            logging.info('loading track ({1} MB): \"{0}\"'.format(track.audio_source, str(round(os.path.getsize(track.audio_source) / (1024*1024), 3))))
+            logging.info(f'loading track ({str(round(os.path.getsize(track.audio_source) / (1024*1024), 3))} MB): \"{track.audio_source}\"')
+            print(f'loading track ({str(round(os.path.getsize(track.audio_source) / (1024*1024), 3))} MB): \"{track.audio_source}\"')
             processing_track = Track(track)
-            logging.info('loading successful: \"{0}\"'.format(track.audio_source))
-            logging.error(self.loading_process)
+            logging.info(f'loading successful: \"{track.audio_source}\"')
+            print(f'loading successful: \"{track.audio_source}\"')
             ret = processing_track
         except MemoryError as err:
             print(err)
-            logging.exception('loading failed: \"{0}\"'.format(track.audio_source))
+            logging.exception(f'loading failed: \"{track.audio_source}\"')
+            print(f'loading failed: \"{track.audio_source}\"')
             ret = None
 
         # here, or after that, probably processing_track.__del__() is called but pickled/recreated
@@ -509,7 +530,8 @@ class Player(object):
 
     def _playback_task(self, **kwargs):
         self.playing_track = kwargs['track']
-        logging.debug('starting playback thread: for {0} from {0}'.format(self.playing_track.path, self.playing_track.playing_from))  # TODO add info
+        logging.debug(f'starting playback thread: for {self.playing_track.path} from {self.playing_track.playing_from}')  # TODO add info
+        print(f'starting playback thread: for {self.playing_track.path} from {self.playing_track.playing_from}')  # TODO add info
         self.playing_track.play()
 
         # cleanup
