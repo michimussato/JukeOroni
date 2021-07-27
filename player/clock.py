@@ -20,7 +20,7 @@ def clock(draw_logo, draw_date, size=448):
     toggle = {white: black, black: white}
     # colors = {(255, 255, 0): (0, 0, 0)}
 
-    draw.ellipse([(int(size*0.482), int(size*0.482)), (int(size-size*0.482), int(size-size*0.482))], fill=white, outline=None, width=14)
+    draw.ellipse([(int(size*0.482), int(size*0.482)), (int(size-size*0.482), int(size-size*0.482))], fill=white, outline=None, width=int(size*0.312))
 
     ####
     # variante 1
@@ -35,7 +35,7 @@ def clock(draw_logo, draw_date, size=448):
     color = white
     for interval in [0.0, 3.0, 29.0, 31.0, 59.0, 61.0, 87.0, 93.0, 119.0, 121.0, 149.0, 151.0, 177.0, 183.0, 209.0,
                      211.0, 239.0, 241.0, 267.0, 273.0, 299.0, 301.0, 329.0, 331.0, 357.0][::-1]:
-        draw.arc([(int(size*0.022), int(size*0.022)), (int(size-size*0.022), int(size-size*0.022))], start=arc_twelve, end=(arc_twelve + interval) % 360, fill=color, width=int(size*0.033))
+        draw.arc([(int(size*0.022), int(size*0.022)), (int(size-size*0.022), int(size-size*0.022))], start=arc_twelve, end=(arc_twelve + interval) % 360, fill=color, width=int(size*0.067))
         color = toggle[color]
     ####
 
