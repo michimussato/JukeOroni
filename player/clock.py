@@ -1,5 +1,7 @@
 import datetime
 from PIL import Image, ImageDraw, ImageFont
+from astral import LocationInfo
+from astral.sun import sun
 
 
 def clock(draw_logo, draw_date, size=448, hours=12, draw_astral=False):
@@ -36,7 +38,7 @@ def clock(draw_logo, draw_date, size=448, hours=12, draw_astral=False):
     ####
     # variante 2
     color = white
-
+    # TODO: we could do the intervals smarter now
     if hours == 24:
         intervals = [0.0, 3.0,
                      14.0, 16.0,
@@ -106,9 +108,6 @@ def clock(draw_logo, draw_date, size=448, hours=12, draw_astral=False):
     #          width=width)
 
     if draw_astral:
-        from astral import LocationInfo
-        from astral.sun import sun
-
         city = LocationInfo("Bern", "Switzerland", "Europe/Zurich", 46.94809, 7.44744)
         _sun = sun(city.observer, date=datetime.date.today(), tzinfo=city.timezone)
 
@@ -123,8 +122,6 @@ def clock(draw_logo, draw_date, size=448, hours=12, draw_astral=False):
         _width = 0.012
         size_astral = [(round(size * _size), round(size * _size)), (round(size - size * _size), round(size - size * _size))]
         width_astral = round(size * _width)
-        # print(arc_length_sunrise)
-        # print(arc_length_sunset)
         draw.arc(size_astral, start=arc_length_sunrise+arc_twelve, end=arc_length_sunset+arc_twelve, fill=color,
                  width=width_astral)
 

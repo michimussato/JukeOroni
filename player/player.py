@@ -588,20 +588,20 @@ class Player(object):
 
         font_size_override = False
 
-        if 'track' in kwargs:
-            track = kwargs['track']
-            title = os.path.basename(track.path)
-            album = Album.objects.get(track=track.track)
-            artist = Artist.objects.get(album=album)
-            text = '{0}\n{1}\n{2}'.format(
-                title,
-                artist,
-                album
-            )
-        elif 'message' in kwargs:
-            text = kwargs['message']
-        else:
-            text = ''
+        # if 'track' in kwargs:
+        #     track = kwargs['track']
+        #     title = os.path.basename(track.path)
+        #     album = Album.objects.get(track=track.track)
+        #     artist = Artist.objects.get(album=album)
+        #     text = '{0}\n{1}\n{2}'.format(
+        #         title,
+        #         artist,
+        #         album
+        #     )
+        # elif 'message' in kwargs:
+        #     text = kwargs['message']
+        # else:
+        #     text = ''
 
         # image = Image.open(kwargs['image_file'])
         # image = image.rotate(90, expand=True)
@@ -652,20 +652,20 @@ class Player(object):
         cover = cover.rotate(90, expand=True)
         # bg.paste(cover, offset)
 
-        text_img = Image.new(mode='RGB', size=(448, 448), color=(0, 0, 0))
-        img_draw = ImageDraw.Draw(text_img)
-
-        font_path = PIMORONI_FONT
-        font = ImageFont.truetype(font_path, font_size_override or FONT_SIZE)
-        # font.set_variation_by_name('Bold')
-        # print(kwargs['media_info'])
-        # img_draw.text((10, 5), self.wrap_text(kwargs['media_info']['filename']), fill=(255, 255, 255, 255))
-        # img_draw.text((10, 5), self.get_text(kwargs['media_info']), fill=(255, 255, 255))
-        img_draw.text((10, 0), text, fill=(255, 255, 255), font=font)
-
-        text_img = text_img.rotate(90, expand=False)
-
-        bg.paste(text_img, (448, 0))
+        # text_img = Image.new(mode='RGB', size=(448, 448), color=(0, 0, 0))
+        # img_draw = ImageDraw.Draw(text_img)
+        #
+        # font_path = PIMORONI_FONT
+        # font = ImageFont.truetype(font_path, font_size_override or FONT_SIZE)
+        # # font.set_variation_by_name('Bold')
+        # # print(kwargs['media_info'])
+        # # img_draw.text((10, 5), self.wrap_text(kwargs['media_info']['filename']), fill=(255, 255, 255, 255))
+        # # img_draw.text((10, 5), self.get_text(kwargs['media_info']), fill=(255, 255, 255))
+        # img_draw.text((10, 0), text, fill=(255, 255, 255), font=font)
+        #
+        # text_img = text_img.rotate(90, expand=False)
+        #
+        # bg.paste(text_img, (448, 0))
 
         bg.paste(cover, offset)
 
