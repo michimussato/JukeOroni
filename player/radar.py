@@ -30,7 +30,7 @@ class Radar(object):
     def __init__(self, size_factor=1.0):
         super().__init__()
 
-        self.radar_image = Image.open(self.DEFAULT_IMAGE)
+        self.radar_image = Image.open(self.DEFAULT_IMAGE).rotate(90, expand=True)
         self.size_factor = size_factor
         self.radar_thread = _RadarThread(target=self._radar_task)
 
