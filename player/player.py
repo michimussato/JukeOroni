@@ -611,7 +611,7 @@ class Player(object):
         # self.pimoroni.set_image(image_resized, saturation=self.PIMORONI_SATURATION)
         # self.pimoroni.show()
 
-        bg = Image.new(mode='RGBA', size=(600, 448), color=(0, 0, 0, 255))
+        bg = Image.new(mode='RGB', size=(600, 448), color=(0, 0, 0))
         # bg_w, bg_h = bg.size
         try:
             cover = Image.open(cover, 'r')
