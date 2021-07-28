@@ -4,7 +4,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 def clock(draw_logo, draw_date, size=448, hours=12):
 
-
+    assert hours in [12, 24], 'hours can only be 12 or 24'
 
     bg = Image.new(mode='RGB', size=(size, size), color=(0, 0, 0))
     image = Image.new(mode='RGB', size=(size, size), color=(0, 0, 0))
@@ -13,7 +13,10 @@ def clock(draw_logo, draw_date, size=448, hours=12):
     # draw.line([(448/2, 448/2), (448/2, 448/3)], fill=(0, 0, 0), width=12, joint=None)  # stundenzeiger x600/y448 ist unten rechts
     # draw.line([(448/2, 448/2), (448/2, 0)], fill=(0, 0, 0), width=7, joint=None)  # minutenzeiger x0/y0 ist oben links
 
-    arc_twelve = 270.0
+    if hours == 24:
+        arc_twelve = 90.0
+    else:
+        arc_twelve = 270.0
 
     white = (255, 255, 255)
     black = (0, 0, 0)
@@ -33,14 +36,55 @@ def clock(draw_logo, draw_date, size=448, hours=12):
     ####
     # variante 2
     color = white
-    for interval in [0.0, 3.0, 29.0, 31.0, 59.0, 61.0, 87.0, 93.0, 119.0, 121.0, 149.0, 151.0, 177.0, 183.0, 209.0,
-                     211.0, 239.0, 241.0, 267.0, 273.0, 299.0, 301.0, 329.0, 331.0, 357.0][::-1]:
+
+    if hours == 24:
+        intervals = [0.0, 3.0,
+                     14.0, 16.0,
+                     29.0, 31.0,
+                     42.0, 48.0,
+                     59.0, 61.0,
+                     74.0, 76.0,
+                     87.0, 93.0,
+                     104.0, 106.0,
+                     119.0, 121.0,
+                     132.0, 138.0,
+                     149.0, 151.0,
+                     164.0, 166.0,
+                     177.0, 183.0,
+                     194.0, 196.0,
+                     209.0, 211.0,
+                     222.0, 228.0,
+                     239.0, 241.0,
+                     254.0, 256.0,
+                     267.0, 273.0,
+                     284.0, 286.0,
+                     299.0, 301.0,
+                     312.0, 318.0,
+                     329.0, 331.0,
+                     344.0, 346.0,
+                     357.0]
+    else:
+        intervals = [0.0, 3.0,
+                     29.0, 31.0,
+                     59.0, 61.0,
+                     87.0, 93.0,
+                     119.0, 121.0,
+                     149.0, 151.0,
+                     177.0, 183.0,
+                     209.0, 211.0,
+                     239.0, 241.0,
+                     267.0, 273.0,
+                     299.0, 301.0,
+                     329.0, 331.0,
+                     357.0]
+
+    for interval in intervals[::-1]:
         draw.arc([(round(size*0.022), round(size*0.022)), (round(size-size*0.022), round(size-size*0.022))], start=arc_twelve, end=(arc_twelve + interval) % 360, fill=color, width=round(size*0.060))
         color = toggle[color]
     ####
 
     decimal_h = float(datetime.datetime.now().strftime('%I')) + float(datetime.datetime.now().strftime('%M')) / 60
-    arc_length_h = decimal_h / 12.0 * 360.0
+    arc_length_h = decimal_h / hours * 360.0
 
     # decimal_m = float(datetime.datetime.now().strftime('%M')) / 60
     # arc_length_m = decimal_m * 360
@@ -78,12 +122,4 @@ def clock(draw_logo, draw_date, size=448, hours=12):
     bg.paste(image.rotate(90, expand=False))
     bg.paste(image)
 
-    # bg = bg.resize((448, 448), Image.ANTIALIAS)
-    # bg = bg.resize((round(bg.size[0] * factor), round(bg.size[1] * factor)))
-
     return bg
-
-    # inky.set_image(bg, saturation=1.0)
-    # inky.show()
-
-    # time.sleep(sleep_time)
