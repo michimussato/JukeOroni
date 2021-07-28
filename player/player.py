@@ -580,7 +580,7 @@ class Player(object):
 
     def task_pimoroni_set_image(self, **kwargs):
         if self.button_3_value != 'Next':
-            bg = standby()
+            bg = standby(labels=self.LABELS)
         else:
             if 'track' in kwargs:
                 # print(kwargs['track'])
