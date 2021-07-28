@@ -2,7 +2,7 @@ import datetime
 from PIL import Image, ImageDraw, ImageFont
 
 
-def clock(draw_logo, draw_date, size=448, hours=12):
+def clock(draw_logo, draw_date, size=448, hours=12, draw_astral=False):
 
     assert hours in [12, 24], 'hours can only be 12 or 24'
 
@@ -105,6 +105,31 @@ def clock(draw_logo, draw_date, size=448, hours=12):
     color = toggle[color]
     draw.arc(size_h, start=arc_twelve, end=(arc_twelve + arc_length_h - round(size*0.007)) % 360, fill=color,
              width=width)
+
+    if draw_astral:
+        from astral import LocationInfo
+        from astral.sun import sun
+
+        city = LocationInfo("Bern", "Switzerland", "Europe/Zurich", 46.94809, 7.44744)
+        _sun = sun(city.observer, date=datetime.date.today(), tzinfo=city.timezone)
+
+        decimal_sunrise = float(_sun["sunrise"].strftime('%I')) + float(_sun["sunrise"].strftime('%M')) / 60
+        arc_length_sunrise = decimal_sunrise / hours * 360.0
+
+        decimal_sunset = float(_sun["sunset"].strftime('%I')) + float(_sun["sunset"].strftime('%M')) / 60
+        arc_length_sunset = decimal_sunset / hours * 360.0
+
+        color = white
+        _size = 0.09
+        _width = 0.05
+        size_astral = [(round(size * _size), round(size * _size)), (round(size - size * _size), round(size - size * _size))]
+        width_astral = round(size * _width)
+        draw.arc(size_astral, start=arc_length_sunrise, end=arc_length_sunset, fill=color,
+                 width=width_astral)
+        # color = toggle[color]
+        # draw.arc(size_h, start=arc_twelve, end=(arc_twelve + arc_length_h - round(size * 0.007)) % 360, fill=color,
+        #          width=width)
+
     # color = toggle[color]
     if draw_logo:
         font = ImageFont.truetype(r'/data/django/jukeoroni/player/static/calligraphia-one.ttf', round(size*0.150))
@@ -119,7 +144,32 @@ def clock(draw_logo, draw_date, size=448, hours=12):
         length = font.getlength(text)
         draw.text((round(size/2) - length / 2, round(size*0.690)), text, fill=white, font=font)
 
+
+
     bg.paste(image.rotate(90, expand=False))
     bg.paste(image)
 
     return bg
+
+
+from astral import LocationInfo
+s = sun(city.observer, date=datetime.date.today(), tzinfo=city.timezone)
+# >>> print((
+#     f"Information for {city.name}/{city.region}\n"
+#     f"Timezone: {city.timezone}\n"
+#     f"Latitude: {city.latitude:.02f}; Longitude: {city.longitude:.02f}\n"
+# ))
+
+# Information for London/England
+# Timezone: Europe/London
+# Latitude: 51.50; Longitude: -0.12
+
+import datetime
+from astral.sun import sun
+s = sun(city.observer, date=datetime.date.today())
+
+s["dawn"]
+s["sunrise"]
+s["noon"]
+s["sunset"]
+s["dusk"]
