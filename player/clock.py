@@ -143,7 +143,7 @@ def clock(draw_logo, draw_date, size=448, hours=12, draw_astral=False):
     bg.paste(image.rotate(90, expand=False))
     bg.paste(image)
 
-    return bg
+    return bg.rotate(90, expand=False)
 
 
 # from astral import LocationInfo

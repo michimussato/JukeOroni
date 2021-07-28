@@ -13,7 +13,7 @@ def buttons_img_overlay(labels):
         labels[0],
     ), fill=(255, 255, 255))
 
-    return buttons_img
+    return buttons_img.rotate(90, expand=False)
 
 
 def standby(labels):
@@ -27,4 +27,4 @@ def standby(labels):
     bg.paste(_clock, (0, 0))
     bg.paste(buttons_overlay, (0, 0))
 
-    return bg.rotate(90, expand=True)
+    return bg.rotate(90, expand=False)
