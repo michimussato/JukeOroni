@@ -17,19 +17,24 @@ def buttons_img_overlay(labels):
 
 
 def standby(labels):
-    _clock = clock(size=200, draw_logo=True, draw_date=True, hours=24, draw_astral=True)
-    # print(_clock.size)
+    _clock = clock(size=400, draw_logo=True, draw_date=True, hours=24, draw_astral=True)
     _radar = Radar()
     _radar_image = _radar.image(scaled_by=0.45)
 
     buttons_overlay = buttons_img_overlay(labels)
     bg = Image.new(mode='RGB', size=(600, 448), color=(0, 0, 0))
 
-    _clock_center = round(bg.size[1]/2 - _clock.size[1]/2)
+    w, h = _clock.size
+    _clock_center = round(bg.size[1]/2 - h/2)
     _clock_right = 0
-    _clock_left = bg.size[1] - _clock.size[1]
-
+    _clock_left = bg.size[1] - h
     bg.paste(_clock, (buttons_overlay.size[0], _clock_center))
+
+    w, h = _radar_image.size
+    border = 4
+    _radar_bottom_right = (int(600-w-border), border)
+    bg.paste(_radar_image)
+
     bg.paste(buttons_overlay, (0, 0))
 
     return bg
