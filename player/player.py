@@ -18,7 +18,7 @@ from .models import Track as DjangoTrack
 from .models import Artist
 from .models import Album
 from .clock import clock
-from .radar import Radar
+# from .radar import Radar
 from .displays import standby
 
 
@@ -165,7 +165,7 @@ class Player(object):
         self.sequential = False
         self._quit = False
         self.pimoroni = Inky()
-        self.radar = Radar()
+        # self.radar = Radar()
         self.pimoroni.set_border('BLACK')
 
         self.current_time = None
