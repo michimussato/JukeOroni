@@ -24,7 +24,8 @@ class _RadarThread(threading.Thread):
 
 class Radar(object):
     RADAR_UPDATE_INTERVAL = 5  # in minutes
-    URL = 'https://meteo.search.ch/prognosis'
+    URL = r'https://meteo.search.ch/prognosis'
+    DEFAULT_IMAGE = r'/data/django/jukeoroni/player/static/no-interent-connection.png'
 
     def __init__(self, size_factor=1.0):
         super().__init__()
@@ -32,13 +33,17 @@ class Radar(object):
         self.radar_image = None
         self.size_factor = size_factor
         self.radar_thread = _RadarThread(target=self._radar_task)
+        self.default_image = Image.open(self.DEFAULT_IMAGE)
 
     def start(self):
         self.radar_thread.start()
 
-    @property
-    def image(self):
-        return self.radar_image
+    def image(self, scaled_by=1.0):
+        ret = self.radar_image.resize(
+            int(self.size[0] * scaled_by),
+            int(self.size[1] * scaled_by)
+        )
+        return ret
 
     @property
     def size(self):
@@ -76,8 +81,6 @@ class Radar(object):
             botton = height - top
             im = im.crop((left, top, right, botton))
 
-            im = im.resize((int(im.size[0] * self.size_factor), int(im.size[1] * self.size_factor)))
-
             # TODO: round edges... will come later again
             # bg = Image.new(mode='RGB', size=im.size, color=(0, 0, 0))
             # mask = Image.new("L", im.size, 0)
@@ -86,6 +89,6 @@ class Radar(object):
             # im = Image.composite(im, bg, mask)
         except Exception as err:
             print(err)
-            im = None
+            im = self.default_image
 
         return im

@@ -672,10 +672,10 @@ class Player(object):
         bg.paste(cover, offset)
 
         if self.button_3_value != 'Next':
-            if self.radar.image is not None:
-                width, height = self.radar.size
-                # bg.paste(radar, (int(600-width-4), int(228-height/2)))
-                bg.paste(self.radar.image, (int(600-width-4), 4))
+            radar_image = self.radar.image(scaled_by=0.45)
+            width, height = radar_image.size
+            # bg.paste(radar, (int(600-width-4), int(228-height/2)))
+            bg.paste(radar_image, (int(600-width-4), 4))
 
         self.pimoroni.set_image(bg, saturation=PIMORONI_SATURATION)
         self.pimoroni.show(busy_wait=False)
