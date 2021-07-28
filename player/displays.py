@@ -1,6 +1,6 @@
 from PIL import Image, ImageDraw
 from .clock import clock
-from .radar import radar_screenshot
+from .radar import Radar
 
 
 def buttons_img_overlay(labels):
@@ -18,7 +18,8 @@ def buttons_img_overlay(labels):
 
 def standby(labels):
     _clock = clock(draw_logo=True, draw_date=True, hours=24, draw_astral=True)
-    _radar_screenshot = radar_screenshot(factor=0.45).rotate(90, expand=True)
+    _radar = Radar()
+    _radar_image = _radar.image(scaled_by=0.45)
 
     buttons_overlay = buttons_img_overlay(labels)
     bg = Image.new(mode='RGB', size=(600, 448), color=(0, 0, 0))

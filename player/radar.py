@@ -24,11 +24,11 @@ class Radar(object):
     URL = r'https://meteo.search.ch/prognosis'
     DEFAULT_IMAGE = r'/data/django/jukeoroni/player/static/no-interent-connection.png'
 
-    def __init__(self, size_factor=1.0):
+    def __init__(self):
         super().__init__()
 
         self.radar_image = Image.open(self.DEFAULT_IMAGE).rotate(90, expand=True)
-        self.size_factor = size_factor
+        # self.size_factor = size_factor
         self.radar_thread = _RadarThread(target=self._radar_task)
 
     def start(self):
