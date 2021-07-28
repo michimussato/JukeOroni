@@ -120,14 +120,14 @@ def clock(draw_logo, draw_date, size=448, hours=12, draw_astral=False):
         decimal_sunset = float(_sun["sunset"].strftime('%H')) + float(_sun["sunset"].strftime('%M')) / 60
         arc_length_sunset = decimal_sunset / hours * 360.0
 
-        color = (128, 128, 128)
+        color = (255, 128, 0)
         _size = 0.05
         _width = 0.05
         size_astral = [(round(size * _size), round(size * _size)), (round(size - size * _size), round(size - size * _size))]
         width_astral = round(size * _width)
         print(arc_length_sunrise)
         print(arc_length_sunset)
-        draw.arc(size_astral, start=arc_length_sunrise-arc_twelve, end=arc_length_sunset-arc_twelve, fill=color,
+        draw.arc(size_astral, start=arc_length_sunrise+90, end=arc_length_sunset+90, fill=color,
                  width=width_astral)
         # color = toggle[color]
         # draw.arc(size_h, start=arc_twelve, end=(arc_twelve + arc_length_h - round(size * 0.007)) % 360, fill=color,
