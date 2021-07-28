@@ -165,9 +165,11 @@ class Player(object):
         self._quit = False
         self.pimoroni = Inky()
         self.pimoroni.set_border('BLACK')
+        self.radar_image = None
 
         self.current_time = None
 
+        self._radar_thread = None
         self._pimoroni_thread = None
         self._playback_thread = None
         self._buttons_watcher_thread = None
@@ -249,6 +251,22 @@ class Player(object):
         if current_label == self.button_4_value:
             return
     ############################################
+
+    ############################################
+    # radar
+    def radar_thread(self, **kwargs):
+        self._radar_thread = threading.Thread(target=self.radar_task, kwargs=kwargs)
+        self._radar_thread.name = 'Radar Thread'
+        self._radar_thread.daemon = False
+        self._radar_thread.start()
+
+    def radar_task(self, **kwargs):
+        while True and not self._quit:
+            print('Updating radar image in background...')
+            radar = radar_screenshot(factor=kwargs['factor'])
+            self.radar_image = radar.rotate(90, expand=True)
+            print('Radar image updated.')
+            time.sleep(1*60.0)
 
     ############################################
     # track list generator
@@ -670,11 +688,12 @@ class Player(object):
         bg.paste(cover, offset)
 
         if self.button_3_value != 'Next':
-            radar = radar_screenshot(factor=0.45)
-            radar = radar.rotate(90, expand=True)
-            width, height = radar.size
-            # bg.paste(radar, (int(600-width-4), int(228-height/2)))
-            bg.paste(radar, (int(600-width-4), 4))
+            if self.radar_image is not None:
+            # radar = radar_screenshot(factor=0.45)
+            # radar = radar.rotate(90, expand=True)
+                width, height = self.radar_image.size
+                # bg.paste(radar, (int(600-width-4), int(228-height/2)))
+                bg.paste(self.radar_image, (int(600-width-4), 4))
 
         self.pimoroni.set_image(bg, saturation=PIMORONI_SATURATION)
         self.pimoroni.show(busy_wait=False)
@@ -800,6 +819,7 @@ class Player(object):
 def player():
     p = Player(auto_update_tracklist=True)
     p.temp_cleanup()
+    p.radar_thread(factor=0.45)
     p.buttons_watcher_thread()
     p.state_watcher_thread()
     p.pimoroni_watcher_thread()
