@@ -81,9 +81,7 @@ def clock(draw_logo, draw_date, size=448, hours=12, draw_astral=False):
     for interval in intervals[::-1]:
         draw.arc([(round(size*0.022), round(size*0.022)), (round(size-size*0.022), round(size-size*0.022))], start=arc_twelve, end=(arc_twelve + interval) % 360, fill=color, width=round(size*0.060))
         color = toggle[color]
-    ####
 
-    # TODO: should this be %H ?
     decimal_h = float(datetime.datetime.now().strftime('%H')) + float(datetime.datetime.now().strftime('%M')) / 60
     arc_length_h = decimal_h / hours * 360.0
 
@@ -121,19 +119,15 @@ def clock(draw_logo, draw_date, size=448, hours=12, draw_astral=False):
         arc_length_sunset = decimal_sunset / hours * 360.0
 
         color = (255, 128, 0)
-        _size = 0.1
-        _width = 0.01
+        _size = 0.14
+        _width = 0.012
         size_astral = [(round(size * _size), round(size * _size)), (round(size - size * _size), round(size - size * _size))]
         width_astral = round(size * _width)
-        print(arc_length_sunrise)
-        print(arc_length_sunset)
+        # print(arc_length_sunrise)
+        # print(arc_length_sunset)
         draw.arc(size_astral, start=arc_length_sunrise+arc_twelve, end=arc_length_sunset+arc_twelve, fill=color,
                  width=width_astral)
-        # color = toggle[color]
-        # draw.arc(size_h, start=arc_twelve, end=(arc_twelve + arc_length_h - round(size * 0.007)) % 360, fill=color,
-        #          width=width)
 
-    # color = toggle[color]
     if draw_logo:
         font = ImageFont.truetype(r'/data/django/jukeoroni/player/static/calligraphia-one.ttf', round(size*0.150))
         text = "JukeOroni"
