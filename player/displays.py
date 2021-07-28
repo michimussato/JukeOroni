@@ -25,7 +25,7 @@ def standby(labels):
     buttons_overlay = buttons_img_overlay(labels)
     bg = Image.new(mode='RGB', size=(600, 448), color=(0, 0, 0))
 
-    _clock_center = bg.size[1]/2 - - _clock.size[1]/2
+    _clock_center = round(bg.size[1]/2 - _clock.size[1]/2)
     _clock_right = 0
     _clock_left = bg.size[1] - _clock.size[1]
 
