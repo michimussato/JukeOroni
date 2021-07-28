@@ -120,9 +120,9 @@ def clock(draw_logo, draw_date, size=448, hours=12, draw_astral=False):
         decimal_sunset = float(_sun["sunset"].strftime('%H')) + float(_sun["sunset"].strftime('%M')) / 60
         arc_length_sunset = decimal_sunset / hours * 360.0
 
-        color = white
-        _size = 0.5
-        _width = 0.1
+        color = (128, 128, 128)
+        _size = 0.05
+        _width = 0.05
         size_astral = [(round(size * _size), round(size * _size)), (round(size - size * _size), round(size - size * _size))]
         width_astral = round(size * _width)
         print(arc_length_sunrise)
