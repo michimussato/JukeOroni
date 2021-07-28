@@ -40,8 +40,8 @@ class Radar(object):
 
     def image(self, scaled_by=1.0):
         ret = self.radar_image.resize(
-            int(self.size[0] * scaled_by),
-            int(self.size[1] * scaled_by)
+            (int(self.size[0] * scaled_by),
+             int(self.size[1] * scaled_by))
         )
         return ret
 
