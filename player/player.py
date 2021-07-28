@@ -18,7 +18,7 @@ from .models import Track as DjangoTrack
 from .models import Artist
 from .models import Album
 from .clock import clock
-from .radar import radar_screenshot
+from .radar import Radar
 
 
 LOG = logging.getLogger(__name__)
@@ -38,7 +38,6 @@ STANDARD_COVER = '/data/django/jukeoroni/player/static/cover_std.png'
 PIMORONI_FONT = '/data/django/jukeoroni/player/static/gotham-black.ttf'
 DEFAULT_TRACKLIST_REGEN_INTERVAL = 12  # in hours
 CLOCK_UPDATE_INTERVAL = 5  # in minutes
-RADAR_UPDATE_INTERVAL = 5  # in minutes
 
 # buttons setup
 BUTTONS = [5, 6, 16, 24]
@@ -165,12 +164,11 @@ class Player(object):
         self.sequential = False
         self._quit = False
         self.pimoroni = Inky()
+        self.radar = Radar()
         self.pimoroni.set_border('BLACK')
-        self.radar_image = None
 
         self.current_time = None
 
-        self._radar_thread = None
         self._pimoroni_thread = None
         self._playback_thread = None
         self._buttons_watcher_thread = None
@@ -252,22 +250,6 @@ class Player(object):
         if current_label == self.button_4_value:
             return
     ############################################
-
-    ############################################
-    # radar
-    def radar_thread(self, **kwargs):
-        self._radar_thread = threading.Thread(target=self.radar_task, kwargs=kwargs)
-        self._radar_thread.name = 'Radar Thread'
-        self._radar_thread.daemon = False
-        self._radar_thread.start()
-
-    def radar_task(self, **kwargs):
-        while True and not self._quit:
-            print('Updating radar image in background...')
-            radar = radar_screenshot(factor=kwargs['factor'])
-            self.radar_image = radar.rotate(90, expand=True)
-            print('Radar image updated.')
-            time.sleep(RADAR_UPDATE_INTERVAL*60.0)
 
     ############################################
     # track list generator
@@ -500,6 +482,7 @@ class Player(object):
             elif self.current_time != new_time.strftime('%H:%M'):  # in stopped state
                 if self.current_time is None or (int(new_time.strftime('%H:%M')[-2:])) % CLOCK_UPDATE_INTERVAL == 0:
                     self.set_image(image_file=clock(draw_logo=True, draw_date=True, hours=24, draw_astral=True))
+                    # set_display(standby)
                     self.current_time = new_time.strftime('%H:%M')
 
             time.sleep(1.0)
@@ -689,12 +672,10 @@ class Player(object):
         bg.paste(cover, offset)
 
         if self.button_3_value != 'Next':
-            if self.radar_image is not None:
-            # radar = radar_screenshot(factor=0.45)
-            # radar = radar.rotate(90, expand=True)
-                width, height = self.radar_image.size
+            if self.radar.image is not None:
+                width, height = self.radar.size
                 # bg.paste(radar, (int(600-width-4), int(228-height/2)))
-                bg.paste(self.radar_image, (int(600-width-4), 4))
+                bg.paste(self.radar.image, (int(600-width-4), 4))
 
         self.pimoroni.set_image(bg, saturation=PIMORONI_SATURATION)
         self.pimoroni.show(busy_wait=False)
@@ -820,7 +801,7 @@ class Player(object):
 def player():
     p = Player(auto_update_tracklist=True)
     p.temp_cleanup()
-    p.radar_thread(factor=0.45)
+    # p.radar_thread(factor=0.45)
     p.buttons_watcher_thread()
     p.state_watcher_thread()
     p.pimoroni_watcher_thread()

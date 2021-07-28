@@ -1,5 +1,6 @@
 import os
 import time
+import threading
 import tempfile
 from io import BytesIO
 from PIL import Image, ImageDraw
@@ -13,39 +14,78 @@ from selenium.webdriver.support.ui import WebDriverWait
 URL = 'https://meteo.search.ch/prognosis'
 
 
-def radar_screenshot(factor=1.0):
-    try:
-        options = selenium.webdriver.firefox.options.Options()
-        options.headless = True
-        service_log_path = os.path.join(tempfile.gettempdir(), 'geckodriver.log')
-        with selenium.webdriver.Firefox(options=options, service_log_path=service_log_path) as driver:
-            print(f'Opening {URL}')
-            driver.get(URL)
-            time.sleep(2.0)
-            # WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.ID, "onetrust-accept-btn-handler"))).click()
-            WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, "//*[@id=\"onetrust-accept-btn-handler\"]"))).click()
-            driver.refresh()
-            time.sleep(5.0)
-            # root = driver.find_element(By.ID, "mapcontainer")
-            root = driver.find_element(By.XPATH, "//*[@id=\"mapcontainer\"]")
-            png = root.screenshot_as_png
-        im = Image.open(BytesIO(png))
-        width, height = im.size
-        left = 140
-        top = 100
-        right = width - left
-        botton = height - top
-        im = im.crop((left, top, right, botton))
+class _RadarThread(threading.Thread):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.name = 'Radar Thread'
+        self.daemon = False
+        self.start()
 
-        im = im.resize((int(im.size[0] * factor), int(im.size[1] * factor)))
 
-        bg = Image.new(mode='RGB', size=im.size, color=(0, 0, 0))
-        mask = Image.new("L", im.size, 0)
-        draw = ImageDraw.Draw(mask)
-        draw.rounded_rectangle([(0, 0), im.size], 15, fill=255)
-        im = Image.composite(im, bg, mask)
-    except Exception as err:
-        print(err)
-        im = None
+class Radar(object):
+    RADAR_UPDATE_INTERVAL = 5  # in minutes
+    URL = 'https://meteo.search.ch/prognosis'
 
-    return im
+    def __init__(self, size_factor=1.0):
+        super().__init__()
+
+        self.radar_image = None
+        self.size_factor = size_factor
+        self.radar_thread = _RadarThread(target=self._radar_task)
+
+    def start(self):
+        self.radar_thread.start()
+
+    @property
+    def image(self):
+        return self.radar_image
+
+    @property
+    def size(self):
+        return self.radar_image.size
+
+    def _radar_task(self):
+        while True:
+            print('Updating radar image in background...')
+            radar = self._radar_screenshot()
+            self.radar_image = radar.rotate(90, expand=True)
+            print('Radar image updated.')
+            time.sleep(self.RADAR_UPDATE_INTERVAL*60.0)
+
+    def _radar_screenshot(self):
+        try:
+            options = selenium.webdriver.firefox.options.Options()
+            options.headless = True
+            service_log_path = os.path.join(tempfile.gettempdir(), 'geckodriver.log')
+            with selenium.webdriver.Firefox(options=options, service_log_path=service_log_path) as driver:
+                print(f'Opening {self.URL}')
+                driver.get(self.URL)
+                time.sleep(2.0)
+                # WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.ID, "onetrust-accept-btn-handler"))).click()
+                WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, "//*[@id=\"onetrust-accept-btn-handler\"]"))).click()
+                driver.refresh()
+                time.sleep(5.0)
+                # root = driver.find_element(By.ID, "mapcontainer")
+                root = driver.find_element(By.XPATH, "//*[@id=\"mapcontainer\"]")
+                png = root.screenshot_as_png
+            im = Image.open(BytesIO(png))
+            width, height = im.size
+            left = 140
+            top = 100
+            right = width - left
+            botton = height - top
+            im = im.crop((left, top, right, botton))
+
+            im = im.resize((int(im.size[0] * self.size_factor), int(im.size[1] * self.size_factor)))
+
+            # TODO: round edges... will come later again
+            # bg = Image.new(mode='RGB', size=im.size, color=(0, 0, 0))
+            # mask = Image.new("L", im.size, 0)
+            # draw = ImageDraw.Draw(mask)
+            # draw.rounded_rectangle([(0, 0), im.size], 15, fill=255)
+            # im = Image.composite(im, bg, mask)
+        except Exception as err:
+            print(err)
+            im = None
+
+        return im
