@@ -30,10 +30,10 @@ class Radar(object):
     def __init__(self, size_factor=1.0):
         super().__init__()
 
-        self.radar_image = None
+        self.radar_image = Image.open(self.DEFAULT_IMAGE)
         self.size_factor = size_factor
         self.radar_thread = _RadarThread(target=self._radar_task)
-        self.default_image = Image.open(self.DEFAULT_IMAGE)
+        # self.default_image = Image.open(self.DEFAULT_IMAGE)
 
     def start(self):
         self.radar_thread.start()
@@ -89,6 +89,6 @@ class Radar(object):
             # im = Image.composite(im, bg, mask)
         except Exception as err:
             print(err)
-            im = self.default_image
+            im = self.radar_image = Image.open(self.DEFAULT_IMAGE)
 
         return im
