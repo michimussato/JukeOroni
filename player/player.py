@@ -19,6 +19,7 @@ from .models import Artist
 from .models import Album
 from .clock import clock
 from .radar import Radar
+from .displays import standby
 
 
 LOG = logging.getLogger(__name__)
@@ -481,7 +482,7 @@ class Player(object):
 
             elif self.current_time != new_time.strftime('%H:%M'):  # in stopped state
                 if self.current_time is None or (int(new_time.strftime('%H:%M')[-2:])) % CLOCK_UPDATE_INTERVAL == 0:
-                    self.set_image(image_file=clock(draw_logo=True, draw_date=True, hours=24, draw_astral=True))
+                    self.init_screen()
                     # set_display(standby)
                     self.current_time = new_time.strftime('%H:%M')
 
@@ -578,109 +579,112 @@ class Player(object):
         sys.exit(0)
 
     def task_pimoroni_set_image(self, **kwargs):
-        if 'track' in kwargs:
-            # print(kwargs['track'])
-            cover = kwargs['track'].cover
-            if cover is None:
-                cover = STANDARD_COVER
-        elif 'image_file' in kwargs:
-            cover = kwargs['image_file']
-        else:
-            cover = STANDARD_COVER
-
-        font_size_override = False
-
-        # if 'track' in kwargs:
-        #     track = kwargs['track']
-        #     title = os.path.basename(track.path)
-        #     album = Album.objects.get(track=track.track)
-        #     artist = Artist.objects.get(album=album)
-        #     text = '{0}\n{1}\n{2}'.format(
-        #         title,
-        #         artist,
-        #         album
-        #     )
-        # elif 'message' in kwargs:
-        #     text = kwargs['message']
-        # else:
-        #     text = ''
-
-        # image = Image.open(kwargs['image_file'])
-        # image = image.rotate(90, expand=True)
-        # image_resized = image.resize(self.PIMORONI_SIZE, Image.ANTIALIAS)
-        # self.pimoroni.set_image(image_resized, saturation=self.PIMORONI_SATURATION)
-        # self.pimoroni.show()
-
-        bg = Image.new(mode='RGB', size=(600, 448), color=(0, 0, 0))
-        # bg_w, bg_h = bg.size
-        try:
-            cover = Image.open(cover, 'r')
-        except AttributeError as err:
-            print(err)
-            logging.exception(err)
-        w, h = cover.size
-        if w == h:
-            cover = cover.resize((448, 448), Image.ANTIALIAS)
-        elif w > h:
-            # TODO
-            cover = cover.resize((448, 448), Image.ANTIALIAS)
-        elif w < h:
-            # TODO
-            cover = cover.resize((448, 448), Image.ANTIALIAS)
-
-        # offset = ((bg_w - w) // 2, (bg_h - h) // 2)
-        # bg.paste(cover, offset)
-
-        offset = (0, 0)
-
-        # img_font = ImageFont.truetype(PIMORONI_FONT, 20)
-
-        # print(bg.size)
-        # bg = bg.rotate(90, expand=False)
-        # print(bg.size)
-
-        # img_draw.text
-
-        self.buttons_img_overlay(cover)
-
-        # self.LABELS
-
-        # buttons_img = Image.new(mode='RGB', size=(448, 12), color=(0, 0, 0))
-        # buttons_draw = ImageDraw.Draw(buttons_img)
-        # buttons_draw.text((0, 0), '       Quit               Play               Next               Stop', fill=(255, 255, 255))
-        # # buttons_img = buttons_img.rotate(90, expand=False)
-        # cover.paste(buttons_img, (0, 0))
-
-        cover = cover.rotate(90, expand=True)
-        # bg.paste(cover, offset)
-
-        # text_img = Image.new(mode='RGB', size=(448, 448), color=(0, 0, 0))
-        # img_draw = ImageDraw.Draw(text_img)
-        #
-        # font_path = PIMORONI_FONT
-        # font = ImageFont.truetype(font_path, font_size_override or FONT_SIZE)
-        # # font.set_variation_by_name('Bold')
-        # # print(kwargs['media_info'])
-        # # img_draw.text((10, 5), self.wrap_text(kwargs['media_info']['filename']), fill=(255, 255, 255, 255))
-        # # img_draw.text((10, 5), self.get_text(kwargs['media_info']), fill=(255, 255, 255))
-        # img_draw.text((10, 0), text, fill=(255, 255, 255), font=font)
-        #
-        # text_img = text_img.rotate(90, expand=False)
-        #
-        # bg.paste(text_img, (448, 0))
-
-        bg.paste(cover, offset)
-
         if self.button_3_value != 'Next':
-            radar_image = self.radar.image(scaled_by=0.45)
-            width, height = radar_image.size
-            bg.paste(radar_image, (int(600-width-4), 4))
+            bg = standby()
+        else:
+            if 'track' in kwargs:
+                # print(kwargs['track'])
+                cover = kwargs['track'].cover
+                if cover is None:
+                    cover = STANDARD_COVER
+            elif 'image_file' in kwargs:
+                cover = kwargs['image_file']
+            else:
+                cover = STANDARD_COVER
+
+            font_size_override = False
+
+            # if 'track' in kwargs:
+            #     track = kwargs['track']
+            #     title = os.path.basename(track.path)
+            #     album = Album.objects.get(track=track.track)
+            #     artist = Artist.objects.get(album=album)
+            #     text = '{0}\n{1}\n{2}'.format(
+            #         title,
+            #         artist,
+            #         album
+            #     )
+            # elif 'message' in kwargs:
+            #     text = kwargs['message']
+            # else:
+            #     text = ''
+
+            # image = Image.open(kwargs['image_file'])
+            # image = image.rotate(90, expand=True)
+            # image_resized = image.resize(self.PIMORONI_SIZE, Image.ANTIALIAS)
+            # self.pimoroni.set_image(image_resized, saturation=self.PIMORONI_SATURATION)
+            # self.pimoroni.show()
+
+            bg = Image.new(mode='RGB', size=(600, 448), color=(0, 0, 0))
+            # bg_w, bg_h = bg.size
+            try:
+                cover = Image.open(cover, 'r')
+            except AttributeError as err:
+                print(err)
+                logging.exception(err)
+            w, h = cover.size
+            if w == h:
+                cover = cover.resize((448, 448), Image.ANTIALIAS)
+            elif w > h:
+                # TODO
+                cover = cover.resize((448, 448), Image.ANTIALIAS)
+            elif w < h:
+                # TODO
+                cover = cover.resize((448, 448), Image.ANTIALIAS)
+
+            # offset = ((bg_w - w) // 2, (bg_h - h) // 2)
+            # bg.paste(cover, offset)
+
+            offset = (0, 0)
+
+            # img_font = ImageFont.truetype(PIMORONI_FONT, 20)
+
+            # print(bg.size)
+            # bg = bg.rotate(90, expand=False)
+            # print(bg.size)
+
+            # img_draw.text
+
+            self.buttons_img_overlay(cover)
+
+            # self.LABELS
+
+            # buttons_img = Image.new(mode='RGB', size=(448, 12), color=(0, 0, 0))
+            # buttons_draw = ImageDraw.Draw(buttons_img)
+            # buttons_draw.text((0, 0), '       Quit               Play               Next               Stop', fill=(255, 255, 255))
+            # # buttons_img = buttons_img.rotate(90, expand=False)
+            # cover.paste(buttons_img, (0, 0))
+
+            cover = cover.rotate(90, expand=True)
+            # bg.paste(cover, offset)
+
+            # text_img = Image.new(mode='RGB', size=(448, 448), color=(0, 0, 0))
+            # img_draw = ImageDraw.Draw(text_img)
+            #
+            # font_path = PIMORONI_FONT
+            # font = ImageFont.truetype(font_path, font_size_override or FONT_SIZE)
+            # # font.set_variation_by_name('Bold')
+            # # print(kwargs['media_info'])
+            # # img_draw.text((10, 5), self.wrap_text(kwargs['media_info']['filename']), fill=(255, 255, 255, 255))
+            # # img_draw.text((10, 5), self.get_text(kwargs['media_info']), fill=(255, 255, 255))
+            # img_draw.text((10, 0), text, fill=(255, 255, 255), font=font)
+            #
+            # text_img = text_img.rotate(90, expand=False)
+            #
+            # bg.paste(text_img, (448, 0))
+
+            bg.paste(cover, offset)
+
+        # if self.button_3_value != 'Next':
+        #     radar_image = self.radar.image(scaled_by=0.45)
+        #     width, height = radar_image.size
+        #     bg.paste(radar_image, (int(600-width-4), 4))
 
         self.pimoroni.set_image(bg, saturation=PIMORONI_SATURATION)
         self.pimoroni.show(busy_wait=False)
 
     def init_screen(self):
-        self.set_image(image_file=clock(draw_logo=True, draw_date=True, hours=24, draw_astral=True))
+        self.set_image()
 
     def buttons_img_overlay(self, bg):
         buttons_img = Image.new(mode='RGB', size=(448, 12), color=(0, 0, 0))
