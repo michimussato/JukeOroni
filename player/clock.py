@@ -101,11 +101,11 @@ def clock(draw_logo, draw_date, size=448, hours=12, draw_astral=False):
     color = white
     size_h = [(round(size*0.112), round(size*0.112)), (round(size-size*0.112), round(size-size*0.112))]
     width = round(size*0.134)
-    draw.arc(size_h, start=arc_twelve, end=(arc_twelve + arc_length_h + round(size*0.007)) % 360, fill=color,
+    draw.arc(size_h, start=(arc_twelve + arc_length_h - round(size*0.007)) % 360, end=(arc_twelve + arc_length_h + round(size*0.007)) % 360, fill=color,
              width=width)
-    color = toggle[color]
-    draw.arc(size_h, start=arc_twelve, end=(arc_twelve + arc_length_h - round(size*0.007)) % 360, fill=color,
-             width=width)
+    # color = toggle[color]
+    # draw.arc(size_h, start=arc_twelve, end=(arc_twelve + arc_length_h - round(size*0.007)) % 360, fill=color,
+    #          width=width)
 
     if draw_astral:
         from astral import LocationInfo
