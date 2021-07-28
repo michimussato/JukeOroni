@@ -152,24 +152,24 @@ def clock(draw_logo, draw_date, size=448, hours=12, draw_astral=False):
     return bg
 
 
-from astral import LocationInfo
-s = sun(city.observer, date=datetime.date.today(), tzinfo=city.timezone)
-# >>> print((
-#     f"Information for {city.name}/{city.region}\n"
-#     f"Timezone: {city.timezone}\n"
-#     f"Latitude: {city.latitude:.02f}; Longitude: {city.longitude:.02f}\n"
-# ))
-
-# Information for London/England
-# Timezone: Europe/London
-# Latitude: 51.50; Longitude: -0.12
-
-import datetime
-from astral.sun import sun
-s = sun(city.observer, date=datetime.date.today())
-
-s["dawn"]
-s["sunrise"]
-s["noon"]
-s["sunset"]
-s["dusk"]
+# from astral import LocationInfo
+# s = sun(city.observer, date=datetime.date.today(), tzinfo=city.timezone)
+# # >>> print((
+# #     f"Information for {city.name}/{city.region}\n"
+# #     f"Timezone: {city.timezone}\n"
+# #     f"Latitude: {city.latitude:.02f}; Longitude: {city.longitude:.02f}\n"
+# # ))
+#
+# # Information for London/England
+# # Timezone: Europe/London
+# # Latitude: 51.50; Longitude: -0.12
+#
+# import datetime
+# from astral.sun import sun
+# s = sun(city.observer, date=datetime.date.today())
+#
+# s["dawn"]
+# s["sunrise"]
+# s["noon"]
+# s["sunset"]
+# s["dusk"]
