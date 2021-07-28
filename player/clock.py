@@ -138,8 +138,6 @@ def clock(draw_logo, draw_date, size=448, hours=12, draw_astral=False):
         length = font.getlength(text)
         draw.text((round(size/2) - length / 2, round(size*0.690)), text, fill=white, font=font)
 
-
-
     bg.paste(image.rotate(90, expand=False))
     bg.paste(image)
 

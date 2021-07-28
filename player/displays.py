@@ -13,7 +13,7 @@ def buttons_img_overlay(labels):
         labels[0],
     ), fill=(255, 255, 255))
 
-    return buttons_img.rotate(90, expand=False)
+    return buttons_img  #.rotate(90, expand=False)
 
 
 def standby(labels):
