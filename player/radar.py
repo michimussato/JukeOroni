@@ -33,7 +33,6 @@ class Radar(object):
         self.radar_image = Image.open(self.DEFAULT_IMAGE)
         self.size_factor = size_factor
         self.radar_thread = _RadarThread(target=self._radar_task)
-        # self.default_image = Image.open(self.DEFAULT_IMAGE)
 
     def start(self):
         self.radar_thread.start()
@@ -52,8 +51,7 @@ class Radar(object):
     def _radar_task(self):
         while True:
             print('Updating radar image in background...')
-            radar = self._radar_screenshot()
-            self.radar_image = radar.rotate(90, expand=True)
+            self.radar_image = self._radar_screenshot()
             print('Radar image updated.')
             time.sleep(self.RADAR_UPDATE_INTERVAL*60.0)
 
@@ -91,4 +89,4 @@ class Radar(object):
             print(err)
             im = self.radar_image = Image.open(self.DEFAULT_IMAGE)
 
-        return im
+        return im.rotate(90, expand=True)
