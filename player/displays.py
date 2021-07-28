@@ -27,4 +27,4 @@ def standby(labels):
     bg.paste(_clock, (0, 0))
     bg.paste(buttons_overlay, (0, 0))
 
-    return bg
+    return bg.rotate(90, expand=False)
