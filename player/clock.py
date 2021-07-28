@@ -113,14 +113,14 @@ def clock(draw_logo, draw_date, size=448, hours=12, draw_astral=False):
         city = LocationInfo("Bern", "Switzerland", "Europe/Zurich", 46.94809, 7.44744)
         _sun = sun(city.observer, date=datetime.date.today(), tzinfo=city.timezone)
 
-        decimal_sunrise = float(_sun["sunrise"].strftime('%I')) + float(_sun["sunrise"].strftime('%M')) / 60
+        decimal_sunrise = float(_sun["sunrise"].strftime('%H')) + float(_sun["sunrise"].strftime('%M')) / 60
         arc_length_sunrise = decimal_sunrise / hours * 360.0
 
-        decimal_sunset = float(_sun["sunset"].strftime('%I')) + float(_sun["sunset"].strftime('%M')) / 60
+        decimal_sunset = float(_sun["sunset"].strftime('%H')) + float(_sun["sunset"].strftime('%M')) / 60
         arc_length_sunset = decimal_sunset / hours * 360.0
 
         color = (128, 128, 128)
-        _size = 0.05
+        _size = 0.5
         _width = 0.05
         size_astral = [(round(size * _size), round(size * _size)), (round(size - size * _size), round(size - size * _size))]
         width_astral = round(size * _width)
