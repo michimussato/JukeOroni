@@ -13,7 +13,6 @@ def buttons_img_overlay(labels):
         labels[0],
     ), fill=(255, 255, 255))
 
-
     buttons_img = buttons_img.rotate(90, expand=True)
     print(buttons_img.size)
     return buttons_img
@@ -21,13 +20,14 @@ def buttons_img_overlay(labels):
 
 def standby(labels):
     _clock = clock(draw_logo=True, draw_date=True, hours=24, draw_astral=True)
+    print(_clock.size)
     _radar = Radar()
     _radar_image = _radar.image(scaled_by=0.45)
 
     buttons_overlay = buttons_img_overlay(labels)
     bg = Image.new(mode='RGB', size=(600, 448), color=(0, 0, 0))
 
-    bg.paste(_clock, (0, 0))
+    bg.paste(_clock, (buttons_overlay.size[0], 0))
     bg.paste(buttons_overlay, (0, 0))
 
     return bg
