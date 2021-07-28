@@ -802,11 +802,11 @@ class Player(object):
 
 def player():
     p = Player(auto_update_tracklist=True)
-    # p.temp_cleanup()
-    # # p.radar_thread(factor=0.45)
-    # p.buttons_watcher_thread()
+    p.temp_cleanup()
+    # p.radar_thread(factor=0.45)
+    p.buttons_watcher_thread()
     p.state_watcher_thread()
-    # p.pimoroni_watcher_thread()
+    p.pimoroni_watcher_thread()
     p.init_screen()
     # p.track_list_generator_thread(auto_update_tracklist_interval=DEFAULT_TRACKLIST_REGEN_INTERVAL / 4)  # effect only if auto_update_tracklist=True
     # p.track_loader_thread()

@@ -14,7 +14,7 @@ def buttons_img_overlay(labels):
     ), fill=(255, 255, 255))
 
 
-    buttons_img = buttons_img.rotate(90, expand=False)
+    buttons_img = buttons_img.rotate(90, expand=True)
     print(buttons_img.size)
     return buttons_img
 
