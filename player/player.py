@@ -36,8 +36,9 @@ SLEEP_IMAGE = '/data/django/jukeoroni/player/static/zzz.jpg'
 LOADING_IMAGE = '/data/django/jukeoroni/player/static/loading.jpg'
 STANDARD_COVER = '/data/django/jukeoroni/player/static/cover_std.png'
 PIMORONI_FONT = '/data/django/jukeoroni/player/static/gotham-black.ttf'
-DEFAULT_TRACKLIST_REGEN_INTERVAL = 43200
+DEFAULT_TRACKLIST_REGEN_INTERVAL = 12  # in hours
 CLOCK_UPDATE_INTERVAL = 5  # in minutes
+RADAR_UPDATE_INTERVAL = 5  # in minutes
 
 # buttons setup
 BUTTONS = [5, 6, 16, 24]
@@ -266,7 +267,7 @@ class Player(object):
             radar = radar_screenshot(factor=kwargs['factor'])
             self.radar_image = radar.rotate(90, expand=True)
             print('Radar image updated.')
-            time.sleep(1*60.0)
+            time.sleep(RADAR_UPDATE_INTERVAL*60.0)
 
     ############################################
     # track list generator
@@ -282,7 +283,7 @@ class Player(object):
 
                 self.create_update_track_list()
 
-            time.sleep(kwargs.get('auto_update_tracklist_interval') or DEFAULT_TRACKLIST_REGEN_INTERVAL)  # is 12 hours
+            time.sleep(kwargs.get('auto_update_tracklist_interval') or DEFAULT_TRACKLIST_REGEN_INTERVAL/3600)  # is 12 hours
 
     @staticmethod
     def create_update_track_list():
