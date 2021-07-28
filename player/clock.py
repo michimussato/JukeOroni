@@ -84,7 +84,7 @@ def clock(draw_logo, draw_date, size=448, hours=12, draw_astral=False):
     ####
 
     # TODO: should this be %H ?
-    decimal_h = float(datetime.datetime.now().strftime('%I')) + float(datetime.datetime.now().strftime('%M')) / 60
+    decimal_h = float(datetime.datetime.now().strftime('%H')) + float(datetime.datetime.now().strftime('%M')) / 60
     arc_length_h = decimal_h / hours * 360.0
 
     # decimal_m = float(datetime.datetime.now().strftime('%M')) / 60
