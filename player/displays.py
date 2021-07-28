@@ -24,7 +24,7 @@ def standby(labels):
     buttons_overlay = buttons_img_overlay(labels)
     bg = Image.new(mode='RGB', size=(600, 448), color=(0, 0, 0))
 
-    bg.paste(_clock, (0, 0))
+    #bg.paste(_clock, (0, 0))
     bg.paste(buttons_overlay, (12, 0))
 
     return bg
