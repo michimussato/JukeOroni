@@ -124,6 +124,8 @@ def clock(draw_logo, draw_date, size=448, hours=12, draw_astral=False):
         _width = 0.05
         size_astral = [(round(size * _size), round(size * _size)), (round(size - size * _size), round(size - size * _size))]
         width_astral = round(size * _width)
+        print(arc_length_sunrise)
+        print(arc_length_sunset)
         draw.arc(size_astral, start=arc_length_sunrise, end=arc_length_sunset, fill=color,
                  width=width_astral)
         # color = toggle[color]
