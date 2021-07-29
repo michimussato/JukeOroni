@@ -65,7 +65,7 @@ class Standby(Layout):
         _clock_center = round(bg.size[1]/2 - clock_size/2)
         # _clock_right = 0
         # _clock_left = bg.size[1] - clock_size
-        bg.paste(_clock, (buttons_overlay.size[0], _clock_center))
+        bg.paste(_clock, (buttons_overlay.size[0] + self.border, _clock_center))
 
         _radar_image = self._radar.radar_image
 
@@ -109,7 +109,7 @@ class Player(Layout):
 
         if _radar_image is not None:
             _radar_image = round_resize(img=_radar_image, corner=40, scaled_by=0.45)
-            print(_radar_image.size)
+            # print(_radar_image.size) yields (151, 205) for now
             w, h = _radar_image.size
             border = 4
             _radar_bottom_right = (int(600 - w - border), border)
