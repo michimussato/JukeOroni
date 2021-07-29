@@ -34,10 +34,11 @@ class Standby:
         _clock_left = bg.size[1] - h
         bg.paste(self._clock, (buttons_overlay.size[0], _clock_center))
 
-        w, h = self._radar_image.size
-        border = 4
-        _radar_bottom_right = (int(600-w-border), border)
-        bg.paste(self._radar_image, _radar_bottom_right)
+        if self._radar_image is not None:
+            w, h = self._radar_image.size
+            border = 4
+            _radar_bottom_right = (int(600-w-border), border)
+            bg.paste(self._radar_image, _radar_bottom_right)
 
         bg.paste(buttons_overlay, (0, 0))
 
