@@ -35,9 +35,11 @@ class Clock:
 
             decimal_sunrise = float(_sun["sunrise"].strftime('%H')) + float(_sun["sunrise"].strftime('%M')) / 60
             arc_length_sunrise = decimal_sunrise / hours * 360.0
+            print('sunrise: {0}'.format(_sun["sunrise"].strftime('%H:%M')))
 
             decimal_sunset = float(_sun["sunset"].strftime('%H')) + float(_sun["sunset"].strftime('%M')) / 60
             arc_length_sunset = decimal_sunset / hours * 360.0
+            print('sunset: {0}'.format(_sun["sunset"].strftime('%H:%M')))
 
             color = (255, 128, 0)
             _size_astral = 0.17  # TODO: bigger means smaller circle
