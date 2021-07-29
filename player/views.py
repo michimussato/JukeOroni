@@ -39,9 +39,9 @@ def radio_index(request):
             if output != '':
                 pid = subprocess.Popen(['pidof mplayer'], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                 pid_output = pid.communicate()[0].decode('utf-8').replace('\n', '')
-                ret += f'        <button style=\"width:100%; background-color:green; \" onclick=\"window.location.href = \'radio/stop/{pid_output}\';\">{channel.display_name}</button>\n'  # , channel.display_name)
+                ret += f'        <button style=\"width:100%; background-color:green; \" onclick=\"window.location.href = \'stop/{pid_output}\';\">{channel.display_name}</button>\n'  # , channel.display_name)
             else:
-                ret += f'        <button style=\"width:100%\" onclick=\"window.location.href = \'radio/{channel.display_name_short}/play\';\">{channel.display_name}</button>\n'
+                ret += f'        <button style=\"width:100%\" onclick=\"window.location.href = \'{channel.display_name_short}/play\';\">{channel.display_name}</button>\n'
     ret += '  </body>\n'
     ret += '</html>\n'
     return HttpResponse(ret)
