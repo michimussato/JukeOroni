@@ -118,3 +118,10 @@ class Player(Layout):
         bg.paste(buttons_overlay, (0, 0))
 
         return bg
+
+
+# TODO
+class Radio(Layout):
+
+    def get_layout(self, labels, cover):
+        pass
