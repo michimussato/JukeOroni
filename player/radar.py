@@ -32,6 +32,16 @@ class Radar(object):
         # self.size_factor = size_factor
         self.radar_thread = _RadarThread(target=self._radar_task)
 
+    @staticmethod
+    def rounded(img):
+        # TODO: round edges... will come later again
+        bg = Image.new(mode='RGB', size=img.size, color=(0, 0, 0))
+        mask = Image.new("L", img.size, 0)
+        draw = ImageDraw.Draw(mask)
+        draw.rounded_rectangle([(0, 0), img.size], 15, fill=255)
+        img = Image.composite(img, bg, mask)
+        return img
+
     def start(self):
         self.radar_thread.start()
 
@@ -78,14 +88,8 @@ class Radar(object):
             im = im.crop((left, top, right, botton))
             # will result in size (456, 336) for now
 
-            # TODO: round edges... will come later again
-            # bg = Image.new(mode='RGB', size=im.size, color=(0, 0, 0))
-            # mask = Image.new("L", im.size, 0)
-            # draw = ImageDraw.Draw(mask)
-            # draw.rounded_rectangle([(0, 0), im.size], 15, fill=255)
-            # im = Image.composite(im, bg, mask)
         except Exception as err:
             print(err)
             im = self.radar_image = self.default_image
 
-        return im.rotate(90, expand=True)
+        return rounded(im.rotate(90, expand=True))
