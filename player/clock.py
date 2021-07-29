@@ -29,6 +29,24 @@ class Clock:
         black = (0, 0, 0)
         toggle = {white: black, black: white}
 
+        if draw_astral:
+            city = LocationInfo("Bern", "Switzerland", "Europe/Zurich", 46.94809, 7.44744)
+            _sun = sun(city.observer, date=datetime.date.today(), tzinfo=city.timezone)
+
+            decimal_sunrise = float(_sun["sunrise"].strftime('%H')) + float(_sun["sunrise"].strftime('%M')) / 60
+            arc_length_sunrise = decimal_sunrise / hours * 360.0
+
+            decimal_sunset = float(_sun["sunset"].strftime('%H')) + float(_sun["sunset"].strftime('%M')) / 60
+            arc_length_sunset = decimal_sunset / hours * 360.0
+
+            color = (255, 128, 0)
+            _size_astral = 0.17
+            _width = 0.012
+            size_astral = [(round(_size * _size_astral), round(_size * _size_astral)), (round(_size - _size * _size_astral), round(_size - _size * _size_astral))]
+            width_astral = round(_size * _width)
+            draw.arc(size_astral, start=arc_length_sunrise+arc_twelve, end=arc_length_sunset+arc_twelve, fill=color,
+                     width=width_astral)
+
         draw.ellipse([(round(_size * 0.482), round(_size * 0.482)), (round(_size - _size * 0.482), round(_size - _size * 0.482))], fill=white, outline=None, width=round(_size * 0.312))
 
         color = white
@@ -86,24 +104,6 @@ class Clock:
         width = round(_size * 0.134)
         draw.arc(size_h, start=(arc_twelve + arc_length_h - round(_size / ANTIALIAS * 0.007)) % 360, end=(arc_twelve + arc_length_h + round(_size / ANTIALIAS * 0.007)) % 360, fill=color,
                  width=width)
-
-        if draw_astral:
-            city = LocationInfo("Bern", "Switzerland", "Europe/Zurich", 46.94809, 7.44744)
-            _sun = sun(city.observer, date=datetime.date.today(), tzinfo=city.timezone)
-
-            decimal_sunrise = float(_sun["sunrise"].strftime('%H')) + float(_sun["sunrise"].strftime('%M')) / 60
-            arc_length_sunrise = decimal_sunrise / hours * 360.0
-
-            decimal_sunset = float(_sun["sunset"].strftime('%H')) + float(_sun["sunset"].strftime('%M')) / 60
-            arc_length_sunset = decimal_sunset / hours * 360.0
-
-            color = (255, 128, 0)
-            _size_astral = 0.15
-            _width = 0.012
-            size_astral = [(round(_size * _size_astral), round(_size * _size_astral)), (round(_size - _size * _size_astral), round(_size - _size * _size_astral))]
-            width_astral = round(_size * _width)
-            draw.arc(size_astral, start=arc_length_sunrise+arc_twelve, end=arc_length_sunset+arc_twelve, fill=color,
-                     width=width_astral)
 
         if draw_logo:
             font = ImageFont.truetype(r'/data/django/jukeoroni/player/static/calligraphia-one.ttf', round(_size * 0.150))
