@@ -511,6 +511,7 @@ class Player(object):
         _display_loading = False
         while not self.tracks and self.loading:
             if not _display_loading:
+                # self.layout_player.get_layout(labels=self.LABELS, cover=LOADING_IMAGE)
                 self.set_image(image_file=LOADING_IMAGE)
                 _display_loading = True
 
