@@ -61,10 +61,9 @@ class Standby(Layout):
         clock_size = 400
         _clock = self._clock.get_clock(size=clock_size, draw_logo=True, draw_date=True, hours=24, draw_astral=True)
 
-        # w, h = _clock.size
         _clock_center = round(bg.size[1]/2 - clock_size/2)
-        _clock_right = 0
-        _clock_left = bg.size[1] - clock_size
+        # _clock_right = 0
+        # _clock_left = bg.size[1] - clock_size
         bg.paste(_clock, (buttons_overlay.size[0], _clock_center))
 
         _radar_image = self._radar.radar_image
@@ -84,10 +83,16 @@ class Standby(Layout):
 
 class Player(Layout):
 
-    def get_layout(self, labels):
+    def get_layout(self, labels, cover):
 
         buttons_overlay = buttons_img_overlay(labels)
         bg = Image.new(mode='RGB', size=(600, 448), color=(0, 0, 0))
+
+        cover_size = 400
+        _cover = cover.resize((cover_size, cover_size), Image.ANTIALIAS)
+
+        _cover_center = round(bg.size[1] / 2 - cover_size / 2)
+        bg.paste(_cover, (buttons_overlay.size[0], _cover_center))
 
         clock_size = 151
         border = 4
