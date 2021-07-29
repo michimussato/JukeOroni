@@ -64,8 +64,8 @@ BUTTON_3 = {
             'Play': 'Next'
             }
 BUTTON_4 = {
-            'Stop': 'Strm',
-            'Strm': 'Stop',
+            # 'Stop': 'Strm',
+            'Strm': 'Strm',
             # 'back': 'Back',
             }
 
@@ -270,19 +270,23 @@ class Player(object):
 
         # Radio button
         if current_label == self.button_4_value:
-            try:
-                last_channel = Channel.objects.get(last_played=True)
-                subprocess.Popen(
-                    ['mplayer', '-nogui', '-noconfig', 'all', '-novideo', '-nocache', '-playlist', last_channel.url])
-
-                image_file_url = last_channel.url_logo
-                cover = Image.open(requests.get(image_file_url, stream=True).raw)
-
-                self.set_image(image_file= cover)
-                # bg = self.layout_player.get_layout(labels=self.LABELS, cover=cover)
-
-            except Channel.DoesNotExist:
+            if self.button_3_value == 'Next':
+                print('we are in playback mode. stop first.')
                 return
+            else:
+                try:
+                    last_channel = Channel.objects.get(last_played=True)
+                    subprocess.Popen(
+                        ['mplayer', '-nogui', '-noconfig', 'all', '-novideo', '-nocache', '-playlist', last_channel.url])
+
+                    image_file_url = last_channel.url_logo
+                    cover = Image.open(requests.get(image_file_url, stream=True).raw)
+
+                    self.set_image(image_file= cover)
+                    # bg = self.layout_player.get_layout(labels=self.LABELS, cover=cover)
+
+                except Channel.DoesNotExist:
+                    return
             # return
     ############################################
 
