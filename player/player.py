@@ -17,7 +17,6 @@ from django.utils.timezone import localtime, now
 from .models import Track as DjangoTrack
 from .models import Artist
 from .models import Album
-from .clock import clock
 from .displays import Standby
 
 

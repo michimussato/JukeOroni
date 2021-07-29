@@ -31,7 +31,6 @@ def round_resize(img, corner, scaled_by):
     img = img.resize((mywidth,hsize), PIL.Image.ANTIALIAS)
     img.save('resized.jpg')
     """
-    # TODO: round edges... will come later again
     if img is None:
         return None
     w, h = img.size
