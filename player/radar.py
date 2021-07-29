@@ -27,7 +27,8 @@ class Radar(object):
     def __init__(self):
         super().__init__()
 
-        self.radar_image = Image.open(self.DEFAULT_IMAGE).rotate(90, expand=True)
+        self.default_image = Image.open(self.DEFAULT_IMAGE).rotate(90, expand=True).resize((456, 336))
+        self.radar_image = self.default_image
         # self.size_factor = size_factor
         self.radar_thread = _RadarThread(target=self._radar_task)
 
@@ -75,8 +76,7 @@ class Radar(object):
             right = width - left
             botton = height - top
             im = im.crop((left, top, right, botton))
-
-            print(im.size)
+            # will result in size (456, 336) for now
 
             # TODO: round edges... will come later again
             # bg = Image.new(mode='RGB', size=im.size, color=(0, 0, 0))
@@ -86,6 +86,6 @@ class Radar(object):
             # im = Image.composite(im, bg, mask)
         except Exception as err:
             print(err)
-            im = self.radar_image = Image.open(self.DEFAULT_IMAGE)
+            im = self.radar_image = self.default_image
 
         return im.rotate(90, expand=True)
