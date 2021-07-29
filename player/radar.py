@@ -28,7 +28,7 @@ class Radar(object):
         super().__init__()
 
         self.default_image = Image.open(self.DEFAULT_IMAGE).resize((456, 336)).rotate(90, expand=True)
-        self.radar_image = self.default_image
+        self.radar_image = self.rounded(self.default_image)
         # self.size_factor = size_factor
         self.radar_thread = _RadarThread(target=self._radar_task)
 
