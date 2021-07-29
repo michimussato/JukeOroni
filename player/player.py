@@ -5,8 +5,8 @@ import sys
 import glob
 import random
 import time
-import requests
-# import urllib.request as request
+# import requests
+import urllib.request
 from pydub.utils import mediainfo
 import threading
 import subprocess
@@ -295,8 +295,12 @@ class Player(object):
                     print(image_file_url)
                     if image_file_url is not None and image_file_url.startswith('http'):
                         if image_file_url.startswith('http'):
-                            cover = Image.open(requests.get(image_file_url, stream=True).raw)
+                            print('here')
+                            img = io.BytesIO(urllib.request.urlopen(image_file_url).read())
+                            cover = Image.open(img)
+                            # cover = Image.open(requests.get(image_file_url, stream=True).raw)
                         else:
+                            print('there')
                             cover = Image.open(image_file_url, 'r')
                         self.set_image(image_file=cover)
                     else:
