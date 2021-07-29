@@ -4,7 +4,7 @@ from .radar import Radar
 
 
 def buttons_img_overlay(labels):
-    buttons_img = Image.new(mode='RGB', size=(448, 12), color=(80, 80, 80))
+    buttons_img = Image.new(mode='RGB', size=(448, 16), color=(80, 80, 80))
     buttons_draw = ImageDraw.Draw(buttons_img)
     buttons_draw.text((0, 0), '       {0}               {1}               {2}           {3}'.format(
         labels[3],
