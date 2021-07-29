@@ -49,6 +49,7 @@ class Layout:
     # threads)
     _clock = Clock()
     _radar = Radar()
+    border = 4
 
 
 class Standby(Layout):
@@ -72,8 +73,7 @@ class Standby(Layout):
             _radar_image = round_resize(img=_radar_image, corner=40, scaled_by=0.45)
             print(_radar_image.size)
             w, h = _radar_image.size
-            border = 4
-            _radar_bottom_right = (int(600-w-border), border)
+            _radar_bottom_right = (int(600-w-self.border), self.border)
             bg.paste(_radar_image, _radar_bottom_right)
 
         bg.paste(buttons_overlay, (0, 0))
@@ -91,15 +91,17 @@ class Player(Layout):
         cover_size = 400
         _cover = Image.open(cover)
         _cover = _cover.resize((cover_size, cover_size), Image.ANTIALIAS)
+        _cover = round_resize(img=_cover, corner=40, scaled_by=1.0)
 
         _cover_center = round(bg.size[1] / 2 - cover_size / 2)
-        bg.paste(_cover, (buttons_overlay.size[0], _cover_center))
+        bg.paste(_cover, (buttons_overlay.size[0] + self.border, _cover_center))
 
         clock_size = 151
-        border = 4
         _clock = self._clock.get_clock(size=clock_size, draw_logo=False, draw_date=False, hours=24, draw_astral=True)
-        _clock_bottom_left_centered = (int(600 - clock_size - border), int(228 + 228/2 + round(border/2) - round(clock_size/2)))
-        _clock_bottom_left = (int(600 - clock_size - border), int(448 - clock_size - border))
+        _clock_bottom_left_centered = (int(600 - clock_size - self.border),
+                                       int(228 + 228/2 + round(self.border/2) - round(clock_size/2)))
+        _clock_bottom_left = (int(600 - clock_size - self.border),
+                              int(448 - clock_size - self.border))
 
         bg.paste(_clock, _clock_bottom_left_centered)
 
