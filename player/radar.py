@@ -27,27 +27,9 @@ class Radar(object):
     def __init__(self):
         super().__init__()
 
-        self.radar_image = None
+        self._placeholder = Image.new(mode='RGB', size=(336, 456), color=(128, 128, 128))
+        self.radar_image = self._placeholder
         self.radar_thread = _RadarThread(target=self._radar_task)
-
-    def rounded_radar_image(self, rounded=20, scaled_by=1.0):
-        if self.radar_image is None:
-            return None
-        return self.rounded(self.radar_image, rounded, scaled_by)
-
-    # @staticmethod
-    # def rounded(img, rounded, scaled_by):
-    #     # TODO: round edges... will come later again
-    #     if img is None:
-    #         return None
-    #     w, h = img.size
-    #     img = img.resize((round(w * scaled_by), round(h * scaled_by)))
-    #     bg = Image.new(mode='RGB', size=img.size, color=(0, 0, 0))
-    #     mask = Image.new("L", img.size, 0)
-    #     draw = ImageDraw.Draw(mask)
-    #     draw.rounded_rectangle([(0, 0), img.size], rounded, fill=255)
-    #     img = Image.composite(img, bg, mask)
-    #     return img
 
     def _radar_task(self):
         while True:
@@ -84,4 +66,4 @@ class Radar(object):
 
         except Exception as err:
             print(err)
-            return None
+            return self._placeholder
