@@ -19,7 +19,7 @@ from django.utils.timezone import localtime, now
 from .models import Track as DjangoTrack
 from .models import Artist
 from .models import Album
-from radio.models import Channel
+from .models import Channel
 from .displays import Standby as StandbyLayout
 from .displays import Player as PlayerLayout
 
