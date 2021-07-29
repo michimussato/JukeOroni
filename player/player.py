@@ -17,7 +17,7 @@ from django.utils.timezone import localtime, now
 from .models import Track as DjangoTrack
 from .models import Artist
 from .models import Album
-from .displays import Standby
+from .displays import Standby as StandbyLayout
 from .displays import Player as PlayerLayout
 
 
@@ -168,7 +168,8 @@ class Player(object):
 
         self.current_time = None
 
-        self.layout_standby = PlayerLayout()
+        self.layout_standby = StandbyLayout()
+        self.layout_player = PlayerLayout()
 
         self._pimoroni_thread = None
         self._playback_thread = None

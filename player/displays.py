@@ -43,11 +43,12 @@ def round_resize(img, corner, scaled_by):
     return img
 
 
-class Standby:
+class Layout:
+    _clock = Clock()
+    _radar = Radar()
 
-    def __init__(self):
-        self._clock = Clock()
-        self._radar = Radar()
+
+class Standby(Layout):
 
     def get_layout(self, labels):
 
@@ -78,11 +79,7 @@ class Standby:
         return bg
 
 
-class Player:
-
-    def __init__(self):
-        self._clock = Clock()
-        self._radar = Radar()
+class Player(Layout):
 
     def get_layout(self, labels):
 
