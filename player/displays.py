@@ -92,7 +92,8 @@ class Player:
         clock_size = 151
         border = 4
         _clock = self._clock.get_clock(size=clock_size, draw_logo=False, draw_date=False, hours=24, draw_astral=True)
-        _clock_bottom_left = (int(600 - clock_size - border), int(228 + 228/2 + round(border/2) - round(clock_size/2)))
+        _clock_bottom_left_centered = (int(600 - clock_size - border), int(228 + 228/2 + round(border/2) - round(clock_size/2)))
+        _clock_bottom_left = (int(600 - clock_size - border), int(448 - clock_size - border))
 
         bg.paste(_clock, _clock_bottom_left)
 
