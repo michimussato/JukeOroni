@@ -89,7 +89,8 @@ class Player(Layout):
         bg = Image.new(mode='RGB', size=(600, 448), color=(0, 0, 0))
 
         cover_size = 400
-        _cover = cover.resize((cover_size, cover_size), Image.ANTIALIAS)
+        _cover = Image.open(cover)
+        _cover = _cover.resize((cover_size, cover_size), Image.ANTIALIAS)
 
         _cover_center = round(bg.size[1] / 2 - cover_size / 2)
         bg.paste(_cover, (buttons_overlay.size[0], _cover_center))
