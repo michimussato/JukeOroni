@@ -89,7 +89,10 @@ class Player(Layout):
 
         # cover_size = 448 - 2 * self.border
         cover_size = self.main_size
-        _cover = Image.open(cover).rotate(90, expand=True)
+        if isinstance(cover, Image):
+            _cover = cover
+        else:
+            _cover = Image.open(cover).rotate(90, expand=True)
         _cover = _cover.resize((cover_size, cover_size), Image.ANTIALIAS)
         _cover = round_resize(img=_cover, corner=40, scaled_by=1.0)
 
