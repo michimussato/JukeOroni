@@ -2,7 +2,7 @@ import os
 import subprocess
 from django.http import HttpResponse, HttpResponseRedirect
 from .player import player
-from .models import Channel
+from radio.models import Channel
 from PIL import Image, ImageDraw, ImageFont
 import logging
 import threading
