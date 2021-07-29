@@ -11,8 +11,10 @@ class Clock:
 
         assert hours in [12, 24], 'hours can only be 12 or 24'
 
-        bg = Image.new(mode='RGB', size=(size, size), color=(0, 0, 0))
-        image = Image.new(mode='RGB', size=(size, size), color=(0, 0, 0))
+        _size = 2 * size
+
+        bg = Image.new(mode='RGB', size=(_size, _size), color=(0, 0, 0))
+        image = Image.new(mode='RGB', size=(_size, _size), color=(0, 0, 0))
         draw = ImageDraw.Draw(image)
 
         if hours == 24:
@@ -24,7 +26,7 @@ class Clock:
         black = (0, 0, 0)
         toggle = {white: black, black: white}
 
-        draw.ellipse([(round(size*0.482), round(size*0.482)), (round(size-size*0.482), round(size-size*0.482))], fill=white, outline=None, width=round(size*0.312))
+        draw.ellipse([(round(_size * 0.482), round(_size * 0.482)), (round(_size - _size * 0.482), round(_size - _size * 0.482))], fill=white, outline=None, width=round(_size * 0.312))
 
         color = white
         # TODO: we could do the intervals smarter now
@@ -70,16 +72,16 @@ class Clock:
                          357.0]
 
         for interval in intervals[::-1]:
-            draw.arc([(round(size*0.022), round(size*0.022)), (round(size-size*0.022), round(size-size*0.022))], start=arc_twelve, end=(arc_twelve + interval) % 360, fill=color, width=round(size*0.060))
+            draw.arc([(round(_size * 0.022), round(_size * 0.022)), (round(_size - _size * 0.022), round(_size - _size * 0.022))], start=arc_twelve, end=(arc_twelve + interval) % 360, fill=color, width=round(_size * 0.060))
             color = toggle[color]
 
         decimal_h = float(datetime.datetime.now().strftime('%H')) + float(datetime.datetime.now().strftime('%M')) / 60
         arc_length_h = decimal_h / hours * 360.0
 
         color = white
-        size_h = [(round(size*0.112), round(size*0.112)), (round(size-size*0.112), round(size-size*0.112))]
-        width = round(size*0.134)
-        draw.arc(size_h, start=(arc_twelve + arc_length_h - round(size*0.007)) % 360, end=(arc_twelve + arc_length_h + round(size*0.007)) % 360, fill=color,
+        size_h = [(round(_size * 0.112), round(_size * 0.112)), (round(_size - _size * 0.112), round(_size - _size * 0.112))]
+        width = round(_size * 0.134)
+        draw.arc(size_h, start=(arc_twelve + arc_length_h - round(_size * 0.007)) % 360, end=(arc_twelve + arc_length_h + round(_size * 0.007)) % 360, fill=color,
                  width=width)
 
         if draw_astral:
@@ -95,24 +97,27 @@ class Clock:
             color = (255, 128, 0)
             _size = 0.26
             _width = 0.012
-            size_astral = [(round(size * _size), round(size * _size)), (round(size - size * _size), round(size - size * _size))]
-            width_astral = round(size * _width)
+            size_astral = [(round(_size * _size), round(_size * _size)), (round(_size - _size * _size), round(_size - _size * _size))]
+            width_astral = round(_size * _width)
             draw.arc(size_astral, start=arc_length_sunrise+arc_twelve, end=arc_length_sunset+arc_twelve, fill=color,
                      width=width_astral)
 
         if draw_logo:
-            font = ImageFont.truetype(r'/data/django/jukeoroni/player/static/calligraphia-one.ttf', round(size*0.150))
+            font = ImageFont.truetype(r'/data/django/jukeoroni/player/static/calligraphia-one.ttf', round(_size * 0.150))
             text = "JukeOroni"
             length = font.getlength(text)
-            draw.text((round(size/2) - length / 2, round(size*0.536)), text, fill=white, font=font)
+            draw.text((round(_size / 2) - length / 2, round(_size * 0.536)), text, fill=white, font=font)
 
         if draw_date:
-            font = ImageFont.truetype(r'/data/django/jukeoroni/player/static/arial_narrow.ttf', round(size*0.035))
+            font = ImageFont.truetype(r'/data/django/jukeoroni/player/static/arial_narrow.ttf', round(_size * 0.035))
             text = datetime.datetime.now().strftime('%A, %B %d %Y')
             length = font.getlength(text)
-            draw.text((round(size/2) - length / 2, round(size*0.690)), text, fill=white, font=font)
+            draw.text((round(_size / 2) - length / 2, round(_size * 0.690)), text, fill=white, font=font)
 
         bg.paste(image.rotate(90, expand=False))
         bg.paste(image)
+
+        bg = bg.rotate(90, expand=False)
+        bg = bg.resize((size, size), Image.ANTIALIAS)
 
         return bg.rotate(90, expand=False)
