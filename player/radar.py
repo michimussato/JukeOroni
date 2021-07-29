@@ -41,7 +41,7 @@ class Radar(object):
         if img is None:
             return None
         w, h = img.size
-        img = img.resize(round(w * scaled_by), round(h *scaled_by))
+        img = img.resize((round(w * scaled_by), round(h * scaled_by)))
         bg = Image.new(mode='RGB', size=img.size, color=(0, 0, 0))
         mask = Image.new("L", img.size, 0)
         draw = ImageDraw.Draw(mask)
