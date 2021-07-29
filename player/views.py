@@ -52,9 +52,9 @@ def radio_play(request, display_name_short):
     pid = subprocess.Popen(['pidof mplayer'], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     pid_output = pid.communicate()[0].decode('utf-8').replace('\n', '')
 
-    for c in Channel.objects.get(last_played=True):
-        c.last_played = False
-        c.save()
+    # for c in Channel.objects.get(last_played=True):
+    #     c.last_played = False
+    #     c.save()
 
     if pid_output != '':
         os.system(f'kill {pid_output}')
