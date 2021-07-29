@@ -76,6 +76,8 @@ class Radar(object):
             botton = height - top
             im = im.crop((left, top, right, botton))
 
+            print(im.size)
+
             # TODO: round edges... will come later again
             # bg = Image.new(mode='RGB', size=im.size, color=(0, 0, 0))
             # mask = Image.new("L", im.size, 0)
