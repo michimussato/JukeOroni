@@ -121,6 +121,6 @@ class Clock:
         bg.paste(image)
 
         bg = bg.rotate(90, expand=False)
-        bg = bg.resize((_size/ANTIALIAS, _size/ANTIALIAS), Image.ANTIALIAS)
+        bg = bg.resize((round(_size/ANTIALIAS), round(_size/ANTIALIAS)), Image.ANTIALIAS)
 
         return bg
