@@ -284,8 +284,8 @@ class Player(object):
                         if channel.last_played:
                             last_channel = channel
                             break
-                    subprocess.Popen(
-                        ['mplayer', '-nogui', '-noconfig', 'all', '-novideo', '-nocache', '-playlist', last_channel.url])
+                    # subprocess.Popen(
+                    #     ['mplayer', '-nogui', '-noconfig', 'all', '-novideo', '-nocache', '-playlist', last_channel.url])
 
                     image_file_url = last_channel.url_logo
                     print(image_file_url)
