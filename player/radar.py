@@ -38,7 +38,7 @@ class Radar(object):
         bg = Image.new(mode='RGB', size=img.size, color=(0, 0, 0))
         mask = Image.new("L", img.size, 0)
         draw = ImageDraw.Draw(mask)
-        draw.rounded_rectangle([(0, 0), img.size], 15, fill=255)
+        draw.rounded_rectangle([(0, 0), img.size], 20, fill=255)
         img = Image.composite(img, bg, mask)
         return img
 
