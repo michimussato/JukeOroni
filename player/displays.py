@@ -44,6 +44,9 @@ def round_resize(img, corner, scaled_by):
 
 
 class Layout:
+    # Base class so that all subclasses
+    # use the same objects (no multiple
+    # threads)
     _clock = Clock()
     _radar = Radar()
 
