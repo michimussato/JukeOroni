@@ -35,19 +35,19 @@ class Radar(object):
             return None
         return self.rounded(self.radar_image, rounded, scaled_by)
 
-    @staticmethod
-    def rounded(img, rounded, scaled_by):
-        # TODO: round edges... will come later again
-        if img is None:
-            return None
-        w, h = img.size
-        img = img.resize((round(w * scaled_by), round(h * scaled_by)))
-        bg = Image.new(mode='RGB', size=img.size, color=(0, 0, 0))
-        mask = Image.new("L", img.size, 0)
-        draw = ImageDraw.Draw(mask)
-        draw.rounded_rectangle([(0, 0), img.size], rounded, fill=255)
-        img = Image.composite(img, bg, mask)
-        return img
+    # @staticmethod
+    # def rounded(img, rounded, scaled_by):
+    #     # TODO: round edges... will come later again
+    #     if img is None:
+    #         return None
+    #     w, h = img.size
+    #     img = img.resize((round(w * scaled_by), round(h * scaled_by)))
+    #     bg = Image.new(mode='RGB', size=img.size, color=(0, 0, 0))
+    #     mask = Image.new("L", img.size, 0)
+    #     draw = ImageDraw.Draw(mask)
+    #     draw.rounded_rectangle([(0, 0), img.size], rounded, fill=255)
+    #     img = Image.composite(img, bg, mask)
+    #     return img
 
     def _radar_task(self):
         while True:
