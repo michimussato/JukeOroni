@@ -1,6 +1,8 @@
 import os
 import subprocess
 from django.http import HttpResponse, HttpResponseRedirect
+
+import radio.models
 from .player import player
 from radio.models import Channel
 from PIL import Image, ImageDraw, ImageFont
@@ -52,9 +54,12 @@ def radio_play(request, display_name_short):
     pid = subprocess.Popen(['pidof mplayer'], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     pid_output = pid.communicate()[0].decode('utf-8').replace('\n', '')
 
-    # for c in Channel.objects.get(last_played=True):
-    #     c.last_played = False
-    #     c.save()
+    try:
+        for c in Channel.objects.get(last_played=True):
+            c.last_played = False
+            c.save()
+    except radio.models.Channel.DoesNotExist:
+        pass
 
     if pid_output != '':
         os.system(f'kill {pid_output}')
