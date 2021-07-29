@@ -86,6 +86,11 @@ class Player(Layout):
 
         buttons_overlay = buttons_img_overlay(labels)
         bg = Image.new(mode='RGB', size=(600, 448), color=(0, 0, 0))
+        print(type(bg))
+        print(type(bg))
+        print(type(bg))
+        print(type(bg))
+        print(type(bg))
 
         # cover_size = 448 - 2 * self.border
         cover_size = self.main_size
