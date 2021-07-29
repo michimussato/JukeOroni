@@ -270,20 +270,25 @@ class Player(object):
 
         # Radio button
         if current_label == self.button_4_value:
-            Album.objects.all()
+            # Album.objects.all()
             if self.button_3_value == 'Next':
                 print('we are in playback mode. stop first.')
                 return
             else:
                 try:
                     channels = Channel.objects.all()
+                    last_channel = random.choice(channels)
+                    for channel in channels:
+                        if channel.last_played:
+                            last_channel = channel
+                            break
                     subprocess.Popen(
                         ['mplayer', '-nogui', '-noconfig', 'all', '-novideo', '-nocache', '-playlist', last_channel.url])
 
                     image_file_url = last_channel.url_logo
                     cover = Image.open(requests.get(image_file_url, stream=True).raw)
 
-                    self.set_image(image_file= cover)
+                    self.set_image(image_file=cover)
                     # bg = self.layout_player.get_layout(labels=self.LABELS, cover=cover)
 
                 except Channel.DoesNotExist:
