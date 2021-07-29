@@ -4,14 +4,17 @@ from astral import LocationInfo
 from astral.sun import sun
 
 
+ANTIALIAS = 4
+
+
 class Clock:
 
     @staticmethod
     def get_clock(draw_logo, draw_date, size=448, hours=12, draw_astral=False):
 
-        assert hours in [12, 24], 'hours can only be 12 or 24'
+        _size = size * ANTIALIAS
 
-        _size = 2 * size
+        assert hours in [12, 24], 'hours can only be 12 or 24'
 
         bg = Image.new(mode='RGB', size=(_size, _size), color=(0, 0, 0))
         image = Image.new(mode='RGB', size=(_size, _size), color=(0, 0, 0))
@@ -95,9 +98,9 @@ class Clock:
             arc_length_sunset = decimal_sunset / hours * 360.0
 
             color = (255, 128, 0)
-            _size = 0.26
+            _size_astral = 0.26
             _width = 0.012
-            size_astral = [(round(_size * _size), round(_size * _size)), (round(_size - _size * _size), round(_size - _size * _size))]
+            size_astral = [(round(_size * _size_astral), round(_size * _size_astral)), (round(_size - _size * _size_astral), round(_size - _size * _size_astral))]
             width_astral = round(_size * _width)
             draw.arc(size_astral, start=arc_length_sunrise+arc_twelve, end=arc_length_sunset+arc_twelve, fill=color,
                      width=width_astral)
@@ -118,6 +121,6 @@ class Clock:
         bg.paste(image)
 
         bg = bg.rotate(90, expand=False)
-        bg = bg.resize((size, size), Image.ANTIALIAS)
+        bg = bg.resize((_size/ANTIALIAS, _size/ANTIALIAS), Image.ANTIALIAS)
 
-        return bg.rotate(90, expand=False)
+        return bg
