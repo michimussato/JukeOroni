@@ -18,6 +18,7 @@ from .models import Track as DjangoTrack
 from .models import Artist
 from .models import Album
 from .displays import Standby
+from .displays import Player as PlayerLayout
 
 
 LOG = logging.getLogger(__name__)
@@ -167,7 +168,7 @@ class Player(object):
 
         self.current_time = None
 
-        self.layout_standby = Standby()
+        self.layout_standby = PlayerLayout()
 
         self._pimoroni_thread = None
         self._playback_thread = None
