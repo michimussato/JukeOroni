@@ -588,8 +588,6 @@ class Player(object):
                 cover = kwargs['track'].cover
                 if cover is None:
                     cover = STANDARD_COVER
-            else:
-                cover = STANDARD_COVER
 
             bg = self.layout_player.get_layout(labels=self.LABELS, cover=cover)
 
