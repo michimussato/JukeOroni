@@ -228,12 +228,12 @@ class Player(object):
         logging.info(f"Button press detected on pin: {pin} label: {current_label}")
         print(f"Button press detected on pin: {pin} label: {current_label}")
 
-        # just kill the radio in every case:
-        # (radical for now)
-        pid = subprocess.Popen(['pidof mplayer'], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        pid_output = pid.communicate()[0].decode('utf-8').replace('\n', '')
-        if pid_output != '':
-            os.system(f'kill {pid_output}')
+        # # just kill the radio in every case:
+        # # (radical for now)
+        # pid = subprocess.Popen(['pidof mplayer'], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        # pid_output = pid.communicate()[0].decode('utf-8').replace('\n', '')
+        # if pid_output != '':
+        #     os.system(f'kill {pid_output}')
 
         # Mode button
         if self.button_3_value == 'Next':  # we only want to switch mode when something is already playing
