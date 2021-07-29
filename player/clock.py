@@ -40,7 +40,7 @@ class Clock:
             arc_length_sunset = decimal_sunset / hours * 360.0
 
             color = (255, 128, 0)
-            _size_astral = 0.17
+            _size_astral = 0.17  # TODO: bigger means smaller circle
             _width = 0.012
             size_astral = [(round(_size * _size_astral), round(_size * _size_astral)), (round(_size - _size * _size_astral), round(_size - _size * _size_astral))]
             width_astral = round(_size * _width)
