@@ -95,7 +95,7 @@ class Player:
         _clock_bottom_left_centered = (int(600 - clock_size - border), int(228 + 228/2 + round(border/2) - round(clock_size/2)))
         _clock_bottom_left = (int(600 - clock_size - border), int(448 - clock_size - border))
 
-        bg.paste(_clock, _clock_bottom_left)
+        bg.paste(_clock, _clock_bottom_left_centered)
 
         _radar_image = self._radar.radar_image
 
