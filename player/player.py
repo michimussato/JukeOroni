@@ -286,6 +286,9 @@ class Player(object):
                         ['mplayer', '-nogui', '-noconfig', 'all', '-novideo', '-nocache', '-playlist', last_channel.url])
 
                     image_file_url = last_channel.url_logo
+                    print(image_file_url)
+                    print(image_file_url)
+                    print(image_file_url)
                     if image_file_url.startswith('http'):
                         cover = Image.open(requests.get(image_file_url, stream=True).raw)
                     else:
