@@ -8,6 +8,7 @@ class Channel(models.Model):
     url = models.URLField(max_length=200, unique=True)
     url_logo = models.URLField(max_length=200, unique=False, null=True, blank=True)
     is_enabled = models.BooleanField(default=True)
+    last_played = models.BooleanField(default=False)
 
     def __str__(self):
         return self.display_name
