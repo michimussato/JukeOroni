@@ -93,11 +93,8 @@ class Player:
         border = 4
         _clock = self._clock.get_clock(size=clock_size, draw_logo=False, draw_date=False, hours=24, draw_astral=True)
         _clock_bottom_left = (int(600 - clock_size - border), int(448 - clock_size - border))
-        # _clock_center = round(bg.size[1]/2 - clock_size/2)
-        # _clock_right = 0
-        # _clock_left = bg.size[1] - clock_size
 
-        bg.paste(_clock, (buttons_overlay.size[0], _clock_center))
+        bg.paste(_clock, _clock_bottom_left)
 
         _radar_image = self._radar.radar_image
 
