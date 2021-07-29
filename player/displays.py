@@ -21,7 +21,6 @@ class Standby:
     def __init__(self):
         self._clock = clock(size=400, draw_logo=True, draw_date=True, hours=24, draw_astral=True)
         self._radar = Radar()
-        self._radar_image = self._radar.rounded_radar_image(rounded=20, scaled_by=0.45)
 
     def get_layout(self, labels):
 
@@ -34,11 +33,13 @@ class Standby:
         _clock_left = bg.size[1] - h
         bg.paste(self._clock, (buttons_overlay.size[0], _clock_center))
 
-        if self._radar_image is not None:
-            w, h = self._radar_image.size
+        _radar_image = self._radar.rounded_radar_image(rounded=20, scaled_by=0.45)
+
+        if _radar_image is not None:
+            w, h = _radar_image.size
             border = 4
             _radar_bottom_right = (int(600-w-border), border)
-            bg.paste(self._radar_image, _radar_bottom_right)
+            bg.paste(_radar_image, _radar_bottom_right)
 
         bg.paste(buttons_overlay, (0, 0))
 
