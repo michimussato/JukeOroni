@@ -94,7 +94,7 @@ class Player(Layout):
 
         # cover_size = 448 - 2 * self.border
         cover_size = self.main_size
-        if isinstance(cover, bg):
+        if isinstance(cover, Image.Image):
             _cover = cover
         else:
             _cover = Image.open(cover).rotate(90, expand=True)
