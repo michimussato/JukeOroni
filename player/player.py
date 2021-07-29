@@ -18,8 +18,7 @@ from .models import Track as DjangoTrack
 from .models import Artist
 from .models import Album
 from .clock import clock
-# from .radar import Radar
-from .displays import standby
+from .displays import Standby
 
 
 LOG = logging.getLogger(__name__)
@@ -168,6 +167,8 @@ class Player(object):
         self.pimoroni.set_border('BLACK')
 
         self.current_time = None
+
+        self.layout_standby = Standby()
 
         self._pimoroni_thread = None
         self._playback_thread = None
@@ -579,7 +580,7 @@ class Player(object):
 
     def task_pimoroni_set_image(self, **kwargs):
         if self.button_3_value != 'Next':
-            bg = standby(labels=self.LABELS)
+            bg = self.layout_standby.get_layout(labels=self.LABELS)
         else:
             if 'track' in kwargs:
                 # print(kwargs['track'])
@@ -673,11 +674,6 @@ class Player(object):
             # bg.paste(text_img, (448, 0))
 
             bg.paste(cover, offset)
-
-        # if self.button_3_value != 'Next':
-        #     radar_image = self.radar.image(scaled_by=0.45)
-        #     width, height = radar_image.size
-        #     bg.paste(radar_image, (int(600-width-4), 4))
 
         self.pimoroni.set_image(bg, saturation=PIMORONI_SATURATION)
         self.pimoroni.show(busy_wait=False)
@@ -803,13 +799,12 @@ class Player(object):
 def player():
     p = Player(auto_update_tracklist=True)
     p.temp_cleanup()
-    # p.radar_thread(factor=0.45)
     p.buttons_watcher_thread()
     p.state_watcher_thread()
     p.pimoroni_watcher_thread()
     p.init_screen()
-    # p.track_list_generator_thread(auto_update_tracklist_interval=DEFAULT_TRACKLIST_REGEN_INTERVAL / 4)  # effect only if auto_update_tracklist=True
-    # p.track_loader_thread()
+    p.track_list_generator_thread(auto_update_tracklist_interval=DEFAULT_TRACKLIST_REGEN_INTERVAL / 4)  # effect only if auto_update_tracklist=True
+    p.track_loader_thread()
 
 
 if __name__ == '__main__':
@@ -832,4 +827,19 @@ AttributeError: 'NoneType' object has no attribute 'track'
 waiting for loading thread to kick in
 
 removed from local filesystem: "/tmp/tmpgc4kybmv"
+"""
+
+
+"""
+source /data/venv/bin/activate
+cd /data/django/jukeoroni/ && git pull && python manage.py shell
+
+from player.player import Player
+p = Player()
+p.temp_cleanup()
+p.buttons_watcher_thread()
+p.state_watcher_thread()
+p.pimoroni_watcher_thread()
+p.init_screen()
+
 """

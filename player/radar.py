@@ -27,34 +27,27 @@ class Radar(object):
     def __init__(self):
         super().__init__()
 
-        self.default_image = Image.open(self.DEFAULT_IMAGE).resize((456, 336)).rotate(90, expand=True)
-        self.radar_image = self.rounded(self.default_image)
-        # self.size_factor = size_factor
+        self.radar_image = None
         self.radar_thread = _RadarThread(target=self._radar_task)
 
+    def rounded_radar_image(self, rounded=20, scaled_by=1.0):
+        if self.radar_image is None:
+            return None
+        return self.rounded(self.radar_image, rounded, scaled_by)
+
     @staticmethod
-    def rounded(img):
+    def rounded(img, rounded, scaled_by):
         # TODO: round edges... will come later again
+        if img is None:
+            return None
+        w, h = img.size
+        img = img.resize(round(w * scaled_by), round(h *scaled_by))
         bg = Image.new(mode='RGB', size=img.size, color=(0, 0, 0))
         mask = Image.new("L", img.size, 0)
         draw = ImageDraw.Draw(mask)
-        draw.rounded_rectangle([(0, 0), img.size], 20, fill=255)
+        draw.rounded_rectangle([(0, 0), img.size], rounded, fill=255)
         img = Image.composite(img, bg, mask)
         return img
-
-    def start(self):
-        self.radar_thread.start()
-
-    def image(self, scaled_by=1.0):
-        ret = self.radar_image.resize(
-            (int(self.size[0] * scaled_by),
-             int(self.size[1] * scaled_by))
-        )
-        return ret
-
-    @property
-    def size(self):
-        return self.radar_image.size
 
     def _radar_task(self):
         while True:
@@ -87,9 +80,8 @@ class Radar(object):
             botton = height - top
             im = im.crop((left, top, right, botton))
             # will result in size (456, 336) for now
+            return im.rotate(90, expand=True)
 
         except Exception as err:
             print(err)
-            im = self.radar_image = self.default_image
-
-        return self.rounded(im.rotate(90, expand=True))
+            return None
