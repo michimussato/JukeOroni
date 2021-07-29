@@ -63,7 +63,6 @@ def radio_play(request, display_name_short):
 
     if pid_output != '':
         os.system(f'kill {pid_output}')
-    # channels = Channel.objects.all()
     channel = Channel.objects.get(display_name_short=display_name_short)
     subprocess.Popen(['mplayer', '-nogui', '-noconfig', 'all', '-novideo', '-nocache', '-playlist', channel.url])
     channel.last_played = True

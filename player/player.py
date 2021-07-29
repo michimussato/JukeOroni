@@ -3,8 +3,10 @@ import sys
 import glob
 import random
 import time
+import requests
 from pydub.utils import mediainfo
 import threading
+import subprocess
 import multiprocessing
 import logging
 from inky.inky_uc8159 import Inky, BLACK
@@ -17,6 +19,7 @@ from django.utils.timezone import localtime, now
 from .models import Track as DjangoTrack
 from .models import Artist
 from .models import Album
+from radio.models import Channel
 from .displays import Standby as StandbyLayout
 from .displays import Player as PlayerLayout
 
@@ -61,12 +64,13 @@ BUTTON_3 = {
             'Play': 'Next'
             }
 BUTTON_4 = {
-            'Quit': 'Quit',
+            'Stop': 'Strm',
+            'Strm': 'Stop',
             # 'back': 'Back',
             }
 
 # Button   4       3       2       1
-# LABELS = ['Stop', 'Next', 'Play', 'Quit']
+# LABELS = ['Stop', 'Next', 'Play', 'Radio']
 
 # for portrait orientation, the order is reversed
 # LABELS = [BUTTON_4, BUTTON_3, BUTTON_2, BUTTON_1]
@@ -152,7 +156,7 @@ class Player(object):
         self.button_1_value = BUTTON_1['Albm -> Rand']
         self.button_2_value = BUTTON_2['Stop']
         self.button_3_value = BUTTON_3['Next']
-        self.button_4_value = BUTTON_4['Quit']
+        self.button_4_value = BUTTON_4['Strm']
 
         self.auto_update_tracklist = auto_update_tracklist
         self.tracks = []
@@ -171,14 +175,14 @@ class Player(object):
         self.layout_standby = StandbyLayout()
         self.layout_player = PlayerLayout()
 
-        print(self.layout_standby._clock == self.layout_player._clock)
-        print(self.layout_standby._clock == self.layout_player._clock)
-        print(self.layout_standby._clock == self.layout_player._clock)
-        print(self.layout_standby._clock == self.layout_player._clock)
-        print(self.layout_standby._radar == self.layout_player._radar)
-        print(self.layout_standby._radar == self.layout_player._radar)
-        print(self.layout_standby._radar == self.layout_player._radar)
-        print(self.layout_standby._radar == self.layout_player._radar)
+        # print(self.layout_standby._clock == self.layout_player._clock)
+        # print(self.layout_standby._clock == self.layout_player._clock)
+        # print(self.layout_standby._clock == self.layout_player._clock)
+        # print(self.layout_standby._clock == self.layout_player._clock)
+        # print(self.layout_standby._radar == self.layout_player._radar)
+        # print(self.layout_standby._radar == self.layout_player._radar)
+        # print(self.layout_standby._radar == self.layout_player._radar)
+        # print(self.layout_standby._radar == self.layout_player._radar)
 
         self._pimoroni_thread = None
         self._playback_thread = None
@@ -222,6 +226,13 @@ class Player(object):
         logging.info(f"Button press detected on pin: {pin} label: {current_label}")
         print(f"Button press detected on pin: {pin} label: {current_label}")
 
+        # just kill the radio in every case:
+        # (radical for now)
+        pid = subprocess.Popen(['pidof mplayer'], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        pid_output = pid.communicate()[0].decode('utf-8').replace('\n', '')
+        if pid_output != '':
+            os.system(f'kill {pid_output}')
+
         # Mode button
         if self.button_3_value == 'Next':  # we only want to switch mode when something is already playing
             if current_label == self.button_1_value:
@@ -257,9 +268,22 @@ class Player(object):
                 logging.info('Next track.')
                 self.next()
 
-        # Quit button
+        # Radio button
         if current_label == self.button_4_value:
-            return
+            try:
+                last_channel = Channel.objects.get(last_played=True)
+                subprocess.Popen(
+                    ['mplayer', '-nogui', '-noconfig', 'all', '-novideo', '-nocache', '-playlist', last_channel.url])
+
+                image_file_url = last_channel.url_logo
+                cover = Image.open(requests.get(image_file_url, stream=True).raw)
+
+                self.set_image(image_file= cover)
+                # bg = self.layout_player.get_layout(labels=self.LABELS, cover=cover)
+
+            except Channel.DoesNotExist:
+                return
+            # return
     ############################################
 
     ############################################
@@ -489,6 +513,8 @@ class Player(object):
                     self.play()
                 elif self._playback_thread.is_alive():
                     pass
+
+            # elif
 
             elif self.current_time != new_time.strftime('%H:%M'):  # in stopped state
                 if self.current_time is None or (int(new_time.strftime('%H:%M')[-2:])) % CLOCK_UPDATE_INTERVAL == 0:
