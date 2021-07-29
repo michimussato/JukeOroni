@@ -275,7 +275,7 @@ class Player(object):
                 return
             else:
                 try:
-                    last_channel = Channel.objects.get(last_played__iexact=True)
+                    last_channel = Channel.objects.get(last_played__name=True)
                     subprocess.Popen(
                         ['mplayer', '-nogui', '-noconfig', 'all', '-novideo', '-nocache', '-playlist', last_channel.url])
 
