@@ -55,7 +55,7 @@ def radio_play(request, display_name_short):
     pid_output = pid.communicate()[0].decode('utf-8').replace('\n', '')
 
     try:
-        for c in Channel.objects.get(last_played=True):
+        for c in Channel.objects.filter(last_played=True):
             c.last_played = False
             c.save()
     except radio.models.Channel.DoesNotExist:
