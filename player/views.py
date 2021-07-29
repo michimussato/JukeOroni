@@ -47,7 +47,7 @@ def radio_index(request):
     return HttpResponse(ret)
 
 
-def play(request, display_name_short):
+def radio_play(request, display_name_short):
 
     pid = subprocess.Popen(['pidof mplayer'], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     pid_output = pid.communicate()[0].decode('utf-8').replace('\n', '')
@@ -63,7 +63,7 @@ def play(request, display_name_short):
     return HttpResponseRedirect('/player/radio')
 
 
-def stop(request, pid):
+def radio_stop(request, pid):
     os.system(f'kill {pid}')
     set_image(image_file=SLEEP_IMAGE, media_info='')
     return HttpResponseRedirect('/player/radio')
