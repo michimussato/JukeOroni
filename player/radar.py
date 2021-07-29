@@ -44,7 +44,7 @@ class Radar(object):
             options.headless = True
             service_log_path = os.path.join(tempfile.gettempdir(), 'geckodriver.log')
             with selenium.webdriver.Firefox(options=options, service_log_path=service_log_path) as driver:
-                print(f'Opening {self.URL}')
+                # print(f'Opening {self.URL}')
                 driver.get(self.URL)
                 time.sleep(2.0)
                 # WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.ID, "onetrust-accept-btn-handler"))).click()

@@ -293,12 +293,11 @@ class Player(object):
 
                     if image_file_url is not None and image_file_url.startswith('http'):
                         if image_file_url.startswith('http'):
-                            print('here')
+                            print(f'Getting cover from {image_file_url}')
                             img = io.BytesIO(urllib.request.urlopen(image_file_url).read())
                             cover = Image.open(img)
                             # cover = Image.open(requests.get(image_file_url, stream=True).raw)
                         else:
-                            print('there')
                             cover = Image.open(image_file_url, 'r')
                         self.set_image(image_file=cover)
                     else:
