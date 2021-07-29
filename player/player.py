@@ -273,7 +273,8 @@ class Player(object):
         # Radio button
         if current_label == self.button_4_value:
             # Album.objects.all()
-            if self.button_3_value == 'Next':
+            if False:
+            # if self.button_3_value == 'Next':
                 print('we are in playback mode. stop first.')
                 return
             else:
