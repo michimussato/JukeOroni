@@ -4,7 +4,7 @@ from astral import LocationInfo
 from astral.sun import sun
 
 
-ANTIALIAS = 4
+ANTIALIAS = 16
 
 
 class Clock:
