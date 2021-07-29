@@ -282,17 +282,15 @@ class Player(object):
                 try:
                     channels = Channel.objects.all()
                     last_channel = random.choice(channels)
-                    for channel in channels:
-                        if channel.last_played:
-                            last_channel = channel
-                            break
+                    # for channel in channels:
+                    #     if channel.last_played:
+                    #         last_channel = channel
+                    #         break
                     # subprocess.Popen(
                     #     ['mplayer', '-nogui', '-noconfig', 'all', '-novideo', '-nocache', '-playlist', last_channel.url])
 
                     image_file_url = last_channel.url_logo
-                    print(image_file_url)
-                    print(image_file_url)
-                    print(image_file_url)
+
                     if image_file_url is not None and image_file_url.startswith('http'):
                         if image_file_url.startswith('http'):
                             print('here')
