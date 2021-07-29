@@ -273,42 +273,42 @@ class Player(object):
         # Radio button
         if current_label == self.button_4_value:
             # Album.objects.all()
-            if False:
-            # if self.button_3_value == 'Next':
-                print('we are in playback mode. stop first.')
-                return
-            else:
-                try:
-                    channels = Channel.objects.all()
-                    last_channel = random.choice(channels)
-                    for channel in channels:
-                        if channel.last_played:
-                            last_channel = channel
-                            break
-                    # subprocess.Popen(
-                    #     ['mplayer', '-nogui', '-noconfig', 'all', '-novideo', '-nocache', '-playlist', last_channel.url])
-
-                    image_file_url = last_channel.url_logo
-                    print(image_file_url)
-                    print(image_file_url)
-                    print(image_file_url)
-                    if image_file_url is not None and image_file_url.startswith('http'):
-                        fd = request.urlopen(image_file_url)
-                        image_file = io.BytesIO(fd.read())
-                        cover = Image.open(image_file)
-                        # cover = Image.open(requests.get(image_file_url, stream=True).raw)
-                        self.set_image(image_file=cover)
-                    else:
-                        # cover = Image.open(image_file_url, 'r')
-                        self.set_image(image_file=STANDARD_COVER)
-                    # cover = Image.open(requests.get(image_file_url, stream=True).raw)
-
-                    # self.set_image(image_file=cover)
-                    # bg = self.layout_player.get_layout(labels=self.LABELS, cover=cover)
-
-                except Channel.DoesNotExist:
-                    return
-            # return
+            # if False:
+            # # if self.button_3_value == 'Next':
+            #     print('we are in playback mode. stop first.')
+            #     return
+            # else:
+            #     try:
+            #         channels = Channel.objects.all()
+            #         last_channel = random.choice(channels)
+            #         for channel in channels:
+            #             if channel.last_played:
+            #                 last_channel = channel
+            #                 break
+            #         # subprocess.Popen(
+            #         #     ['mplayer', '-nogui', '-noconfig', 'all', '-novideo', '-nocache', '-playlist', last_channel.url])
+            #
+            #         image_file_url = last_channel.url_logo
+            #         print(image_file_url)
+            #         print(image_file_url)
+            #         print(image_file_url)
+            #         if image_file_url is not None and image_file_url.startswith('http'):
+            #             fd = request.urlopen(image_file_url)
+            #             image_file = io.BytesIO(fd.read())
+            #             cover = Image.open(image_file)
+            #             # cover = Image.open(requests.get(image_file_url, stream=True).raw)
+            #             self.set_image(image_file=cover)
+            #         else:
+            #             # cover = Image.open(image_file_url, 'r')
+            #             self.set_image(image_file=STANDARD_COVER)
+            #         # cover = Image.open(requests.get(image_file_url, stream=True).raw)
+            #
+            #         # self.set_image(image_file=cover)
+            #         # bg = self.layout_player.get_layout(labels=self.LABELS, cover=cover)
+            #
+            #     except Channel.DoesNotExist:
+            #         return
+            return
     ############################################
 
     ############################################
