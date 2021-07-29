@@ -84,7 +84,7 @@ class Clock:
         color = white
         size_h = [(round(_size * 0.112), round(_size * 0.112)), (round(_size - _size * 0.112), round(_size - _size * 0.112))]
         width = round(_size * 0.134)
-        draw.arc(size_h, start=(arc_twelve + arc_length_h - round(_size * 0.007)) / ANTIALIAS % 360, end=(arc_twelve + arc_length_h + round(_size * 0.007)) / ANTIALIAS % 360, fill=color,
+        draw.arc(size_h, start=(arc_twelve + arc_length_h - round(_size * 0.007)) % 360, end=(arc_twelve + arc_length_h + round(_size * 0.007)) % 360, fill=color,
                  width=width)
 
         if draw_astral:
