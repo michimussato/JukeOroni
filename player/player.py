@@ -5,7 +5,7 @@ import sys
 import glob
 import random
 import time
-import requests.urllib as urllib
+import urllib
 from pydub.utils import mediainfo
 import threading
 import subprocess
