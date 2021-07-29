@@ -171,6 +171,15 @@ class Player(object):
         self.layout_standby = StandbyLayout()
         self.layout_player = PlayerLayout()
 
+        print(self.layout_standby._clock == self.layout_player._clock)
+        print(self.layout_standby._clock == self.layout_player._clock)
+        print(self.layout_standby._clock == self.layout_player._clock)
+        print(self.layout_standby._clock == self.layout_player._clock)
+        print(self.layout_standby._radar == self.layout_player._radar)
+        print(self.layout_standby._radar == self.layout_player._radar)
+        print(self.layout_standby._radar == self.layout_player._radar)
+        print(self.layout_standby._radar == self.layout_player._radar)
+
         self._pimoroni_thread = None
         self._playback_thread = None
         self._buttons_watcher_thread = None
