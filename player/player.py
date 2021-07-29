@@ -270,6 +270,7 @@ class Player(object):
 
         # Radio button
         if current_label == self.button_4_value:
+            Album.objects.get(album_title='Lest We Forget (The Best Of) [FLAC-16:44.1]')
             if self.button_3_value == 'Next':
                 print('we are in playback mode. stop first.')
                 return

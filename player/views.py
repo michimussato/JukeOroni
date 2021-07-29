@@ -4,7 +4,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 
 import radio.models
 from .player import player
-# from models import Channel
+# from player.models import Channel
 from PIL import Image, ImageDraw, ImageFont
 import logging
 import threading
