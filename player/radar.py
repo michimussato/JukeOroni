@@ -92,4 +92,4 @@ class Radar(object):
             print(err)
             im = self.radar_image = self.default_image
 
-        return rounded(im.rotate(90, expand=True))
+        return self.rounded(im.rotate(90, expand=True))
