@@ -33,7 +33,7 @@ def standby(labels):
     w, h = _radar_image.size
     border = 4
     _radar_bottom_right = (int(600-w-border), border)
-    bg.paste(_radar_image)
+    bg.paste(_radar_image, _radar_bottom_right)
 
     bg.paste(buttons_overlay, (0, 0))
 
