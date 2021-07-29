@@ -584,10 +584,11 @@ class Player(object):
         if self.button_3_value != 'Next':
             bg = self.layout_standby.get_layout(labels=self.LABELS)
         else:
-            if 'track' in kwargs:
+            cover = STANDARD_COVER
+            if 'image_file' in kwargs:
+                cover = kwargs['image_file']
+            elif 'track' in kwargs:
                 cover = kwargs['track'].cover
-                if cover is None:
-                    cover = STANDARD_COVER
 
             bg = self.layout_player.get_layout(labels=self.LABELS, cover=cover)
 
