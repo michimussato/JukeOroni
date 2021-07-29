@@ -89,7 +89,7 @@ class Player(Layout):
         bg = Image.new(mode='RGB', size=(600, 448), color=(0, 0, 0))
 
         cover_size = 400
-        _cover = Image.open(cover)
+        _cover = Image.open(cover).rotate(90, expand=True)
         _cover = _cover.resize((cover_size, cover_size), Image.ANTIALIAS)
         _cover = round_resize(img=_cover, corner=40, scaled_by=1.0)
 
