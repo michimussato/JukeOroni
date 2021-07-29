@@ -99,7 +99,7 @@ ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
     'player.apps.PlayerConfig',
-    'radio.apps.RadioConfig',
+    # 'radio.apps.RadioConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
