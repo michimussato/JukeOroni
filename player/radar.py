@@ -1,7 +1,6 @@
 import os
 import time
-# import threading
-import multiprocessing
+import threading
 import tempfile
 from io import BytesIO
 from PIL import Image, ImageDraw
@@ -12,7 +11,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
 
-class _RadarThread(multiprocessing.Process):
+class _RadarThread(threading.Thread):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.name = 'Radar Thread'
@@ -45,15 +44,18 @@ class Radar(object):
     def __init__(self):
         super().__init__()
 
-        # Non-Picklable
-        # must use Thread
+        # Non-Picklable objects as Image.Image()
+        # must use Thread (shared memory)
+        # to use multiprocessing, we could save the resulting
+        # radar images to disk and read it in the main thread
+        # Thread is okay for now
         self._placeholder = Image.new(mode='RGB', size=(336, 456), color=(128, 128, 128))
         self.radar_image = self._placeholder
         # maybe we need to pass the image here because of multiprocessing not
         # sharing memory...not know yet...indeed. need syncmanager
-        self.radar_thread = _RadarThread(target=self._radar_task, kwargs={'radar_image': self.radar_image})
+        self.radar_thread = _RadarThread(target=self._radar_task)
 
-    def _radar_task(self, **kwargs):
+    def _radar_task(self):
         while True:
             print('Updating radar image in background...')
             self.radar_image = self._radar_screenshot()
