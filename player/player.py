@@ -969,6 +969,7 @@ class Player(object):
         self.playing_track.play()
 
         # cleanup
+        self._playback_thread.join()
         self.playing_track = None
         self._playback_thread = None
     ############################################
