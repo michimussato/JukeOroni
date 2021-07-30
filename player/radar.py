@@ -56,12 +56,11 @@ class Radar(object):
     def _radar_task(self, **kwargs):
         while True:
             print('Updating radar image in background...')
-            self._radar_screenshot(radar_image=kwargs['radar_image'])
+            self.radar_image = self._radar_screenshot()
             print('Radar image updated.')
             time.sleep(self.RADAR_UPDATE_INTERVAL*60.0)
 
-    def _radar_screenshot(self, **kwargs):
-        radar_image = kwargs['radar_image']
+    def _radar_screenshot(self):
         try:
             options = selenium.webdriver.firefox.options.Options()
             options.headless = True
@@ -85,8 +84,8 @@ class Radar(object):
             botton = height - top
             im = im.crop((left, top, right, botton))
             # will result in size (456, 336) for now
-            radar_image = im.rotate(90, expand=True)
+            return im.rotate(90, expand=True)
 
         except Exception as err:
             print(err)
-            radar_image = self._placeholder
+            return self._placeholder
