@@ -961,7 +961,9 @@ class Player(object):
 
             # start playback first, then change image to prevent lag
             self.set_image(track=track)
+            print('here')
             self._playback_thread.join()
+            print('there')
 
     def _playback_task(self, **kwargs):
         self.playing_track = kwargs['track']

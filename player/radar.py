@@ -47,6 +47,8 @@ class Radar(object):
 
         self._placeholder = Image.new(mode='RGB', size=(336, 456), color=(128, 128, 128))
         self.radar_image = self._placeholder
+        # maybe we need to pass the image here because of multiprocessing not
+        # sharing memory...not know yet
         self.radar_thread = _RadarThread(target=self._radar_task)
 
     def _radar_task(self):
