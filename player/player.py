@@ -574,14 +574,14 @@ class Player(object):
     ############################################
     # buttons
     def buttons_watcher_thread(self):
-        # self._buttons_watcher_thread = threading.Thread(target=self._buttons_watcher_task)
-        # self._buttons_watcher_thread.name = 'Buttons Watcher Thread'
-        # self._buttons_watcher_thread.daemon = False
-        # self._buttons_watcher_thread.start()
-        self._buttons_watcher_thread = multiprocessing.Process(target=self._buttons_watcher_task)
+        self._buttons_watcher_thread = threading.Thread(target=self._buttons_watcher_task)
         self._buttons_watcher_thread.name = 'Buttons Watcher Thread'
         self._buttons_watcher_thread.daemon = False
         self._buttons_watcher_thread.start()
+        # self._buttons_watcher_thread = multiprocessing.Process(target=self._buttons_watcher_task)
+        # self._buttons_watcher_thread.name = 'Buttons Watcher Thread'
+        # self._buttons_watcher_thread.daemon = False
+        # self._buttons_watcher_thread.start()
 
     def _buttons_watcher_task(self):
         for pin in BUTTONS:
