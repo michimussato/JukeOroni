@@ -18,7 +18,7 @@ def buttons_img_overlay(labels):
 
 def round_resize(img, corner, scaled_by):
     """
-    #Resizes an image and keeps aspect ratio. Set mywidth to the desired with in pixels.
+    # Resizes an image and keeps aspect ratio. Set mywidth to the desired with in pixels.
 
     import PIL
     from PIL import Image
