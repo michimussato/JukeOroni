@@ -490,6 +490,10 @@ class Track(object):
             self.track.played += 1
             self.track.save()
             self.is_playing = True
+            print(multiprocessing.current_process().pid)
+            # TODO: now this would be a classic
+            #  subprocess example: calling an external
+            #  application
             os.system(f'ffplay -hide_banner -autoexit -vn -nodisp -loglevel error \"{self.playing_from}\"')
             logging.info(f'playback finished: \"{self.path}\"')
             print(f'playback finished: \"{self.path}\"')
@@ -821,6 +825,7 @@ class Player(object):
                 # print(dir(self.loading_process))
 
                 try:
+                    # TODO: could use .join() instead of checking is_alive()
                     while self.loading_process.is_alive():
                         # logging.error(self.loading_process)
                         # print(self.loading_process)
@@ -966,8 +971,11 @@ class Player(object):
             self.set_image(track=track)
             print('here')
             print(self._playback_thread)
+            # <Process(Playback Thread, started)>
             self._playback_thread.join()
             print(self._playback_thread)
+            # <Process(Playback Thread, stopped)>
+
             # so, join continues as soon as this
             # thread is finished, leaving the rest
             # of the application responsive
@@ -975,8 +983,10 @@ class Player(object):
             self.playing_track = None
             self._playback_thread = None
             print(self._playback_thread)
+            # None
 
     def _playback_task(self, **kwargs):
+        print(multiprocessing.current_process().pid)
         self.playing_track = kwargs['track']
         logging.debug(f'starting playback thread: for {self.playing_track.path} from {self.playing_track.playing_from}')  # TODO add info
         print(f'starting playback thread: for {self.playing_track.path} from {self.playing_track.playing_from}')  # TODO add info
@@ -1026,11 +1036,10 @@ class Player(object):
         if self.button_3_value != 'Next':
             bg = self.layout_standby.get_layout(labels=self.LABELS)
         else:
-            cover = STANDARD_COVER
             if 'image_file' in kwargs:
                 cover = kwargs['image_file']
             elif 'track' in kwargs:
-                cover = kwargs['track'].cover
+                cover = kwargs['track'].cover or STANDARD_COVER
 
             bg = self.layout_player.get_layout(labels=self.LABELS, cover=cover)
 
