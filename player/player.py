@@ -965,13 +965,16 @@ class Player(object):
             # start playback first, then change image to prevent lag
             self.set_image(track=track)
             print('here')
+            print(self._playback_thread)
             self._playback_thread.join()
+            print(self._playback_thread)
             # so, join continues as soon as this
             # thread is finished, leaving the rest
             # of the application responsive
             print('there')
             self.playing_track = None
             self._playback_thread = None
+            print(self._playback_thread)
 
     def _playback_task(self, **kwargs):
         self.playing_track = kwargs['track']
