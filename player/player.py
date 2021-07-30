@@ -966,7 +966,12 @@ class Player(object):
             self.set_image(track=track)
             print('here')
             self._playback_thread.join()
+            # so, join continues as soon as this
+            # thread is finished, leaving the rest
+            # of the application responsive
             print('there')
+            self.playing_track = None
+            self._playback_thread = None
 
     def _playback_task(self, **kwargs):
         self.playing_track = kwargs['track']
@@ -975,9 +980,9 @@ class Player(object):
         self.playing_track.play()
 
         # cleanup
-        # self._playback_thread.join()
-        self.playing_track = None
-        self._playback_thread = None
+        # self._playback_thread.close()
+        # self.playing_track = None
+        # self._playback_thread = None
     ############################################
 
     def kill_loading_process(self):
