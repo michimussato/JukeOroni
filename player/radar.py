@@ -1,6 +1,7 @@
 import os
 import time
-import threading
+# import threading
+import multiprocessing
 import tempfile
 from io import BytesIO
 from PIL import Image, ImageDraw
@@ -11,7 +12,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
 
-class _RadarThread(threading.Thread):
+class _RadarThread(multiprocessing.Process):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.name = 'Radar Thread'
@@ -34,7 +35,6 @@ class Radar(object):
 
     # https://www.meteoschweiz.admin.ch/product/output/satellite/cloud-cover/version__20210730_1138/VLSN84.LSSW_20210730_1115.jpg
     # https://www.meteoschweiz.admin.ch/product/output/cosmo/wind/10m/forecast/version__20210730_1142/web_c1e_ch_ctrl-web_uv10m_kmh_20210731_2300.png
-
 
     # import urllib.request
     # img = io.BytesIO(urllib.request.urlopen(image_file_url).read())
