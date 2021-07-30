@@ -84,18 +84,245 @@ GPIO.setup(BUTTONS, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 AUDIO_FILES = ['.dsf', '.flac', '.wav', '.dff']
 
 
+class AudiobookBox(object):
+    ACCEPTED_FILES = ['.mp3']
+
+
+class MeditationBox(object):
+    ACCEPTED_FILES = []
+
+
+"""
+subprocess
+The subprocess module lets you run and control other programs. Anything you can start with the command line on the computer, can be run and controlled with this module. Use this to integrate external programs into your Python code.
+
+multiprocessing
+The multiprocessing module lets you divide tasks written in python over multiple processes to help improve performance. It provides an API very similar to the threading module; it provides methods to share data across the processes it creates, and makes the task of managing multiple processes to run Python code (much) easier. In other words, multiprocessing lets you take advantage of multiple processes to get your tasks done faster by executing code in parallel.
+(can run on several cores)
+
+threading
+The threading module uses threads, the multiprocessing module uses processes. The difference is that threads run in the same memory space, while processes have separate memory. This makes it a bit harder to share objects between processes with multiprocessing. Since threads use the same memory, precautions have to be taken or two threads will write to the same memory at the same time. This is what the global interpreter lock is for.
+(no multicore usage, but process concurrency/context switching)
+"""
+
+
 class JukeBox(object):
+    ACCEPTED_FILES = ['.dsf', '.flac', '.wav', '.dff']
     # Plays Tracks and Albums
-    CMD = 'ffplay -hide_banner -autoexit -nodisp -vn {file}'
+    #
+    CMD = 'ffplay -hide_banner -autoexit -nodisp -vn -loglevel quiet {file}'
 
     def __init__(self):
         self.is_playing = False
+        self.auto_update_tracklist = False
+
+        self.loaded_tracks_queue = []
+
+        self.loading_queue = multiprocessing.Queue()
+        self.loading = 0
+
+        self._track_list_generator_thread = None
+        self._track_loader_thread = None
+
+    ############################################
+    # turn on procedure
+    def turn_on(self):
+        self.track_list_generator_thread()
+        self.track_loader_thread()
+    ############################################
+
+    ############################################
+    # track list generator
+    def track_list_generator_thread(self, **kwargs):
+        self._track_list_generator_thread = threading.Thread(target=self.track_list_generator_task, kwargs=kwargs)
+        self._track_list_generator_thread.name = 'Track List Generator Thread'
+        self._track_list_generator_thread.daemon = False
+        self._track_list_generator_thread.start()
+
+    def track_list_generator_task(self, **kwargs):
+        while True:
+            if self.auto_update_tracklist:
+
+                self.create_update_track_list()
+
+            time.sleep(kwargs.get('auto_update_tracklist_interval') or DEFAULT_TRACKLIST_REGEN_INTERVAL/3600)  # is 12 hours
+
+    @staticmethod
+    def create_update_track_list():
+        # TODO: filter image files, m3u etc.
+        logging.info('generating updated track list...')
+        print('generating updated track list...')
+        _files = []
+        for path, dirs, files in os.walk(MUSIC_DIR):
+            album = os.path.basename(path)
+            try:
+                # TODO: maybe use a better character
+                artist, year, title = album.split(' - ')
+            except ValueError as err:
+                with open(FAULTY_ALBUMS, 'a+') as f:
+                    f.write(album + '\n')
+                # TODO: store this somewhere to fix it
+                print(err)
+                LOG.exception(f'not a valid album path: {album}')
+                print(f'not a valid album path: {album}')
+                continue
+
+            query_artist = Artist.objects.filter(name__exact=artist)
+            if bool(query_artist):
+                model_artist = query_artist[0]
+                # print('    artist found in db')
+            else:
+                model_artist = Artist(name=artist)
+                model_artist.save()
+                # print('    artist created in db')
+
+            cover_root = path
+            jpg_path = os.path.join(cover_root, 'cover.jpg')
+            png_path = os.path.join(cover_root, 'cover.png')
+            if os.path.exists(jpg_path):
+                img_path = jpg_path
+            elif os.path.exists(png_path):
+                img_path = png_path
+            else:
+                with open(MISSING_COVERS_FILE, 'a+') as f:
+                    f.write(cover_root + '\n')
+                logging.info(f'cover is None: {album}')
+                print(f'cover is None: {album}')
+                img_path = None
+
+            # need to add artist too
+            query_album = Album.objects.filter(artist_id=model_artist, album_title__exact=title, year__exact=year)
+
+            if bool(query_album):
+                model_album = query_album[0]
+                model_album.cover = img_path
+                # print('    album found in db')
+            else:
+                model_album = Album(artist_id=model_artist, album_title=title, year=year, cover=img_path)
+                # print('    album created in db')
+
+            try:
+                model_album.save()
+            except Exception as err:
+                logging.exception(err)
+                print(err)
+
+            for _file in files:
+                # print('      track: ' + _file)
+                if os.path.splitext(_file)[1] in AUDIO_FILES:
+                    file_path = os.path.join(path, _file)
+                    query_track = DjangoTrack.objects.filter(audio_source__exact=file_path)
+
+                    # # TODO: will throw error if query returns zero or more than one
+                    # #  result
+                    # query_track = DjangoTrack.objects.get(audio_source__exact=file_path)
+
+                    if not bool(query_track):
+                        model_track = DjangoTrack(album_id=model_album, audio_source=file_path)
+                        model_track.save()
+                        # print('        track created in db')
+
+                    _files.append(file_path)
+
+        # remove obsolete db objects:
+        django_tracks = DjangoTrack.objects.all()
+        for django_track in django_tracks:
+            if django_track.audio_source not in _files:
+                django_track.delete()
+
+        logging.info(f'track list generated successfully: {len(_files)} tracks found')
+        print(f'track list generated successfully: {len(_files)} tracks found')
+    ############################################
+
+    ############################################
+    # track loader
+    def track_loader_thread(self):
+        self._track_loader_thread = threading.Thread(target=self._track_loader_task)
+        self._track_loader_thread.name = 'Track Loader Thread'
+        self._track_loader_thread.daemon = False
+        self._track_loader_thread.start()
+
+    def _track_loader_task(self):
+        while True:
+            if len(self.loaded_tracks_queue) + self.loading < MAX_CACHED_FILES and not bool(self.loading):
+                next_track = self.get_next_track()
+                if next_track is None:
+                    time.sleep(1.0)
+                    continue
+
+                # # threading approach seems causing problems if we actually need to empty
+                # # self.tracks. the thread will finish and add the cached track to self.tracks
+                # # afterwards because we cannot kill the running thread
+                # thread = threading.Thread(target=self._load_track_task, kwargs={'track': next_track})
+                # # TODO: maybe this name is not ideal
+                # thread.name = 'Track Loader Task Thread'
+                # thread.daemon = False
+
+                # multiprocessing approach
+                # this approach apparently destroys the Track object that it uses to cache
+                # data. when the Queue handles over that cached object, it seems like
+                # it re-creates the Track object (pickle, probably) but the cached data is
+                # gone of course because __del__ was called before that already.
+                self.loading_process = multiprocessing.Process(target=self._load_track_task, kwargs={'track': next_track})
+                self.loading_process.start()
+
+                self.loading += 1
+
+                # print(type(self.loading_process))
+                # print(dir(self.loading_process))
+
+                try:
+                    while self.loading_process.is_alive():
+                        # logging.error(self.loading_process)
+                        # print(self.loading_process)
+                        time.sleep(1.0)
+
+                    ret = self.loading_queue.get()
+
+                    if ret is not None:
+                        self.loaded_tracks_queue.append(ret)
+
+                    # logging.error(self.loading_process)
+                    self.loading_process.join()
+
+                except AttributeError as err:
+                    print(err)
+                    logging.exception(err)
+
+                finally:
+                    self.loading -= 1
+
+            time.sleep(1.0)
+
+    def _load_track_task(self, **kwargs):
+        track = kwargs['track']
+        logging.debug(f'starting thread: \"{track.audio_source}\"')
+        print(f'starting thread: \"{track.audio_source}\"')
+
+        try:
+            size = os.path.getsize(track.audio_source)
+            logging.info(f'loading track ({str(round(size / (1024*1024), 3))} MB): \"{track.audio_source}\"')
+            print(f'loading track ({str(round(size / (1024*1024), 3))} MB): \"{track.audio_source}\"')
+            processing_track = Track(track)
+            logging.info(f'loading successful: \"{track.audio_source}\"')
+            print(f'loading successful: \"{track.audio_source}\"')
+            ret = processing_track
+        except MemoryError as err:
+            print(err)
+            logging.exception(f'loading failed: \"{track.audio_source}\"')
+            print(f'loading failed: \"{track.audio_source}\"')
+            ret = None
+
+        # here, or after that, probably processing_track.__del__() is called but pickled/recreated
+        # in the main process
+        self.loading_queue.put(ret)
+    ############################################
 
 
 class Radio(object):
-    # Plays online radio streams
+    # Plays online radio streams (Channels)
     # CMD = 'mplayer -nogui -noconfig all -novideo -nocache -playlist {url}'  # plays m3u
-    CMD = 'ffplay -hide_banner -autoexit -nodisp -vn {url}'  # plays the actual icy stream
+    CMD = 'ffplay -hide_banner -autoexit -nodisp -vn -loglevel quiet {url}'  # plays the actual icy stream
     # Header: curl --head {url}
 
     def __init__(self):
