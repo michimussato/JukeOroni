@@ -1,7 +1,7 @@
 import os
 import time
-import threading
-# import multiprocessing
+# import threading
+import multiprocessing
 import tempfile
 from io import BytesIO
 from PIL import Image, ImageDraw
@@ -12,7 +12,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
 
-class _RadarThread(threading.Thread):
+class _RadarThread(multiprocessing.Process):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.name = 'Radar Thread'
@@ -51,16 +51,17 @@ class Radar(object):
         self.radar_image = self._placeholder
         # maybe we need to pass the image here because of multiprocessing not
         # sharing memory...not know yet...indeed. need syncmanager
-        self.radar_thread = _RadarThread(target=self._radar_task)
+        self.radar_thread = _RadarThread(target=self._radar_task, radar_image=self.radar_image)
 
-    def _radar_task(self):
+    def _radar_task(self, **kwargs):
         while True:
             print('Updating radar image in background...')
-            self.radar_image = self._radar_screenshot()
+            self._radar_screenshot(radar_image=kwargs['radar_image'])
             print('Radar image updated.')
             time.sleep(self.RADAR_UPDATE_INTERVAL*60.0)
 
-    def _radar_screenshot(self):
+    def _radar_screenshot(self, **kwargs):
+        radar_image = kwargs['radar_image']
         try:
             options = selenium.webdriver.firefox.options.Options()
             options.headless = True
@@ -84,8 +85,8 @@ class Radar(object):
             botton = height - top
             im = im.crop((left, top, right, botton))
             # will result in size (456, 336) for now
-            return im.rotate(90, expand=True)
+            radar_image = im.rotate(90, expand=True)
 
         except Exception as err:
             print(err)
-            return self._placeholder
+            radar_image = self._placeholder
