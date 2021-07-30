@@ -574,14 +574,14 @@ class Player(object):
     ############################################
     # buttons
     def buttons_watcher_thread(self):
-        # self._buttons_watcher_thread = threading.Thread(target=self._buttons_watcher_task)
-        # self._buttons_watcher_thread.name = 'Buttons Watcher Thread'
-        # self._buttons_watcher_thread.daemon = False
-        # self._buttons_watcher_thread.start()
-        self._buttons_watcher_thread = multiprocessing.Process(target=self._buttons_watcher_task)
+        self._buttons_watcher_thread = threading.Thread(target=self._buttons_watcher_task)
         self._buttons_watcher_thread.name = 'Buttons Watcher Thread'
         self._buttons_watcher_thread.daemon = False
         self._buttons_watcher_thread.start()
+        # self._buttons_watcher_thread = multiprocessing.Process(target=self._buttons_watcher_task)
+        # self._buttons_watcher_thread.name = 'Buttons Watcher Thread'
+        # self._buttons_watcher_thread.daemon = False
+        # self._buttons_watcher_thread.start()
 
     def _buttons_watcher_task(self):
         for pin in BUTTONS:
@@ -954,7 +954,7 @@ class Player(object):
         if self.tracks:
             track = self.tracks.pop(0)
 
-            self._playback_thread = threading.Thread(target=self._playback_task, kwargs={'track': track})
+            self._playback_thread = multiprocessing.Process(target=self._playback_task, kwargs={'track': track})
             self._playback_thread.name = 'Playback Thread'
             self._playback_thread.daemon = False
             self._playback_thread.start()
