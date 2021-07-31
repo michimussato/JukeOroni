@@ -363,11 +363,11 @@ class Player(object):
 
     def _track_loader_task(self):
         while True and not self._quit:
-            print('here')
-            print(len(self.tracks) + int(bool(self.loading_process)) < MAX_CACHED_FILES)
-            print(not bool(self.loading_process))
+            # print('here')
+            # print(len(self.tracks) + int(bool(self.loading_process)) < MAX_CACHED_FILES)
+            # print(not bool(self.loading_process))
             if len(self.tracks) + int(bool(self.loading_process)) < MAX_CACHED_FILES and not bool(self.loading_process):
-                print('and here')
+                # print('and here')
                 next_track = self.get_next_track()
                 if next_track is None:
                     print('stuck here?')
@@ -453,22 +453,21 @@ class Player(object):
                 # if self.loading_process is not None:
                 # stop here and wait for the process to finish or to get killed
                 # in case of a mode change
-                print(self.loading_process)
-                print(self.loading_process)
-                print(self.loading_process)
+                # print(self.loading_process)
+                # print(self.loading_process)
+                # print(self.loading_process)
                 self.loading_process.join()
                 ret = self.loading_queue.get()
 
                 if self.loading_process.exitcode:
                     raise Exception('Exit code not 0')
-                print(self.loading_process.exitcode)
-                print(self.loading_process.exitcode)
-                print(self.loading_process.exitcode)
+                # print(self.loading_process.exitcode)
+                # print(self.loading_process.exitcode)
+                # print(self.loading_process.exitcode)
                 self.loading_process = None
-                print(self.loading_process)
-                print(self.loading_process)
-                print(self.loading_process)
-
+                # print(self.loading_process)
+                # print(self.loading_process)
+                # print(self.loading_process)
 
                 if ret is not None:
                     self.tracks.append(ret)
@@ -561,8 +560,8 @@ class Player(object):
     def playback_thread(self):
         printed_waiting_msg = False
         while not self.tracks and not bool(self.loading_process):
-            print(self.tracks)
-            print(self.loading_process)
+            # print(self.tracks)
+            # print(self.loading_process)
             # if not printed_waiting_msg:
             logging.info('waiting for loading thread to kick in')
             print('waiting for loading thread to kick in')
@@ -577,7 +576,7 @@ class Player(object):
             # []
             # print(self.loading)
             # # 1
-            print(self.loading_process)
+            # print(self.loading_process)
             # None
             if not _display_loading:
                 self.set_image(image_file=LOADING_IMAGE)
@@ -634,7 +633,7 @@ class Player(object):
             self.loading_process.terminate()
             # a process can be joined multiple times:
             # here: just wait for termination before proceeding
-            self.loading_process.join()
+            # self.loading_process.join()
         self.loading_process = None
         # remove all cached tracks from the filesystem except the one
         # that is currently playing
@@ -697,12 +696,12 @@ class Player(object):
 
             tracks = self.track_list
 
-            print(tracks)
-            print(tracks)
-            print(tracks)
-            print(tracks)
-            print(tracks)
-            print(tracks)
+            # print(tracks)
+            # print(tracks)
+            # print(tracks)
+            # print(tracks)
+            # print(tracks)
+            # print(tracks)
 
             if not bool(tracks):
                 random_album = random.choice(Album.objects.all())
@@ -734,10 +733,10 @@ class Player(object):
                     next_track = album_tracks[0]
 
             else:
-                print('Are we here?')
-                print('Are we here?')
-                print('Are we here?')
-                print('Are we here?')
+                # print('Are we here?')
+                # print('Are we here?')
+                # print('Are we here?')
+                # print('Are we here?')
                 # in case self.tracks is empty, we want the next
                 # track id based on the one that is currently
                 # playing
