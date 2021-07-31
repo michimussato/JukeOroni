@@ -701,12 +701,12 @@ class Player(object):
 
             tracks = self.track_list
 
-            print(tracks)
-            print(tracks)
-            print(tracks)
-            print(tracks)
-            print(tracks)
-            print(tracks)
+            # print(tracks)
+            # print(tracks)
+            # print(tracks)
+            # print(tracks)
+            # print(tracks)
+            # print(tracks)
 
             if not bool(tracks):
                 random_album = random.choice(Album.objects.all())
@@ -738,10 +738,6 @@ class Player(object):
                     next_track = album_tracks[0]
 
             else:
-                print('Are we here?')
-                print('Are we here?')
-                print('Are we here?')
-                print('Are we here?')
                 # in case self.tracks is empty, we want the next
                 # track id based on the one that is currently
                 # playing
@@ -779,14 +775,16 @@ class Player(object):
 
 
 def player():
-    p = Player(auto_update_tracklist=True)
+    track_list_gen = False
+    p = Player(auto_update_tracklist=track_list_gen)
     p.temp_cleanup()
     p.buttons_watcher_thread()
     p.state_watcher_thread()
     p.pimoroni_watcher_thread()
     p.set_image()
-    p.track_list_generator_thread(auto_update_tracklist_interval=DEFAULT_TRACKLIST_REGEN_INTERVAL / 4)  # effect only if auto_update_tracklist=True
     p.track_loader_thread()
+    if track_list_gen:
+        p.track_list_generator_thread(auto_update_tracklist_interval=DEFAULT_TRACKLIST_REGEN_INTERVAL / 4)  # effect only if auto_update_tracklist=True
 
 
 if __name__ == '__main__':
