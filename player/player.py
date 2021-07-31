@@ -435,61 +435,18 @@ class Player(object):
                 self.loading_process.name = 'Track Loader Task Process'
                 self.loading_process.start()
 
-                print(self.loading_process)
-                print(self.loading_process)
-                print(self.loading_process)
-                print(self.loading_process)
-
                 self.loading += 1
 
-                # print(type(self.loading_process))
-                # print(dir(self.loading_process))
+                # if self.loading_process is not None:
+                # stop here and wait for the process to finish or to get killed
+                # in case of a mode change
+                self.loading_process.join()
+                ret = self.loading_queue.get()
 
-                if self.loading_process is not None:
-                    self.loading_process.join()
-                    ret = self.loading_queue.get()
-                    print(ret)
-                    # while self.loading_process.is_alive():
-                    #     print(self.loading_process)
-                    #     # logging.error(self.loading_process)
-                    #     # print(self.loading_process)
-                    #     time.sleep(1.0)
-
-                    # ret = self.loading_queue.get()
-
-                    if ret is not None:
-                        self.tracks.append(ret)
-
-                    # logging.error(self.loading_process)
-                    # self.loading_process.join()
+                if ret is not None:
+                    self.tracks.append(ret)
 
                 self.loading -= 1
-
-                # try:
-                #     # TODO: WHY THIS TRY CLAUSE??? CAN'T REMEMBER...
-                #     #  maybe because we might be stuck in that loop
-                #     #  checking if is_alive() when we set self.loading_process
-                #     #  to None somewhere else at the same time... could be
-                #     # TODO: could use .join() instead of checking is_alive()
-                #     while self.loading_process.is_alive():
-                #         # logging.error(self.loading_process)
-                #         # print(self.loading_process)
-                #         time.sleep(1.0)
-                #
-                #     ret = self.loading_queue.get()
-                #
-                #     if ret is not None:
-                #         self.tracks.append(ret)
-                #
-                #     # logging.error(self.loading_process)
-                #     self.loading_process.join()
-                #
-                # except AttributeError as err:
-                #     print(err)
-                #     logging.exception(err)
-                #
-                # finally:
-                #     self.loading -= 1
 
             time.sleep(1.0)
 
