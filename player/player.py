@@ -141,7 +141,7 @@ class Player(object):
 
         self.auto_update_tracklist = auto_update_tracklist
         self.tracks = []
-        # self.loading = 0
+        self.loading = 0
         self.loading_queue = multiprocessing.Queue()
         self.loading_process = None
         self.playing = False
@@ -200,29 +200,18 @@ class Player(object):
         print(f"Button press detected on pin: {pin} label: {current_label}")
 
         # Mode button
-        # if self.button_3_value == 'Next':  # we only want to switch mode when something is already playing
-        if current_label == self.button_1_value:
-            # empty cached track list but leave current track playing
-            # but update the display to reflect current Mode
-            self.kill_loading_process()
+        if self.button_3_value == 'Next':  # we only want to switch mode when something is already playing
+            if current_label == self.button_1_value:
+                # empty cached track list but leave current track playing
+                # but update the display to reflect current Mode
+                self.kill_loading_process()
 
-            self.button_1_value = BUTTON_1[current_label]
+                self.button_1_value = BUTTON_1[current_label]
 
-            # print(self.playing_track)
-            # print(self.playing_track)
-            # print(self.playing_track)
-            # print(self.playing_track)
-
-            # if self.playing_track is None:
-            #     self.set_image(image_file=LOADING_IMAGE)
-            # else:
-            if self.button_3_value == 'Next':
                 self.set_image(track=self.playing_track)
-            elif self.button_3_value == 'Play':
-                self.set_image()
-            print(f'Playback mode is now {self.button_1_value}.')
-            logging.info(f'Playback mode is now {self.button_1_value}.')
-            return
+                print(f'Playback mode is now {self.button_1_value}.')
+                logging.info(f'Playback mode is now {self.button_1_value}.')
+                return
 
         # Stop button
         if current_label == self.button_2_value:
@@ -366,14 +355,9 @@ class Player(object):
 
     def _track_loader_task(self):
         while True and not self._quit:
-            print('here')
-            print(len(self.tracks) + int(bool(self.loading_process)) < MAX_CACHED_FILES)
-            print(not bool(self.loading_process))
-            if len(self.tracks) + int(bool(self.loading_process)) < MAX_CACHED_FILES and not bool(self.loading_process):
-                print('and here')
+            if len(self.tracks) + self.loading < MAX_CACHED_FILES and not bool(self.loading):
                 next_track = self.get_next_track()
                 if next_track is None:
-                    print('stuck here?')
                     time.sleep(1.0)
                     continue
 
@@ -390,93 +374,22 @@ class Player(object):
                 # data. when the Queue handles over that cached object, it seems like
                 # it re-creates the Track object (pickle, probably) but the cached data is
                 # gone of course because __del__ was called before that already.
-                """
-                self.loading_process = multiprocessing.Process(target=self._load_track_task, args=(self.loading_queue, ), kwargs={'track': next_track})
-                self.loading_process.name = 'Track Loader Task Process'
-                self.loading_process.start()
-
-                # self.loading += 1
-
-                # if self.loading_process is not None:
-                # stop here and wait for the process to finish or to get killed
-                # in case of a mode change
-                print(self.loading_process)
-                print(self.loading_process)
-                print(self.loading_process)
-                self.loading_process.join()
-                ret = self.loading_queue.get()
-
-                if self.loading_process.exitcode:
-                    raise Exception('Exit code not 0')
-                print(self.loading_process.exitcode)
-                print(self.loading_process.exitcode)
-                print(self.loading_process.exitcode)
-                self.loading_process = None
-                print(self.loading_process)
-                print(self.loading_process)
-                print(self.loading_process)
-
-
-                if ret is not None:
-                    self.tracks.append(ret)
-
-                # self.loading -= 1
-
-            time.sleep(1.0)
-
-    def _load_track_task(self, *args, **kwargs):
-        track = kwargs['track']
-        logging.debug(f'starting thread: \"{track.audio_source}\"')
-        print(f'starting thread: \"{track.audio_source}\"')
-
-        try:
-            size = os.path.getsize(track.audio_source)
-            logging.info(f'loading track ({str(round(size / (1024*1024), 3))} MB): \"{track.audio_source}\"')
-            print(f'loading track ({str(round(size / (1024*1024), 3))} MB): \"{track.audio_source}\"')
-            processing_track = Track(track)
-            logging.info(f'loading successful: \"{track.audio_source}\"')
-            print(f'loading successful: \"{track.audio_source}\"')
-            ret = processing_track
-        except MemoryError as err:
-            print(err)
-            logging.exception(f'loading failed: \"{track.audio_source}\"')
-            print(f'loading failed: \"{track.audio_source}\"')
-            ret = None
-
-        # here, or after that, probably processing_track.__del__() is called but pickled/recreated
-        # in the main process
-        args[0].put(ret)
-                """
                 self.loading_process = multiprocessing.Process(target=self._load_track_task, kwargs={'track': next_track})
                 self.loading_process.name = 'Track Loader Task Process'
                 self.loading_process.start()
 
-                # self.loading += 1
+                self.loading += 1
 
                 # if self.loading_process is not None:
                 # stop here and wait for the process to finish or to get killed
                 # in case of a mode change
-                print(self.loading_process)
-                print(self.loading_process)
-                print(self.loading_process)
                 self.loading_process.join()
                 ret = self.loading_queue.get()
-
-                if self.loading_process.exitcode:
-                    raise Exception('Exit code not 0')
-                print(self.loading_process.exitcode)
-                print(self.loading_process.exitcode)
-                print(self.loading_process.exitcode)
-                self.loading_process = None
-                print(self.loading_process)
-                print(self.loading_process)
-                print(self.loading_process)
-
 
                 if ret is not None:
                     self.tracks.append(ret)
 
-                # self.loading -= 1
+                self.loading -= 1
 
             time.sleep(1.0)
 
@@ -536,11 +449,11 @@ class Player(object):
 
     def state_watcher_task(self):
         while True and not self._quit:
-            print('State Watcher')
 
             new_time = localtime(now())
 
             if self.button_3_value == 'Next':  # equals: in Play mode
+                # TODO implement Play/Next combo
                 if self._playback_thread is None:
                     self.play()
                 elif self._playback_thread.is_alive():
@@ -563,25 +476,17 @@ class Player(object):
 
     def playback_thread(self):
         printed_waiting_msg = False
-        while not self.tracks and not bool(self.loading_process):
-            print(self.tracks)
-            print(self.loading_process)
-            # if not printed_waiting_msg:
-            logging.info('waiting for loading thread to kick in')
-            print('waiting for loading thread to kick in')
-            printed_waiting_msg = True
+        while not self.tracks and not self.loading:
+            if not printed_waiting_msg:
+                logging.info('waiting for loading thread to kick in')
+                print('waiting for loading thread to kick in')
+                printed_waiting_msg = True
             time.sleep(1)
 
         del printed_waiting_msg
 
         _display_loading = False
-        while not self.tracks and bool(self.loading_process):
-            print(self.tracks)
-            # []
-            # print(self.loading)
-            # # 1
-            print(self.loading_process)
-            # None
+        while not self.tracks and self.loading:
             if not _display_loading:
                 self.set_image(image_file=LOADING_IMAGE)
                 _display_loading = True
@@ -637,7 +542,7 @@ class Player(object):
             self.loading_process.terminate()
             # a process can be joined multiple times:
             # here: just wait for termination before proceeding
-            # self.loading_process.join()
+            self.loading_process.join()
         self.loading_process = None
         # remove all cached tracks from the filesystem except the one
         # that is currently playing
@@ -699,19 +604,8 @@ class Player(object):
         elif self.button_1_value == 'Albm -> Rand':
 
             tracks = self.track_list
-
-            print(tracks)
-            print(tracks)
-            print(tracks)
-            print(tracks)
-            print(tracks)
-            print(tracks)
-
             if not bool(tracks):
-                random_album = random.choice(Album.objects.all())
-                album_tracks = DjangoTrack.objects.filter(album_id=random_album)
-                next_track = album_tracks[0]
-                return next_track
+                return None
             if bool(self.tracks):
                 # TODO: if we pressed the Next button too fast,
                 #  self.tracks will be still empty, hence,
@@ -737,10 +631,6 @@ class Player(object):
                     next_track = album_tracks[0]
 
             else:
-                print('Are we here?')
-                print('Are we here?')
-                print('Are we here?')
-                print('Are we here?')
                 # in case self.tracks is empty, we want the next
                 # track id based on the one that is currently
                 # playing
