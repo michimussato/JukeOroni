@@ -11,14 +11,6 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
 
-class _RadarThread(threading.Thread):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.name = 'Radar Thread'
-        self.daemon = False
-        self.start()
-
-
 class Radar(object):
     RADAR_UPDATE_INTERVAL = 5  # in minutes
     URL = r'https://meteo.search.ch/prognosis'
@@ -51,8 +43,12 @@ class Radar(object):
         self._placeholder = Image.new(mode='RGB', size=(336, 456), color=(128, 128, 128))
         self.radar_image = self._placeholder
         # maybe we need to pass the image here because of multiprocessing not
-        # sharing memory...not know yet...indeed. need syncmanager
-        self.radar_thread = _RadarThread(target=self._radar_task)
+        # sharing memory...not know yet...indeed. need syncmanager maybe?
+        # probably also not an option because it has its own types
+        self.radar_thread = threading.Thread(target=self._radar_task)
+        self.radar_thread.name = 'Radar Thread'
+        self.radar_thread.daemon = False
+        self.radar_thread.start()
 
     def _radar_task(self):
         while True:

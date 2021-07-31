@@ -303,7 +303,7 @@ class Player(object):
     # so hopefully ideal for multiprocessing
     def track_list_generator_thread(self, **kwargs):
         self._track_list_generator_thread = multiprocessing.Process(target=self.track_list_generator_task, kwargs=kwargs)
-        self._track_list_generator_thread.name = 'Track List Generator Thread'
+        self._track_list_generator_thread.name = 'Track List Generator Process'
         self._track_list_generator_thread.daemon = False
         self._track_list_generator_thread.start()
 
