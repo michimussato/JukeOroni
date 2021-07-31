@@ -141,7 +141,7 @@ class Player(object):
 
         self.auto_update_tracklist = auto_update_tracklist
         self.tracks = []
-        self.loading = 0
+        # self.loading = 0
         self.loading_queue = multiprocessing.Queue()
         self.loading_process = None
         self.playing = False
@@ -363,7 +363,7 @@ class Player(object):
 
     def _track_loader_task(self):
         while True and not self._quit:
-            if len(self.tracks) + self.loading < MAX_CACHED_FILES and not bool(self.loading):
+            if len(self.tracks) + int(bool(self.loading_process)) < MAX_CACHED_FILES and not bool(self.loading_process):
                 next_track = self.get_next_track()
                 if next_track is None:
                     # print('stuck here?')
@@ -387,7 +387,7 @@ class Player(object):
                 self.loading_process.name = 'Track Loader Task Process'
                 self.loading_process.start()
 
-                self.loading += 1
+                # self.loading += 1
 
                 # if self.loading_process is not None:
                 # stop here and wait for the process to finish or to get killed
@@ -398,7 +398,7 @@ class Player(object):
                 if ret is not None:
                     self.tracks.append(ret)
 
-                self.loading -= 1
+                # self.loading -= 1
 
             time.sleep(1.0)
 
@@ -485,7 +485,7 @@ class Player(object):
 
     def playback_thread(self):
         printed_waiting_msg = False
-        while not self.tracks and not self.loading:
+        while not self.tracks and not bool(self.loading_process):
             if not printed_waiting_msg:
                 logging.info('waiting for loading thread to kick in')
                 print('waiting for loading thread to kick in')
@@ -495,10 +495,13 @@ class Player(object):
         del printed_waiting_msg
 
         _display_loading = False
-        while not self.tracks and self.loading:
+        while not self.tracks and bool(self.loading_process):
             print(self.tracks)
-            print(self.loading)
+            # []
+            # print(self.loading)
+            # # 1
             print(self.loading_process)
+            # None
             if not _display_loading:
                 self.set_image(image_file=LOADING_IMAGE)
                 _display_loading = True
