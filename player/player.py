@@ -225,6 +225,8 @@ class Player(object):
                     self.stop()
                     self.set_image()
                     return
+                else:
+                    print('ignored')
             else:
                 print('ignored')
 
@@ -242,13 +244,15 @@ class Player(object):
                 return
             else:
                 print('ignored')
+        else:
+            print('ignored')
 
         # Radio button
         if current_label == self.button_4_value:  # Strm
             # Will be implemented in the refactored version
             # Why mess around here...
             print('ignored')
-            return
+            # return
     ############################################
 
     ############################################
