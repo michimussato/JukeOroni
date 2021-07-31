@@ -87,15 +87,27 @@ channel_list = [
 ]
 
 
-def main():
+def channels_write_table():
     from player.models import Channel
     for channel in channel_list:
         c = Channel(display_name=channel[0], display_name_short=channel[1], is_enabled=channel[2], url=channel[3], url_logo=channel[4])
         c.save()
 
 
-def dump_table_channels():
+def channels_dump_table():
     from player.models import Channel
     _channels = Channel.objects.all()
     for _channel in _channels:
         print(f'(\"{_channel.display_name}\", \"{_channel.display_name_short}\", {_channel.is_enabled}, \"{_channel.url}\", \"{_channel.url_logo}\", {_channel.last_played}),')
+
+
+def remove_tracks_albums_artists():
+    from player.models import Track, Album, Artist
+    Track.objects.all().delete()
+    Album.objects.all().delete()
+    Artist.objects.all().delete()
+
+
+def remove_channels():
+    from radio.models import Channel
+    Channel.objects.all().delete()

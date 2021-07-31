@@ -9,6 +9,7 @@ import selenium.webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
+from player.jukeoroni.settings import RADAR_UPDATE_INTERVAL
 
 
 class _RadarThread(threading.Thread):
@@ -20,7 +21,7 @@ class _RadarThread(threading.Thread):
 
 
 class Radar(object):
-    RADAR_UPDATE_INTERVAL = 5  # in minutes
+    # RADAR_UPDATE_INTERVAL = 5  # in minutes
     URL = r'https://meteo.search.ch/prognosis'
 
     # https://de.sat24.com/de/freeimages
@@ -59,7 +60,7 @@ class Radar(object):
             print('Updating radar image in background...')
             self.radar_image = self._radar_screenshot()
             print('Radar image updated.')
-            time.sleep(self.RADAR_UPDATE_INTERVAL*60.0)
+            time.sleep(RADAR_UPDATE_INTERVAL*60.0)
 
     def _radar_screenshot(self):
         try:

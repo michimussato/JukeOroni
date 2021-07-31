@@ -84,11 +84,77 @@ GPIO.setup(BUTTONS, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 AUDIO_FILES = ['.dsf', '.flac', '.wav', '.dff']
 
 
-# class AudiobookBox(object):
+
+
+"""
+event based start/suspend/resume thread
+
+import threading
+import time
+
+# This function gets called by our thread.. so it basically becomes the thread innit..                    
+def wait_for_event(e):
+    while True:
+        print '\tTHREAD: This is the thread speaking, we are Waiting for event to start..'
+        event_is_set = e.wait()
+        print '\tTHREAD:  WHOOOOOO HOOOO WE GOT A SIGNAL  : %s', event_is_set
+        e.clear()
+
+# Main code.. 
+e = threading.Event()
+t = threading.Thread(name='your_mum', 
+                     target=wait_for_event,
+                     args=(e,))
+t.start()
+
+while True:
+    print 'MAIN LOOP: still in the main loop..'
+    time.sleep(4)
+    print 'MAIN LOOP: I just set the flag..'
+    e.set()
+    print 'MAIN LOOP: now Im gonna do some processing n shi-t'
+    time.sleep(4)
+    print 'MAIN LOOP:  .. some more procesing im doing   yeahhhh'
+    time.sleep(4)
+    print 'MAIN LOOP: ok ready, soon we will repeat the loop..'
+    time.sleep(2)
+"""
+
+
+# class PlayerBase(object):
+#     ACCEPTED_OBJECTS = list()
+#     CMD = str()
+#
+#     def turn_on(self):
+#         pass
+#
+#     def shut_down(self):
+#         pass
+#
+#     def insert(self):
+#         pass
+#
+#     def eject(self):
+#         pass
+#
+#     def play(self):
+#         pass
+#
+#     def pause(self):
+#         pass
+#
+#     def stop(self):
+#         pass
+#
+#     def pid(self):
+#         pass
+#
+#
+# class AudiobookBox(PlayerBase):
 #     ACCEPTED_FILES = ['.mp3']
 #
 #
-# class MeditationBox(object):
+# class MeditationBox(PlayerBase):
 #     ACCEPTED_FILES = []
 #
 #
@@ -106,23 +172,15 @@ AUDIO_FILES = ['.dsf', '.flac', '.wav', '.dff']
 # """
 #
 #
-# class JukeBox(object):
+# class JukeBox(PlayerBase):
 #     ACCEPTED_FILES = ['.dsf', '.flac', '.wav', '.dff']
 #     # Plays Tracks and Albums
 #     #
 #     CMD = 'ffplay -hide_banner -autoexit -nodisp -vn -loglevel quiet {file}'
 #
 #     def __init__(self):
-#         self.is_playing = False
-#         self.auto_update_tracklist = False
 #
 #         self.loaded_tracks_queue = []
-#
-#         self.loading_queue = multiprocessing.Queue()
-#         self.loading = 0
-#
-#         self._track_list_generator_thread = None
-#         self._track_loader_thread = None
 #
 #     ############################################
 #     # turn on procedure
@@ -131,108 +189,23 @@ AUDIO_FILES = ['.dsf', '.flac', '.wav', '.dff']
 #         self.track_loader_thread()
 #     ############################################
 #
-#     ############################################
-#     # track list generator
-#     def track_list_generator_thread(self, **kwargs):
-#         self._track_list_generator_thread = threading.Thread(target=self.track_list_generator_task, kwargs=kwargs)
-#         self._track_list_generator_thread.name = 'Track List Generator Thread'
-#         self._track_list_generator_thread.daemon = False
-#         self._track_list_generator_thread.start()
+#     def play(self):
+#         pass
 #
-#     def track_list_generator_task(self, **kwargs):
-#         while True:
-#             if self.auto_update_tracklist:
+#     def pause(self):
+#         pass
 #
-#                 self.create_update_track_list()
+#     def stop(self):
+#         pass
 #
-#             time.sleep(kwargs.get('auto_update_tracklist_interval') or DEFAULT_TRACKLIST_REGEN_INTERVAL/3600)  # is 12 hours
+#     def next(self):
+#         pass
 #
-#     @staticmethod
-#     def create_update_track_list():
-#         # TODO: filter image files, m3u etc.
-#         logging.info('generating updated track list...')
-#         print('generating updated track list...')
-#         _files = []
-#         for path, dirs, files in os.walk(MUSIC_DIR):
-#             album = os.path.basename(path)
-#             try:
-#                 # TODO: maybe use a better character
-#                 artist, year, title = album.split(' - ')
-#             except ValueError as err:
-#                 with open(FAULTY_ALBUMS, 'a+') as f:
-#                     f.write(album + '\n')
-#                 # TODO: store this somewhere to fix it
-#                 print(err)
-#                 LOG.exception(f'not a valid album path: {album}')
-#                 print(f'not a valid album path: {album}')
-#                 continue
+#     def insert(self):
+#         pass
 #
-#             query_artist = Artist.objects.filter(name__exact=artist)
-#             if bool(query_artist):
-#                 model_artist = query_artist[0]
-#                 # print('    artist found in db')
-#             else:
-#                 model_artist = Artist(name=artist)
-#                 model_artist.save()
-#                 # print('    artist created in db')
-#
-#             cover_root = path
-#             jpg_path = os.path.join(cover_root, 'cover.jpg')
-#             png_path = os.path.join(cover_root, 'cover.png')
-#             if os.path.exists(jpg_path):
-#                 img_path = jpg_path
-#             elif os.path.exists(png_path):
-#                 img_path = png_path
-#             else:
-#                 with open(MISSING_COVERS_FILE, 'a+') as f:
-#                     f.write(cover_root + '\n')
-#                 logging.info(f'cover is None: {album}')
-#                 print(f'cover is None: {album}')
-#                 img_path = None
-#
-#             # need to add artist too
-#             query_album = Album.objects.filter(artist_id=model_artist, album_title__exact=title, year__exact=year)
-#
-#             if bool(query_album):
-#                 model_album = query_album[0]
-#                 model_album.cover = img_path
-#                 # print('    album found in db')
-#             else:
-#                 model_album = Album(artist_id=model_artist, album_title=title, year=year, cover=img_path)
-#                 # print('    album created in db')
-#
-#             try:
-#                 model_album.save()
-#             except Exception as err:
-#                 logging.exception(err)
-#                 print(err)
-#
-#             for _file in files:
-#                 # print('      track: ' + _file)
-#                 if os.path.splitext(_file)[1] in AUDIO_FILES:
-#                     file_path = os.path.join(path, _file)
-#                     query_track = DjangoTrack.objects.filter(audio_source__exact=file_path)
-#
-#                     # # TODO: will throw error if query returns zero or more than one
-#                     # #  result
-#                     # query_track = DjangoTrack.objects.get(audio_source__exact=file_path)
-#
-#                     if not bool(query_track):
-#                         model_track = DjangoTrack(album_id=model_album, audio_source=file_path)
-#                         model_track.save()
-#                         # print('        track created in db')
-#
-#                     _files.append(file_path)
-#
-#         # remove obsolete db objects:
-#         django_tracks = DjangoTrack.objects.all()
-#         for django_track in django_tracks:
-#             if django_track.audio_source not in _files:
-#                 django_track.delete()
-#
-#         logging.info(f'track list generated successfully: {len(_files)} tracks found')
-#         print(f'track list generated successfully: {len(_files)} tracks found')
-#     ############################################
+#     def eject(self):
+#         pass
 #
 #     ############################################
 #     # track loader
@@ -329,112 +302,6 @@ AUDIO_FILES = ['.dsf', '.flac', '.wav', '.dff']
 #         self.is_playing = False
 #
 #
-# class JukeOroni(object):
-#     def __init__(self):
-#         self.jukebox = JukeBox()
-#         self.radio = Radio()
-#
-#         self.pimoroni = Inky()
-#
-#         # display layouts
-#         self.layout_standby = StandbyLayout()
-#         self.layout_jukebox = PlayerLayout()
-#         self.layout_radio = None
-#
-#         self._pimoroni_thread_queue = None
-#
-#         # Watcher threads
-#         self._pimoroni_watcher_thread = None
-#         self._buttons_watcher_thread = None
-#         self._state_watcher_thread = None
-#
-#     ############################################
-#     # startup procedure
-#     def turn_on(self):
-#         self.buttons_watcher_thread()
-#         self.pimoroni_watcher_thread()
-#         self.set_image()
-#     ############################################
-#
-#     ############################################
-#     # shutdown procedure
-#     def turn_off(self):
-#         pass
-#     ############################################
-#
-#     ############################################
-#     # pimoroni_watcher_thread
-#     # checks if display update is required
-#     # display has to be updated, we submit a thread
-#     # to self._pimoroni_thread_queue by calling set_image()
-#     def pimoroni_watcher_thread(self):
-#         self._pimoroni_watcher_thread = threading.Thread(target=self._pimoroni_watcher_task)
-#         self._pimoroni_watcher_thread.name = 'Pimoroni Watcher Thread'
-#         self._pimoroni_watcher_thread.daemon = False
-#         self._pimoroni_watcher_thread.start()
-#
-#     def _pimoroni_watcher_task(self):
-#         while True:
-#             if self._pimoroni_thread_queue is not None:
-#                 thread = self._pimoroni_thread_queue
-#                 self._pimoroni_thread_queue = None
-#                 if not thread.is_alive():
-#                     thread.start()
-#                 while thread.is_alive():
-#                     time.sleep(1.0)
-#
-#             time.sleep(1.0)
-#
-#     def set_image(self, **kwargs):
-#         # TODO filter for types of images
-#         #  url, local path, Image.Image, Track
-#         thread = threading.Thread(target=self.task_pimoroni_set_image, kwargs=kwargs)
-#         thread.name = 'Set Image Thread'
-#         thread.daemon = False
-#         self._pimoroni_thread_queue = thread
-#
-#     def task_pimoroni_set_image(self, **kwargs):
-#         # magic here...
-#         bg = kwargs
-#         self.pimoroni.set_image(bg, saturation=PIMORONI_SATURATION)
-#         self.pimoroni.show(busy_wait=False)
-#     ############################################
-#
-#     ############################################
-#     # buttons_watcher_thread
-#     def buttons_watcher_thread(self):
-#         self._buttons_watcher_thread = threading.Thread(target=self._buttons_watcher_task)
-#         self._buttons_watcher_thread.name = 'Buttons Watcher Thread'
-#         self._buttons_watcher_thread.daemon = False
-#         self._buttons_watcher_thread.start()
-#
-#     def _buttons_watcher_task(self):
-#         for pin in BUTTONS:
-#             GPIO.add_event_detect(pin, GPIO.FALLING, self._handle_button, bouncetime=250)
-#         signal.pause()
-#
-#     def _handle_button(self, pin):
-#         button = BUTTONS.index(pin)
-#         logging.info(f"Button press detected on pin: {pin} button: {button}")
-#         print(f"Button press detected on pin: {pin} button: {button}")
-#     ############################################
-#
-#     ############################################
-#     # State watcher (buttons)
-#     # checks if the push of buttons or actions
-#     # performed on web ui requires a state change
-#     # TODO: define states
-#     def state_watcher_thread(self):
-#         self._state_watcher_thread = threading.Thread(target=self.state_watcher_task)
-#         self._state_watcher_thread.name = 'State Watcher Thread'
-#         self._state_watcher_thread.daemon = False
-#         self._state_watcher_thread.start()
-#
-#     def state_watcher_task(self):
-#         while True:
-#             # procedure goes in here
-#             time.sleep(1.0)
-#     ############################################
 
 
 # class Channel(object):
