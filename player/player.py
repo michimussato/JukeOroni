@@ -582,7 +582,9 @@ class Player(object):
             print(track)
             print(track)
 
-            self._playback_thread = multiprocessing.Process(target=self._playback_task, kwargs={'track': track})
+            # cannot use multithreading.Process because the target wants
+            # to modify self.playing_track. only works with threading.Thread
+            self._playback_thread = threading.Thread(target=self._playback_task, kwargs={'track': track})
             self._playback_thread.name = 'Playback Thread'
             self._playback_thread.daemon = False
             self._playback_thread.start()
