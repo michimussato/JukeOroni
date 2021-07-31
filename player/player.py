@@ -370,7 +370,7 @@ class Player(object):
                 # print('and here')
                 next_track = self.get_next_track()
                 if next_track is None:
-                    print('stuck here?')
+                    # print('stuck here?')
                     time.sleep(1.0)
                     continue
 
@@ -464,13 +464,15 @@ class Player(object):
                 # print(self.loading_process.exitcode)
                 # print(self.loading_process.exitcode)
                 # print(self.loading_process.exitcode)
-                self.loading_process = None
+
                 # print(self.loading_process)
                 # print(self.loading_process)
                 # print(self.loading_process)
 
                 if ret is not None:
                     self.tracks.append(ret)
+
+                self.loading_process = None
 
                 # self.loading -= 1
 
