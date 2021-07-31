@@ -563,10 +563,10 @@ class Player(object):
         while not self.tracks and not bool(self.loading_process):
             print(self.tracks)
             print(self.loading_process)
-            if not printed_waiting_msg:
-                logging.info('waiting for loading thread to kick in')
-                print('waiting for loading thread to kick in')
-                printed_waiting_msg = True
+            # if not printed_waiting_msg:
+            logging.info('waiting for loading thread to kick in')
+            print('waiting for loading thread to kick in')
+            printed_waiting_msg = True
             time.sleep(1)
 
         del printed_waiting_msg
