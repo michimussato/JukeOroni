@@ -643,13 +643,13 @@ class Player(object):
                 # it has finished (per default; if we want to skip
                 # the currently playing track: "Next" button)
 
-                if self.playing_track is None:
-                    # and if nothing is playing, we want
-                    # the first track of a random album
-                    random_album = random.choice(Album.objects.all())
-                    album_tracks = DjangoTrack.objects.filter(album_id=random_album)
-                    next_track = album_tracks[0]
-                    return next_track
+                # if self.playing_track is None:
+                #     # and if nothing is playing, we want
+                #     # the first track of a random album
+                #     random_album = random.choice(Album.objects.all())
+                #     album_tracks = DjangoTrack.objects.filter(album_id=random_album)
+                #     next_track = album_tracks[0]
+                #     return next_track
 
                 previous_track_id = self.playing_track.track.id
 
