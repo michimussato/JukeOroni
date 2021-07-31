@@ -5,11 +5,8 @@ import sys
 import glob
 import random
 import time
-# import requests
-import urllib.request
 from pydub.utils import mediainfo
 import threading
-import subprocess
 import multiprocessing
 import logging
 from inky.inky_uc8159 import Inky, BLACK
@@ -22,7 +19,6 @@ from django.utils.timezone import localtime, now
 from .models import Track as DjangoTrack
 from .models import Artist
 from .models import Album
-from .models import Channel as DjangoChannel
 from .displays import Standby as StandbyLayout
 from .displays import Player as PlayerLayout
 
@@ -52,11 +48,8 @@ BUTTONS = [5, 6, 16, 24]
 # https://stackoverflow.com/questions/8381735/how-to-toggle-a-value
 BUTTON_1 = {
             #'Albm': 'Rand',
-            #'    Albm    ': 'Rand',
             'Albm -> Rand': 'Rand -> Albm',
-            # #'Rand': 'Sequ',
-            # 'Rand -> Sequ': 'Sequ -> Albm',
-            #'Sequ': 'Albm',
+            #'Rand': 'Albm',
             'Rand -> Albm': 'Albm -> Rand',
             }
 BUTTON_2 = {
@@ -71,12 +64,6 @@ BUTTON_4 = {
             'Strm': 'Strm',
             # 'back': 'Back',
             }
-
-# Button   4       3       2       1
-# LABELS = ['Stop', 'Next', 'Play', 'Radio']
-
-# for portrait orientation, the order is reversed
-# LABELS = [BUTTON_4, BUTTON_3, BUTTON_2, BUTTON_1]
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(BUTTONS, GPIO.IN, pull_up_down=GPIO.PUD_UP)
@@ -212,13 +199,6 @@ class Player(object):
         logging.info(f"Button press detected on pin: {pin} label: {current_label}")
         print(f"Button press detected on pin: {pin} label: {current_label}")
 
-        # # just kill the radio in every case:
-        # # (radical for now)
-        # pid = subprocess.Popen(['pidof mplayer'], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        # pid_output = pid.communicate()[0].decode('utf-8').replace('\n', '')
-        # if pid_output != '':
-        #     os.system(f'kill {pid_output}')
-
         # Mode button
         if self.button_3_value == 'Next':  # we only want to switch mode when something is already playing
             if current_label == self.button_1_value:
@@ -240,7 +220,6 @@ class Player(object):
                 logging.info('Playback stopped.')
                 self.button_3_value = BUTTON_3['Next']  # Switch button back to Play
                 self.stop()
-                # self.kill_loading_process()
                 self.set_image()
 
         # Play/Next button
@@ -255,45 +234,9 @@ class Player(object):
                 self.next()
 
         # Radio button
-        if current_label == self.button_4_value:
-            # Album.objects.all()
-            if False:
-            # if self.button_3_value == 'Next':
-                print('we are in playback mode. stop first.')
-                return
-            else:
-                try:
-                    self.stop()
-                    channels = DjangoChannel.objects.all()
-                    last_channel = random.choice(channels)
-                    # for channel in channels:
-                    #     if channel.last_played:
-                    #         last_channel = channel
-                    #         break
-                    # subprocess.Popen(
-                    #     ['mplayer', '-nogui', '-noconfig', 'all', '-novideo', '-nocache', '-playlist', last_channel.url])
-
-                    image_file_url = last_channel.url_logo
-
-                    if image_file_url is not None and image_file_url.startswith('http'):
-                        if image_file_url.startswith('http'):
-                            print(f'Getting cover from {image_file_url}')
-                            img = io.BytesIO(urllib.request.urlopen(image_file_url).read())
-                            cover = Image.open(img)
-                            # cover = Image.open(requests.get(image_file_url, stream=True).raw)
-                        else:
-                            cover = Image.open(image_file_url, 'r')
-                        self.set_image(image_file=cover)
-                    else:
-                        # cover = Image.open(image_file_url, 'r')
-                        self.set_image(image_file=STANDARD_COVER)
-                    # cover = Image.open(requests.get(image_file_url, stream=True).raw)
-
-                    # self.set_image(image_file=cover)
-                    # bg = self.layout_player.get_layout(labels=self.LABELS, cover=cover)
-
-                except DjangoChannel.DoesNotExist:
-                    return
+        if current_label == self.button_4_value:  # Strm
+            # Will be implemented in the refactored version
+            # Why mess around here...
             return
     ############################################
 
@@ -312,7 +255,7 @@ class Player(object):
             if self.auto_update_tracklist:
                 self.create_update_track_list()
             # instead of putting it to sleep, we
-            # could schedule it (so that it can finish an
+            # could schedule it maybe (so that it can finish an
             # restart at some given time again)
             time.sleep(kwargs.get('auto_update_tracklist_interval') or DEFAULT_TRACKLIST_REGEN_INTERVAL/3600)  # is 12 hours
 
@@ -516,12 +459,9 @@ class Player(object):
                 elif self._playback_thread.is_alive():
                     pass
 
-            # elif self.button_4_value == ''
-
             elif self.current_time != new_time.strftime('%H:%M'):  # in stopped state
                 if self.current_time is None or (int(new_time.strftime('%H:%M')[-2:])) % CLOCK_UPDATE_INTERVAL == 0:
                     self.set_image()
-                    # set_display(standby)
                     self.current_time = new_time.strftime('%H:%M')
 
             time.sleep(1.0)
@@ -548,7 +488,6 @@ class Player(object):
         _display_loading = False
         while not self.tracks and self.loading:
             if not _display_loading:
-                # self.layout_player.get_layout(labels=self.LABELS, cover=LOADING_IMAGE)
                 self.set_image(image_file=LOADING_IMAGE)
                 _display_loading = True
 
@@ -564,11 +503,6 @@ class Player(object):
         if self.tracks:
             track = self.tracks.pop(0)
 
-            # print(track)
-            # print(track)
-            # print(track)
-            # print(track)
-
             # cannot use multithreading.Process because the target wants
             # to modify self.playing_track. only works with threading.Thread
             self._playback_thread = threading.Thread(target=self._playback_task, kwargs={'track': track})
@@ -578,29 +512,15 @@ class Player(object):
 
             # start playback first, then change image to prevent lag
             self.set_image(track=track)
-            # print('here')
-            # print(self._playback_thread)
-            # <Process(Playback Thread, started)>
-            # print(self.playing_track)
-            # print(self.playing_track)
-            # print(self.playing_track)
-            # print(self.playing_track)
-            self._playback_thread.join()
-            # print(self.playing_track)
-            # print(self.playing_track)
-            # print(self.playing_track)
-            # print(self.playing_track)
-
-            # print(self._playback_thread)
-            # <Process(Playback Thread, stopped)>
 
             # so, join continues as soon as this
             # thread is finished, leaving the rest
             # of the application responsive
-            # print('there')
+            self._playback_thread.join()
+
             self.playing_track = None
             self._playback_thread = None
-            print(self._playback_thread)
+            # print(self._playback_thread)
             # None
 
     def _playback_task(self, **kwargs):
@@ -673,7 +593,7 @@ class Player(object):
         buttons_img = Image.new(mode='RGB', size=(448, 12), color=(0, 0, 0))
         buttons_draw = ImageDraw.Draw(buttons_img)
         buttons_draw.text((0, 0), '       {0}               {1}               {2}           {3}'.format(
-            self.button_4_value,
+            '    ',  # self.button_4_value,  # Just hide the label for now as the button has no effect
             self.button_3_value,
             self.button_2_value,
             self.button_1_value,
@@ -734,23 +654,6 @@ class Player(object):
                 # it has finished (per default; if we want to skip
                 # the currently playing track: "Next" button)
                 previous_track_id = self.playing_track.track.id
-
-                """
-                [Sat Jul 31 17:26:00.947039 2021] [wsgi:error] [pid 27170:tid 2835346464] Button press detected on pin: 5 label: Rand -> Albm
-                [Sat Jul 31 17:26:01.169609 2021] [wsgi:error] [pid 27170:tid 2805986336] 'NoneType' object has no attribute 'is_alive'
-                [Sat Jul 31 17:26:01.183415 2021] [wsgi:error] [pid 27170:tid 2835346464] Playback mode is now Albm -> Rand.
-                [Sat Jul 31 17:26:02.678782 2021] [wsgi:error] [pid 27170:tid 2805986336] Exception in thread Track Loader Thread:
-                [Sat Jul 31 17:26:02.678861 2021] [wsgi:error] [pid 27170:tid 2805986336] Traceback (most recent call last):
-                [Sat Jul 31 17:26:02.678880 2021] [wsgi:error] [pid 27170:tid 2805986336]   File "/usr/lib/python3.7/threading.py", line 917, in _bootstrap_inner
-                [Sat Jul 31 17:26:02.678899 2021] [wsgi:error] [pid 27170:tid 2805986336]     self.run()
-                [Sat Jul 31 17:26:02.678936 2021] [wsgi:error] [pid 27170:tid 2805986336]   File "/usr/lib/python3.7/threading.py", line 865, in run
-                [Sat Jul 31 17:26:02.678953 2021] [wsgi:error] [pid 27170:tid 2805986336]     self._target(*self._args, **self._kwargs)
-                [Sat Jul 31 17:26:02.679009 2021] [wsgi:error] [pid 27170:tid 2805986336]   File "/data/django/jukeoroni/player/player.py", line 416, in _track_loader_task
-                [Sat Jul 31 17:26:02.679028 2021] [wsgi:error] [pid 27170:tid 2805986336]     next_track = self.get_next_track()
-                [Sat Jul 31 17:26:02.679045 2021] [wsgi:error] [pid 27170:tid 2805986336]   File "/data/django/jukeoroni/player/player.py", line 730, in get_next_track
-                [Sat Jul 31 17:26:02.679061 2021] [wsgi:error] [pid 27170:tid 2805986336]     previous_track_id = self.playing_track.track.id
-                [Sat Jul 31 17:26:02.679076 2021] [wsgi:error] [pid 27170:tid 2805986336] AttributeError: 'NoneType' object has no attribute 'track'
-                """
 
                 album = DjangoTrack.objects.get(id=previous_track_id).album_id
                 album_tracks = DjangoTrack.objects.filter(album_id=album)
