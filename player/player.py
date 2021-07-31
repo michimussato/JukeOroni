@@ -494,12 +494,11 @@ class Player(object):
             processing_track = Track(track)
             logging.info(f'loading successful: \"{track.audio_source}\"')
             print(f'loading successful: \"{track.audio_source}\"')
-            ret = processing_track
+            self.tracks.append(processing_track)
         except MemoryError as err:
             print(err)
             logging.exception(f'loading failed: \"{track.audio_source}\"')
             print(f'loading failed: \"{track.audio_source}\"')
-            ret = None
 
         # here, or after that, probably processing_track.__del__() is called but pickled/recreated
         # in the main process
