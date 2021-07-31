@@ -215,6 +215,8 @@ class Player(object):
                 print(f'Playback mode is now {self.button_1_value}.')
                 logging.info(f'Playback mode is now {self.button_1_value}.')
                 return
+        else:
+            print('ignored')
 
         # Stop button
         # only in play mode active
@@ -226,6 +228,9 @@ class Player(object):
                     self.button_3_value = BUTTON_3['Next']  # Switch button back to Play
                     self.stop()
                     self.set_image()
+                    return
+        else:
+            print('ignored')
 
         # Play/Next button
         if current_label == self.button_3_value:
@@ -233,15 +238,20 @@ class Player(object):
                 print('Starting playback.')
                 logging.info('Starting playback.')
                 self.button_3_value = BUTTON_3[current_label]
+                return
             elif current_label == 'Next':
                 print('Next track.')
                 logging.info('Next track.')
                 self.next()
+                return
+            else:
+                print('ignored')
 
         # Radio button
         if current_label == self.button_4_value:  # Strm
             # Will be implemented in the refactored version
             # Why mess around here...
+            print('ignored')
             return
     ############################################
 
