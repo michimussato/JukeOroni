@@ -620,7 +620,9 @@ class Player(object):
         print('killing self.loading_process and resetting it to None')
         if self.loading_process is not None:
             self.loading_process.terminate()
-            # self.loading_process.join()
+            # a process can be joined multiple times:
+            # here: just wait for termination before proceeding
+            self.loading_process.join()
         self.loading_process = None
         # remove all cached tracks from the filesystem except the one
         # that is currently playing
