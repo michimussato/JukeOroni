@@ -55,9 +55,10 @@ class MediaCrawler(object):
     def track_list_generator_task(self, **kwargs):
         while True:
             if self.auto_update_tracklist:
-
                 self.create_update_track_list()
-
+            # instead of putting it to sleep, we
+            # could schedule it (so that it can finish an
+            # restart at some given time again)
             time.sleep(kwargs.get('auto_update_tracklist_interval') or DEFAULT_TRACKLIST_REGEN_INTERVAL/3600)  # is 12 hours
 
     @staticmethod
