@@ -200,18 +200,18 @@ class Player(object):
         print(f"Button press detected on pin: {pin} label: {current_label}")
 
         # Mode button
-        if self.button_3_value == 'Next':  # we only want to switch mode when something is already playing
-            if current_label == self.button_1_value:
-                # empty cached track list but leave current track playing
-                # but update the display to reflect current Mode
-                self.kill_loading_process()
+        # if self.button_3_value == 'Next':  # we only want to switch mode when something is already playing
+        if current_label == self.button_1_value:
+            # empty cached track list but leave current track playing
+            # but update the display to reflect current Mode
+            self.kill_loading_process()
 
-                self.button_1_value = BUTTON_1[current_label]
+            self.button_1_value = BUTTON_1[current_label]
 
-                self.set_image(track=self.playing_track)
-                print(f'Playback mode is now {self.button_1_value}.')
-                logging.info(f'Playback mode is now {self.button_1_value}.')
-                return
+            self.set_image(track=self.playing_track)
+            print(f'Playback mode is now {self.button_1_value}.')
+            logging.info(f'Playback mode is now {self.button_1_value}.')
+            return
 
         # Stop button
         if current_label == self.button_2_value:
@@ -605,7 +605,10 @@ class Player(object):
 
             tracks = self.track_list
             if not bool(tracks):
-                return None
+                random_album = random.choice(Album.objects.all())
+                album_tracks = DjangoTrack.objects.filter(album_id=random_album)
+                next_track = album_tracks[0]
+                return next_track
             if bool(self.tracks):
                 # TODO: if we pressed the Next button too fast,
                 #  self.tracks will be still empty, hence,
