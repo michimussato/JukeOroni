@@ -142,7 +142,7 @@ class Player(object):
         self.auto_update_tracklist = auto_update_tracklist
         self.tracks = []
         # self.loading = 0
-        self.loading_queue = multiprocessing.Queue()
+        # self.loading_queue = multiprocessing.Queue()
         self.loading_process = None
         self.playing = False
         self.playing_track = None
