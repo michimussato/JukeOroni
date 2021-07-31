@@ -446,6 +446,7 @@ class Player(object):
 
                 if self.loading_process is not None:
                     while self.loading_process.is_alive():
+                        print(self.loading_process)
                         # logging.error(self.loading_process)
                         # print(self.loading_process)
                         time.sleep(1.0)
@@ -462,6 +463,9 @@ class Player(object):
 
                 # try:
                 #     # TODO: WHY THIS TRY CLAUSE??? CAN'T REMEMBER...
+                #     #  maybe because we might be stuck in that loop
+                #     #  checking if is_alive() when we set self.loading_process
+                #     #  to None somewhere else at the same time... could be
                 #     # TODO: could use .join() instead of checking is_alive()
                 #     while self.loading_process.is_alive():
                 #         # logging.error(self.loading_process)
