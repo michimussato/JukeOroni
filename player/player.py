@@ -208,7 +208,15 @@ class Player(object):
 
             self.button_1_value = BUTTON_1[current_label]
 
-            self.set_image(track=self.playing_track)
+            print(self.playing_track)
+            print(self.playing_track)
+            print(self.playing_track)
+            print(self.playing_track)
+
+            if self.playing_track is None:
+                self.set_image(image_file=LOADING_IMAGE)
+            else:
+                self.set_image(track=self.playing_track)
             print(f'Playback mode is now {self.button_1_value}.')
             logging.info(f'Playback mode is now {self.button_1_value}.')
             return
