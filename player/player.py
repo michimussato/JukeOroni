@@ -562,24 +562,20 @@ class Player(object):
     def playback_thread(self):
         printed_waiting_msg = False
         while not self.tracks and not bool(self.loading_process):
-            # print(self.tracks)
-            # print(self.loading_process)
-            # if not printed_waiting_msg:
-            logging.info('waiting for loading thread to kick in')
-            print('waiting for loading thread to kick in')
+            if not printed_waiting_msg:
+                logging.info('waiting for loading thread to kick in')
+                print('waiting for loading thread to kick in')
             printed_waiting_msg = True
             time.sleep(1)
+
+        if printed_waiting_msg:
+            logging.info('loading thread is now active')
+            print('loading wthread is now active')
 
         del printed_waiting_msg
 
         _display_loading = False
         while not self.tracks and bool(self.loading_process):
-            # print(self.tracks)
-            # []
-            # print(self.loading)
-            # # 1
-            # print(self.loading_process)
-            # None
             if not _display_loading:
                 self.set_image(image_file=LOADING_IMAGE)
                 _display_loading = True
@@ -614,8 +610,6 @@ class Player(object):
 
             self.playing_track = None
             self._playback_thread = None
-            # print(self._playback_thread)
-            # None
 
     def _playback_task(self, **kwargs):
         print(multiprocessing.current_process().pid)
