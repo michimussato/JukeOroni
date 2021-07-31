@@ -394,8 +394,15 @@ class Player(object):
                 # if self.loading_process is not None:
                 # stop here and wait for the process to finish or to get killed
                 # in case of a mode change
+                print(self.loading_process)
+                print(self.loading_process)
+                print(self.loading_process)
                 self.loading_process.join()
                 ret = self.loading_queue.get()
+                print(self.loading_process)
+                print(self.loading_process)
+                print(self.loading_process)
+
 
                 if ret is not None:
                     self.tracks.append(ret)
