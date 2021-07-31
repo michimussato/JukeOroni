@@ -215,13 +215,9 @@ class Player(object):
                 print(f'Playback mode is now {self.button_1_value}.')
                 logging.info(f'Playback mode is now {self.button_1_value}.')
                 return
-        else:
-            print('ignored')
-
-        # Stop button
-        # only in play mode active
-        if self.button_3_value == 'Next':
-            if current_label == self.button_2_value:
+            # Stop button
+            # only in play mode active
+            elif current_label == self.button_2_value:
                 if self._playback_thread is not None:
                     print('Playback stopped.')
                     logging.info('Playback stopped.')
@@ -229,8 +225,8 @@ class Player(object):
                     self.stop()
                     self.set_image()
                     return
-        else:
-            print('ignored')
+            else:
+                print('ignored')
 
         # Play/Next button
         if current_label == self.button_3_value:
