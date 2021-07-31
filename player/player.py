@@ -216,7 +216,10 @@ class Player(object):
             # if self.playing_track is None:
             #     self.set_image(image_file=LOADING_IMAGE)
             # else:
-            self.set_image(track=self.playing_track)
+            if self.button_3_value == 'Next':
+                self.set_image(track=self.playing_track)
+            elif self.button_3_value == 'Play':
+                self.set_image()
             print(f'Playback mode is now {self.button_1_value}.')
             logging.info(f'Playback mode is now {self.button_1_value}.')
             return
@@ -533,11 +536,11 @@ class Player(object):
 
     def state_watcher_task(self):
         while True and not self._quit:
+            print('State Watcher')
 
             new_time = localtime(now())
 
             if self.button_3_value == 'Next':  # equals: in Play mode
-                # TODO implement Play/Next combo
                 if self._playback_thread is None:
                     self.play()
                 elif self._playback_thread.is_alive():
@@ -634,7 +637,7 @@ class Player(object):
             self.loading_process.terminate()
             # a process can be joined multiple times:
             # here: just wait for termination before proceeding
-            self.loading_process.join()
+            # self.loading_process.join()
         self.loading_process = None
         # remove all cached tracks from the filesystem except the one
         # that is currently playing
