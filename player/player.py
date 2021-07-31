@@ -686,33 +686,6 @@ class Player(object):
                 return None
             next_track = random.choice(tracks)
 
-        # elif self.button_1_value == 'Sequ -> Albm':  # or self.button_1_value == 'Albm -> Rand':
-        #     tracks = self.track_list
-        #     if not bool(tracks):
-        #         return None
-        #     if bool(self.tracks):
-        #         # we use this case to append the next track
-        #         # based on the last one in the self.tracks queue
-        #         # i.e: if playing_track has id 1 and self.tracks
-        #         # contains id's [2, 3, 4], we want to append
-        #         # id 5 once a free spot is available
-        #         previous_track_id = self.tracks[-1].track.id
-        #     else:
-        #         # in case self.tracks is empty, we want the next
-        #         # track id based on the one that is currently
-        #         # playing
-        #         previous_track_id = self.playing_track.track.id
-        #
-        #     try:
-        #         next_track = DjangoTrack.objects.get(id=previous_track_id + 1)
-        #     except Exception as err:
-        #         print(err)
-        #         # if there is no higher id available in the db, we end up in this exception
-        #         # just start at the beginning again
-        #         logging.exception('no next track id found (max. reached). start again at the beginning')
-        #         print('no next track id found (max. reached). start again at the beginning')
-        #         next_track = DjangoTrack.objects.all()[0]
-
         elif self.button_1_value == 'Albm -> Rand':
 
             tracks = self.track_list
