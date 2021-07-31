@@ -366,7 +366,7 @@ class Player(object):
             if len(self.tracks) + self.loading < MAX_CACHED_FILES and not bool(self.loading):
                 next_track = self.get_next_track()
                 if next_track is None:
-                    print('stuck here?')
+                    # print('stuck here?')
                     time.sleep(1.0)
                     continue
 
@@ -496,6 +496,9 @@ class Player(object):
 
         _display_loading = False
         while not self.tracks and self.loading:
+            print(self.tracks)
+            print(self.loading)
+            print(self.loading_process)
             if not _display_loading:
                 self.set_image(image_file=LOADING_IMAGE)
                 _display_loading = True
