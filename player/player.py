@@ -363,7 +363,9 @@ class Player(object):
 
     def _track_loader_task(self):
         while True and not self._quit:
+            print('here')
             if len(self.tracks) + int(bool(self.loading_process)) < MAX_CACHED_FILES and not bool(self.loading_process):
+                print('and here')
                 next_track = self.get_next_track()
                 if next_track is None:
                     # print('stuck here?')
