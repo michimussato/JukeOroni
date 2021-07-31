@@ -5,8 +5,11 @@ import sys
 import glob
 import random
 import time
+# import requests
+import urllib.request
 from pydub.utils import mediainfo
 import threading
+import subprocess
 import multiprocessing
 import logging
 from inky.inky_uc8159 import Inky, BLACK
@@ -19,6 +22,7 @@ from django.utils.timezone import localtime, now
 from .models import Track as DjangoTrack
 from .models import Artist
 from .models import Album
+from .models import Channel as DjangoChannel
 from .displays import Standby as StandbyLayout
 from .displays import Player as PlayerLayout
 
@@ -48,9 +52,12 @@ BUTTONS = [5, 6, 16, 24]
 # https://stackoverflow.com/questions/8381735/how-to-toggle-a-value
 BUTTON_1 = {
             #'Albm': 'Rand',
-            'Albm -> Rand': 'Rand -> Albm',
-            #'Rand': 'Albm',
-            'Rand -> Albm': 'Albm -> Rand',
+            #'    Albm    ': 'Rand',
+            'Albm -> Rand': 'Rand -> Sequ',
+            #'Rand': 'Sequ',
+            'Rand -> Sequ': 'Sequ -> Albm',
+            #'Sequ': 'Albm',
+            'Sequ -> Albm': 'Albm -> Rand',
             }
 BUTTON_2 = {
             'Stop': 'Stop',
@@ -65,10 +72,384 @@ BUTTON_4 = {
             # 'back': 'Back',
             }
 
+# Button   4       3       2       1
+# LABELS = ['Stop', 'Next', 'Play', 'Radio']
+
+# for portrait orientation, the order is reversed
+# LABELS = [BUTTON_4, BUTTON_3, BUTTON_2, BUTTON_1]
+
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(BUTTONS, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 # Audio files to index:
 AUDIO_FILES = ['.dsf', '.flac', '.wav', '.dff']
+
+
+# class AudiobookBox(object):
+#     ACCEPTED_FILES = ['.mp3']
+#
+#
+# class MeditationBox(object):
+#     ACCEPTED_FILES = []
+#
+#
+# """
+# subprocess
+# The subprocess module lets you run and control other programs. Anything you can start with the command line on the computer, can be run and controlled with this module. Use this to integrate external programs into your Python code.
+#
+# multiprocessing
+# The multiprocessing module lets you divide tasks written in python over multiple processes to help improve performance. It provides an API very similar to the threading module; it provides methods to share data across the processes it creates, and makes the task of managing multiple processes to run Python code (much) easier. In other words, multiprocessing lets you take advantage of multiple processes to get your tasks done faster by executing code in parallel.
+# (can run on several cores)
+#
+# threading
+# The threading module uses threads, the multiprocessing module uses processes. The difference is that threads run in the same memory space, while processes have separate memory. This makes it a bit harder to share objects between processes with multiprocessing. Since threads use the same memory, precautions have to be taken or two threads will write to the same memory at the same time. This is what the global interpreter lock is for.
+# (no multicore usage, but process concurrency/context switching)
+# """
+#
+#
+# class JukeBox(object):
+#     ACCEPTED_FILES = ['.dsf', '.flac', '.wav', '.dff']
+#     # Plays Tracks and Albums
+#     #
+#     CMD = 'ffplay -hide_banner -autoexit -nodisp -vn -loglevel quiet {file}'
+#
+#     def __init__(self):
+#         self.is_playing = False
+#         self.auto_update_tracklist = False
+#
+#         self.loaded_tracks_queue = []
+#
+#         self.loading_queue = multiprocessing.Queue()
+#         self.loading = 0
+#
+#         self._track_list_generator_thread = None
+#         self._track_loader_thread = None
+#
+#     ############################################
+#     # turn on procedure
+#     def turn_on(self):
+#         self.track_list_generator_thread()
+#         self.track_loader_thread()
+#     ############################################
+#
+#     ############################################
+#     # track list generator
+#     def track_list_generator_thread(self, **kwargs):
+#         self._track_list_generator_thread = threading.Thread(target=self.track_list_generator_task, kwargs=kwargs)
+#         self._track_list_generator_thread.name = 'Track List Generator Thread'
+#         self._track_list_generator_thread.daemon = False
+#         self._track_list_generator_thread.start()
+#
+#     def track_list_generator_task(self, **kwargs):
+#         while True:
+#             if self.auto_update_tracklist:
+#
+#                 self.create_update_track_list()
+#
+#             time.sleep(kwargs.get('auto_update_tracklist_interval') or DEFAULT_TRACKLIST_REGEN_INTERVAL/3600)  # is 12 hours
+#
+#     @staticmethod
+#     def create_update_track_list():
+#         # TODO: filter image files, m3u etc.
+#         logging.info('generating updated track list...')
+#         print('generating updated track list...')
+#         _files = []
+#         for path, dirs, files in os.walk(MUSIC_DIR):
+#             album = os.path.basename(path)
+#             try:
+#                 # TODO: maybe use a better character
+#                 artist, year, title = album.split(' - ')
+#             except ValueError as err:
+#                 with open(FAULTY_ALBUMS, 'a+') as f:
+#                     f.write(album + '\n')
+#                 # TODO: store this somewhere to fix it
+#                 print(err)
+#                 LOG.exception(f'not a valid album path: {album}')
+#                 print(f'not a valid album path: {album}')
+#                 continue
+#
+#             query_artist = Artist.objects.filter(name__exact=artist)
+#             if bool(query_artist):
+#                 model_artist = query_artist[0]
+#                 # print('    artist found in db')
+#             else:
+#                 model_artist = Artist(name=artist)
+#                 model_artist.save()
+#                 # print('    artist created in db')
+#
+#             cover_root = path
+#             jpg_path = os.path.join(cover_root, 'cover.jpg')
+#             png_path = os.path.join(cover_root, 'cover.png')
+#             if os.path.exists(jpg_path):
+#                 img_path = jpg_path
+#             elif os.path.exists(png_path):
+#                 img_path = png_path
+#             else:
+#                 with open(MISSING_COVERS_FILE, 'a+') as f:
+#                     f.write(cover_root + '\n')
+#                 logging.info(f'cover is None: {album}')
+#                 print(f'cover is None: {album}')
+#                 img_path = None
+#
+#             # need to add artist too
+#             query_album = Album.objects.filter(artist_id=model_artist, album_title__exact=title, year__exact=year)
+#
+#             if bool(query_album):
+#                 model_album = query_album[0]
+#                 model_album.cover = img_path
+#                 # print('    album found in db')
+#             else:
+#                 model_album = Album(artist_id=model_artist, album_title=title, year=year, cover=img_path)
+#                 # print('    album created in db')
+#
+#             try:
+#                 model_album.save()
+#             except Exception as err:
+#                 logging.exception(err)
+#                 print(err)
+#
+#             for _file in files:
+#                 # print('      track: ' + _file)
+#                 if os.path.splitext(_file)[1] in AUDIO_FILES:
+#                     file_path = os.path.join(path, _file)
+#                     query_track = DjangoTrack.objects.filter(audio_source__exact=file_path)
+#
+#                     # # TODO: will throw error if query returns zero or more than one
+#                     # #  result
+#                     # query_track = DjangoTrack.objects.get(audio_source__exact=file_path)
+#
+#                     if not bool(query_track):
+#                         model_track = DjangoTrack(album_id=model_album, audio_source=file_path)
+#                         model_track.save()
+#                         # print('        track created in db')
+#
+#                     _files.append(file_path)
+#
+#         # remove obsolete db objects:
+#         django_tracks = DjangoTrack.objects.all()
+#         for django_track in django_tracks:
+#             if django_track.audio_source not in _files:
+#                 django_track.delete()
+#
+#         logging.info(f'track list generated successfully: {len(_files)} tracks found')
+#         print(f'track list generated successfully: {len(_files)} tracks found')
+#     ############################################
+#
+#     ############################################
+#     # track loader
+#     def track_loader_thread(self):
+#         self._track_loader_thread = threading.Thread(target=self._track_loader_task)
+#         self._track_loader_thread.name = 'Track Loader Thread'
+#         self._track_loader_thread.daemon = False
+#         self._track_loader_thread.start()
+#
+#     def _track_loader_task(self):
+#         while True:
+#             if len(self.loaded_tracks_queue) + self.loading < MAX_CACHED_FILES and not bool(self.loading):
+#                 next_track = self.get_next_track()
+#                 if next_track is None:
+#                     time.sleep(1.0)
+#                     continue
+#
+#                 # # threading approach seems causing problems if we actually need to empty
+#                 # # self.tracks. the thread will finish and add the cached track to self.tracks
+#                 # # afterwards because we cannot kill the running thread
+#                 # thread = threading.Thread(target=self._load_track_task, kwargs={'track': next_track})
+#                 # # TODO: maybe this name is not ideal
+#                 # thread.name = 'Track Loader Task Thread'
+#                 # thread.daemon = False
+#
+#                 # multiprocessing approach
+#                 # this approach apparently destroys the Track object that it uses to cache
+#                 # data. when the Queue handles over that cached object, it seems like
+#                 # it re-creates the Track object (pickle, probably) but the cached data is
+#                 # gone of course because __del__ was called before that already.
+#                 self.loading_process = multiprocessing.Process(target=self._load_track_task, kwargs={'track': next_track})
+#                 self.loading_process.start()
+#
+#                 self.loading += 1
+#
+#                 # print(type(self.loading_process))
+#                 # print(dir(self.loading_process))
+#
+#                 try:
+#                     while self.loading_process.is_alive():
+#                         # logging.error(self.loading_process)
+#                         # print(self.loading_process)
+#                         time.sleep(1.0)
+#
+#                     ret = self.loading_queue.get()
+#
+#                     if ret is not None:
+#                         self.loaded_tracks_queue.append(ret)
+#
+#                     # logging.error(self.loading_process)
+#                     self.loading_process.join()
+#
+#                 except AttributeError as err:
+#                     print(err)
+#                     logging.exception(err)
+#
+#                 finally:
+#                     self.loading -= 1
+#
+#             time.sleep(1.0)
+#
+#     def _load_track_task(self, **kwargs):
+#         track = kwargs['track']
+#         logging.debug(f'starting thread: \"{track.audio_source}\"')
+#         print(f'starting thread: \"{track.audio_source}\"')
+#
+#         try:
+#             size = os.path.getsize(track.audio_source)
+#             logging.info(f'loading track ({str(round(size / (1024*1024), 3))} MB): \"{track.audio_source}\"')
+#             print(f'loading track ({str(round(size / (1024*1024), 3))} MB): \"{track.audio_source}\"')
+#             processing_track = Track(track)
+#             logging.info(f'loading successful: \"{track.audio_source}\"')
+#             print(f'loading successful: \"{track.audio_source}\"')
+#             ret = processing_track
+#         except MemoryError as err:
+#             print(err)
+#             logging.exception(f'loading failed: \"{track.audio_source}\"')
+#             print(f'loading failed: \"{track.audio_source}\"')
+#             ret = None
+#
+#         # here, or after that, probably processing_track.__del__() is called but pickled/recreated
+#         # in the main process
+#         self.loading_queue.put(ret)
+#     ############################################
+#
+#
+# class Radio(object):
+#     # Plays online radio streams (Channels)
+#     # CMD = 'mplayer -nogui -noconfig all -novideo -nocache -playlist {url}'  # plays m3u
+#     CMD = 'ffplay -hide_banner -autoexit -nodisp -vn -loglevel quiet {url}'  # plays the actual icy stream
+#     # Header: curl --head {url}
+#
+#     def __init__(self):
+#         self.is_playing = False
+#
+#
+# class JukeOroni(object):
+#     def __init__(self):
+#         self.jukebox = JukeBox()
+#         self.radio = Radio()
+#
+#         self.pimoroni = Inky()
+#
+#         # display layouts
+#         self.layout_standby = StandbyLayout()
+#         self.layout_jukebox = PlayerLayout()
+#         self.layout_radio = None
+#
+#         self._pimoroni_thread_queue = None
+#
+#         # Watcher threads
+#         self._pimoroni_watcher_thread = None
+#         self._buttons_watcher_thread = None
+#         self._state_watcher_thread = None
+#
+#     ############################################
+#     # startup procedure
+#     def turn_on(self):
+#         self.buttons_watcher_thread()
+#         self.pimoroni_watcher_thread()
+#         self.set_image()
+#     ############################################
+#
+#     ############################################
+#     # shutdown procedure
+#     def turn_off(self):
+#         pass
+#     ############################################
+#
+#     ############################################
+#     # pimoroni_watcher_thread
+#     # checks if display update is required
+#     # display has to be updated, we submit a thread
+#     # to self._pimoroni_thread_queue by calling set_image()
+#     def pimoroni_watcher_thread(self):
+#         self._pimoroni_watcher_thread = threading.Thread(target=self._pimoroni_watcher_task)
+#         self._pimoroni_watcher_thread.name = 'Pimoroni Watcher Thread'
+#         self._pimoroni_watcher_thread.daemon = False
+#         self._pimoroni_watcher_thread.start()
+#
+#     def _pimoroni_watcher_task(self):
+#         while True:
+#             if self._pimoroni_thread_queue is not None:
+#                 thread = self._pimoroni_thread_queue
+#                 self._pimoroni_thread_queue = None
+#                 if not thread.is_alive():
+#                     thread.start()
+#                 while thread.is_alive():
+#                     time.sleep(1.0)
+#
+#             time.sleep(1.0)
+#
+#     def set_image(self, **kwargs):
+#         # TODO filter for types of images
+#         #  url, local path, Image.Image, Track
+#         thread = threading.Thread(target=self.task_pimoroni_set_image, kwargs=kwargs)
+#         thread.name = 'Set Image Thread'
+#         thread.daemon = False
+#         self._pimoroni_thread_queue = thread
+#
+#     def task_pimoroni_set_image(self, **kwargs):
+#         # magic here...
+#         bg = kwargs
+#         self.pimoroni.set_image(bg, saturation=PIMORONI_SATURATION)
+#         self.pimoroni.show(busy_wait=False)
+#     ############################################
+#
+#     ############################################
+#     # buttons_watcher_thread
+#     def buttons_watcher_thread(self):
+#         self._buttons_watcher_thread = threading.Thread(target=self._buttons_watcher_task)
+#         self._buttons_watcher_thread.name = 'Buttons Watcher Thread'
+#         self._buttons_watcher_thread.daemon = False
+#         self._buttons_watcher_thread.start()
+#
+#     def _buttons_watcher_task(self):
+#         for pin in BUTTONS:
+#             GPIO.add_event_detect(pin, GPIO.FALLING, self._handle_button, bouncetime=250)
+#         signal.pause()
+#
+#     def _handle_button(self, pin):
+#         button = BUTTONS.index(pin)
+#         logging.info(f"Button press detected on pin: {pin} button: {button}")
+#         print(f"Button press detected on pin: {pin} button: {button}")
+#     ############################################
+#
+#     ############################################
+#     # State watcher (buttons)
+#     # checks if the push of buttons or actions
+#     # performed on web ui requires a state change
+#     # TODO: define states
+#     def state_watcher_thread(self):
+#         self._state_watcher_thread = threading.Thread(target=self.state_watcher_task)
+#         self._state_watcher_thread.name = 'State Watcher Thread'
+#         self._state_watcher_thread.daemon = False
+#         self._state_watcher_thread.start()
+#
+#     def state_watcher_task(self):
+#         while True:
+#             # procedure goes in here
+#             time.sleep(1.0)
+#     ############################################
+
+
+# class Channel(object):
+#     def __init__(self, channel):
+#         self.channel = channel
+#         # self.process = multiprocessing.Process(target=self.play)
+#         # self.process.daemon = False
+#
+#     @property
+#     def cover(self):
+#         return self.channel.url_logo
+#
+#     def play(self):
+#         # os.system(f'ffplay -hide_banner -autoexit -vn -nodisp -loglevel error \"{self.playing_from}\"')
+#         os.system(f'mplayer -nogui -noconfig all -novideo -nocache -playlist \"{self.channel.url}\"')
 
 
 class Track(object):
@@ -109,10 +490,6 @@ class Track(object):
             self.track.played += 1
             self.track.save()
             self.is_playing = True
-            print(multiprocessing.current_process().pid)
-            # TODO: now this would be a classic
-            #  subprocess example: calling an external
-            #  application
             os.system(f'ffplay -hide_banner -autoexit -vn -nodisp -loglevel error \"{self.playing_from}\"')
             logging.info(f'playback finished: \"{self.path}\"')
             print(f'playback finished: \"{self.path}\"')
@@ -126,6 +503,19 @@ class Track(object):
                 os.remove(self.cache)
                 logging.info(f'removed from local filesystem: \"{self.cache}\"')
                 print(f'removed from local filesystem: \"{self.cache}\"')
+
+    # # this would be easiest for cleanup, but the way multiprocessing seems to hand
+    # # over objects, this method is not working anymore
+    # def __del__(self):
+    #     if self.cache is not None:
+    #         try:
+    #             os.remove(self.cache)
+    #             logging.info('removed from local filesystem: \"{0}\"'.format(self.cache))
+    #             print('removed from local filesystem: \"{0}\"'.format(self.cache))
+    #         except Exception:
+    #             logging.exception('deletion failed: \"{0}\"'.format(self.cache))
+    #     else:
+    #         pass
 
 
 class Player(object):
@@ -188,6 +578,10 @@ class Player(object):
         self._buttons_watcher_thread.name = 'Buttons Watcher Thread'
         self._buttons_watcher_thread.daemon = False
         self._buttons_watcher_thread.start()
+        # self._buttons_watcher_thread = multiprocessing.Process(target=self._buttons_watcher_task)
+        # self._buttons_watcher_thread.name = 'Buttons Watcher Thread'
+        # self._buttons_watcher_thread.daemon = False
+        # self._buttons_watcher_thread.start()
 
     def _buttons_watcher_task(self):
         for pin in BUTTONS:
@@ -198,6 +592,13 @@ class Player(object):
         current_label = self.LABELS[BUTTONS.index(pin)]
         logging.info(f"Button press detected on pin: {pin} label: {current_label}")
         print(f"Button press detected on pin: {pin} label: {current_label}")
+
+        # # just kill the radio in every case:
+        # # (radical for now)
+        # pid = subprocess.Popen(['pidof mplayer'], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        # pid_output = pid.communicate()[0].decode('utf-8').replace('\n', '')
+        # if pid_output != '':
+        #     os.system(f'kill {pid_output}')
 
         # Mode button
         if self.button_3_value == 'Next':  # we only want to switch mode when something is already playing
@@ -220,6 +621,7 @@ class Player(object):
                 logging.info('Playback stopped.')
                 self.button_3_value = BUTTON_3['Next']  # Switch button back to Play
                 self.stop()
+                # self.kill_loading_process()
                 self.set_image()
 
         # Play/Next button
@@ -234,9 +636,45 @@ class Player(object):
                 self.next()
 
         # Radio button
-        if current_label == self.button_4_value:  # Strm
-            # Will be implemented in the refactored version
-            # Why mess around here...
+        if current_label == self.button_4_value:
+            # Album.objects.all()
+            if False:
+            # if self.button_3_value == 'Next':
+                print('we are in playback mode. stop first.')
+                return
+            else:
+                try:
+                    self.stop()
+                    channels = DjangoChannel.objects.all()
+                    last_channel = random.choice(channels)
+                    # for channel in channels:
+                    #     if channel.last_played:
+                    #         last_channel = channel
+                    #         break
+                    # subprocess.Popen(
+                    #     ['mplayer', '-nogui', '-noconfig', 'all', '-novideo', '-nocache', '-playlist', last_channel.url])
+
+                    image_file_url = last_channel.url_logo
+
+                    if image_file_url is not None and image_file_url.startswith('http'):
+                        if image_file_url.startswith('http'):
+                            print(f'Getting cover from {image_file_url}')
+                            img = io.BytesIO(urllib.request.urlopen(image_file_url).read())
+                            cover = Image.open(img)
+                            # cover = Image.open(requests.get(image_file_url, stream=True).raw)
+                        else:
+                            cover = Image.open(image_file_url, 'r')
+                        self.set_image(image_file=cover)
+                    else:
+                        # cover = Image.open(image_file_url, 'r')
+                        self.set_image(image_file=STANDARD_COVER)
+                    # cover = Image.open(requests.get(image_file_url, stream=True).raw)
+
+                    # self.set_image(image_file=cover)
+                    # bg = self.layout_player.get_layout(labels=self.LABELS, cover=cover)
+
+                except DjangoChannel.DoesNotExist:
+                    return
             return
     ############################################
 
@@ -246,7 +684,7 @@ class Player(object):
     # so hopefully ideal for multiprocessing
     def track_list_generator_thread(self, **kwargs):
         self._track_list_generator_thread = multiprocessing.Process(target=self.track_list_generator_task, kwargs=kwargs)
-        self._track_list_generator_thread.name = 'Track List Generator Process'
+        self._track_list_generator_thread.name = 'Track List Generator Thread'
         self._track_list_generator_thread.daemon = False
         self._track_list_generator_thread.start()
 
@@ -255,7 +693,7 @@ class Player(object):
             if self.auto_update_tracklist:
                 self.create_update_track_list()
             # instead of putting it to sleep, we
-            # could schedule it maybe (so that it can finish an
+            # could schedule it (so that is can finish an
             # restart at some given time again)
             time.sleep(kwargs.get('auto_update_tracklist_interval') or DEFAULT_TRACKLIST_REGEN_INTERVAL/3600)  # is 12 hours
 
@@ -375,21 +813,33 @@ class Player(object):
                 # it re-creates the Track object (pickle, probably) but the cached data is
                 # gone of course because __del__ was called before that already.
                 self.loading_process = multiprocessing.Process(target=self._load_track_task, kwargs={'track': next_track})
-                self.loading_process.name = 'Track Loader Task Process'
                 self.loading_process.start()
 
                 self.loading += 1
 
-                # if self.loading_process is not None:
-                # stop here and wait for the process to finish or to get killed
-                # in case of a mode change
-                self.loading_process.join()
-                ret = self.loading_queue.get()
+                # print(type(self.loading_process))
+                # print(dir(self.loading_process))
 
-                if ret is not None:
-                    self.tracks.append(ret)
+                try:
+                    while self.loading_process.is_alive():
+                        # logging.error(self.loading_process)
+                        # print(self.loading_process)
+                        time.sleep(1.0)
 
-                self.loading -= 1
+                    ret = self.loading_queue.get()
+
+                    if ret is not None:
+                        self.tracks.append(ret)
+
+                    # logging.error(self.loading_process)
+                    self.loading_process.join()
+
+                except AttributeError as err:
+                    print(err)
+                    logging.exception(err)
+
+                finally:
+                    self.loading -= 1
 
             time.sleep(1.0)
 
@@ -459,9 +909,12 @@ class Player(object):
                 elif self._playback_thread.is_alive():
                     pass
 
+            # elif self.button_4_value == ''
+
             elif self.current_time != new_time.strftime('%H:%M'):  # in stopped state
                 if self.current_time is None or (int(new_time.strftime('%H:%M')[-2:])) % CLOCK_UPDATE_INTERVAL == 0:
                     self.set_image()
+                    # set_display(standby)
                     self.current_time = new_time.strftime('%H:%M')
 
             time.sleep(1.0)
@@ -488,6 +941,7 @@ class Player(object):
         _display_loading = False
         while not self.tracks and self.loading:
             if not _display_loading:
+                # self.layout_player.get_layout(labels=self.LABELS, cover=LOADING_IMAGE)
                 self.set_image(image_file=LOADING_IMAGE)
                 _display_loading = True
 
@@ -503,28 +957,26 @@ class Player(object):
         if self.tracks:
             track = self.tracks.pop(0)
 
-            # cannot use multithreading.Process because the target wants
-            # to modify self.playing_track. only works with threading.Thread
-            self._playback_thread = threading.Thread(target=self._playback_task, kwargs={'track': track})
+            self._playback_thread = multiprocessing.Process(target=self._playback_task, kwargs={'track': track})
             self._playback_thread.name = 'Playback Thread'
             self._playback_thread.daemon = False
             self._playback_thread.start()
 
             # start playback first, then change image to prevent lag
             self.set_image(track=track)
-
+            print('here')
+            print(self._playback_thread)
+            self._playback_thread.join()
+            print(self._playback_thread)
             # so, join continues as soon as this
             # thread is finished, leaving the rest
             # of the application responsive
-            self._playback_thread.join()
-
+            print('there')
             self.playing_track = None
             self._playback_thread = None
-            # print(self._playback_thread)
-            # None
+            print(self._playback_thread)
 
     def _playback_task(self, **kwargs):
-        print(multiprocessing.current_process().pid)
         self.playing_track = kwargs['track']
         logging.debug(f'starting playback thread: for {self.playing_track.path} from {self.playing_track.playing_from}')  # TODO add info
         print(f'starting playback thread: for {self.playing_track.path} from {self.playing_track.playing_from}')  # TODO add info
@@ -537,11 +989,8 @@ class Player(object):
     ############################################
 
     def kill_loading_process(self):
-        print('killing self.loading_process and resetting it to None')
         if self.loading_process is not None:
             self.loading_process.terminate()
-            # a process can be joined multiple times:
-            # here: just wait for termination before proceeding
             self.loading_process.join()
         self.loading_process = None
         # remove all cached tracks from the filesystem except the one
@@ -581,13 +1030,23 @@ class Player(object):
             if 'image_file' in kwargs:
                 cover = kwargs['image_file']
             elif 'track' in kwargs:
-                if kwargs['track'] is not None:
-                    cover = kwargs['track'].cover
+                cover = kwargs['track'].cover
 
             bg = self.layout_player.get_layout(labels=self.LABELS, cover=cover)
 
         self.pimoroni.set_image(bg, saturation=PIMORONI_SATURATION)
         self.pimoroni.show(busy_wait=False)
+
+    def buttons_img_overlay(self, bg):
+        buttons_img = Image.new(mode='RGB', size=(448, 12), color=(0, 0, 0))
+        buttons_draw = ImageDraw.Draw(buttons_img)
+        buttons_draw.text((0, 0), '       {0}               {1}               {2}           {3}'.format(
+            self.button_4_value,
+            self.button_3_value,
+            self.button_2_value,
+            self.button_1_value,
+        ), fill=(255, 255, 255))
+        bg.paste(buttons_img, (0, 0))
 
     @property
     def track_list(self):
@@ -595,11 +1054,38 @@ class Player(object):
 
     def get_next_track(self):
         next_track = None
-        if self.button_1_value == 'Rand -> Albm':
+        if self.button_1_value == 'Rand -> Sequ':
             tracks = self.track_list
             if not bool(tracks):
                 return None
             next_track = random.choice(tracks)
+
+        elif self.button_1_value == 'Sequ -> Albm':  # or self.button_1_value == 'Albm -> Rand':
+            tracks = self.track_list
+            if not bool(tracks):
+                return None
+            if bool(self.tracks):
+                # we use this case to append the next track
+                # based on the last one in the self.tracks queue
+                # i.e: if playing_track has id 1 and self.tracks
+                # contains id's [2, 3, 4], we want to append
+                # id 5 once a free spot is available
+                previous_track_id = self.tracks[-1].track.id
+            else:
+                # in case self.tracks is empty, we want the next
+                # track id based on the one that is currently
+                # playing
+                previous_track_id = self.playing_track.track.id
+
+            try:
+                next_track = DjangoTrack.objects.get(id=previous_track_id + 1)
+            except Exception as err:
+                print(err)
+                # if there is no higher id available in the db, we end up in this exception
+                # just start at the beginning again
+                logging.exception('no next track id found (max. reached). start again at the beginning')
+                print('no next track id found (max. reached). start again at the beginning')
+                next_track = DjangoTrack.objects.all()[0]
 
         elif self.button_1_value == 'Albm -> Rand':
 
@@ -642,17 +1128,7 @@ class Player(object):
                 # but we leave the current track playing until
                 # it has finished (per default; if we want to skip
                 # the currently playing track: "Next" button)
-
-                # if self.playing_track is None:
-                #     # and if nothing is playing, we want
-                #     # the first track of a random album
-                #     random_album = random.choice(Album.objects.all())
-                #     album_tracks = DjangoTrack.objects.filter(album_id=random_album)
-                #     next_track = album_tracks[0]
-                #     return next_track
-
                 previous_track_id = self.playing_track.track.id
-
                 album = DjangoTrack.objects.get(id=previous_track_id).album_id
                 album_tracks = DjangoTrack.objects.filter(album_id=album)
                 next_track = album_tracks[0]
