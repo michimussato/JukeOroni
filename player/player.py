@@ -200,26 +200,21 @@ class Player(object):
         print(f"Button press detected on pin: {pin} label: {current_label}")
 
         # Mode button
-        # if self.button_3_value == 'Next':  # we only want to switch mode when something is already playing
-        if current_label == self.button_1_value:
-            # empty cached track list but leave current track playing
-            # but update the display to reflect current Mode
-            self.kill_loading_process()
+        # we only want to switch mode when something is already playing
+        # because if we switch in non-playing mode
+        # we get a problem with the track loader for now
+        if self.button_3_value == 'Next':
+            if current_label == self.button_1_value:
+                # empty cached track list but leave current track playing
+                # but update the display to reflect current Mode
+                self.kill_loading_process()
 
-            self.button_1_value = BUTTON_1[current_label]
+                self.button_1_value = BUTTON_1[current_label]
 
-            # print(self.playing_track)
-            # print(self.playing_track)
-            # print(self.playing_track)
-            # print(self.playing_track)
-
-            # if self.playing_track is None:
-            #     self.set_image(image_file=LOADING_IMAGE)
-            # else:
-            self.set_image(track=self.playing_track)
-            print(f'Playback mode is now {self.button_1_value}.')
-            logging.info(f'Playback mode is now {self.button_1_value}.')
-            return
+                self.set_image(track=self.playing_track)
+                print(f'Playback mode is now {self.button_1_value}.')
+                logging.info(f'Playback mode is now {self.button_1_value}.')
+                return
 
         # Stop button
         if current_label == self.button_2_value:
@@ -363,14 +358,9 @@ class Player(object):
 
     def _track_loader_task(self):
         while True and not self._quit:
-            # print('here')
-            # print(len(self.tracks) + int(bool(self.loading_process)) < MAX_CACHED_FILES)
-            # print(not bool(self.loading_process))
             if len(self.tracks) + int(bool(self.loading_process)) < MAX_CACHED_FILES and not bool(self.loading_process):
-                # print('and here')
                 next_track = self.get_next_track()
                 if next_track is None:
-                    # print('stuck here?')
                     time.sleep(1.0)
                     continue
 
@@ -448,33 +438,16 @@ class Player(object):
                 self.loading_process.name = 'Track Loader Task Process'
                 self.loading_process.start()
 
-                # self.loading += 1
-
-                # if self.loading_process is not None:
-                # stop here and wait for the process to finish or to get killed
-                # in case of a mode change
-                # print(self.loading_process)
-                # print(self.loading_process)
-                # print(self.loading_process)
                 self.loading_process.join()
                 ret = self.loading_queue.get()
 
                 if self.loading_process.exitcode:
                     raise Exception('Exit code not 0')
-                # print(self.loading_process.exitcode)
-                # print(self.loading_process.exitcode)
-                # print(self.loading_process.exitcode)
-
-                # print(self.loading_process)
-                # print(self.loading_process)
-                # print(self.loading_process)
 
                 if ret is not None:
                     self.tracks.append(ret)
 
                 self.loading_process = None
-
-                # self.loading -= 1
 
             time.sleep(1.0)
 

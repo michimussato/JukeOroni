@@ -3,14 +3,14 @@ from .clock import Clock
 from .radar import Radar
 
 
-def buttons_img_overlay(labels):
+def buttons_img_overlay(labels, stby=False):
     buttons_img = Image.new(mode='RGB', size=(448, 16), color=(80, 80, 80))
     buttons_draw = ImageDraw.Draw(buttons_img)
     buttons_draw.text((0, 0), '       {0}               {1}               {2}           {3}'.format(
         '    ',  # self.button_4_value,  # Just hide the label for now as the button has no effect
         labels[2],
         labels[1],
-        labels[0],
+        '    ' if stby else labels[0],
     ), fill=(255, 255, 255))
 
     return buttons_img.rotate(90, expand=True)
@@ -54,7 +54,7 @@ class Standby(Layout):
 
     def get_layout(self, labels):
 
-        buttons_overlay = buttons_img_overlay(labels)
+        buttons_overlay = buttons_img_overlay(labels=labels, stby=True)
         bg = Image.new(mode='RGB', size=(600, 448), color=(0, 0, 0))
 
         # clock_size = 448 - 2 * self.border
