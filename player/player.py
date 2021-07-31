@@ -612,6 +612,14 @@ class Player(object):
         elif self.button_1_value == 'Albm -> Rand':
 
             tracks = self.track_list
+
+            print(tracks)
+            print(tracks)
+            print(tracks)
+            print(tracks)
+            print(tracks)
+            print(tracks)
+
             if not bool(tracks):
                 random_album = random.choice(Album.objects.all())
                 album_tracks = DjangoTrack.objects.filter(album_id=random_album)
@@ -642,6 +650,10 @@ class Player(object):
                     next_track = album_tracks[0]
 
             else:
+                print('Are we here?')
+                print('Are we here?')
+                print('Are we here?')
+                print('Are we here?')
                 # in case self.tracks is empty, we want the next
                 # track id based on the one that is currently
                 # playing
