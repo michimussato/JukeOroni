@@ -500,7 +500,7 @@ class Player(object):
 
         # here, or after that, probably processing_track.__del__() is called but pickled/recreated
         # in the main process
-        self.loading_queue.put(ret)
+        # self.loading_queue.put(ret)
     ############################################
 
     ############################################
