@@ -651,10 +651,12 @@ class Player(object):
         if self.button_3_value != 'Next':
             bg = self.layout_standby.get_layout(labels=self.LABELS)
         else:
+            cover = STANDARD_COVER
             if 'image_file' in kwargs:
                 cover = kwargs['image_file']
             elif 'track' in kwargs:
-                cover = kwargs['track'].cover or STANDARD_COVER
+                if kwargs['track'] is not None:
+                    cover = kwargs['track'].cover
 
             bg = self.layout_player.get_layout(labels=self.LABELS, cover=cover)
 
@@ -753,6 +755,32 @@ class Player(object):
                 # it has finished (per default; if we want to skip
                 # the currently playing track: "Next" button)
                 previous_track_id = self.playing_track.track.id
+
+                """
+                [Sat Jul 31 17:10:07.770556 2021] [wsgi:error] [pid 25728:tid 2804937760] 'NoneType' object has no attribute 'is_alive'
+                [Sat Jul 31 17:10:08.729209 2021] [wsgi:error] [pid 25728:tid 2789471264] Exception in thread Set Image Thread:
+                [Sat Jul 31 17:10:08.729329 2021] [wsgi:error] [pid 25728:tid 2789471264] Traceback (most recent call last):
+                [Sat Jul 31 17:10:08.729374 2021] [wsgi:error] [pid 25728:tid 2789471264]   File "/usr/lib/python3.7/threading.py", line 917, in _bootstrap_inner
+                [Sat Jul 31 17:10:08.729470 2021] [wsgi:error] [pid 25728:tid 2789471264]     self.run()
+                [Sat Jul 31 17:10:08.729506 2021] [wsgi:error] [pid 25728:tid 2789471264]   File "/usr/lib/python3.7/threading.py", line 865, in run
+                [Sat Jul 31 17:10:08.729542 2021] [wsgi:error] [pid 25728:tid 2789471264]     self._target(*self._args, **self._kwargs)
+                [Sat Jul 31 17:10:08.729577 2021] [wsgi:error] [pid 25728:tid 2789471264]   File "/data/django/jukeoroni/player/player.py", line 657, in task_pimoroni_set_image
+                [Sat Jul 31 17:10:08.729612 2021] [wsgi:error] [pid 25728:tid 2789471264]     cover = kwargs['track'].cover or STANDARD_COVER
+                [Sat Jul 31 17:10:08.729646 2021] [wsgi:error] [pid 25728:tid 2789471264] AttributeError: 'NoneType' object has no attribute 'cover'
+                [Sat Jul 31 17:10:08.729702 2021] [wsgi:error] [pid 25728:tid 2789471264] 
+                [Sat Jul 31 17:10:09.194452 2021] [wsgi:error] [pid 25728:tid 2804937760] Exception in thread Track Loader Thread:
+                [Sat Jul 31 17:10:09.194545 2021] [wsgi:error] [pid 25728:tid 2804937760] Traceback (most recent call last):
+                [Sat Jul 31 17:10:09.194565 2021] [wsgi:error] [pid 25728:tid 2804937760]   File "/usr/lib/python3.7/threading.py", line 917, in _bootstrap_inner
+                [Sat Jul 31 17:10:09.194583 2021] [wsgi:error] [pid 25728:tid 2804937760]     self.run()
+                [Sat Jul 31 17:10:09.194622 2021] [wsgi:error] [pid 25728:tid 2804937760]   File "/usr/lib/python3.7/threading.py", line 865, in run
+                [Sat Jul 31 17:10:09.194640 2021] [wsgi:error] [pid 25728:tid 2804937760]     self._target(*self._args, **self._kwargs)
+                [Sat Jul 31 17:10:09.194657 2021] [wsgi:error] [pid 25728:tid 2804937760]   File "/data/django/jukeoroni/player/player.py", line 416, in _track_loader_task
+                [Sat Jul 31 17:10:09.194673 2021] [wsgi:error] [pid 25728:tid 2804937760]     next_track = self.get_next_track()
+                [Sat Jul 31 17:10:09.194689 2021] [wsgi:error] [pid 25728:tid 2804937760]   File "/data/django/jukeoroni/player/player.py", line 755, in get_next_track
+                [Sat Jul 31 17:10:09.194707 2021] [wsgi:error] [pid 25728:tid 2804937760]     previous_track_id = self.playing_track.track.id
+                [Sat Jul 31 17:10:09.194725 2021] [wsgi:error] [pid 25728:tid 2804937760] AttributeError: 'NoneType' object has no attribute 'track'
+                """
+
                 album = DjangoTrack.objects.get(id=previous_track_id).album_id
                 album_tracks = DjangoTrack.objects.filter(album_id=album)
                 next_track = album_tracks[0]
