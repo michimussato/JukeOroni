@@ -434,13 +434,17 @@ class Player(object):
                 self.loading_process = multiprocessing.Process(target=self._load_track_task, kwargs={'track': next_track})
                 self.loading_process.start()
 
+                print(self.loading_process)
+                print(self.loading_process)
+                print(self.loading_process)
+                print(self.loading_process)
+
                 self.loading += 1
 
                 # print(type(self.loading_process))
                 # print(dir(self.loading_process))
 
-                try:
-                    # TODO: could use .join() instead of checking is_alive()
+                if self.loading_process is not None:
                     while self.loading_process.is_alive():
                         # logging.error(self.loading_process)
                         # print(self.loading_process)
@@ -454,12 +458,30 @@ class Player(object):
                     # logging.error(self.loading_process)
                     self.loading_process.join()
 
-                except AttributeError as err:
-                    print(err)
-                    logging.exception(err)
+                self.loading -= 1
 
-                finally:
-                    self.loading -= 1
+                # try:
+                #     # TODO: WHY THIS TRY CLAUSE??? CAN'T REMEMBER...
+                #     # TODO: could use .join() instead of checking is_alive()
+                #     while self.loading_process.is_alive():
+                #         # logging.error(self.loading_process)
+                #         # print(self.loading_process)
+                #         time.sleep(1.0)
+                #
+                #     ret = self.loading_queue.get()
+                #
+                #     if ret is not None:
+                #         self.tracks.append(ret)
+                #
+                #     # logging.error(self.loading_process)
+                #     self.loading_process.join()
+                #
+                # except AttributeError as err:
+                #     print(err)
+                #     logging.exception(err)
+                #
+                # finally:
+                #     self.loading -= 1
 
             time.sleep(1.0)
 
@@ -577,10 +599,10 @@ class Player(object):
         if self.tracks:
             track = self.tracks.pop(0)
 
-            print(track)
-            print(track)
-            print(track)
-            print(track)
+            # print(track)
+            # print(track)
+            # print(track)
+            # print(track)
 
             # cannot use multithreading.Process because the target wants
             # to modify self.playing_track. only works with threading.Thread
@@ -594,23 +616,23 @@ class Player(object):
             # print('here')
             # print(self._playback_thread)
             # <Process(Playback Thread, started)>
-            print(self.playing_track)
-            print(self.playing_track)
-            print(self.playing_track)
-            print(self.playing_track)
+            # print(self.playing_track)
+            # print(self.playing_track)
+            # print(self.playing_track)
+            # print(self.playing_track)
             self._playback_thread.join()
-            print(self.playing_track)
-            print(self.playing_track)
-            print(self.playing_track)
-            print(self.playing_track)
+            # print(self.playing_track)
+            # print(self.playing_track)
+            # print(self.playing_track)
+            # print(self.playing_track)
 
-            print(self._playback_thread)
+            # print(self._playback_thread)
             # <Process(Playback Thread, stopped)>
 
             # so, join continues as soon as this
             # thread is finished, leaving the rest
             # of the application responsive
-            print('there')
+            # print('there')
             self.playing_track = None
             self._playback_thread = None
             print(self._playback_thread)
