@@ -7,7 +7,7 @@ def buttons_img_overlay(labels):
     buttons_img = Image.new(mode='RGB', size=(448, 16), color=(80, 80, 80))
     buttons_draw = ImageDraw.Draw(buttons_img)
     buttons_draw.text((0, 0), '       {0}               {1}               {2}           {3}'.format(
-        labels[3],
+        '    ',  # self.button_4_value,  # Just hide the label for now as the button has no effect
         labels[2],
         labels[1],
         labels[0],

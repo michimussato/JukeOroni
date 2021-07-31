@@ -589,17 +589,6 @@ class Player(object):
         self.pimoroni.set_image(bg, saturation=PIMORONI_SATURATION)
         self.pimoroni.show(busy_wait=False)
 
-    def buttons_img_overlay(self, bg):
-        buttons_img = Image.new(mode='RGB', size=(448, 12), color=(0, 0, 0))
-        buttons_draw = ImageDraw.Draw(buttons_img)
-        buttons_draw.text((0, 0), '       {0}               {1}               {2}           {3}'.format(
-            '    ',  # self.button_4_value,  # Just hide the label for now as the button has no effect
-            self.button_3_value,
-            self.button_2_value,
-            self.button_1_value,
-        ), fill=(255, 255, 255))
-        bg.paste(buttons_img, (0, 0))
-
     @property
     def track_list(self):
         return DjangoTrack.objects.all()
