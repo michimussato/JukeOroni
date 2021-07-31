@@ -457,7 +457,10 @@ class Player(object):
                 print(self.loading_process)
                 print(self.loading_process)
                 while self.loading_process.is_alive():
+                    print('loading')
                     time.sleep(1.0)
+                print('loading done')
+                self.loading_process = None
                 # self.loading_process.join()
                 # ret = self.loading_queue.get()
 
