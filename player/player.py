@@ -574,7 +574,7 @@ class Player(object):
 
         _display_loading = False
         while not self.tracks and bool(self.loading_process):
-            print(self.tracks)
+            # print(self.tracks)
             # []
             # print(self.loading)
             # # 1
@@ -588,8 +588,9 @@ class Player(object):
                 logging.info('loading 1st track')
             time.sleep(1.0)
 
-        print('loading 1st track finished')
-        logging.info('loading 1st track finished')
+        if _display_loading:
+            print('loading 1st track finished')
+            logging.info('loading 1st track finished')
 
         del _display_loading
 
@@ -815,7 +816,7 @@ cd /data/django/jukeoroni/ && git pull && python manage.py shell
 
 from player.player import Player
 p = Player()
-p.temp_cleanup()
+# p.temp_cleanup()
 p.buttons_watcher_thread()
 p.state_watcher_thread()
 p.pimoroni_watcher_thread()
