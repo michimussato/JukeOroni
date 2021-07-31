@@ -577,6 +577,11 @@ class Player(object):
         if self.tracks:
             track = self.tracks.pop(0)
 
+            print(track)
+            print(track)
+            print(track)
+            print(track)
+
             self._playback_thread = multiprocessing.Process(target=self._playback_task, kwargs={'track': track})
             self._playback_thread.name = 'Playback Thread'
             self._playback_thread.daemon = False
@@ -584,10 +589,19 @@ class Player(object):
 
             # start playback first, then change image to prevent lag
             self.set_image(track=track)
-            print('here')
-            print(self._playback_thread)
+            # print('here')
+            # print(self._playback_thread)
             # <Process(Playback Thread, started)>
+            print(self.playing_track)
+            print(self.playing_track)
+            print(self.playing_track)
+            print(self.playing_track)
             self._playback_thread.join()
+            print(self.playing_track)
+            print(self.playing_track)
+            print(self.playing_track)
+            print(self.playing_track)
+
             print(self._playback_thread)
             # <Process(Playback Thread, stopped)>
 
@@ -730,28 +744,20 @@ class Player(object):
                 previous_track_id = self.playing_track.track.id
 
                 """
-                [Sat Jul 31 17:10:07.770556 2021] [wsgi:error] [pid 25728:tid 2804937760] 'NoneType' object has no attribute 'is_alive'
-                [Sat Jul 31 17:10:08.729209 2021] [wsgi:error] [pid 25728:tid 2789471264] Exception in thread Set Image Thread:
-                [Sat Jul 31 17:10:08.729329 2021] [wsgi:error] [pid 25728:tid 2789471264] Traceback (most recent call last):
-                [Sat Jul 31 17:10:08.729374 2021] [wsgi:error] [pid 25728:tid 2789471264]   File "/usr/lib/python3.7/threading.py", line 917, in _bootstrap_inner
-                [Sat Jul 31 17:10:08.729470 2021] [wsgi:error] [pid 25728:tid 2789471264]     self.run()
-                [Sat Jul 31 17:10:08.729506 2021] [wsgi:error] [pid 25728:tid 2789471264]   File "/usr/lib/python3.7/threading.py", line 865, in run
-                [Sat Jul 31 17:10:08.729542 2021] [wsgi:error] [pid 25728:tid 2789471264]     self._target(*self._args, **self._kwargs)
-                [Sat Jul 31 17:10:08.729577 2021] [wsgi:error] [pid 25728:tid 2789471264]   File "/data/django/jukeoroni/player/player.py", line 657, in task_pimoroni_set_image
-                [Sat Jul 31 17:10:08.729612 2021] [wsgi:error] [pid 25728:tid 2789471264]     cover = kwargs['track'].cover or STANDARD_COVER
-                [Sat Jul 31 17:10:08.729646 2021] [wsgi:error] [pid 25728:tid 2789471264] AttributeError: 'NoneType' object has no attribute 'cover'
-                [Sat Jul 31 17:10:08.729702 2021] [wsgi:error] [pid 25728:tid 2789471264] 
-                [Sat Jul 31 17:10:09.194452 2021] [wsgi:error] [pid 25728:tid 2804937760] Exception in thread Track Loader Thread:
-                [Sat Jul 31 17:10:09.194545 2021] [wsgi:error] [pid 25728:tid 2804937760] Traceback (most recent call last):
-                [Sat Jul 31 17:10:09.194565 2021] [wsgi:error] [pid 25728:tid 2804937760]   File "/usr/lib/python3.7/threading.py", line 917, in _bootstrap_inner
-                [Sat Jul 31 17:10:09.194583 2021] [wsgi:error] [pid 25728:tid 2804937760]     self.run()
-                [Sat Jul 31 17:10:09.194622 2021] [wsgi:error] [pid 25728:tid 2804937760]   File "/usr/lib/python3.7/threading.py", line 865, in run
-                [Sat Jul 31 17:10:09.194640 2021] [wsgi:error] [pid 25728:tid 2804937760]     self._target(*self._args, **self._kwargs)
-                [Sat Jul 31 17:10:09.194657 2021] [wsgi:error] [pid 25728:tid 2804937760]   File "/data/django/jukeoroni/player/player.py", line 416, in _track_loader_task
-                [Sat Jul 31 17:10:09.194673 2021] [wsgi:error] [pid 25728:tid 2804937760]     next_track = self.get_next_track()
-                [Sat Jul 31 17:10:09.194689 2021] [wsgi:error] [pid 25728:tid 2804937760]   File "/data/django/jukeoroni/player/player.py", line 755, in get_next_track
-                [Sat Jul 31 17:10:09.194707 2021] [wsgi:error] [pid 25728:tid 2804937760]     previous_track_id = self.playing_track.track.id
-                [Sat Jul 31 17:10:09.194725 2021] [wsgi:error] [pid 25728:tid 2804937760] AttributeError: 'NoneType' object has no attribute 'track'
+                [Sat Jul 31 17:26:00.947039 2021] [wsgi:error] [pid 27170:tid 2835346464] Button press detected on pin: 5 label: Rand -> Albm
+                [Sat Jul 31 17:26:01.169609 2021] [wsgi:error] [pid 27170:tid 2805986336] 'NoneType' object has no attribute 'is_alive'
+                [Sat Jul 31 17:26:01.183415 2021] [wsgi:error] [pid 27170:tid 2835346464] Playback mode is now Albm -> Rand.
+                [Sat Jul 31 17:26:02.678782 2021] [wsgi:error] [pid 27170:tid 2805986336] Exception in thread Track Loader Thread:
+                [Sat Jul 31 17:26:02.678861 2021] [wsgi:error] [pid 27170:tid 2805986336] Traceback (most recent call last):
+                [Sat Jul 31 17:26:02.678880 2021] [wsgi:error] [pid 27170:tid 2805986336]   File "/usr/lib/python3.7/threading.py", line 917, in _bootstrap_inner
+                [Sat Jul 31 17:26:02.678899 2021] [wsgi:error] [pid 27170:tid 2805986336]     self.run()
+                [Sat Jul 31 17:26:02.678936 2021] [wsgi:error] [pid 27170:tid 2805986336]   File "/usr/lib/python3.7/threading.py", line 865, in run
+                [Sat Jul 31 17:26:02.678953 2021] [wsgi:error] [pid 27170:tid 2805986336]     self._target(*self._args, **self._kwargs)
+                [Sat Jul 31 17:26:02.679009 2021] [wsgi:error] [pid 27170:tid 2805986336]   File "/data/django/jukeoroni/player/player.py", line 416, in _track_loader_task
+                [Sat Jul 31 17:26:02.679028 2021] [wsgi:error] [pid 27170:tid 2805986336]     next_track = self.get_next_track()
+                [Sat Jul 31 17:26:02.679045 2021] [wsgi:error] [pid 27170:tid 2805986336]   File "/data/django/jukeoroni/player/player.py", line 730, in get_next_track
+                [Sat Jul 31 17:26:02.679061 2021] [wsgi:error] [pid 27170:tid 2805986336]     previous_track_id = self.playing_track.track.id
+                [Sat Jul 31 17:26:02.679076 2021] [wsgi:error] [pid 27170:tid 2805986336] AttributeError: 'NoneType' object has no attribute 'track'
                 """
 
                 album = DjangoTrack.objects.get(id=previous_track_id).album_id
