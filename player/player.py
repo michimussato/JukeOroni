@@ -7,7 +7,7 @@ import random
 import time
 from pydub.utils import mediainfo
 import threading
-import multiprocessing
+# import multiprocessing
 import logging
 from inky.inky_uc8159 import Inky, BLACK
 import signal
@@ -109,7 +109,7 @@ class Track(object):
             self.track.played += 1
             self.track.save()
             self.is_playing = True
-            print(multiprocessing.current_process().pid)
+            # print(multiprocessing.current_process().pid)
             # TODO: now this would be a classic
             #  subprocess example: calling an external
             #  application
@@ -253,7 +253,7 @@ class Player(object):
     # this is not returning non picklable objects
     # so hopefully ideal for multiprocessing
     def track_list_generator_thread(self, **kwargs):
-        self._track_list_generator_thread = multiprocessing.Process(target=self.track_list_generator_task, kwargs=kwargs)
+        self._track_list_generator_thread = threading.Thread(target=self.track_list_generator_task, kwargs=kwargs)
         self._track_list_generator_thread.name = 'Track List Generator Process'
         self._track_list_generator_thread.daemon = False
         self._track_list_generator_thread.start()
@@ -444,7 +444,7 @@ class Player(object):
         # in the main process
         args[0].put(ret)
                 """
-                self.loading_process = multiprocessing.Process(target=self._load_track_task, kwargs={'track': next_track})
+                self.loading_process = threading.Thread(target=self._load_track_task, kwargs={'track': next_track})
                 self.loading_process.name = 'Track Loader Task Process'
                 self.loading_process.start()
 
@@ -456,22 +456,24 @@ class Player(object):
                 print(self.loading_process)
                 print(self.loading_process)
                 print(self.loading_process)
-                self.loading_process.join()
-                ret = self.loading_queue.get()
+                while self.loading_process.is_alive():
+                    time.sleep(1.0)
+                # self.loading_process.join()
+                # ret = self.loading_queue.get()
 
-                if self.loading_process.exitcode:
-                    raise Exception('Exit code not 0')
-                print(self.loading_process.exitcode)
-                print(self.loading_process.exitcode)
-                print(self.loading_process.exitcode)
-                self.loading_process = None
-                print(self.loading_process)
-                print(self.loading_process)
-                print(self.loading_process)
+                # if self.loading_process.exitcode:
+                #     raise Exception('Exit code not 0')
+                # print(self.loading_process.exitcode)
+                # print(self.loading_process.exitcode)
+                # print(self.loading_process.exitcode)
+                # self.loading_process = None
+                # print(self.loading_process)
+                # print(self.loading_process)
+                # print(self.loading_process)
 
 
-                if ret is not None:
-                    self.tracks.append(ret)
+                # if ret is not None:
+                #     self.tracks.append(ret)
 
                 # self.loading -= 1
 
@@ -616,7 +618,7 @@ class Player(object):
             # None
 
     def _playback_task(self, **kwargs):
-        print(multiprocessing.current_process().pid)
+        # print(multiprocessing.current_process().pid)
         self.playing_track = kwargs['track']
         logging.debug(f'starting playback thread: for {self.playing_track.path} from {self.playing_track.playing_from}')  # TODO add info
         print(f'starting playback thread: for {self.playing_track.path} from {self.playing_track.playing_from}')  # TODO add info
