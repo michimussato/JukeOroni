@@ -217,13 +217,15 @@ class Player(object):
                 return
 
         # Stop button
-        if current_label == self.button_2_value:
-            if self._playback_thread is not None:
-                print('Playback stopped.')
-                logging.info('Playback stopped.')
-                self.button_3_value = BUTTON_3['Next']  # Switch button back to Play
-                self.stop()
-                self.set_image()
+        # only in play mode active
+        if self.button_3_value == 'Next':
+            if current_label == self.button_2_value:
+                if self._playback_thread is not None:
+                    print('Playback stopped.')
+                    logging.info('Playback stopped.')
+                    self.button_3_value = BUTTON_3['Next']  # Switch button back to Play
+                    self.stop()
+                    self.set_image()
 
         # Play/Next button
         if current_label == self.button_3_value:
