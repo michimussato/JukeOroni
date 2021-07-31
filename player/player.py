@@ -385,6 +385,7 @@ class Player(object):
                 # data. when the Queue handles over that cached object, it seems like
                 # it re-creates the Track object (pickle, probably) but the cached data is
                 # gone of course because __del__ was called before that already.
+                """
                 self.loading_process = multiprocessing.Process(target=self._load_track_task, args=(self.loading_queue, ), kwargs={'track': next_track})
                 self.loading_process.name = 'Track Loader Task Process'
                 self.loading_process.start()
@@ -440,6 +441,62 @@ class Player(object):
         # here, or after that, probably processing_track.__del__() is called but pickled/recreated
         # in the main process
         args[0].put(ret)
+                """
+                self.loading_process = multiprocessing.Process(target=self._load_track_task, kwargs={'track': next_track})
+                self.loading_process.name = 'Track Loader Task Process'
+                self.loading_process.start()
+
+                # self.loading += 1
+
+                # if self.loading_process is not None:
+                # stop here and wait for the process to finish or to get killed
+                # in case of a mode change
+                print(self.loading_process)
+                print(self.loading_process)
+                print(self.loading_process)
+                self.loading_process.join()
+                ret = self.loading_queue.get()
+
+                if self.loading_process.exitcode:
+                    raise Exception('Exit code not 0')
+                print(self.loading_process.exitcode)
+                print(self.loading_process.exitcode)
+                print(self.loading_process.exitcode)
+                self.loading_process = None
+                print(self.loading_process)
+                print(self.loading_process)
+                print(self.loading_process)
+
+
+                if ret is not None:
+                    self.tracks.append(ret)
+
+                # self.loading -= 1
+
+            time.sleep(1.0)
+
+    def _load_track_task(self, **kwargs):
+        track = kwargs['track']
+        logging.debug(f'starting thread: \"{track.audio_source}\"')
+        print(f'starting thread: \"{track.audio_source}\"')
+
+        try:
+            size = os.path.getsize(track.audio_source)
+            logging.info(f'loading track ({str(round(size / (1024*1024), 3))} MB): \"{track.audio_source}\"')
+            print(f'loading track ({str(round(size / (1024*1024), 3))} MB): \"{track.audio_source}\"')
+            processing_track = Track(track)
+            logging.info(f'loading successful: \"{track.audio_source}\"')
+            print(f'loading successful: \"{track.audio_source}\"')
+            ret = processing_track
+        except MemoryError as err:
+            print(err)
+            logging.exception(f'loading failed: \"{track.audio_source}\"')
+            print(f'loading failed: \"{track.audio_source}\"')
+            ret = None
+
+        # here, or after that, probably processing_track.__del__() is called but pickled/recreated
+        # in the main process
+        self.loading_queue.put(ret)
     ############################################
 
     ############################################
@@ -502,6 +559,8 @@ class Player(object):
     def playback_thread(self):
         printed_waiting_msg = False
         while not self.tracks and not bool(self.loading_process):
+            print(self.tracks)
+            print(self.loading_process)
             if not printed_waiting_msg:
                 logging.info('waiting for loading thread to kick in')
                 print('waiting for loading thread to kick in')
