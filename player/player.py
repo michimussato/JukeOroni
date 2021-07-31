@@ -399,6 +399,10 @@ class Player(object):
                 print(self.loading_process)
                 self.loading_process.join()
                 ret = self.loading_queue.get()
+                print(self.loading_process.exitcode)
+                print(self.loading_process.exitcode)
+                print(self.loading_process.exitcode)
+                self.loading_process = None
                 print(self.loading_process)
                 print(self.loading_process)
                 print(self.loading_process)
