@@ -244,8 +244,6 @@ class Player(object):
                 return
             else:
                 print('ignored')
-        else:
-            print('ignored')
 
         # Radio button
         if current_label == self.button_4_value:  # Strm
