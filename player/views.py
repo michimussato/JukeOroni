@@ -7,7 +7,7 @@ from PIL import Image, ImageDraw, ImageFont
 from inky.inky_uc8159 import Inky, CLEAN
 from django.http import HttpResponse, HttpResponseRedirect
 from player.displays import Player as PlayerLayout
-# import radio.models
+import radio.models
 from .player import player
 from .models import Channel
 
@@ -80,24 +80,30 @@ def radio_stop(request, pid):
 
 
 def set_image(image_file, media_info):
-    logging.debug('starting setting image task')
-    thread = threading.Thread(target=task_pimoroni_set_image, kwargs={'image_file': image_file, 'media_info': media_info})
-    thread.name = 'Set Image Thread'
-    thread.daemon = False
-    thread.start()
-
-
-def task_pimoroni_set_image(**kwargs):
-    pimoroni = Inky()
-
-    logging.debug('setting image...')
-
-    if kwargs['image_file'] is None:
-        cover = STANDARD_COVER
-    else:
-        cover = kwargs['image_file']
-
-    bg = PlayerLayout.get_layout(labels=['', '', '', ''], cover=cover)
-
-    pimoroni.set_image(bg, saturation=PIMORONI_SATURATION)
-    pimoroni.show()
+    logging.debug('ignoring setting image task')
+    return
+#     thread = threading.Thread(target=task_pimoroni_set_image, kwargs={'image_file': image_file, 'media_info': media_info})
+#     thread.name = 'Set Image Thread'
+#     thread.daemon = False
+#     thread.start()
+#
+#
+# def task_pimoroni_set_image(**kwargs):
+#     pimoroni = Inky()
+#
+#     logging.debug('setting image...')
+#
+#     if kwargs['image_file'] is None:
+#         cover = STANDARD_COVER
+#     else:
+#         cover = kwargs['image_file']
+#
+#     bg = PlayerLayout.get_layout(labels=['', '', '', ''], cover=cover)
+#     """
+#     File "/data/django/jukeoroni/player/views.py", line 100, in task_pimoroni_set_image
+#       bg = PlayerLayout.get_layout(labels=['', '', '', ''], cover=cover)
+#     TypeError: get_layout() missing 1 required positional argument: 'self'
+#     """
+#
+#     pimoroni.set_image(bg, saturation=PIMORONI_SATURATION)
+#     pimoroni.show()
