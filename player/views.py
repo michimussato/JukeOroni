@@ -64,7 +64,9 @@ def radio_play(request, display_name_short):
     if pid_output != '':
         os.system(f'kill {pid_output}')
     channel = Channel.objects.get(display_name_short=display_name_short)
-    subprocess.Popen(['mplayer', '-nogui', '-noconfig', 'all', '-novideo', '-nocache', '-playlist', channel.url])
+    # subprocess.Popen(['mplayer', '-nogui', '-noconfig', 'all', '-novideo', '-nocache', '-playlist', channel.url])
+    # 'ffplay -hide_banner -autoexit -nodisp -vn -loglevel quiet {file}'
+    subprocess.Popen(['ffplay', '-hide_banner', '-autoexit', '-nodisp', '-vn', '-vn', 'quiet', channel.url])
     channel.last_played = True
     channel.save()
 

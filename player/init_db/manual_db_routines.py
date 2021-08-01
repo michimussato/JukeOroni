@@ -109,5 +109,5 @@ def remove_tracks_albums_artists():
 
 
 def remove_channels():
-    from radio.models import Channel
+    from player.models import Channel
     Channel.objects.all().delete()
