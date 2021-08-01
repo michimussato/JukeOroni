@@ -36,10 +36,10 @@ def radio_index(request):
     for channel in channels:
         if channel.is_enabled:
             # required to find out if and which channel is playing
-            ps = subprocess.Popen(['ps -o cmd -p $(pidof mplayer) | grep -i {0}'.format(channel.url)], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            ps = subprocess.Popen(['ps -o cmd -p $(pidof ffplay) | grep -i {0}'.format(channel.url)], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             output = ps.communicate()[0].decode('utf-8').replace('\n', '')
             if output != '':
-                pid = subprocess.Popen(['pidof mplayer'], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                pid = subprocess.Popen(['pidof ffplay'], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                 pid_output = pid.communicate()[0].decode('utf-8').replace('\n', '')
                 ret += f'        <button style=\"width:100%; background-color:green; \" onclick=\"window.location.href = \'stop/{pid_output}\';\">{channel.display_name}</button>\n'  # , channel.display_name)
             else:
@@ -51,7 +51,7 @@ def radio_index(request):
 
 def radio_play(request, display_name_short):
 
-    pid = subprocess.Popen(['pidof mplayer'], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    pid = subprocess.Popen(['pidof ffplay'], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     pid_output = pid.communicate()[0].decode('utf-8').replace('\n', '')
 
     try:
