@@ -6,6 +6,11 @@
 # tuple[4]: url_logo
 
 
+# radio bob streams:
+# http://streams.radiobob.de/
+
+# radio srf
+# https://www.broadcast.ch/fileadmin/kundendaten/Dokumente/Internet_Streaming/2021_01_links_for_streaming_internet_radio_de_fr_it_V006.pdf
 channel_list = [
     ("BOBs 100", "100", True, "http://bob.hoerradar.de/radiobob-100-mp3-hq", None, False),
     ("BOBs 101", "101", True, "http://bob.hoerradar.de/radiobob-101-mp3-hq", None, False),
@@ -16,7 +21,7 @@ channel_list = [
     ("BOBs AC/DC", "bob-acdc", True, "http://bob.hoerradar.de/radiobob-acdc-mp3-hq", "http://aggregatorservice.loverad.io/wp-content/uploads/2021/01/bob_acdc_600x600.png", False),
     ("BOBs Alternative", "bob-alternative", True, "http://bob.hoerradar.de/radiobob-alternative-mp3-hq", "http://aggregatorservice.loverad.io/wp-content/uploads/2018/07/radiobob-streamicon_alternative-rock-1.png", False),
     ("BOBs Best of Rock", "bob-bestofrock", True, "http://bob.hoerradar.de/radiobob-bestofrock-mp3-hq", "http://aggregatorservice.loverad.io/wp-content/uploads/2021/01/bob_best-of-rock_600x600.png", False),
-    ("BOBs Chillout", "bob-chillout", True, "http://bob.hoerradar.de/radiobob-chillout-mp3-hq", "http://aggregatorservice.loverad.io/wp-content/uploads/2021/01/bob_unplugged_600x600.png", False),
+    ("BOBs Unplugged (Chillout)", "bob-unplugged-chillout", True, "http://bob.hoerradar.de/radiobob-chillout-mp3-hq", "http://aggregatorservice.loverad.io/wp-content/uploads/2021/01/bob_unplugged_600x600.png", False),
     ("BOBs Christmas", "bob-christmas", False, "http://bob.hoerradar.de/radiobob-christmas-mp3-hq", "http://aggregatorservice.loverad.io/wp-content/uploads/2021/01/bob_christmas-rock_600x600.png", False),
     ("BOBS Classic Rock", "bob-classicrock", True, "http://bob.hoerradar.de/radiobob-classicrock-mp3-hq", "http://aggregatorservice.loverad.io/wp-content/uploads/2021/01/bob_classic-rock_600x600.png", False),
     ("BOBs Deutsch Rock", "bob-deutsch", True, "http://bob.hoerradar.de/radiobob-deutsch-mp3-hq", "http://aggregatorservice.loverad.io/wp-content/uploads/2021/01/bob_deutschrock_600x600.png", False),
