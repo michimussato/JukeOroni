@@ -23,9 +23,9 @@ from .models import Artist
 from .models import Album
 from .displays import Standby as StandbyLayout
 from .displays import Player as PlayerLayout
-from .discogs import main as discogs_main
+from .discogs import get_client, get_artist, get_album
 
-discogs = discogs_main()
+# discogs = discogs_main()
 
 
 LOG = logging.getLogger(__name__)
@@ -297,6 +297,7 @@ class Player(object):
         # TODO: filter image files, m3u etc.
         logging.info('generating updated track list...')
         print('generating updated track list...')
+        discogs_client = get_client()
         _files = []
         for path, dirs, files in os.walk(MUSIC_DIR):
             album = os.path.basename(path)
@@ -315,9 +316,15 @@ class Player(object):
             query_artist = Artist.objects.filter(name__exact=artist)
             if bool(query_artist):
                 model_artist = query_artist[0]
+                if model_artist.cover_online is None:
+                    cover_online = get_artist(discogs_client, model_artist)
+                    if cover_online:
+                        model_artist.cover_online = cover_online
+                        model_artist.save()
                 # print('    artist found in db')
             else:
-                model_artist = Artist(name=artist)
+                cover_online = get_artist(discogs_client, artist)
+                model_artist = Artist(name=artist, cover_online=cover_online)
                 model_artist.save()
                 # print('    artist created in db')
 
