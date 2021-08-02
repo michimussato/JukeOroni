@@ -343,6 +343,7 @@ class Player(object):
 
             # need to add artist too
             cover_online = None
+            title_stripped = title.split(' [')[0]
             print(title)
             query_album = Album.objects.filter(artist_id=model_artist, album_title__exact=title, year__exact=year)
 
@@ -350,13 +351,13 @@ class Player(object):
                 model_album = query_album[0]
                 model_album.cover = img_path
                 if model_album.cover_online is None:
-                    cover_online = get_album(discogs_client, artist, title)
+                    cover_online = get_album(discogs_client, artist, title_stripped)
                     print(cover_online)
                     if cover_online:
                         model_album.cover_online = cover_online
                 # print('    album found in db')
             else:
-                cover_online = get_album(discogs_client, artist, title)
+                cover_online = get_album(discogs_client, artist, title_stripped)
                 model_album = Album(artist_id=model_artist, album_title=title, year=year, cover=img_path, cover_online=cover_online)
                 # print('    album created in db')
 
