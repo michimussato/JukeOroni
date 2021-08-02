@@ -1,6 +1,7 @@
 import os
 # import urllib2 as urllib
-import io
+# import io
+import requests
 import sys
 import glob
 import random
@@ -13,6 +14,7 @@ from inky.inky_uc8159 import Inky, BLACK
 import signal
 import RPi.GPIO as GPIO
 from PIL import Image, ImageDraw, ImageFont
+import discogs_client
 import shutil
 import tempfile
 from django.utils.timezone import localtime, now
@@ -71,6 +73,9 @@ GPIO.setup(BUTTONS, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 AUDIO_FILES = ['.dsf', '.flac', '.wav', '.dff']
 
 
+DISCOGS = discogs_client.Client('JukeOroni/0.0.1', user_token='GWoCGSuONXRmcCFUEqDbZYGAVVuMVUhcIwtpTPYE')
+
+
 class Track(object):
     def __init__(self, track, cached=True):
         self.track = track
@@ -85,6 +90,18 @@ class Track(object):
     @property
     def cover(self):
         album = Album.objects.get(track=self.track)
+        artist = album.artist_id
+
+        try:
+            global DISCOGS
+            results = DISCOGS.search(album, type='release', artist=artist)
+            cover_square = results[0].images[0]['uri150']
+            print('Discogs cover is: ' + cover_square)
+            cover = Image.open(requests.get(cover_square, stream=True).raw)
+            # rotate cover??
+        except Exception as error:
+            print(error)
+
         return album.cover
 
     @property
@@ -675,13 +692,6 @@ class Player(object):
         elif self.button_1_value == 'Albm -> Rand':
 
             tracks = self.track_list
-
-            # print(tracks)
-            # print(tracks)
-            # print(tracks)
-            # print(tracks)
-            # print(tracks)
-            # print(tracks)
 
             if not bool(tracks):
                 random_album = random.choice(Album.objects.all())

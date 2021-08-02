@@ -1,4 +1,10 @@
 import datetime
+try:
+    from jukeoroni.settings import TIME_ZONE
+    tz = TIME_ZONE
+    print('using djangos timezone')
+except ImportError as err:
+    tz = "Europe/Zurich"
 from PIL import Image, ImageDraw, ImageFont
 from astral import LocationInfo
 from astral.sun import sun
@@ -30,7 +36,7 @@ class Clock:
         toggle = {white: black, black: white}
 
         if draw_astral:
-            city = LocationInfo("Bern", "Switzerland", "Europe/Zurich", 46.94809, 7.44744)
+            city = LocationInfo("Bern", "Switzerland", tz, 46.94809, 7.44744)
             _sun = sun(city.observer, date=datetime.date.today(), tzinfo=city.timezone)
 
             decimal_sunrise = float(_sun["sunrise"].strftime('%H')) + float(_sun["sunrise"].strftime('%M')) / 60

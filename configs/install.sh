@@ -53,6 +53,14 @@ printf "hello"
 #git checkout develop
 
 
+# # # Git Crypt
+# # create key file: https://buddy.works/guides/git-crypt
+#sudo apt-get install git-crypt
+#cp /data/googledrive/temp/git-crypt-key /data/django/
+#cd /data/django/jukeoroni
+#git-crypt unlock /data/django/git-crypt-key
+
+
 # # # Google Drive
 #sudo apt-get install rclone
 #sudo mkdir -p /data/googledrive
