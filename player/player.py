@@ -314,6 +314,7 @@ class Player(object):
                 continue
 
             query_artist = Artist.objects.filter(name__exact=artist)
+            print(artist)
             if bool(query_artist):
                 model_artist = query_artist[0]
                 if model_artist.cover_online is None:
