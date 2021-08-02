@@ -1,7 +1,4 @@
 import os
-# import urllib2 as urllib
-# import io
-import requests
 import sys
 import glob
 import random
@@ -13,8 +10,6 @@ import logging
 from inky.inky_uc8159 import Inky, BLACK
 import signal
 import RPi.GPIO as GPIO
-from PIL import Image, ImageDraw, ImageFont
-import discogs_client
 import shutil
 import tempfile
 from django.utils.timezone import localtime, now
@@ -74,9 +69,6 @@ GPIO.setmode(GPIO.BCM)
 GPIO.setup(BUTTONS, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 # Audio files to index:
 AUDIO_FILES = ['.dsf', '.flac', '.wav', '.dff']
-
-
-# DISCOGS = discogs_client.Client('JukeOroni/0.0.1', user_token='GWoCGSuONXRmcCFUEqDbZYGAVVuMVUhcIwtpTPYE')
 
 
 class Track(object):
@@ -699,7 +691,7 @@ class Player(object):
                     print('album: {0}'.format(kwargs['track'].cover_album))
                     cover = kwargs['track'].cover
 
-            bg = self.layout_player.get_layout(labels=self.LABELS, cover=cover)
+            bg = self.layout_Imageplayer.get_layout(labels=self.LABELS, cover=cover)
 
         self.pimoroni.set_image(bg, saturation=PIMORONI_SATURATION)
         self.pimoroni.show(busy_wait=False)
