@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/3.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
-
+from jukeoroni.secrets import DJANGO_SECRET_KEY
 from pathlib import Path
 import os
 # import logging.config
@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # For JukeOroni is this probably not a big issue
-SECRET_KEY = 'django-insecure-j9&7qo(#1mg7^-c7j_et6p7mhgok)1x@&2kwu0f=n*gl%us1gp'
+SECRET_KEY = DJANGO_SECRET_KEY
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
