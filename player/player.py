@@ -344,7 +344,7 @@ class Player(object):
             # need to add artist too
             cover_online = None
             title_stripped = title.split(' [')[0]
-            print(title)
+            print(title_stripped)
             query_album = Album.objects.filter(artist_id=model_artist, album_title__exact=title, year__exact=year)
 
             if bool(query_album):
