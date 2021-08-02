@@ -20,8 +20,6 @@ from .displays import Standby as StandbyLayout
 from .displays import Player as PlayerLayout
 from .discogs import get_client, get_artist, get_album
 
-# discogs = discogs_main()
-
 
 LOG = logging.getLogger(__name__)
 
@@ -684,16 +682,22 @@ class Player(object):
             bg = self.layout_standby.get_layout(labels=self.LABELS)
         else:
             cover = STANDARD_COVER
+            cover_album = None  # discogs
+            cover_artist = None  # discogs
             if 'image_file' in kwargs:
                 cover = kwargs['image_file']
             elif 'track' in kwargs:
                 if kwargs['track'] is not None:
                     print('online covers for track:')
-                    print('artist: {0}'.format(kwargs['track'].cover_artist))
-                    print('album: {0}'.format(kwargs['track'].cover_album))
+                    cover_artist = kwargs['track'].cover_artist
+                    cover_album = kwargs['track'].cover_album
+                    print('artist: {0}'.format(cover_artist))
+                    print('album: {0}'.format(cover_album))
                     cover = kwargs['track'].cover
 
-            bg = self.layout_Imageplayer.get_layout(labels=self.LABELS, cover=cover)
+            cover = cover_album or cover
+
+            bg = self.layout_player.get_layout(labels=self.LABELS, cover=cover)
 
         self.pimoroni.set_image(bg, saturation=PIMORONI_SATURATION)
         self.pimoroni.show(busy_wait=False)

@@ -9,11 +9,6 @@ import jukeoroni.secrets as secrets
 def get_client():
     d = discogs_client.Client('JukeOroni/0.0.1', user_token=secrets.DISCOGS_USER_TOKEN)
     return d
-    # results = d.search('The Violin Player', type='release', artist='Vanessa Mae')
-    # cover = results[0].images[0]['uri']
-    # cover_square = results[0].images[0]['uri150']
-    # print(cover)
-    # print(cover_square)
 
 
 def get_artist(client, artist):
