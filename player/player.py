@@ -76,7 +76,7 @@ GPIO.setup(BUTTONS, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 AUDIO_FILES = ['.dsf', '.flac', '.wav', '.dff']
 
 
-DISCOGS = discogs_client.Client('JukeOroni/0.0.1', user_token='GWoCGSuONXRmcCFUEqDbZYGAVVuMVUhcIwtpTPYE')
+# DISCOGS = discogs_client.Client('JukeOroni/0.0.1', user_token='GWoCGSuONXRmcCFUEqDbZYGAVVuMVUhcIwtpTPYE')
 
 
 class Track(object):
@@ -91,21 +91,24 @@ class Track(object):
             self._cache()
 
     @property
+    def album(self):
+        return Album.objects.get(track=self.track)
+
+    @property
+    def artist(self):
+        return self.album.artist_id
+
+    @property
     def cover(self):
-        album = Album.objects.get(track=self.track)
-        artist = album.artist_id
+        return self.album.cover_online or self.album.cover
 
-        try:
-            global DISCOGS
-            results = DISCOGS.search(album, type='release', artist=artist)
-            cover_square = results[0].images[0]['uri150']
-            print('Discogs cover is: ' + cover_square)
-            cover = Image.open(requests.get(cover_square, stream=True).raw)
-            # rotate cover??
-        except Exception as error:
-            print(error)
+    @property
+    def cover_album(self):
+        return self.cover
 
-        return album.cover
+    @property
+    def cover_artist(self):
+        return self.artist.cover_online
 
     @property
     def media_info(self):
@@ -313,6 +316,7 @@ class Player(object):
                 print(f'not a valid album path: {album}')
                 continue
 
+            cover_online = None
             query_artist = Artist.objects.filter(name__exact=artist)
             print(artist)
             if bool(query_artist):
@@ -346,14 +350,21 @@ class Player(object):
                 img_path = None
 
             # need to add artist too
+            cover_online = None
             query_album = Album.objects.filter(artist_id=model_artist, album_title__exact=title, year__exact=year)
 
             if bool(query_album):
                 model_album = query_album[0]
                 model_album.cover = img_path
+                if model_album.cover_online is None:
+                    cover_online = get_album(discogs_client, artist, title)
+                    print(cover_online)
+                    if cover_online:
+                        model_album.cover_online = cover_online
                 # print('    album found in db')
             else:
-                model_album = Album(artist_id=model_artist, album_title=title, year=year, cover=img_path)
+                cover_online = get_album(discogs_client, artist, title)
+                model_album = Album(artist_id=model_artist, album_title=title, year=year, cover=img_path, cover_online=cover_online)
                 # print('    album created in db')
 
             try:
@@ -683,6 +694,9 @@ class Player(object):
                 cover = kwargs['image_file']
             elif 'track' in kwargs:
                 if kwargs['track'] is not None:
+                    print('online covers for track:')
+                    print('artist: {0}'.format(kwargs['track'].cover_artist))
+                    print('album: {0}'.format(kwargs['track'].cover_album))
                     cover = kwargs['track'].cover
 
             bg = self.layout_player.get_layout(labels=self.LABELS, cover=cover)
