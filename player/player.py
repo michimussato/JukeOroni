@@ -309,8 +309,8 @@ class Player(object):
                 continue
 
             cover_online = None
-            query_artist = Artist.objects.filter(name__exact=artist)
             print(artist)
+            query_artist = Artist.objects.filter(name__exact=artist)
             if bool(query_artist):
                 model_artist = query_artist[0]
                 if model_artist.cover_online is None:
@@ -343,6 +343,7 @@ class Player(object):
 
             # need to add artist too
             cover_online = None
+            print(title)
             query_album = Album.objects.filter(artist_id=model_artist, album_title__exact=title, year__exact=year)
 
             if bool(query_album):
