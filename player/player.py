@@ -317,13 +317,15 @@ class Player(object):
             if bool(query_artist):
                 model_artist = query_artist[0]
                 if model_artist.cover_online is None:
-                    cover_online = get_artist(discogs_client, model_artist)
+                    cover_online = get_artist(discogs_client, artist)
+                    print(cover_online)
                     if cover_online:
                         model_artist.cover_online = cover_online
                         model_artist.save()
                 # print('    artist found in db')
             else:
                 cover_online = get_artist(discogs_client, artist)
+                print(cover_online)
                 model_artist = Artist(name=artist, cover_online=cover_online)
                 model_artist.save()
                 # print('    artist created in db')
