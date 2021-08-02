@@ -23,6 +23,9 @@ from .models import Artist
 from .models import Album
 from .displays import Standby as StandbyLayout
 from .displays import Player as PlayerLayout
+from .discogs import main as discogs_main
+
+discogs = discogs_main()
 
 
 LOG = logging.getLogger(__name__)
