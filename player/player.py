@@ -78,7 +78,7 @@ AUDIO_FILES = ['.dsf', '.flac', '.wav', '.dff']
 
 
 def is_string_an_url(url_string: str) -> bool:
-    validate_url = URLValidator(verify_exists=True)
+    validate_url = URLValidator()
 
     try:
         validate_url(url_string)
