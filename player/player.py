@@ -114,10 +114,16 @@ class Track(object):
 
     @property
     def cover_album(self):
+        # TODO: query Discogs image here on the fly?
+        #  downside: we cannot specify the actual image
+        #  on the database if path is not stored beforehand
         return self.cover
 
     @property
     def cover_artist(self):
+        # TODO: query Discogs image here on the fly?
+        #  downside: we cannot specify the actual image
+        #  on the database if path is not stored beforehand
         return self.artist.cover_online
 
     @property
@@ -723,6 +729,18 @@ class Player(object):
                             print('using local album cover')
                     else:
                         print('using local album cover')
+
+                    if cover_artist:
+                        hdr = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64)'}
+                        req = urllib.request.Request(cover_artist, headers=hdr)
+                        response = urllib.request.urlopen(req)
+                        if response.status == 200:
+                            print('using Discogs artist cover')
+                            cover = io.BytesIO(response.read())
+                        else:
+                            print('using local artist cover')
+                    else:
+                        print('using local/no artist cover')
                             # cover = Image.open(im)
                     # else:
                     #     cover = Image.open(cover)
@@ -739,7 +757,7 @@ class Player(object):
             cover = Image.open(cover)
             # cover = cover_album or cover
 
-            bg = self.layout_player.get_layout(labels=self.LABELS, cover=cover)
+            bg = self.layout_player.get_layout(labels=self.LABELS, cover=cover, artist=cover_artist)
 
         self.pimoroni.set_image(bg, saturation=PIMORONI_SATURATION)
         self.pimoroni.show(busy_wait=False)

@@ -82,9 +82,13 @@ class Standby(Layout):
 
 class Player(Layout):
 
-    def get_layout(self, labels, cover):
+    def get_layout(self, labels, cover, artist=None):
 
-        assert isinstance(cover, Image.Image), 'cover type must be PIL.Image.Image() (not rotated)'
+        assert isinstance(cover, Image.Image), 'album cover type must be PIL.Image.Image() (not rotated)'
+        if artist is None:
+            pass
+        else:
+            assert isinstance(cover, Image.Image), 'artist cover type must be PIL.Image.Image() (not rotated)'
 
         buttons_overlay = buttons_img_overlay(labels)
         bg = Image.new(mode='RGB', size=(600, 448), color=(0, 0, 0))
@@ -110,6 +114,14 @@ class Player(Layout):
         cover = cover.rotate(90, expand=True)
         cover = cover.resize((cover_size, cover_size), Image.ANTIALIAS)
         cover = round_resize(img=cover, corner=40, scaled_by=1.0)
+
+        if artist:
+            scale_cover_artist = 4
+            cover_artist = artist.rotate(90, expand=True)
+            cover_artist = cover_artist((cover_size/scale_cover_artist, cover_size/scale_cover_artist), Image.ANTIALIAS)
+            cover_artist = round_resize(img=cover_artist, corner=30, scaled_by=1.0)
+
+            cover.paste(cover_artist, (cover_size - cover_size/scale_cover_artist, 0))
 
         _cover_center = round(bg.size[1] / 2 - cover_size / 2)
         bg.paste(cover, (buttons_overlay.size[0] + self.border, _cover_center))
