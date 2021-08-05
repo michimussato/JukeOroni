@@ -714,7 +714,7 @@ class Player(object):
                         hdr = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64)'}
                         req = urllib.request.Request(cover_album, headers=hdr)
                         response = urllib.request.urlopen(req)
-                        if req.status == '200':
+                        if response.status == '200':
                             cover = io.BytesIO(response.read())
                             # cover = Image.open(im)
                     # else:
