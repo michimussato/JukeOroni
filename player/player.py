@@ -318,9 +318,8 @@ class Player(object):
                 with open(FAULTY_ALBUMS, 'a+') as f:
                     f.write(album + '\n')
                 # TODO: store this somewhere to fix it
-                print(err)
-                LOG.exception(f'not a valid album path: {album}')
-                print(f'not a valid album path: {album}')
+                print(f'not a valid album path: {album}: {err}')
+                LOG.exception(f'not a valid album path: {album}: {err}')
                 continue
 
             cover_online = None
@@ -379,8 +378,8 @@ class Player(object):
             try:
                 model_album.save()
             except Exception as err:
-                logging.exception(err)
-                print(err)
+                logging.exception(f'cannot save album model {title} by {artist}: {err}')
+                print(f'cannot save album model {title} by {artist}: {err}')
 
             for _file in files:
                 # print('      track: ' + _file)
