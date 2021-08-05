@@ -736,7 +736,7 @@ class Player(object):
                         response = urllib.request.urlopen(req)
                         if response.status == 200:
                             print('using Discogs artist cover')
-                            cover = io.BytesIO(response.read())
+                            cover_artist = io.BytesIO(response.read())
                         else:
                             print('using local artist cover')
                     else:

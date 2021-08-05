@@ -88,7 +88,7 @@ class Player(Layout):
         if artist is None:
             pass
         else:
-            assert isinstance(cover, Image.Image), 'artist cover type must be PIL.Image.Image() (not rotated)'
+            assert isinstance(artist, Image.Image), 'artist cover type must be PIL.Image.Image() (not rotated)'
 
         buttons_overlay = buttons_img_overlay(labels)
         bg = Image.new(mode='RGB', size=(600, 448), color=(0, 0, 0))
