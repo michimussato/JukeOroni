@@ -741,6 +741,7 @@ class Player(object):
                             if response.status == 200:
                                 print('using Discogs artist cover')
                                 cover_artist = io.BytesIO(response.read())
+                                cover_artist = Image.open(cover_artist)
                             else:
                                 print('using local artist cover')
                     else:
