@@ -119,10 +119,10 @@ class Player(Layout):
         if artist:
             scale_cover_artist = 4
             cover_artist = artist.rotate(90, expand=True)
-            cover_artist = cover_artist.resize((cover_size/scale_cover_artist, cover_size/scale_cover_artist), Image.ANTIALIAS)
+            cover_artist = cover_artist.resize((round(cover_size/scale_cover_artist), round(cover_size/scale_cover_artist)), Image.ANTIALIAS)
             cover_artist = round_resize(img=cover_artist, corner=30, scaled_by=1.0)
 
-            cover.paste(cover_artist, (cover_size - cover_size/scale_cover_artist, 0))
+            cover.paste(cover_artist, (round(cover_size - cover_size/scale_cover_artist), 0))
 
         _cover_center = round(bg.size[1] / 2 - cover_size / 2)
         bg.paste(cover, (buttons_overlay.size[0] + self.border, _cover_center))
