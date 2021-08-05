@@ -1,8 +1,11 @@
 import os
+import io
 import sys
 import glob
 import random
 import time
+import urllib.request
+from PIL import Image
 from pydub.utils import mediainfo
 import threading
 import multiprocessing
@@ -13,6 +16,8 @@ import RPi.GPIO as GPIO
 import shutil
 import tempfile
 from django.utils.timezone import localtime, now
+from django.core.validators import URLValidator
+from django.core.exceptions import ValidationError
 from .models import Track as DjangoTrack
 from .models import Artist
 from .models import Album
@@ -67,6 +72,17 @@ GPIO.setmode(GPIO.BCM)
 GPIO.setup(BUTTONS, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 # Audio files to index:
 AUDIO_FILES = ['.dsf', '.flac', '.wav', '.dff']
+
+
+def is_string_an_url(url_string: str) -> bool:
+    validate_url = URLValidator(verify_exists=True)
+
+    try:
+        validate_url(url_string)
+    except ValidationError as e:
+        return False
+
+    return True
 
 
 class Track(object):
@@ -694,16 +710,27 @@ class Player(object):
                     cover_album = kwargs['track'].cover_album
                     print('artist: {0}'.format(cover_artist))
                     print('album: {0}'.format(cover_album))
-                    cover = kwargs['track'].cover
+                    if cover_album:
+                        hdr = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64)'}
+                        req = urllib.request.Request(cover_album, headers=hdr)
+                        response = urllib.request.urlopen(req)
+                        if req.status == '200':
+                            cover = io.BytesIO(response.read())
+                            # cover = Image.open(im)
+                    # else:
+                    #     cover = Image.open(cover)
 
-                    print(cover_album)
-                    print(cover_album)
-                    print(cover_album)
-                    print(cover_album)
-                    print(cover_album)
-                    print(cover_album)
+                    # cover = kwargs['track'].cover
 
-            cover = cover_album or cover
+                    # print(cover_album)
+                    # print(cover_album)
+                    # print(cover_album)
+                    # print(cover_album)
+                    # print(cover_album)
+                    # print(cover_album)
+
+            cover = Image.open(cover)
+            # cover = cover_album or cover
 
             bg = self.layout_player.get_layout(labels=self.LABELS, cover=cover)
 

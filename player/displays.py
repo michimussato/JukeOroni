@@ -84,30 +84,35 @@ class Player(Layout):
 
     def get_layout(self, labels, cover):
 
+        assert isinstance(cover, Image.Image), 'cover type must be PIL.Image.Image() (not rotated)'
+
         buttons_overlay = buttons_img_overlay(labels)
         bg = Image.new(mode='RGB', size=(600, 448), color=(0, 0, 0))
 
         # cover_size = 448 - 2 * self.border
         cover_size = self.main_size
-        print(cover)
-        print(cover)
-        print(cover)
-        print(cover)
-        print(type(cover))
-        print(type(cover))
-        print(type(cover))
-        print(type(cover))
-        if isinstance(cover, Image.Image):
-            _cover = cover
-        else:
-            # im = Image.open(BytesIO(png))
-            _cover = Image.open(cover)
-        _cover = _cover.rotate(90, expand=True)
-        _cover = _cover.resize((cover_size, cover_size), Image.ANTIALIAS)
-        _cover = round_resize(img=_cover, corner=40, scaled_by=1.0)
+        # print(cover)
+        # print(cover)
+        # print(cover)
+        # print(cover)
+        # print(type(cover))
+        # print(type(cover))
+        # print(type(cover))
+        # print(type(cover))
+
+        # cover = cover
+
+        # if isinstance(cover, Image.Image):
+        #     _cover = cover
+        # else:
+        #     # im = Image.open(BytesIO(png))
+        #     _cover = Image.open(cover)
+        cover = cover.rotate(90, expand=True)
+        cover = cover.resize((cover_size, cover_size), Image.ANTIALIAS)
+        cover = round_resize(img=cover, corner=40, scaled_by=1.0)
 
         _cover_center = round(bg.size[1] / 2 - cover_size / 2)
-        bg.paste(_cover, (buttons_overlay.size[0] + self.border, _cover_center))
+        bg.paste(cover, (buttons_overlay.size[0] + self.border, _cover_center))
 
         clock_size = 151
         _clock = self._clock.get_clock(size=clock_size, draw_logo=False, draw_date=False, hours=24, draw_astral=True)
