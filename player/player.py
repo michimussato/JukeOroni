@@ -74,6 +74,9 @@ GPIO.setup(BUTTONS, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 AUDIO_FILES = ['.dsf', '.flac', '.wav', '.dff']
 
 
+# TODO: [Fri Aug 06 00:00:01.223762 2021] [mpm_event:notice] [pid 7463:tid 3069252112] AH00493: SIGUSR1 received.  Doing graceful restart
+
+
 def is_string_an_url(url_string: str) -> bool:
     validate_url = URLValidator(verify_exists=True)
 
