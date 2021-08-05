@@ -82,6 +82,7 @@ class Track(object):
 
     @property
     def album(self):
+        print(self.track)
         return Album.objects.get(track=self.track)
 
     @property
