@@ -719,26 +719,28 @@ class Player(object):
                     print('artist: {0}'.format(cover_artist))
                     print('album: {0}'.format(cover_album))
                     if cover_album:
-                        hdr = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64)'}
-                        req = urllib.request.Request(cover_album, headers=hdr)
-                        response = urllib.request.urlopen(req)
-                        if response.status == 200:
-                            print('using Discogs album cover')
-                            cover = io.BytesIO(response.read())
-                        else:
-                            print('using local album cover')
+                        if is_string_an_url(cover_album)
+                            hdr = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64)'}
+                            req = urllib.request.Request(cover_album, headers=hdr)
+                            response = urllib.request.urlopen(req)
+                            if response.status == 200:
+                                print('using Discogs album cover')
+                                cover = io.BytesIO(response.read())
+                            else:
+                                print('using local album cover')
                     else:
                         print('using local album cover')
 
                     if cover_artist:
-                        hdr = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64)'}
-                        req = urllib.request.Request(cover_artist, headers=hdr)
-                        response = urllib.request.urlopen(req)
-                        if response.status == 200:
-                            print('using Discogs artist cover')
-                            cover_artist = io.BytesIO(response.read())
-                        else:
-                            print('using local artist cover')
+                        if is_string_an_url(cover_album):
+                            hdr = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64)'}
+                            req = urllib.request.Request(cover_artist, headers=hdr)
+                            response = urllib.request.urlopen(req)
+                            if response.status == 200:
+                                print('using Discogs artist cover')
+                                cover_artist = io.BytesIO(response.read())
+                            else:
+                                print('using local artist cover')
                     else:
                         print('using local/no artist cover')
                             # cover = Image.open(im)
