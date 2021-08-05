@@ -308,20 +308,20 @@ class Player(object):
                 continue
 
             cover_online = None
-            print(artist)
+            # print(artist)
             query_artist = Artist.objects.filter(name__exact=artist)
             if bool(query_artist):
                 model_artist = query_artist[0]
                 if model_artist.cover_online is None:
                     cover_online = get_artist(discogs_client, artist)
-                    print(cover_online)
+                    # print(cover_online)
                     if cover_online:
                         model_artist.cover_online = cover_online
                         model_artist.save()
                 # print('    artist found in db')
             else:
                 cover_online = get_artist(discogs_client, artist)
-                print(cover_online)
+                # print(cover_online)
                 model_artist = Artist(name=artist, cover_online=cover_online)
                 model_artist.save()
                 # print('    artist created in db')
@@ -343,7 +343,7 @@ class Player(object):
             # need to add artist too
             cover_online = None
             title_stripped = title.split(' [')[0]
-            print(title_stripped)
+            # print(title_stripped)
             query_album = Album.objects.filter(artist_id=model_artist, album_title__exact=title, year__exact=year)
 
             if bool(query_album):
@@ -351,7 +351,7 @@ class Player(object):
                 model_album.cover = img_path
                 if model_album.cover_online is None:
                     cover_online = get_album(discogs_client, artist, title_stripped)
-                    print(cover_online)
+                    # print(cover_online)
                     if cover_online:
                         model_album.cover_online = cover_online
                 # print('    album found in db')
