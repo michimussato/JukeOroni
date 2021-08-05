@@ -524,9 +524,9 @@ class Player(object):
             print(f'loading successful: \"{track.audio_source}\"')
             ret = processing_track
         except MemoryError as err:
-            print(err)
-            logging.exception(f'loading failed: \"{track.audio_source}\"')
-            print(f'loading failed: \"{track.audio_source}\"')
+            # print(err)
+            logging.exception(f'loading failed: \"{track.audio_source}\": {err}')
+            print(f'loading failed: \"{track.audio_source}\": {err}')
             ret = None
 
         # here, or after that, probably processing_track.__del__() is called but pickled/recreated
@@ -714,7 +714,12 @@ class Player(object):
                         req = urllib.request.Request(cover_album, headers=hdr)
                         response = urllib.request.urlopen(req)
                         if response.status == 200:
+                            print('using Discogs album cover')
                             cover = io.BytesIO(response.read())
+                        else:
+                            print('using local album cover')
+                    else:
+                        print('using local album cover')
                             # cover = Image.open(im)
                     # else:
                     #     cover = Image.open(cover)

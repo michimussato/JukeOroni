@@ -84,5 +84,6 @@ class Radar(object):
             return im.rotate(90, expand=True)
 
         except Exception as err:
-            print(err)
+            print(f'could not update radar image: {err}')
+            # print(err)
             return self._placeholder

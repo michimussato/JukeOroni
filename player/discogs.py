@@ -17,7 +17,8 @@ def get_artist(client, artist):
         cover_square = results[0].images[0]['uri150']
         return cover_square
     except Exception as err:
-        print(err)
+        print(f'discogs could not look up artist: {err}')
+        # print(err)
         return None
 
 
@@ -27,5 +28,6 @@ def get_album(client, artist, album):
         cover_square = results[0].images[0]['uri150']
         return cover_square
     except Exception as err:
-        print(err)
+        print(f'discogs could not look up album: {err}')
+        # print(err)
         return None
