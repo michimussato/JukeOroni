@@ -719,6 +719,7 @@ class Player(object):
                     print('artist: {0}'.format(cover_artist))
                     print('album: {0}'.format(cover_album))
                     if cover_album:
+                        print(cover_album)
                         if is_string_an_url(cover_album):
                             hdr = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64)'}
                             req = urllib.request.Request(cover_album, headers=hdr)
@@ -732,6 +733,7 @@ class Player(object):
                         print('using local album cover')
 
                     if cover_artist:
+                        print(cover_artist)
                         if is_string_an_url(cover_album):
                             hdr = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64)'}
                             req = urllib.request.Request(cover_artist, headers=hdr)
