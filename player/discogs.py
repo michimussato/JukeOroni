@@ -28,6 +28,6 @@ def get_album(client, artist, album):
         cover_square = results[0].images[0]['uri150']
         return cover_square
     except Exception as err:
-        print(f'discogs could not look up album: {err}')
+        print(f'discogs could not look up album {album} (by {artist}): {err}')
         # print(err)
         return None
