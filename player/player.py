@@ -696,6 +696,13 @@ class Player(object):
                     print('album: {0}'.format(cover_album))
                     cover = kwargs['track'].cover
 
+                    print(cover_album)
+                    print(cover_album)
+                    print(cover_album)
+                    print(cover_album)
+                    print(cover_album)
+                    print(cover_album)
+
             cover = cover_album or cover
 
             bg = self.layout_player.get_layout(labels=self.LABELS, cover=cover)
