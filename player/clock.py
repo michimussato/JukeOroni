@@ -25,7 +25,7 @@ class Clock:
         # bg = Image.new(mode='RGB', size=(_size, _size), color=(0, 0, 0, 0))
         bg = Image.new(mode='RGBA', size=(_size, _size))
         mask_bg_draw = ImageDraw.Draw(bg)
-        mask_bg_draw.ellipse((0,0,400,400), fill=(0,0,0,255))
+        mask_bg_draw.ellipse((0,0,300,300), fill=(255,0,0,255))
         # image = Image.new(mode='RGB', size=(_size, _size), color=(0, 0, 0))
         # draw = ImageDraw.Draw(image)
 
