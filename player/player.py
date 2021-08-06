@@ -725,11 +725,12 @@ class Player(object):
                         if response.status == 200:
                             print('using Discogs album cover')
                             cover_album = io.BytesIO(response.read())
-                    elif cover_album == STANDARD_COVER:
-                        cover_album = Image.open(cover_artist)
-                        print('using local album cover')
                     else:
-                        raise Exception('No album cover for track!!')
+                        cover_album = Image.open(cover_album)
+                        print('using local album cover')
+                    # else:
+
+                        # raise Exception('No album cover for track!!')
 
                     cover_artist = kwargs['track'].cover_artist
                     print('artist: {0}'.format(cover_artist))
