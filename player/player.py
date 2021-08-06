@@ -706,11 +706,10 @@ class Player(object):
         if self.button_3_value != 'Next':
             bg = self.layout_standby.get_layout(labels=self.LABELS)
         else:
-            # cover = STANDARD_COVER
             cover_album = None  # discogs
             cover_artist = None  # discogs
             if 'image_file' in kwargs:
-                # This will cause an exception as we are not creating an Image.Image()
+                # This if will cause an exception as we are not creating an Image.Image()
                 # object. This will have to go at some point.
                 cover_album = kwargs['image_file']
             elif 'track' in kwargs:
@@ -750,20 +749,6 @@ class Player(object):
                         else:
                             print('using no artist cover')
                             cover_artist = None
-                    # else:
-                    #     print('using local/no artist cover')
-                            # cover = Image.open(im)
-                    # else:
-                    #     cover = Image.open(cover)
-
-                    # cover = kwargs['track'].cover
-
-                    # print(cover_album)
-                    # print(cover_album)
-                    # print(cover_album)
-                    # print(cover_album)
-                    # print(cover_album)
-                    # print(cover_album)
 
             cover_album = Image.open(cover_album)
 
