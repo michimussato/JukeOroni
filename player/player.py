@@ -853,7 +853,7 @@ def player():
     p.pimoroni_watcher_thread()
     p.set_image()
     # p.track_list_generator_thread(auto_update_tracklist_interval=DEFAULT_TRACKLIST_REGEN_INTERVAL)  # effect only if auto_update_tracklist=True
-    p.track_loader_thread()
+    # p.track_loader_thread()
 
 
 if __name__ == '__main__':
