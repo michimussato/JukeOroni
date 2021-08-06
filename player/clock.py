@@ -29,7 +29,7 @@ class Clock:
         alpha_mask_draw.ellipse([(0, 0), (300, 300)], fill=255)
         mask_bg_draw = ImageDraw.Draw(_bg, 'RGBA')
         mask_bg_draw.ellipse([(0,0),(300,300)], fill=(255,0,0,255))
-        bg = Image.composite(_bg, None, mask_bg_draw)
+        bg = Image.composite(_bg, mask_bg_draw)
         # image = Image.new(mode='RGB', size=(_size, _size), color=(0, 0, 0))
         # draw = ImageDraw.Draw(image)
 
