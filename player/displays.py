@@ -64,7 +64,7 @@ class Standby(Layout):
         _clock_center = round(bg.size[1]/2 - clock_size/2)
         # _clock_right = 0
         # _clock_left = bg.size[1] - clock_size
-        bg.paste(_clock, (buttons_overlay.size[0] + self.border, _clock_center))
+        bg.composite(_clock, (buttons_overlay.size[0] + self.border, _clock_center))
 
         _radar_image = self._radar.radar_image
 
