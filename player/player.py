@@ -706,32 +706,34 @@ class Player(object):
         if self.button_3_value != 'Next':
             bg = self.layout_standby.get_layout(labels=self.LABELS)
         else:
-            cover = STANDARD_COVER
+            # cover = STANDARD_COVER
             cover_album = None  # discogs
             cover_artist = None  # discogs
             if 'image_file' in kwargs:
-                cover = kwargs['image_file']
+                # This will cause an exception as we are not creating an Image.Image()
+                # object. This will have to go at some point.
+                cover_album = kwargs['image_file']
             elif 'track' in kwargs:
                 if kwargs['track'] is not None:
                     print('online covers for track:')
-                    cover_artist = kwargs['track'].cover_artist
-                    cover_album = kwargs['track'].cover_album
-                    print('artist: {0}'.format(cover_artist))
-                    print('album: {0}'.format(cover_album))
-                    if cover_album:
-                        print(cover_album)
-                        if is_string_an_url(cover_album):
-                            hdr = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64)'}
-                            req = urllib.request.Request(cover_album, headers=hdr)
-                            response = urllib.request.urlopen(req)
-                            if response.status == 200:
-                                print('using Discogs album cover')
-                                cover = io.BytesIO(response.read())
-                            else:
-                                print('using local album cover')
-                    else:
-                        print('using local album cover')
 
+                    cover_album = kwargs['track'].cover_album or STANDARD_COVER
+                    print('album: {0}'.format(cover_album))
+                    if is_string_an_url(cover_album):
+                        hdr = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64)'}
+                        req = urllib.request.Request(cover_album, headers=hdr)
+                        response = urllib.request.urlopen(req)
+                        if response.status == 200:
+                            print('using Discogs album cover')
+                            cover_album = io.BytesIO(response.read())
+                    elif cover_album == STANDARD_COVER:
+                        cover_album = Image.open(cover_artist)
+                        print('using local album cover')
+                    else:
+                        raise Exception('No album cover for track!!')
+
+                    cover_artist = kwargs['track'].cover_artist
+                    print('artist: {0}'.format(cover_artist))
                     if cover_artist:
                         print(cover_artist)
                         if is_string_an_url(cover_album):
@@ -743,9 +745,13 @@ class Player(object):
                                 cover_artist = io.BytesIO(response.read())
                                 cover_artist = Image.open(cover_artist)
                             else:
-                                print('using local artist cover')
-                    else:
-                        print('using local/no artist cover')
+                                print(f'response status is not 200: {response.status}')
+                                cover_artist = None
+                        else:
+                            print('using no artist cover')
+                            cover_artist = None
+                    # else:
+                    #     print('using local/no artist cover')
                             # cover = Image.open(im)
                     # else:
                     #     cover = Image.open(cover)
@@ -759,10 +765,9 @@ class Player(object):
                     # print(cover_album)
                     # print(cover_album)
 
-            cover = Image.open(cover)
-            # cover = cover_album or cover
+            cover_album = Image.open(cover_album)
 
-            bg = self.layout_player.get_layout(labels=self.LABELS, cover=cover, artist=cover_artist)
+            bg = self.layout_player.get_layout(labels=self.LABELS, cover=cover_album, artist=cover_artist)
 
         self.pimoroni.set_image(bg, saturation=PIMORONI_SATURATION)
         self.pimoroni.show(busy_wait=False)
