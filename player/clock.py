@@ -25,8 +25,8 @@ class Clock:
         # bg = Image.new(mode='RGB', size=(_size, _size), color=(0, 0, 0, 0))
         bg = Image.new(mode='RGBa', size=(_size, _size), color=(255, 0, 0, 0))
         # _bg = Image.new(mode='RGBA', size=(_size, _size))
-        # draw = ImageDraw.Draw(bg)
-        # draw.ellipse([(0, 0), (300, 300)], fill=(255,0,0))
+        draw = ImageDraw.Draw(bg)
+        draw.ellipse([(0, 0), (300, 300)], fill=(0,0,0,255))
         # bg = Image.alpha_composite(bg, _bg)
         # draw = Image.Imag
         # alpha_mask = Image.new('L', _bg.size, 0)
