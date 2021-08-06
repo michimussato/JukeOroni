@@ -852,7 +852,7 @@ def player():
     p.state_watcher_thread()
     p.pimoroni_watcher_thread()
     p.set_image()
-    p.track_list_generator_thread(auto_update_tracklist_interval=DEFAULT_TRACKLIST_REGEN_INTERVAL / 4)  # effect only if auto_update_tracklist=True
+    # p.track_list_generator_thread(auto_update_tracklist_interval=DEFAULT_TRACKLIST_REGEN_INTERVAL)  # effect only if auto_update_tracklist=True
     p.track_loader_thread()
 
 
