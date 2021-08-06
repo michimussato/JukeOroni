@@ -26,8 +26,8 @@ class Clock:
         bg = Image.new(mode='RGBA', size=(_size, _size))
         mask_bg_draw = ImageDraw.Draw(bg)
         mask_bg_draw.ellipse((0,0,400,400), fill=(0,0,0,255))
-        image = Image.new(mode='RGB', size=(_size, _size), color=(0, 0, 0))
-        draw = ImageDraw.Draw(image)
+        # image = Image.new(mode='RGB', size=(_size, _size), color=(0, 0, 0))
+        # draw = ImageDraw.Draw(image)
 
         if hours == 24:
             arc_twelve = 90.0
@@ -128,8 +128,8 @@ class Clock:
             length = font.getlength(text)
             # draw.text((round(_size / 2) - length / 2, round(_size * 0.690)), text, fill=white, font=font)
 
-        bg.paste(image.rotate(90, expand=False))
-        bg.paste(image)
+        # bg.paste(image.rotate(90, expand=False))
+        # bg.paste(image)
 
         bg = bg.rotate(90, expand=False)
         bg = bg.resize((round(_size/ANTIALIAS), round(_size/ANTIALIAS)), Image.ANTIALIAS)
