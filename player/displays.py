@@ -56,7 +56,6 @@ class Standby(Layout):
 
         buttons_overlay = buttons_img_overlay(labels=labels, stby=True)
         bg = Image.new(mode='RGB', size=(600, 448), color=(255, 255, 255))
-        bg.putalpha(0)
 
         # clock_size = 448 - 2 * self.border
         clock_size = self.main_size
