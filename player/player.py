@@ -714,10 +714,10 @@ class Player(object):
                 cover_album = kwargs['image_file']
             elif 'track' in kwargs:
                 if kwargs['track'] is not None:
-                    print('online covers for track:')
+                    # print('online covers for track:')
 
                     cover_album = kwargs['track'].cover_album or STANDARD_COVER
-                    print('album: {0}'.format(cover_album))
+                    print(f'album: {cover_album}')
                     if is_string_an_url(cover_album):
                         hdr = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64)'}
                         req = urllib.request.Request(cover_album, headers=hdr)
@@ -725,6 +725,7 @@ class Player(object):
                         if response.status == 200:
                             print('using Discogs album cover')
                             cover_album = io.BytesIO(response.read())
+                            cover_album = Image.open(cover_album)
                     else:
                         cover_album = Image.open(cover_album)
                         print('using local album cover')
@@ -751,7 +752,7 @@ class Player(object):
                             print('using no artist cover')
                             cover_artist = None
 
-            cover_album = Image.open(cover_album)
+            # cover_album = Image.open(cover_album)
 
             bg = self.layout_player.get_layout(labels=self.LABELS, cover=cover_album, artist=cover_artist)
 
