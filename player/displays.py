@@ -55,7 +55,8 @@ class Standby(Layout):
     def get_layout(self, labels):
 
         buttons_overlay = buttons_img_overlay(labels=labels, stby=True)
-        bg = Image.new(mode='RGBA', size=(600, 448), color=(255, 255, 255, 0))
+        bg = Image.new(mode='RGB', size=(600, 448), color=(255, 255, 255))
+        bg.putalpha(0)
 
         # clock_size = 448 - 2 * self.border
         clock_size = self.main_size
@@ -64,7 +65,7 @@ class Standby(Layout):
         _clock_center = round(bg.size[1]/2 - clock_size/2)
         # _clock_right = 0
         # _clock_left = bg.size[1] - clock_size
-        bg.composite(_clock, (buttons_overlay.size[0] + self.border, _clock_center))
+        bg.paste(_clock, (buttons_overlay.size[0] + self.border, _clock_center))
 
         _radar_image = self._radar.radar_image
 
