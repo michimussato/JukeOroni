@@ -55,7 +55,7 @@ class Standby(Layout):
     def get_layout(self, labels):
 
         buttons_overlay = buttons_img_overlay(labels=labels, stby=True)
-        bg = Image.new(mode='RGB', size=(600, 448), color=(0, 0, 0))
+        bg = Image.new(mode='RGB', size=(600, 448), color=(255, 255, 255))
 
         # clock_size = 448 - 2 * self.border
         clock_size = self.main_size
@@ -92,26 +92,11 @@ class Player(Layout):
             assert isinstance(artist, Image.Image), 'artist cover type must be PIL.Image.Image() (not rotated)'
 
         buttons_overlay = buttons_img_overlay(labels)
-        bg = Image.new(mode='RGB', size=(600, 448), color=(0, 0, 0))
+        bg = Image.new(mode='RGB', size=(600, 448), color=(255, 255, 255))
 
         # cover_size = 448 - 2 * self.border
         cover_size = self.main_size
-        # print(cover)
-        # print(cover)
-        # print(cover)
-        # print(cover)
-        # print(type(cover))
-        # print(type(cover))
-        # print(type(cover))
-        # print(type(cover))
 
-        # cover = cover
-
-        # if isinstance(cover, Image.Image):
-        #     _cover = cover
-        # else:
-        #     # im = Image.open(BytesIO(png))
-        #     _cover = Image.open(cover)
         cover = cover.rotate(90, expand=True)
         cover = cover.resize((cover_size, cover_size), Image.ANTIALIAS)
         cover = round_resize(img=cover, corner=40, scaled_by=1.0)
