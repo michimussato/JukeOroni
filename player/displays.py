@@ -95,7 +95,7 @@ def round_resize(img, corner, scaled_by):
     w, h = img.size
     img = img.resize((round(w * scaled_by), round(h * scaled_by)))
     bg = Image.new(mode='RGBA', size=img.size, color=(0, 0, 0,0))
-    mask = Image.new("RGBA", img.size, fill=(0,0,0,0))
+    mask = Image.new("RGBA", img.size, color=(0,0,0,0))
     draw = ImageDraw.Draw(mask)
     draw.rounded_rectangle([(0, 0), img.size], corner, fill=(0,255,0,255))
     comp = Image.new(mode='RGBA', size=img.size)
