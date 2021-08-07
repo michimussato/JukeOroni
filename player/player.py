@@ -631,19 +631,20 @@ class Player(object):
 
     def kill_loading_process(self):
         print('killing self.loading_process and resetting it to None')
-        # if self.loading_process is not None:
-        #     self.loading_process.terminate()
+        if self.loading_process is not None:
+            self.loading_process.terminate()
             # a process can be joined multiple times:
             # here: just wait for termination before proceeding
             # self.loading_process.join()
-        # self.loading_process = None
+        self.loading_process = None
+
         # remove all cached tracks from the filesystem except the one
         # that is currently playing
 
-        # # is it a problem if self.track is still empty?
-        # for track in self.tracks:
-        #     if track.cached and not track.is_playing:
-        #         os.remove(track.cache)
+        # is it a problem if self.track is still empty?
+        for track in self.tracks:
+            if track.cached and not track.is_playing:
+                os.remove(track.cache)
         self.tracks = []
 
     def __del__(self):
