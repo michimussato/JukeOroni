@@ -741,16 +741,21 @@ class Player(object):
 
         elif self.button_1_value == 'Albm -> Rand':
 
-            tracks = self.track_list
+            # tracks = self.track_list
 
-            print(dir(self.loading_process))
+            # print(dir(self.loading_process))
+            # print(tracks)
 
-            if not bool(tracks):
+            if not bool(self.tracks):
+                if bool(self.loading_process):
+                    self.kill_loading_process()
                 random_album = random.choice(Album.objects.all())
                 album_tracks = DjangoTrack.objects.filter(album_id=random_album)
                 next_track = album_tracks[0]
                 return next_track
-            if bool(self.tracks):
+            elif bool(self.tracks):
+                # if bool(self.loading_process):
+                #     self.kill_loading_process()
                 # TODO: if we pressed the Next button too fast,
                 #  self.tracks will be still empty, hence,
                 #  we end up here again unintentionally
