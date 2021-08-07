@@ -716,7 +716,6 @@ class Player(object):
                 cover_album = kwargs['image_file']
             elif 'track' in kwargs:
                 if kwargs['track'] is not None:
-                    # print('online covers for track:')
 
                     cover_album = kwargs['track'].cover_album or STANDARD_COVER
                     print(f'album: {cover_album}')
@@ -729,11 +728,7 @@ class Player(object):
                             cover_album = io.BytesIO(response.read())
                             cover_album = Image.open(cover_album)
                     else:
-                        cover_album = Image.open(cover_album)
                         print('using local album cover')
-                    # else:
-
-                        # raise Exception('No album cover for track!!')
 
                     cover_artist = kwargs['track'].cover_artist
                     print('artist: {0}'.format(cover_artist))
@@ -753,8 +748,6 @@ class Player(object):
                         else:
                             print('using no artist cover')
                             cover_artist = None
-
-            # cover_album = Image.open(cover_album)
 
             bg = self.layout_player.get_layout(labels=self.LABELS, cover=cover_album, artist=cover_artist)
 
@@ -807,10 +800,6 @@ class Player(object):
                     next_track = album_tracks[0]
 
             else:
-                # print('Are we here?')
-                # print('Are we here?')
-                # print('Are we here?')
-                # print('Are we here?')
                 # in case self.tracks is empty, we want the next
                 # track id based on the one that is currently
                 # playing
