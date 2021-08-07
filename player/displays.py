@@ -190,7 +190,7 @@ class Player(Layout):
         _clock_bottom_left = (int(600 - clock_size - self.border),
                               int(448 - clock_size - self.border))
 
-        bg.paste(_clock, _clock_bottom_left_centered)
+        bg.paste(_clock, box=_clock_bottom_left_centered, mask=_clock)
 
         _radar_image = self._radar.radar_image
 
@@ -200,9 +200,9 @@ class Player(Layout):
             w, h = _radar_image.size
             border = 4
             _radar_bottom_right = (int(600 - w - border), border)
-            bg.paste(_radar_image, _radar_bottom_right)
+            bg.paste(_radar_image, box=_radar_bottom_right, mask=_radar_image)
 
-        bg.paste(buttons_overlay, (0, 0))
+        bg.paste(buttons_overlay, box=(0, 0), mask=buttons_overlay)
 
         return bg
 
