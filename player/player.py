@@ -454,6 +454,7 @@ class Player(object):
 
                 self.loading_process.join()
                 ret = self.loading_queue.get()
+                print(f'ret: {ret}')
 
                 if self.loading_process.exitcode:
                     raise Exception('Exit code not 0')
