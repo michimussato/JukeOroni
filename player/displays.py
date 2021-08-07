@@ -22,7 +22,8 @@ def buttons_img_overlay(labels, stby=False):
 
     comp_buttons = comp_buttons.rotate(90, expand=False)
     # comp_buttons = comp_buttons.crop((left, top, right, botton))
-    comp_buttons = comp_buttons.crop((0, 0, 0, widget_buttons.size[0]-widget_buttons.size[1]))
+    # comp_buttons = comp_buttons.crop((0, 0, 0, widget_buttons.size[0]-widget_buttons.size[1]))
+    # comp_buttons = comp_buttons.crop((0, 0, 0, widget_buttons.size[0]-widget_buttons.size[1]))
 
     return comp_buttons
 
