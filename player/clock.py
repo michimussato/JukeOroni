@@ -24,6 +24,9 @@ class Clock:
         assert hours in [12, 24], 'hours can only be 12 or 24'
 
         bg = Image.new(mode='RGBA', size=(_size, _size), color=(0, 0, 0, 0))
+        draw_bg = ImageDraw.Draw(bg)
+        draw_bg.ellipse((0,0,_size, _size), fill=(0,0,0,255))
+
         _clock = Image.new(mode='RGBA', size=(_size, _size), color=(0, 0, 0, 0))
 
 
