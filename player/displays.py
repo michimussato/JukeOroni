@@ -139,7 +139,7 @@ class Standby(Layout):
             # print(_radar_image.size) yields (151, 205) for now
             w, h = _radar_image.size
             _radar_bottom_right = (int(600-w-self.border), self.border)
-            bg.paste(_radar_image, _radar_bottom_right)
+            bg.paste(_radar_image, _radar_bottom_right, mask=_radar_image)
 
         bg.paste(buttons_overlay, box=(0, 0), mask=buttons_overlay)
 
