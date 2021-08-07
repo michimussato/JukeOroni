@@ -97,27 +97,14 @@ def round_resize(img, corner, scaled_by):
 
     img = img.resize((round(w * scaled_by), round(h * scaled_by)))
 
-    bg = Image.new('RGBA', img.size, color=(0,0,0,0))
+    bg = Image.new('RGBA', img.size, color=(0, 0, 0, 0))
 
-    mask = Image.new('RGBA', img.size, color=(0,0,0,0))
+    mask = Image.new('RGBA', img.size, color=(0, 0, 0, 0))
     mask_draw = ImageDraw.Draw(mask)
     mask_draw.rounded_rectangle([(0, 0), img.size], corner, fill=(0, 0, 0, 255))
 
     comp = Image.composite(img, bg, mask)
 
-    # img.putalpha(255)
-    # rect = Image.new("RGBA", img.size, color=(0,0,0,0))
-    # mask = ImageDraw.Draw(rect)
-    # mask.rounded_rectangle([(0, 0), img.size], corner, fill=(0,0,0,255))
-    # # bg = Image.new(mode='RGBA', size=img.size, color=(0, 0, 0,0))
-    # mask = Image.new("RGBA", img.size, color=(255,255,255,255))
-    # draw = ImageDraw.Draw(mask)
-    # draw.rounded_rectangle([(0, 0), img.size], corner, fill=(0,0,0,0))
-    # comp = Image.new(mode='RGBA', size=img.size)
-    # comp = Image.alpha_composite(comp, img)
-    # comp = Image.alpha_composite(comp, mask)
-    # # img = Image.composite(img, bg, mask)
-    # # bg.paste(img, box=(0,0), mask=bg)
     return comp
 
 
@@ -176,7 +163,7 @@ class Player(Layout):
             assert isinstance(artist, Image.Image), 'artist cover type must be PIL.Image.Image() (not rotated)'
 
         buttons_overlay = buttons_img_overlay(labels)
-        bg = Image.new(mode='RGB', size=(600, 448), color=(255, 255, 255))
+        bg = Image.new(mode='RGBA', size=(600, 448), color=(0, 255, 0, 255))
 
         # cover_size = 448 - 2 * self.border
         cover_size = self.main_size
@@ -185,16 +172,16 @@ class Player(Layout):
         cover = cover.resize((cover_size, cover_size), Image.ANTIALIAS)
         cover = round_resize(img=cover, corner=40, scaled_by=1.0)
 
-        if artist:
-            scale_cover_artist = 4
-            cover_artist = artist.rotate(90, expand=True)
-            cover_artist = cover_artist.resize((round(cover_size/scale_cover_artist), round(cover_size/scale_cover_artist)), Image.ANTIALIAS)
-            cover_artist = round_resize(img=cover_artist, corner=20, scaled_by=1.0)
-
-            cover.paste(cover_artist, (round(cover_size - cover_size/scale_cover_artist)-20, 20))
+        # if artist:
+        #     scale_cover_artist = 4
+        #     cover_artist = artist.rotate(90, expand=True)
+        #     cover_artist = cover_artist.resize((round(cover_size/scale_cover_artist), round(cover_size/scale_cover_artist)), Image.ANTIALIAS)
+        #     cover_artist = round_resize(img=cover_artist, corner=20, scaled_by=1.0)
+        #
+        #     cover.paste(cover_artist, (round(cover_size - cover_size/scale_cover_artist)-20, 20))
 
         _cover_center = round(bg.size[1] / 2 - cover_size / 2)
-        bg.paste(cover, (buttons_overlay.size[0] + self.border, _cover_center))
+        bg.paste(cover, box=(buttons_overlay.size[0] + self.border, _cover_center), mask=cover)
 
         clock_size = 151
         _clock = self._clock.get_clock(size=clock_size, draw_logo=False, draw_date=False, hours=24, draw_astral=True)
