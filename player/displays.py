@@ -4,16 +4,16 @@ from .radar import Radar
 
 
 def buttons_img_overlay(labels, stby=False):
-    bg = Image.new(mode='RGBA', size=(448, 448), color=(0, 0, 0, 0))
+    # bg = Image.new(mode='RGBA', size=(448, 448), color=(0, 0, 0, 0))
     widget_buttons = Image.new(mode='RGBA', size=(448, 448), color=(0, 0, 0, 0))
     draw_buttons = ImageDraw.Draw(widget_buttons)
-    draw_buttons.rectangle([(0, 0), (448, 16)], fill=(0, 0, 0, 128), outline=None, width=1)
+    draw_buttons.rectangle([(0, 0), (448, 16)], fill=(255, 255, 255, 128), outline=None, width=1)
     # widget_buttons = Image.new(mode='RGBA', size=(448, 16), color=(0, 0, 0, 0))
     comp_buttons = Image.new(mode='RGBA', size=widget_buttons.size)
 
     comp_buttons = Image.alpha_composite(comp_buttons, widget_buttons)
 
-    bg.paste(comp_buttons, mask=comp_buttons)
+    # bg.paste(comp_buttons, mask=comp_buttons)
 
     # # bg = Image.new(mode='RGBA', size=(448, 16), color=(80, 80, 80, 0))
     # # buttons_img = Image.new(mode='RGBA', size=(448, 16), color=(80, 80, 80, 64))
@@ -25,13 +25,13 @@ def buttons_img_overlay(labels, stby=False):
     #     '    ' if stby else labels[0],
     # ), fill=(0, 255, 0, 255))
 
-    bg = bg.rotate(90, expand=True)
+    # bg = bg.rotate(90, expand=True)
     # comp_buttons = comp_buttons.rotate(90, expand=False)
     # comp_buttons = comp_buttons.crop((left, top, right, botton))
     # comp_buttons = comp_buttons.crop((0, 0, 0, widget_buttons.size[0]-widget_buttons.size[1]))
     # comp_buttons = comp_buttons.crop((0, 0, 0, widget_buttons.size[0]-widget_buttons.size[1]))
 
-    return bg
+    return comp_buttons
 
 
 def round_resize(img, corner, scaled_by):
