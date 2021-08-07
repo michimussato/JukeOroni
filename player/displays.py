@@ -4,7 +4,7 @@ from .radar import Radar
 
 
 def buttons_img_overlay(labels, stby=False):
-    bg = Image.new(mode='RGBA', size=(600, 448), color=(0, 0, 0, 0))
+    # bg = Image.new(mode='RGBA', size=(600, 448), color=(0, 0, 0, 0))
     widget_buttons = Image.new(mode='RGBA', size=(448, 16), color=(255, 255, 255, 128))
     comp_buttons = Image.new(mode='RGBA', size=widget_buttons.size)
 
