@@ -4,17 +4,22 @@ from .radar import Radar
 
 
 def buttons_img_overlay(labels, stby=False):
+    widget_buttons = Image.new(mode='RGBA', size=(448, 16), color=(0, 0, 0, 0))
+    comp_buttons = Image.new(mode='RGBA', size=widget_buttons.size)
+
     # bg = Image.new(mode='RGBA', size=(448, 16), color=(80, 80, 80, 0))
-    buttons_img = Image.new(mode='RGBA', size=(448, 16), color=(80, 80, 80, 128))
+    buttons_img = Image.new(mode='RGBA', size=(448, 16), color=(80, 80, 80, 64))
     buttons_draw = ImageDraw.Draw(buttons_img)
     buttons_draw.text((0, 0), '       {0}               {1}               {2}           {3}'.format(
         '    ',  # self.button_4_value,  # Just hide the label for now as the button has no effect
         labels[2],
         '    ' if stby else labels[1],
         '    ' if stby else labels[0],
-    ), fill=(255, 255, 255))
+    ), fill=(255, 255, 255, 255))
 
-    return buttons_img.rotate(90, expand=True)
+    buttons_img = buttons_img.rotate(90, expand=False)
+
+    return buttons_img
 
 
 def round_resize(img, corner, scaled_by):
@@ -58,7 +63,7 @@ class Standby(Layout):
         buttons_overlay = buttons_img_overlay(labels=labels, stby=True)
         bg = Image.new(mode='RGBA', size=(600, 448), color=(255, 0, 0, 255))
         widget_clock = Image.new(mode='RGBA', size=(self.main_size, self.main_size), color=(0, 0, 0, 0))
-        comp_clock = Image.new(mode='RGBA', size=(self.main_size, self.main_size))
+        comp_clock = Image.new(mode='RGBA', size=widget_clock.size)
 
         # clock_size = 448 - 2 * self.border
         clock_size = self.main_size
@@ -82,6 +87,9 @@ class Standby(Layout):
         #     _radar_bottom_right = (int(600-w-self.border), self.border)
         #     bg.paste(_radar_image, _radar_bottom_right)
 
+        # bg.paste(buttons_overlay, (0, 0))
+        comp_buttons_overlay = Image.new(mode='RGBA', size=(448, 16))
+        comp_buttons_overlay = Image.alpha_composite(comp_buttons_overlay)
         bg.paste(buttons_overlay, (0, 0))
 
         return bg
