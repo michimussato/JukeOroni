@@ -182,7 +182,6 @@ class Player(object):
 
         self.auto_update_tracklist = auto_update_tracklist
         self.tracks = []
-        # self.loading = 0
         self.loading_queue = multiprocessing.Queue()
         self.loading_process = None
         self.playing = False
@@ -377,7 +376,6 @@ class Player(object):
                 model_album.cover = img_path
                 if model_album.cover_online is None:
                     cover_online = get_album(discogs_client, artist, title_stripped)
-                    # print(cover_online)
                     if cover_online:
                         model_album.cover_online = cover_online
                 # print('    album found in db')
@@ -434,76 +432,15 @@ class Player(object):
                     time.sleep(1.0)
                     continue
 
-                # # threading approach seems causing problems if we actually need to empty
-                # # self.tracks. the thread will finish and add the cached track to self.tracks
-                # # afterwards because we cannot kill the running thread
-                # thread = threading.Thread(target=self._load_track_task, kwargs={'track': next_track})
-                # # TODO: maybe this name is not ideal
-                # thread.name = 'Track Loader Task Thread'
-                # thread.daemon = False
+                # threading approach seems causing problems if we actually need to empty
+                # self.tracks. the thread will finish and add the cached track to self.tracks
+                # afterwards because we cannot kill the running thread
 
                 # multiprocessing approach
                 # this approach apparently destroys the Track object that it uses to cache
                 # data. when the Queue handles over that cached object, it seems like
                 # it re-creates the Track object (pickle, probably) but the cached data is
                 # gone of course because __del__ was called before that already.
-                """
-                self.loading_process = multiprocessing.Process(target=self._load_track_task, args=(self.loading_queue, ), kwargs={'track': next_track})
-                self.loading_process.name = 'Track Loader Task Process'
-                self.loading_process.start()
-
-                # self.loading += 1
-
-                # if self.loading_process is not None:
-                # stop here and wait for the process to finish or to get killed
-                # in case of a mode change
-                print(self.loading_process)
-                print(self.loading_process)
-                print(self.loading_process)
-                self.loading_process.join()
-                ret = self.loading_queue.get()
-
-                if self.loading_process.exitcode:
-                    raise Exception('Exit code not 0')
-                print(self.loading_process.exitcode)
-                print(self.loading_process.exitcode)
-                print(self.loading_process.exitcode)
-                self.loading_process = None
-                print(self.loading_process)
-                print(self.loading_process)
-                print(self.loading_process)
-
-
-                if ret is not None:
-                    self.tracks.append(ret)
-
-                # self.loading -= 1
-
-            time.sleep(1.0)
-
-    def _load_track_task(self, *args, **kwargs):
-        track = kwargs['track']
-        logging.debug(f'starting thread: \"{track.audio_source}\"')
-        print(f'starting thread: \"{track.audio_source}\"')
-
-        try:
-            size = os.path.getsize(track.audio_source)
-            logging.info(f'loading track ({str(round(size / (1024*1024), 3))} MB): \"{track.audio_source}\"')
-            print(f'loading track ({str(round(size / (1024*1024), 3))} MB): \"{track.audio_source}\"')
-            processing_track = Track(track)
-            logging.info(f'loading successful: \"{track.audio_source}\"')
-            print(f'loading successful: \"{track.audio_source}\"')
-            ret = processing_track
-        except MemoryError as err:
-            print(err)
-            logging.exception(f'loading failed: \"{track.audio_source}\"')
-            print(f'loading failed: \"{track.audio_source}\"')
-            ret = None
-
-        # here, or after that, probably processing_track.__del__() is called but pickled/recreated
-        # in the main process
-        args[0].put(ret)
-                """
                 self.loading_process = multiprocessing.Process(target=self._load_track_task, kwargs={'track': next_track})
                 self.loading_process.name = 'Track Loader Task Process'
                 self.loading_process.start()
@@ -535,7 +472,6 @@ class Player(object):
             print(f'loading successful: \"{track.audio_source}\"')
             ret = processing_track
         except MemoryError as err:
-            # print(err)
             logging.exception(f'loading failed: \"{track.audio_source}\": {err}')
             print(f'loading failed: \"{track.audio_source}\": {err}')
             ret = None
@@ -789,7 +725,6 @@ class Player(object):
                 previous_track_id = self.tracks[-1].track.id
                 album = DjangoTrack.objects.get(id=previous_track_id).album_id
 
-                # album_tracks = Track.objects.filter(album_id=album)
                 next_track = DjangoTrack.objects.get(id=previous_track_id + 1)
 
                 if next_track.album_id != album:

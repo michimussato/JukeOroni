@@ -25,6 +25,7 @@ class Radar(object):
 
     # https://www.meteoschweiz.admin.ch/product/output/satellite/cloud-cover/version__20210730_1138/VLSN84.LSSW_20210730_1115.jpg
     # https://www.meteoschweiz.admin.ch/product/output/cosmo/wind/10m/forecast/version__20210730_1142/web_c1e_ch_ctrl-web_uv10m_kmh_20210731_2300.png
+    # https://www.srf.ch/meteo/radar
 
     # import urllib.request
     # img = io.BytesIO(urllib.request.urlopen(image_file_url).read())
