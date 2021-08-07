@@ -94,8 +94,21 @@ def round_resize(img, corner, scaled_by):
     if img is None:
         return None
     w, h = img.size
+
     img = img.resize((round(w * scaled_by), round(h * scaled_by)))
-    img.putalpha(255)
+
+    bg = Image.new('RGBA', img.size, color=(0,0,0,0))
+
+    mask = Image.new('RGBA', img.size, color=(0,0,0,0))
+    mask_draw = ImageDraw.Draw(mask)
+    mask_draw.rounded_rectangle([(0, 0), img.size], corner, fill=(0, 0, 0, 255))
+
+    comp = Image.composite(img, bg, mask)
+
+    # img.putalpha(255)
+    # rect = Image.new("RGBA", img.size, color=(0,0,0,0))
+    # mask = ImageDraw.Draw(rect)
+    # mask.rounded_rectangle([(0, 0), img.size], corner, fill=(0,0,0,255))
     # # bg = Image.new(mode='RGBA', size=img.size, color=(0, 0, 0,0))
     # mask = Image.new("RGBA", img.size, color=(255,255,255,255))
     # draw = ImageDraw.Draw(mask)
@@ -105,7 +118,7 @@ def round_resize(img, corner, scaled_by):
     # comp = Image.alpha_composite(comp, mask)
     # # img = Image.composite(img, bg, mask)
     # # bg.paste(img, box=(0,0), mask=bg)
-    return img
+    return comp
 
 
 class Layout:
