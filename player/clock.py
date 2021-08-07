@@ -94,7 +94,7 @@ class Clock:
                          312.0, 318.0,
                          329.0, 331.0,
                          344.0, 346.0,
-                         357.0, 359.9,
+                         357.0, 359.99,
                          ]
         else:
             intervals = [0.0, 3.0,
@@ -109,7 +109,7 @@ class Clock:
                          267.0, 273.0,
                          299.0, 301.0,
                          329.0, 331.0,
-                         357.0, 359.9,
+                         357.0, 359.99,
                          ]
 
         for interval in intervals[::-1]:  # reversed
@@ -126,12 +126,12 @@ class Clock:
         draw.arc(size_h, start=(arc_twelve + arc_length_h - round(_size / ANTIALIAS * 0.007)) % 360, end=(arc_twelve + arc_length_h + round(_size / ANTIALIAS * 0.007)) % 360, fill=color,
                  width=width)
 
-        # if draw_logo:
-        #     font = ImageFont.truetype(r'/data/django/jukeoroni/player/static/calligraphia-one.ttf', round(_size * 0.150))
-        #     text = "JukeOroni"
-        #     length = font.getlength(text)
-        #     draw.text((round(_size / 2) - length / 2, round(_size * 0.536)), text, fill=white, font=font)
-        #
+        if draw_logo:
+            font = ImageFont.truetype(r'/data/django/jukeoroni/player/static/calligraphia-one.ttf', round(_size * 0.150))
+            text = "JukeOroni"
+            length = font.getlength(text)
+            draw.text((round(_size / 2) - length / 2, round(_size * 0.536)), text, fill=white, font=font)
+
         # if draw_date:
         #     font = ImageFont.truetype(r'/data/django/jukeoroni/player/static/arial_narrow.ttf', round(_size * 0.035))
         #     text = datetime.datetime.now().strftime('%A, %B %d %Y')
