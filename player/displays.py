@@ -6,14 +6,14 @@ from .radar import Radar
 def buttons_img_overlay(labels, stby=False):
     bg = Image.new(mode='RGBA', size=(448, 448), color=(0, 0, 0, 0))
     widget_buttons = Image.new(mode='RGBA', size=(448, 448), color=(0, 0, 0, 0))
-    draw_buttons = ImageDraw.Draw(bg)
+    draw_buttons = ImageDraw.Draw(widget_buttons)
     draw_buttons.rectangle([(0, 0), (448, 16)], fill=(0, 0, 0, 128), outline=None, width=1)
     # widget_buttons = Image.new(mode='RGBA', size=(448, 16), color=(0, 0, 0, 0))
     comp_buttons = Image.new(mode='RGBA', size=widget_buttons.size)
 
     comp_buttons = Image.alpha_composite(comp_buttons, widget_buttons)
 
-    bg.paste(comp_buttons, mask=widget_buttons)
+    bg.paste(comp_buttons, mask=comp_buttons)
 
     # # bg = Image.new(mode='RGBA', size=(448, 16), color=(80, 80, 80, 0))
     # # buttons_img = Image.new(mode='RGBA', size=(448, 16), color=(80, 80, 80, 64))
