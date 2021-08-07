@@ -459,6 +459,11 @@ class Player(object):
                 self.loading_process.join()
                 print('5')
                 if self.loading_process is not None:
+                    # self.loading_process waits for a result
+                    # which it won't receive in case we killed
+                    # the loading process (mode switch), so
+                    # we would get stuck here if self.loading_process
+                    # was None
                     ret = self.loading_queue.get()
                     print('6')
                     # print(f'ret: {ret}')
