@@ -448,24 +448,38 @@ class Player(object):
                 # data. when the Queue handles over that cached object, it seems like
                 # it re-creates the Track object (pickle, probably) but the cached data is
                 # gone of course because __del__ was called before that already.
+                print('1')
                 self.loading_process = multiprocessing.Process(target=self._load_track_task, kwargs={'track': next_track})
+                print('2')
                 self.loading_process.name = 'Track Loader Task Process'
+                print('3')
                 self.loading_process.start()
+                print('4')
 
                 self.loading_process.join()
+                print('5')
                 ret = self.loading_queue.get()
-                print(f'ret: {ret}')
+                print('6')
+                # print(f'ret: {ret}')
                 # print(f'ret 2: {ret}')
 
                 if self.loading_process.exitcode:
+                    print('7')
                     raise Exception('Exit code not 0')
 
+                print('8')
+
                 if ret is not None:
+                    print('9')
                     self.tracks.append(ret)
 
-                self.loading_process = None
+                print('10')
 
-            print('that')
+                self.loading_process = None
+                print('11')
+
+
+            print('12')
             time.sleep(1.0)
 
     def _load_track_task(self, **kwargs):
