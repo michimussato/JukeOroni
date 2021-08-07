@@ -18,8 +18,8 @@ class Clock:
     @staticmethod
     def get_clock(draw_logo, draw_date, size=448, hours=12, draw_astral=False):
 
-        # _size = size * ANTIALIAS
-        _size = size
+        _size = size * ANTIALIAS
+        # _size = size
 
         assert hours in [12, 24], 'hours can only be 12 or 24'
 
@@ -153,6 +153,6 @@ class Clock:
         # _clock.putalpha(im_a)
         #
         # _clock = _clock.rotate(90, expand=False)
-        # _clock = _clock.resize((round(_size/ANTIALIAS), round(_size/ANTIALIAS)), Image.ANTIALIAS)
+        comp = comp.resize((round(_size/ANTIALIAS), round(_size/ANTIALIAS)), Image.ANTIALIAS)
 
         return comp
