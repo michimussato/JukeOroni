@@ -452,9 +452,10 @@ class Player(object):
                 self.loading_process.name = 'Track Loader Task Process'
                 self.loading_process.start()
 
-                self.loading_process.join()
                 ret = self.loading_queue.get()
                 print(f'ret: {ret}')
+                self.loading_process.join()
+                print(f'ret 2: {ret}')
 
                 if self.loading_process.exitcode:
                     raise Exception('Exit code not 0')
