@@ -84,7 +84,7 @@ class Standby(Layout):
         #
         bg.paste(buttons_overlay, (0, 0))
 
-        return comp
+        return bg
 
 
 class Player(Layout):
