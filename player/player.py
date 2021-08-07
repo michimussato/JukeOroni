@@ -754,7 +754,7 @@ class Player(object):
                 next_track = album_tracks[0]
                 return next_track
 
-            elif bool(self.tracks):
+            if bool(self.tracks):
                 # TODO: if we pressed the Next button too fast,
                 #  self.tracks will be still empty, hence,
                 #  we end up here again unintentionally
