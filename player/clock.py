@@ -136,7 +136,7 @@ class Clock:
         #     draw.text((round(_size / 2) - length / 2, round(_size * 0.690)), text, fill=white, font=font)
 
         comp = Image.alpha_composite(comp, _clock)
-        comp.resize((600, 448))
+        comp = comp.resize((600, 448))
 
         # _clock.paste(image.rotate(90, expand=False))
         # _clock.paste(image)
