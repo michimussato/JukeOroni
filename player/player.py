@@ -746,7 +746,7 @@ class Player(object):
             # print(dir(self.loading_process))
             # print(tracks)
 
-            if self.playing_track is None:
+            if self.playing_track is None and not bool(self.tracks):
                 if bool(self.loading_process):
                     self.kill_loading_process()
                 random_album = random.choice(Album.objects.all())
