@@ -622,7 +622,7 @@ class Player(object):
             # a process can be joined multiple times:
             # here: just wait for termination before proceeding
             # self.loading_process.join()
-        self.loading_process = None
+        # self.loading_process = None
         # remove all cached tracks from the filesystem except the one
         # that is currently playing
 
