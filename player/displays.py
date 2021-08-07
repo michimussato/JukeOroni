@@ -155,7 +155,7 @@ class Player(Layout):
 
     def get_layout(self, labels, cover, artist=None):
 
-        assert isinstance(cover, Image.Image), 'album cover type must be PIL.Image.Image() (not rotated)'
+        assert isinstance(cover, Image.Image), f'album cover type must be PIL.Image.Image() (not rotated): {cover}'
         if artist is None:
             pass
         else:
