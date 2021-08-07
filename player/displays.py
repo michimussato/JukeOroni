@@ -55,29 +55,30 @@ class Standby(Layout):
     def get_layout(self, labels):
 
         buttons_overlay = buttons_img_overlay(labels=labels, stby=True)
-        bg = Image.new(mode='RGB', size=(600, 448), color=(255, 255, 255))
+        bg = Image.new(mode='RGBA', size=(600, 448), color=(255, 255, 255, 255))
+        comp = Image.new(mode='RGBA', size=bg.size)
 
         # clock_size = 448 - 2 * self.border
         clock_size = self.main_size
         _clock = self._clock.get_clock(size=clock_size, draw_logo=True, draw_date=True, hours=24, draw_astral=True)
 
-        _clock_center = round(bg.size[1]/2 - clock_size/2)
-        # _clock_right = 0
-        # _clock_left = bg.size[1] - clock_size
-        bg.blend(_clock, (buttons_overlay.size[0] + self.border, _clock_center))
+        # _clock_center = round(bg.size[1]/2 - clock_size/2)
+        # # _clock_right = 0
+        # # _clock_left = bg.size[1] - clock_size
+        # bg.blend(_clock, (buttons_overlay.size[0] + self.border, _clock_center))
+        #
+        # _radar_image = self._radar.radar_image
+        #
+        # if _radar_image is not None:
+        #     _radar_image = round_resize(img=_radar_image, corner=40, scaled_by=0.45)
+        #     # print(_radar_image.size) yields (151, 205) for now
+        #     w, h = _radar_image.size
+        #     _radar_bottom_right = (int(600-w-self.border), self.border)
+        #     bg.paste(_radar_image, _radar_bottom_right)
+        #
+        # bg.paste(buttons_overlay, (0, 0))
 
-        _radar_image = self._radar.radar_image
-
-        if _radar_image is not None:
-            _radar_image = round_resize(img=_radar_image, corner=40, scaled_by=0.45)
-            # print(_radar_image.size) yields (151, 205) for now
-            w, h = _radar_image.size
-            _radar_bottom_right = (int(600-w-self.border), self.border)
-            bg.paste(_radar_image, _radar_bottom_right)
-
-        bg.paste(buttons_overlay, (0, 0))
-
-        return bg
+        return comp
 
 
 class Player(Layout):
