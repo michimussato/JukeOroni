@@ -429,6 +429,8 @@ class Player(object):
             print('here')
             print(len(self.tracks))
             print(int(bool(self.loading_process)))
+
+            print(len(self.tracks) + int(bool(self.loading_process)) < MAX_CACHED_FILES)
             print(not bool(self.loading_process))
             if len(self.tracks) + int(bool(self.loading_process)) < MAX_CACHED_FILES and not bool(self.loading_process):
                 next_track = self.get_next_track()
