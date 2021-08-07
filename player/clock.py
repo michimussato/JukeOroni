@@ -137,7 +137,7 @@ class Clock:
         #     draw.text((round(_size / 2) - length / 2, round(_size * 0.690)), text, fill=white, font=font)
 
         comp = Image.new(mode='RGBA', size=(_size, _size))
-        comp = comp.alpha_composite(comp, bg)
+        comp = Image.alpha_composite(comp, bg)
         comp = Image.alpha_composite(comp, _clock)
         comp = comp.resize((600, 448))
 
