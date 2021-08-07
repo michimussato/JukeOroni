@@ -454,7 +454,7 @@ class Player(object):
 
                 ret = self.loading_queue.get()
                 print(f'ret: {ret}')
-                self.loading_process.join()
+                # self.loading_process.join()
                 print(f'ret 2: {ret}')
 
                 if self.loading_process.exitcode:
@@ -601,7 +601,7 @@ class Player(object):
             self._playback_thread = None
 
     def _playback_task(self, **kwargs):
-        print(multiprocessing.current_process().pid)
+        # print(multiprocessing.current_process().pid)
         self.playing_track = kwargs['track']
         logging.debug(f'starting playback thread: for {self.playing_track.path} from {self.playing_track.playing_from}')  # TODO add info
         print(f'starting playback thread: for {self.playing_track.path} from {self.playing_track.playing_from}')  # TODO add info
@@ -682,7 +682,7 @@ class Player(object):
                     cover_artist = kwargs['track'].cover_artist
                     print('artist: {0}'.format(cover_artist))
                     if cover_artist:
-                        print(cover_artist)
+                        # print(cover_artist)
                         if is_string_an_url(cover_artist):
                             hdr = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64)'}
                             req = urllib.request.Request(cover_artist, headers=hdr)

@@ -90,7 +90,7 @@ def round_resize(img, corner, scaled_by):
     img = img.resize((mywidth,hsize), PIL.Image.ANTIALIAS)
     img.save('resized.jpg')
     """
-    print(img)
+    # print(img)
     if img is None:
         return None
     w, h = img.size
@@ -159,7 +159,7 @@ class Player(Layout):
         if artist is None:
             pass
         else:
-            print(artist)
+            # print(artist)
             assert isinstance(artist, Image.Image), 'artist cover type must be PIL.Image.Image() (not rotated)'
 
         buttons_overlay = buttons_img_overlay(labels)
