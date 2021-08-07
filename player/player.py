@@ -243,32 +243,32 @@ class Player(object):
         # we only want to switch mode when something is already playing
         # because if we switch in non-playing mode
         # we get a problem with the track loader for now
-        if self.button_3_value == 'Next':
-            if current_label == self.button_1_value:
-                # empty cached track list but leave current track playing
-                # but update the display to reflect current Mode
-                self.kill_loading_process()
+        # if self.button_3_value == 'Next':
+        if current_label == self.button_1_value:
+            # empty cached track list but leave current track playing
+            # but update the display to reflect current Mode
+            self.kill_loading_process()
 
-                self.button_1_value = BUTTON_1[current_label]
+            self.button_1_value = BUTTON_1[current_label]
 
-                self.set_image(track=self.playing_track)
-                print(f'Playback mode is now {self.button_1_value}.')
-                logging.info(f'Playback mode is now {self.button_1_value}.')
+            self.set_image(track=self.playing_track)
+            print(f'Playback mode is now {self.button_1_value}.')
+            logging.info(f'Playback mode is now {self.button_1_value}.')
+            return
+        # Stop button
+        # only in play mode active
+        elif current_label == self.button_2_value:
+            if self._playback_thread is not None:
+                print('Playback stopped.')
+                logging.info('Playback stopped.')
+                self.button_3_value = BUTTON_3['Next']  # Switch button back to Play
+                self.stop()
+                self.set_image()
                 return
-            # Stop button
-            # only in play mode active
-            elif current_label == self.button_2_value:
-                if self._playback_thread is not None:
-                    print('Playback stopped.')
-                    logging.info('Playback stopped.')
-                    self.button_3_value = BUTTON_3['Next']  # Switch button back to Play
-                    self.stop()
-                    self.set_image()
-                    return
-                else:
-                    print('ignored')
             else:
                 print('ignored')
+        else:
+            print('ignored')
 
         # Play/Next button
         if current_label == self.button_3_value:
