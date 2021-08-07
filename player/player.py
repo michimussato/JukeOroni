@@ -719,10 +719,14 @@ class Player(object):
                 # if we switch mode from Rand to Albm,
                 # we always want the first track of
                 # the album, no matter what
+                track_id = self.playing_track.track.id
                 album_id = self.playing_track.track.album_id
                 album_tracks = DjangoTrack.objects.filter(album_id=album_id)
+                first_track = album_tracks[0]
+                first_track_id = first_track.id
                 self._need_first_album_track = False
-                return album_tracks[0]
+                if track_id != first_track_id:
+                    return first_track
 
             if self.playing_track is None and not bool(self.tracks):
                 if bool(self.loading_process):
