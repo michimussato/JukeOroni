@@ -16,7 +16,7 @@ def buttons_img_overlay(labels, stby=False):
         labels[2],
         '    ' if stby else labels[1],
         '    ' if stby else labels[0],
-    ), fill=(0, 255, 0, 255))
+    ), fill=(255, 255, 255, 255))
 
     comp_buttons = Image.new(mode='RGBA', size=widget_buttons.size)
     comp_buttons = Image.alpha_composite(comp_buttons, widget_buttons)
@@ -65,7 +65,7 @@ class Standby(Layout):
     def get_layout(self, labels):
 
         buttons_overlay = buttons_img_overlay(labels=labels, stby=True)
-        bg = Image.new(mode='RGBA', size=(600, 448), color=(255, 0, 0, 255))
+        bg = Image.new(mode='RGBA', size=(600, 448), color=(64, 64, 64, 255))
         widget_clock = Image.new(mode='RGBA', size=(self.main_size, self.main_size), color=(0, 0, 0, 0))
         comp_clock = Image.new(mode='RGBA', size=widget_clock.size)
 
