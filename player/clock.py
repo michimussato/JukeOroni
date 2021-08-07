@@ -41,7 +41,7 @@ class Clock:
             arc_twelve = 270.0
 
         white = (255, 255, 255, 255)
-        black = (0, 0, 0, 255)
+        black = (0, 0, 0, 128)
         toggle = {white: black, black: white}
 
         # if draw_astral:
@@ -94,7 +94,7 @@ class Clock:
                          312.0, 318.0,
                          329.0, 331.0,
                          344.0, 346.0,
-                         357.0, 360,
+                         357.0, 360.0,
                          ]
         else:
             intervals = [0.0, 3.0,
@@ -109,7 +109,7 @@ class Clock:
                          267.0, 273.0,
                          299.0, 301.0,
                          329.0, 331.0,
-                         357.0, 360,
+                         357.0, 360.0,
                          ]
 
         for interval in intervals[::-1]:
@@ -142,7 +142,7 @@ class Clock:
         comp = Image.alpha_composite(comp, bg)
         comp = Image.alpha_composite(comp, _clock)
         comp = comp.rotate(90, expand=False)
-        comp = comp.resize((600, 448))
+        # comp = comp.resize((600, 448))
 
         # _clock.paste(image.rotate(90, expand=False))
         # _clock.paste(image)

@@ -56,14 +56,17 @@ class Standby(Layout):
 
         buttons_overlay = buttons_img_overlay(labels=labels, stby=True)
         bg = Image.new(mode='RGBA', size=(600, 448), color=(255, 0, 0, 255))
-        comp = Image.new(mode='RGBA', size=bg.size)
+        widget_clock = Image.new(mode='RGBA', size=(self.main_size, self.main_size), color=(0, 0, 0, 0))
+        comp_clock = Image.new(mode='RGBA', size=(self.main_size, self.main_size))
 
         # clock_size = 448 - 2 * self.border
         clock_size = self.main_size
         _clock = self._clock.get_clock(size=clock_size, draw_logo=True, draw_date=True, hours=24, draw_astral=True)
 
-        comp = Image.alpha_composite(comp, bg)
-        comp = Image.alpha_composite(comp, _clock)
+        comp_clock = Image.alpha_composite(comp_clock, widget_clock)
+        comp_clock = Image.alpha_composite(comp_clock, _clock)
+
+        bg.paste(comp_clock, (0, 0))
 
         # _clock_center = round(bg.size[1]/2 - clock_size/2)
         # # _clock_right = 0
@@ -79,7 +82,7 @@ class Standby(Layout):
         #     _radar_bottom_right = (int(600-w-self.border), self.border)
         #     bg.paste(_radar_image, _radar_bottom_right)
         #
-        # bg.paste(buttons_overlay, (0, 0))
+        bg.paste(buttons_overlay, (0, 0))
 
         return comp
 
