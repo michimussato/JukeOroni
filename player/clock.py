@@ -132,11 +132,11 @@ class Clock:
             length = font.getlength(text)
             draw.text((round(_size / 2) - length / 2, round(_size * 0.536)), text, fill=white, font=font)
 
-        # if draw_date:
-        #     font = ImageFont.truetype(r'/data/django/jukeoroni/player/static/arial_narrow.ttf', round(_size * 0.035))
-        #     text = datetime.datetime.now().strftime('%A, %B %d %Y')
-        #     length = font.getlength(text)
-        #     draw.text((round(_size / 2) - length / 2, round(_size * 0.690)), text, fill=white, font=font)
+        if draw_date:
+            font = ImageFont.truetype(r'/data/django/jukeoroni/player/static/arial_narrow.ttf', round(_size * 0.035))
+            text = datetime.datetime.now().strftime('%A, %B %d %Y')
+            length = font.getlength(text)
+            draw.text((round(_size / 2) - length / 2, round(_size * 0.690)), text, fill=white, font=font)
 
         comp = Image.new(mode='RGBA', size=(_size, _size))
         comp = Image.alpha_composite(comp, bg)
