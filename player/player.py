@@ -706,6 +706,12 @@ class Player(object):
         return DjangoTrack.objects.all()
 
     def get_next_track(self):
+        # TODO: we cannot tell which track it is
+        #  that is currently being loaded.
+        #  because of this, we always have
+        #  to start clean, even if the track
+        #  is almost fully loaded
+
         if self.button_1_value == 'Rand -> Albm':
             tracks = self.track_list
             if not bool(tracks):
@@ -786,7 +792,8 @@ class Player(object):
 
                 return next_track
 
-        print('we should not be here')
+        print('we should not be here, no next track!!!')
+        raise Exception('we should not be here, no next track!!!')
 
     def next(self):
         self.stop()
