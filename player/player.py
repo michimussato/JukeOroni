@@ -798,9 +798,11 @@ class Player(object):
                 album_tracks = DjangoTrack.objects.filter(album_id=album)
                 next_track = album_tracks[0]
 
-            return next_track
+                return next_track
 
-        return next_track
+        # return next_track
+
+        print('we should not be here')
 
     def next(self):
         self.stop()
