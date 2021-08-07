@@ -19,7 +19,6 @@ class Clock:
     def get_clock(draw_logo, draw_date, size=448, hours=12, draw_astral=False):
 
         _size = size * ANTIALIAS
-        # _size = size
 
         assert hours in [12, 24], 'hours can only be 12 or 24'
 
@@ -30,13 +29,6 @@ class Clock:
 
         _clock = Image.new(mode='RGBA', size=(_size, _size), color=(0, 0, 0, 0))
 
-
-        # im_a = Image.new("L", bg.size, 0)
-        # draw_a = ImageDraw.Draw(im_a)
-        # draw_a.ellipse((140, 50, 260, 170), fill=255)
-        # bg.putalpha(im_a)
-
-        # image = Image.new(mode='RGB', size=(_size, _size), color=(0, 0, 0))
         draw = ImageDraw.Draw(_clock)
 
         if hours == 24:
@@ -123,7 +115,7 @@ class Clock:
         decimal_h = float(datetime.datetime.now().strftime('%H')) + float(datetime.datetime.now().strftime('%M')) / 60
         arc_length_h = decimal_h / hours * 360.0
 
-        # Zeiger
+        # indicator
         color = white
         size_h = [(round(_size * 0.112), round(_size * 0.112)), (round(_size - _size * 0.112), round(_size - _size * 0.112))]
         width = round(_size * 0.134)
@@ -146,17 +138,7 @@ class Clock:
         comp = Image.alpha_composite(comp, bg)
         comp = Image.alpha_composite(comp, _clock)
         comp = comp.rotate(90, expand=False)
-        # comp = comp.resize((600, 448))
 
-        # _clock.paste(image.rotate(90, expand=False))
-        # _clock.paste(image)
-        #
-        # im_a = Image.new("L", _clock.size, 0)
-        # draw_a = ImageDraw.Draw(im_a)
-        # draw_a.ellipse((140, 50, 260, 170), fill=255)
-        # _clock.putalpha(im_a)
-        #
-        # _clock = _clock.rotate(90, expand=False)
         comp = comp.resize((round(_size/ANTIALIAS), round(_size/ANTIALIAS)), Image.ANTIALIAS)
 
         return comp

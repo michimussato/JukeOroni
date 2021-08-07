@@ -4,7 +4,8 @@ from .radar import Radar
 
 
 def buttons_img_overlay(labels, stby=False):
-    buttons_img = Image.new(mode='RGB', size=(448, 16), color=(80, 80, 80))
+    # bg = Image.new(mode='RGBA', size=(448, 16), color=(80, 80, 80, 0))
+    buttons_img = Image.new(mode='RGBA', size=(448, 16), color=(80, 80, 80, 128))
     buttons_draw = ImageDraw.Draw(buttons_img)
     buttons_draw.text((0, 0), '       {0}               {1}               {2}           {3}'.format(
         '    ',  # self.button_4_value,  # Just hide the label for now as the button has no effect
@@ -69,15 +70,8 @@ class Standby(Layout):
         _clock_center = round(bg.size[1]/2 - clock_size/2)
         # _clock_right = 0
         # _clock_left = bg.size[1] - clock_size
-        # bg.blend(_clock, (buttons_overlay.size[0] + self.border, _clock_center))
-
 
         bg.paste(comp_clock, box=(buttons_overlay.size[0] + self.border, _clock_center), mask=comp_clock)
-
-        # _clock_center = round(bg.size[1]/2 - clock_size/2)
-        # # _clock_right = 0
-        # # _clock_left = bg.size[1] - clock_size
-        # bg.blend(_clock, (buttons_overlay.size[0] + self.border, _clock_center))
 
         # _radar_image = self._radar.radar_image
         #
@@ -88,7 +82,7 @@ class Standby(Layout):
         #     _radar_bottom_right = (int(600-w-self.border), self.border)
         #     bg.paste(_radar_image, _radar_bottom_right)
 
-        # bg.paste(buttons_overlay, (0, 0))
+        bg.paste(buttons_overlay, (0, 0))
 
         return bg
 
