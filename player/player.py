@@ -448,16 +448,16 @@ class Player(object):
                 # data. when the Queue handles over that cached object, it seems like
                 # it re-creates the Track object (pickle, probably) but the cached data is
                 # gone of course because __del__ was called before that already.
-                print('1')
+                # print('1')
                 self.loading_process = multiprocessing.Process(target=self._load_track_task, kwargs={'track': next_track})
-                print('2')
+                # print('2')
                 self.loading_process.name = 'Track Loader Task Process'
-                print('3')
+                # print('3')
                 self.loading_process.start()
-                print('4')
+                # print('4')
 
                 self.loading_process.join()
-                print('5')
+                # print('5')
                 if self.loading_process is not None:
                     # self.loading_process waits for a result
                     # which it won't receive in case we killed
@@ -465,27 +465,26 @@ class Player(object):
                     # we would get stuck here if self.loading_process
                     # was None
                     ret = self.loading_queue.get()
-                    print('6')
+                    # print('6')
                     # print(f'ret: {ret}')
                     # print(f'ret 2: {ret}')
 
                     if self.loading_process.exitcode:
-                        print('7')
+                        # print('7')
                         raise Exception('Exit code not 0')
 
-                    print('8')
+                    # print('8')
 
                     if ret is not None:
-                        print('9')
+                        # print('9')
                         self.tracks.append(ret)
 
-                print('10')
+                # print('10')
 
                 self.loading_process = None
-                print('11')
+                # print('11')
 
-
-            print('12')
+            # print('12')
             time.sleep(1.0)
 
     def _load_track_task(self, **kwargs):
@@ -792,11 +791,17 @@ class Player(object):
                 # but we leave the current track playing until
                 # it has finished (per default; if we want to skip
                 # the currently playing track: "Next" button)
-                previous_track_id = self.playing_track.track.id
+                playing_track_id = self.playing_track.track.id
+                next_track_id = playing_track_id+1
+                next_track = DjangoTrack.objects.get(id=next_track_id)
 
-                album = DjangoTrack.objects.get(id=previous_track_id).album_id
-                album_tracks = DjangoTrack.objects.filter(album_id=album)
-                next_track = album_tracks[0]
+                # album = DjangoTrack.objects.get(id=previous_track_id).album_id
+                # album_tracks = DjangoTrack.objects.filter(album_id=album)
+
+                # TODO: what happens if current track is last one of album?
+                # print(next_track_id in [track.track_id for track in album_tracks])
+
+                # next_track = album_tracks[0]
 
                 return next_track
 
