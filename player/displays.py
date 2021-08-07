@@ -3,6 +3,55 @@ from .clock import Clock
 from .radar import Radar
 
 
+"""
+https://stackoverflow.com/questions/5324647/how-to-merge-a-transparent-png-image-with-another-image-using-pil
+https://github.com/python-pillow/Pillow/issues/924#issuecomment-61848826
+
+
+paste
+https://pillow.readthedocs.io/en/stable/reference/Image.html?highlight=composite#PIL.Image.Image.paste
+
+>>> bg = Image.new("RGBA", (500, 500), (0,0,0,0))
+>>> draw = ImageDraw.Draw(bg)
+>>> draw.ellipse([(0,0),(200,200)], (255,0,0,128))
+>>> fg = Image.new("RGBA", (500, 500), (0,0,0,0))
+>>> draw_fg = ImageDraw.Draw(fg)
+>>> draw_fg.ellipse([(100,100),(200,200)], (0,255,0,128))
+>>> bg.paste(fg, (0,0), fg)
+>>> bg.show()
+
+
+alpha_composite
+https://pillow.readthedocs.io/en/stable/reference/Image.html?highlight=composite#PIL.Image.alpha_composite
+
+>>> bg = Image.new("RGBA", (500, 500), (0,0,0,0))
+>>> draw_bg = ImageDraw.Draw(bg)
+>>> draw_bg.ellipse([(0,0),(200,200)], (255,0,0,128))
+>>> fg = Image.new("RGBA", (500, 500), (0,0,0,0))
+>>> draw_fg = ImageDraw.Draw(fg)
+>>> draw_fg.ellipse([(100,100),(200,200)], (0,255,0,128))
+>>> comp = Image.new('RGBA', bg.size)
+>>> comp = Image.alpha_composite(comp, bg)
+>>> comp = Image.alpha_composite(comp, fg)
+>>> comp.show()
+
+3 layers (bg, layer1, layer2)
+
+>>> bg = Image.new("RGBA", (500, 500), (255,255,255,255))
+>>> layer1 = Image.new("RGBA", (500, 500), (255,255,255,0))
+>>> draw_layer1 = ImageDraw.Draw(layer1)
+>>> draw_layer1.ellipse([(0,0),(200,200)], (255,0,0,128))
+>>> layer2 = Image.new("RGBA", (500, 500), (0,0,0,0))
+>>> draw_layer2 = ImageDraw.Draw(layer2)
+>>> draw_layer2.ellipse([(100,100),(200,200)], (0,255,0,128))
+>>> comp = Image.new('RGBA', bg.size)
+>>> comp = Image.alpha_composite(comp, bg)
+>>> comp = Image.alpha_composite(comp, layer1)
+>>> comp = Image.alpha_composite(comp, layer2)
+>>> comp.show()
+"""
+
+
 BUTTONS_HEIGHT = 16
 
 
@@ -91,9 +140,6 @@ class Standby(Layout):
         #     _radar_bottom_right = (int(600-w-self.border), self.border)
         #     bg.paste(_radar_image, _radar_bottom_right)
 
-        # bg.paste(buttons_overlay, (0, 0))
-        # comp_buttons_overlay = Image.new(mode='RGBA', size=(448, 16))
-        # comp_buttons_overlay = Image.alpha_composite(comp_buttons_overlay)
         bg.paste(buttons_overlay, box=(0, 0), mask=buttons_overlay)
 
         return bg
