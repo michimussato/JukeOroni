@@ -88,8 +88,8 @@ class Standby(Layout):
         #     bg.paste(_radar_image, _radar_bottom_right)
 
         # bg.paste(buttons_overlay, (0, 0))
-        comp_buttons_overlay = Image.new(mode='RGBA', size=(448, 16))
-        comp_buttons_overlay = Image.alpha_composite(comp_buttons_overlay)
+        # comp_buttons_overlay = Image.new(mode='RGBA', size=(448, 16))
+        # comp_buttons_overlay = Image.alpha_composite(comp_buttons_overlay)
         bg.paste(buttons_overlay, (0, 0))
 
         return bg
