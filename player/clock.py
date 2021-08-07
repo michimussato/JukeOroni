@@ -94,7 +94,8 @@ class Clock:
                          312.0, 318.0,
                          329.0, 331.0,
                          344.0, 346.0,
-                         357.0]
+                         357.0, 360,
+                         ]
         else:
             intervals = [0.0, 3.0,
                          29.0, 31.0,
@@ -108,7 +109,8 @@ class Clock:
                          267.0, 273.0,
                          299.0, 301.0,
                          329.0, 331.0,
-                         357.0]
+                         357.0, 360,
+                         ]
 
         for interval in intervals[::-1]:
             draw.arc([(round(_size * 0.022), round(_size * 0.022)), (round(_size - _size * 0.022), round(_size - _size * 0.022))], start=arc_twelve, end=(arc_twelve + interval) % 360, fill=color, width=round(_size * 0.060))
@@ -139,6 +141,7 @@ class Clock:
         comp = Image.new(mode='RGBA', size=(_size, _size))
         comp = Image.alpha_composite(comp, bg)
         comp = Image.alpha_composite(comp, _clock)
+        comp = comp.rotate(90, expand=False)
         comp = comp.resize((600, 448))
 
         # _clock.paste(image.rotate(90, expand=False))
