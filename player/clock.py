@@ -41,28 +41,28 @@ class Clock:
             arc_twelve = 270.0
 
         white = (255, 255, 255, 255)
-        black = (0, 0, 0, 128)
+        black = (0, 0, 0, 64)
         toggle = {white: black, black: white}
 
-        # if draw_astral:
-        #     city = LocationInfo("Bern", "Switzerland", tz, 46.94809, 7.44744)
-        #     _sun = sun(city.observer, date=datetime.date.today(), tzinfo=city.timezone)
-        #
-        #     decimal_sunrise = float(_sun["sunrise"].strftime('%H')) + float(_sun["sunrise"].strftime('%M')) / 60
-        #     arc_length_sunrise = decimal_sunrise / hours * 360.0
-        #     print('sunrise: {0}'.format(_sun["sunrise"].strftime('%H:%M')))
-        #
-        #     decimal_sunset = float(_sun["sunset"].strftime('%H')) + float(_sun["sunset"].strftime('%M')) / 60
-        #     arc_length_sunset = decimal_sunset / hours * 360.0
-        #     print('sunset: {0}'.format(_sun["sunset"].strftime('%H:%M')))
-        #
-        #     color = (255, 128, 0)
-        #     _size_astral = 0.17  # TODO: bigger means smaller circle
-        #     _width = 0.012
-        #     size_astral = [(round(_size * _size_astral), round(_size * _size_astral)), (round(_size - _size * _size_astral), round(_size - _size * _size_astral))]
-        #     width_astral = round(_size * _width)
-        #     draw.arc(size_astral, start=arc_length_sunrise+arc_twelve, end=arc_length_sunset+arc_twelve, fill=color,
-        #              width=width_astral)
+        if draw_astral:
+            city = LocationInfo("Bern", "Switzerland", tz, 46.94809, 7.44744)
+            _sun = sun(city.observer, date=datetime.date.today(), tzinfo=city.timezone)
+
+            decimal_sunrise = float(_sun["sunrise"].strftime('%H')) + float(_sun["sunrise"].strftime('%M')) / 60
+            arc_length_sunrise = decimal_sunrise / hours * 360.0
+            print('sunrise: {0}'.format(_sun["sunrise"].strftime('%H:%M')))
+
+            decimal_sunset = float(_sun["sunset"].strftime('%H')) + float(_sun["sunset"].strftime('%M')) / 60
+            arc_length_sunset = decimal_sunset / hours * 360.0
+            print('sunset: {0}'.format(_sun["sunset"].strftime('%H:%M')))
+
+            color = (255, 128, 0, 255)
+            _size_astral = 0.17  # TODO: bigger means smaller circle
+            _width = 0.012
+            size_astral = [(round(_size * _size_astral), round(_size * _size_astral)), (round(_size - _size * _size_astral), round(_size - _size * _size_astral))]
+            width_astral = round(_size * _width)
+            draw.arc(size_astral, start=arc_length_sunrise+arc_twelve, end=arc_length_sunset+arc_twelve, fill=color,
+                     width=width_astral)
 
         # center dot
         draw.ellipse([(round(_size * 0.482), round(_size * 0.482)), (round(_size - _size * 0.482), round(_size - _size * 0.482))], fill=white, outline=None, width=round(_size * 0.312))
