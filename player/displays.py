@@ -66,7 +66,7 @@ class Standby(Layout):
         comp_clock = Image.alpha_composite(comp_clock, widget_clock)
         comp_clock = Image.alpha_composite(comp_clock, _clock)
 
-        bg.paste(comp_clock, (0, 0))
+        bg.paste(comp_clock, (0, 0), comp_clock)
 
         # _clock_center = round(bg.size[1]/2 - clock_size/2)
         # # _clock_right = 0
@@ -81,8 +81,8 @@ class Standby(Layout):
         #     w, h = _radar_image.size
         #     _radar_bottom_right = (int(600-w-self.border), self.border)
         #     bg.paste(_radar_image, _radar_bottom_right)
-        #
-        bg.paste(buttons_overlay, (0, 0))
+
+        # bg.paste(buttons_overlay, (0, 0))
 
         return bg
 
