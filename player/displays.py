@@ -98,8 +98,9 @@ def round_resize(img, corner, scaled_by):
     mask = Image.new("L", img.size, 0)
     draw = ImageDraw.Draw(mask)
     draw.rounded_rectangle([(0, 0), img.size], corner, fill=255)
-    img = Image.composite(img, bg, mask)
-    return img
+    # img = Image.composite(img, bg, mask)
+    bg.paste(img, box=(0,0), mask=bg)
+    return bg
 
 
 class Layout:
