@@ -734,6 +734,7 @@ class Player(object):
         next_track = None
         if self.button_1_value == 'Rand -> Albm':
             tracks = self.track_list
+            print(dir(self.loading_process))
             if not bool(tracks):
                 return None
             next_track = random.choice(tracks)
