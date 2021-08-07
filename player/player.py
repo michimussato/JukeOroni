@@ -848,12 +848,12 @@ class Player(object):
 def player():
     p = Player(auto_update_tracklist=True)
     # p.temp_cleanup()
-    # p.buttons_watcher_thread()
+    p.buttons_watcher_thread()
     p.state_watcher_thread()
     p.pimoroni_watcher_thread()
     p.set_image()
     # p.track_list_generator_thread(auto_update_tracklist_interval=DEFAULT_TRACKLIST_REGEN_INTERVAL)  # effect only if auto_update_tracklist=True
-    # p.track_loader_thread()
+    p.track_loader_thread()
 
 
 if __name__ == '__main__':
