@@ -460,19 +460,19 @@ class Player(object):
                 print('5')
                 if self.loading_process is not None:
                     ret = self.loading_queue.get()
-                print('6')
+                    print('6')
                 # print(f'ret: {ret}')
                 # print(f'ret 2: {ret}')
 
-                if self.loading_process.exitcode:
-                    print('7')
-                    raise Exception('Exit code not 0')
+                    if self.loading_process.exitcode:
+                        print('7')
+                        raise Exception('Exit code not 0')
 
-                print('8')
+                    print('8')
 
-                if ret is not None:
-                    print('9')
-                    self.tracks.append(ret)
+                    if ret is not None:
+                        print('9')
+                        self.tracks.append(ret)
 
                 print('10')
 
