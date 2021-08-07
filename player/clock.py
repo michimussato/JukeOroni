@@ -23,9 +23,10 @@ class Clock:
 
         assert hours in [12, 24], 'hours can only be 12 or 24'
 
-        comp = Image.new(mode='RGBA', size=(_size, _size), color=(0, 0, 0, 0))
-
+        bg = Image.new(mode='RGBA', size=(_size, _size), color=(0, 0, 0, 0))
         _clock = Image.new(mode='RGBA', size=(_size, _size), color=(0, 0, 0, 0))
+
+
         # im_a = Image.new("L", bg.size, 0)
         # draw_a = ImageDraw.Draw(im_a)
         # draw_a.ellipse((140, 50, 260, 170), fill=255)
@@ -135,6 +136,8 @@ class Clock:
         #     length = font.getlength(text)
         #     draw.text((round(_size / 2) - length / 2, round(_size * 0.690)), text, fill=white, font=font)
 
+        comp = Image.new(mode='RGBA', size=(_size, _size))
+        comp = comp.alpha_composite(comp, bg)
         comp = Image.alpha_composite(comp, _clock)
         comp = comp.resize((600, 448))
 
