@@ -461,8 +461,8 @@ class Player(object):
                 if self.loading_process is not None:
                     ret = self.loading_queue.get()
                     print('6')
-                # print(f'ret: {ret}')
-                # print(f'ret 2: {ret}')
+                    # print(f'ret: {ret}')
+                    # print(f'ret 2: {ret}')
 
                     if self.loading_process.exitcode:
                         print('7')
