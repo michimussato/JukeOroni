@@ -94,7 +94,7 @@ class Clock:
                          312.0, 318.0,
                          329.0, 331.0,
                          344.0, 346.0,
-                         357.0, 360.0,
+                         357.0, 0.0,
                          ]
         else:
             intervals = [0.0, 3.0,
@@ -109,10 +109,10 @@ class Clock:
                          267.0, 273.0,
                          299.0, 301.0,
                          329.0, 331.0,
-                         357.0, 360.0,
+                         357.0, 0.0,
                          ]
 
-        for interval in intervals[::-1]:
+        for interval in intervals[::-1]:  # reversed
             draw.arc([(round(_size * 0.022), round(_size * 0.022)), (round(_size - _size * 0.022), round(_size - _size * 0.022))], start=arc_twelve, end=(arc_twelve + interval) % 360, fill=color, width=round(_size * 0.060))
             color = toggle[color]
 
