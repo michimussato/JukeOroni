@@ -66,7 +66,7 @@ class Standby(Layout):
         comp_clock = Image.alpha_composite(comp_clock, widget_clock)
         comp_clock = Image.alpha_composite(comp_clock, _clock)
 
-        bg.paste(comp_clock, (0, 0), comp_clock)
+        bg.paste(comp_clock, box=(0, 0), mask=comp_clock)
 
         # _clock_center = round(bg.size[1]/2 - clock_size/2)
         # # _clock_right = 0
