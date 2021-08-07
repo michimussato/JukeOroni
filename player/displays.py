@@ -15,7 +15,7 @@ def buttons_img_overlay(labels, stby=False):
         labels[2],
         '    ' if stby else labels[1],
         '    ' if stby else labels[0],
-    ), fill=(255, 255, 255, 255))
+    ), fill=(0, 255, 0, 255))
 
     buttons_img = buttons_img.rotate(90, expand=False)
 
