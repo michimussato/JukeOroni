@@ -40,8 +40,8 @@ FONT_SIZE = 20
 SLEEP_IMAGE = '/data/django/jukeoroni/player/static/zzz.jpg'
 _LOADING_IMAGE = '/data/django/jukeoroni/player/static/loading.jpg'
 LOADING_IMAGE = Image.open(_LOADING_IMAGE)
-_STANDARD_COVER = '/data/django/jukeoroni/player/static/cover_std.png'
-STANDARD_COVER = Image.open(_STANDARD_COVER)
+STANDARD_COVER = '/data/django/jukeoroni/player/static/cover_std.png'
+# STANDARD_COVER = Image.open(_STANDARD_COVER)
 PIMORONI_FONT = '/data/django/jukeoroni/player/static/gotham-black.ttf'
 DEFAULT_TRACKLIST_REGEN_INTERVAL = 12  # in hours
 CLOCK_UPDATE_INTERVAL = 5  # in minutes
@@ -621,6 +621,8 @@ class Player(object):
         self.loading_process = None
         # remove all cached tracks from the filesystem except the one
         # that is currently playing
+
+        # is it a problem if self.track is still empty?
         for track in self.tracks:
             if track.cached and not track.is_playing:
                 os.remove(track.cache)
@@ -672,6 +674,7 @@ class Player(object):
                             cover_album = io.BytesIO(response.read())
                             cover_album = Image.open(cover_album)
                     else:
+                        cover_album = Image.open(cover_album)
                         print('using local album cover')
 
                     cover_artist = kwargs['track'].cover_artist
