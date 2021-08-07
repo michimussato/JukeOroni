@@ -743,6 +743,8 @@ class Player(object):
 
             tracks = self.track_list
 
+            rint(dir(self.loading_process))
+
             if not bool(tracks):
                 random_album = random.choice(Album.objects.all())
                 album_tracks = DjangoTrack.objects.filter(album_id=random_album)
