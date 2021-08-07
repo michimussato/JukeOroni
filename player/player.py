@@ -435,6 +435,7 @@ class Player(object):
             if len(self.tracks) + int(bool(self.loading_process)) < MAX_CACHED_FILES and not bool(self.loading_process):
                 next_track = self.get_next_track()
                 if next_track is None:
+                    print('this')
                     time.sleep(1.0)
                     continue
 
@@ -462,6 +463,7 @@ class Player(object):
 
                 self.loading_process = None
 
+            print('that')
             time.sleep(1.0)
 
     def _load_track_task(self, **kwargs):
