@@ -188,6 +188,7 @@ class Player(object):
         self.playing_track = None
         self.sequential = False
         self._quit = False
+        self._need_first_album_track = False
         self.pimoroni = Inky()
         self.pimoroni.set_border('BLACK')
 
@@ -247,6 +248,7 @@ class Player(object):
         if current_label == self.button_1_value:
             # empty cached track list but leave current track playing
             # but update the display to reflect current Mode
+            self._need_first_album_track = True
             self.kill_loading_process()
 
             self.button_1_value = BUTTON_1[current_label]
@@ -426,16 +428,9 @@ class Player(object):
 
     def _track_loader_task(self):
         while True and not self._quit:
-            print('here')
-            print(len(self.tracks))
-            print(int(bool(self.loading_process)))
-
-            print(len(self.tracks) + int(bool(self.loading_process)) < MAX_CACHED_FILES)
-            print(not bool(self.loading_process))
             if len(self.tracks) + int(bool(self.loading_process)) < MAX_CACHED_FILES and not bool(self.loading_process):
                 next_track = self.get_next_track()
                 if next_track is None:
-                    print('this')
                     time.sleep(1.0)
                     continue
 
@@ -448,16 +443,11 @@ class Player(object):
                 # data. when the Queue handles over that cached object, it seems like
                 # it re-creates the Track object (pickle, probably) but the cached data is
                 # gone of course because __del__ was called before that already.
-                # print('1')
                 self.loading_process = multiprocessing.Process(target=self._load_track_task, kwargs={'track': next_track})
-                # print('2')
                 self.loading_process.name = 'Track Loader Task Process'
-                # print('3')
                 self.loading_process.start()
-                # print('4')
 
                 self.loading_process.join()
-                # print('5')
                 if self.loading_process is not None:
                     # self.loading_process waits for a result
                     # which it won't receive in case we killed
@@ -465,26 +455,15 @@ class Player(object):
                     # we would get stuck here if self.loading_process
                     # was None
                     ret = self.loading_queue.get()
-                    # print('6')
-                    # print(f'ret: {ret}')
-                    # print(f'ret 2: {ret}')
 
                     if self.loading_process.exitcode:
-                        # print('7')
                         raise Exception('Exit code not 0')
 
-                    # print('8')
-
                     if ret is not None:
-                        # print('9')
                         self.tracks.append(ret)
 
-                # print('10')
-
                 self.loading_process = None
-                # print('11')
 
-            # print('12')
             time.sleep(1.0)
 
     def _load_track_task(self, **kwargs):
@@ -507,9 +486,7 @@ class Player(object):
 
         # here, or after that, probably processing_track.__del__() is called but pickled/recreated
         # in the main process
-        print('before')
         self.loading_queue.put(ret)
-        print('after')
     ############################################
 
     ############################################
@@ -622,7 +599,6 @@ class Player(object):
             self._playback_thread = None
 
     def _playback_task(self, **kwargs):
-        # print(multiprocessing.current_process().pid)
         self.playing_track = kwargs['track']
         logging.debug(f'starting playback thread: for {self.playing_track.path} from {self.playing_track.playing_from}')  # TODO add info
         print(f'starting playback thread: for {self.playing_track.path} from {self.playing_track.playing_from}')  # TODO add info
@@ -730,10 +706,8 @@ class Player(object):
         return DjangoTrack.objects.all()
 
     def get_next_track(self):
-        next_track = None
         if self.button_1_value == 'Rand -> Albm':
             tracks = self.track_list
-            print(dir(self.loading_process))
             if not bool(tracks):
                 return None
             next_track = random.choice(tracks)
@@ -741,10 +715,14 @@ class Player(object):
 
         elif self.button_1_value == 'Albm -> Rand':
 
-            # tracks = self.track_list
-
-            # print(dir(self.loading_process))
-            # print(tracks)
+            if self._need_first_album_track and self.playing_track is not None:
+                # if we switch mode from Rand to Albm,
+                # we always want the first track of
+                # the album, no matter what
+                album_id = self.playing_track.track.album_id
+                album_tracks = DjangoTrack.objects.filter(album_id=album_id)
+                self._need_first_album_track = False
+                return album_tracks[0]
 
             if self.playing_track is None and not bool(self.tracks):
                 if bool(self.loading_process):
@@ -795,17 +773,14 @@ class Player(object):
                 next_track_id = playing_track_id+1
                 next_track = DjangoTrack.objects.get(id=next_track_id)
 
-                # album = DjangoTrack.objects.get(id=previous_track_id).album_id
-                # album_tracks = DjangoTrack.objects.filter(album_id=album)
+                album = DjangoTrack.objects.get(id=playing_track_id).album_id
 
-                # TODO: what happens if current track is last one of album?
-                # print(next_track_id in [track.track_id for track in album_tracks])
-
-                # next_track = album_tracks[0]
+                if next_track.album_id != album:
+                    random_album = random.choice(Album.objects.all())
+                    album_tracks = DjangoTrack.objects.filter(album_id=random_album)
+                    next_track = album_tracks[0]
 
                 return next_track
-
-        # return next_track
 
         print('we should not be here')
 
