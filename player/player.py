@@ -746,13 +746,14 @@ class Player(object):
             # print(dir(self.loading_process))
             # print(tracks)
 
-            if not bool(self.tracks):
+            if not bool(self.tracks) and self.playing_track is None:
                 if bool(self.loading_process):
                     self.kill_loading_process()
                 random_album = random.choice(Album.objects.all())
                 album_tracks = DjangoTrack.objects.filter(album_id=random_album)
                 next_track = album_tracks[0]
                 return next_track
+
             elif bool(self.tracks):
                 # if bool(self.loading_process):
                 #     self.kill_loading_process()
