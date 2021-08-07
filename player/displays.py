@@ -114,7 +114,7 @@ class Standby(Layout):
     def get_layout(self, labels):
 
         buttons_overlay = buttons_img_overlay(labels=labels, stby=True)
-        bg = Image.new(mode='RGBA', size=(600, 448), color=(32, 32, 32, 255))
+        bg = Image.new(mode='RGBA', size=(600, 448), color=(255, 0, 0, 255))
         widget_clock = Image.new(mode='RGBA', size=(self.main_size, self.main_size), color=(0, 0, 0, 0))
         comp_clock = Image.new(mode='RGBA', size=widget_clock.size)
 
