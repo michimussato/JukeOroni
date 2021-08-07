@@ -62,6 +62,8 @@ class Standby(Layout):
         clock_size = self.main_size
         _clock = self._clock.get_clock(size=clock_size, draw_logo=True, draw_date=True, hours=24, draw_astral=True)
 
+        comp = comp.alpha_composite(comp, _clock)
+
         # _clock_center = round(bg.size[1]/2 - clock_size/2)
         # # _clock_right = 0
         # # _clock_left = bg.size[1] - clock_size
