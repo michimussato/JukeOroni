@@ -102,7 +102,7 @@ class Track(object):
             self._cache()
 
     @property
-    def track(self):
+    def track_title(self):
         return self.path.split(os.sep)[-1]
 
     @property
