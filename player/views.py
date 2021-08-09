@@ -78,6 +78,7 @@ class PlayerView(View):
         player.button_3_value = BUTTON_3['Play']
         # while player._playback_thread is None:
         #     time.sleep(1.0)
+        time.sleep(1.0)
         return HttpResponseRedirect('/player')
 
     def next(self):
