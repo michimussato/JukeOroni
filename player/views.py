@@ -43,14 +43,15 @@ class PlayerView(View):
         ret += '  <body>\n'
 
         # else:
-        if not player.tracks and bool(player.loading_process):
-            ret += f'<div><img src=\"{_LOADING_IMAGE}\" alt=\"Loading...\"></div>'
-        elif player.playing_track is None:
-            ret += f'<div>{str(player.playing_track)}</div>'
-        elif player.playing_track is not None:
+        if player.playing_track is not None:
             ret += f'<div><img src=\"{str(player.playing_track.cover_album)}\" alt=\"{str(player.playing_track.path)}\"></div>'
             ret += f'<div><img src=\"{str(player.playing_track.cover_artist)}\" alt=\"{str(player.playing_track.path)}\"></div>'
             ret += f'<div>{str(player.playing_track.path)}</div>'
+        elif not player.tracks and bool(player.loading_process):
+            ret += f'<div><img src=\"{_LOADING_IMAGE}\" alt=\"Loading...\"></div>'
+        elif player.playing_track is None:
+            ret += f'<div>{str(player.playing_track)}</div>'
+
         ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/player/play\';\">Play</button>\n'
         ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/player/next\';\">Next</button>\n'
         ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/player/stop\';\">Stop</button>\n'
