@@ -1,5 +1,6 @@
 import os
 import requests
+import time
 import subprocess
 import logging
 import threading
@@ -60,6 +61,8 @@ class PlayerView(View):
         # button_3_value = self.player.button_3_value
 
         player.button_3_value = BUTTON_3['Play']
+        while player._playback_thread is None:
+            time.sleep(1.0)
         return HttpResponseRedirect('/player')
 
     def next(self):
