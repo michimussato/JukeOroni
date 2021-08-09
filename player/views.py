@@ -62,6 +62,17 @@ class PlayerView(View):
         player.button_3_value = BUTTON_3['Play']
         return HttpResponseRedirect('/player')
 
+    def stop(self):
+        global player
+        if player._playback_thread is not None:
+            player.button_3_value = BUTTON_3['Next']
+            player.stop()
+            player.set_image()
+        # button_3_value = self.player.button_3_value
+
+        # player.button_3_value = BUTTON_3['Play']
+        return HttpResponseRedirect('/player')
+
 
 def radio_index(request):
     channels = Channel.objects.all()
