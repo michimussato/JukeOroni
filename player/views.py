@@ -42,6 +42,7 @@ class PlayerView(View):
             ret += f'<div>{str(player.playing_track)}</div>'
         else:
             ret += f'<div><img src=\"{str(player.playing_track.cover_album)}\" alt=\"{str(player.playing_track.path)}\"></div>'
+            ret += f'<div><img src=\"{str(player.playing_track.artist_album)}\" alt=\"{str(player.playing_track.path)}\"></div>'
             ret += f'<div>{str(player.playing_track.path)}</div>'
         ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/player/play\';\">Play</button>\n'
         ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/player/next\';\">Next</button>\n'
@@ -59,7 +60,6 @@ class PlayerView(View):
 
     def play(self):
         global player
-        # button_3_value = self.player.button_3_value
 
         player.button_3_value = BUTTON_3['Play']
         while player._playback_thread is None:
@@ -68,10 +68,8 @@ class PlayerView(View):
 
     def next(self):
         global player
-        # button_3_value = self.player.button_3_value
         if player._playback_thread is not None:
             player.next()
-            # player.button_3_value = BUTTON_3['Play']
         return HttpResponseRedirect('/player')
 
     def stop(self):
