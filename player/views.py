@@ -9,7 +9,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.views import View
 from player.displays import Player as PlayerLayout
 import radio.models
-from player.player import Player
+from player.player import Player, BUTTON_4, BUTTON_3, BUTTON_2, BUTTON_1
 from .models import Channel
 
 
@@ -42,7 +42,13 @@ class PlayerView(View):
         self.player.set_image()
 
     def get(self, request):
-        return HttpResponse('Player page')
+        return HttpResponse(f'{str(self.player.playing_track)}')
+
+    def play(self, request):
+        button_3_value = self.button_3_value
+
+        self.player.button_3_value = BUTTON_3[button_3_value]
+        return HttpResponseRedirect('/player')
 
 
 def radio_index(request):
