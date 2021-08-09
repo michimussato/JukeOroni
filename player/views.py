@@ -36,10 +36,10 @@ class PlayerView(View):
 
     # player = Player()
 
-    def __init__(self):
-        super().__init__()
-        global player
-        self.player = player
+    # def __init__(self):
+    #     super().__init__()
+    #     global player
+    #     self.player = player
 
         # self.init_player()
 
@@ -51,12 +51,14 @@ class PlayerView(View):
     #     self.player.set_image()
 
     def get(self, request):
-        return HttpResponse(f'{str(self.player.playing_track)}')
+        global player
+        return HttpResponse(f'{str(player.playing_track)}')
 
     def play(self):
+        global player
         # button_3_value = self.player.button_3_value
 
-        self.player.button_3_value = BUTTON_3['Play']
+        player.button_3_value = BUTTON_3['Play']
         return HttpResponseRedirect('/player')
 
 
