@@ -44,7 +44,7 @@ class PlayerView(View):
     def get(self, request):
         return HttpResponse(f'{str(self.player.playing_track)}')
 
-    def play(self, request):
+    def play(self):
         button_3_value = self.button_3_value
 
         self.player.button_3_value = BUTTON_3[button_3_value]
