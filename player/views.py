@@ -29,11 +29,11 @@ PIMORONI_FONT = '/data/django/jukeoroni/player/static/gotham-black.ttf'
 #     return HttpResponse('Player page')
 class PlayerView(View):
 
-    player = Player()
+    # player = Player()
 
     def __init__(self):
         super().__init__()
-        # self.player = Player()
+        self.player = Player()
 
         self.init_player()
 
