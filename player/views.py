@@ -52,8 +52,10 @@ class PlayerView(View):
             ret += f'<div>{str(player.playing_track.path)}</div>'
         if not player.tracks and bool(player.loading_process):
             ret += f'<div><img src=\"{_LOADING_IMAGE}\" alt=\"Loading...\"></div>'
-        ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/player/play\';\">Play</button>\n'
-        ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/player/next\';\">Next</button>\n'
+        if player.button_3_value == BUTTON_3['Next']:
+            ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/player/play\';\">Play</button>\n'
+        elif player.button_3_value == BUTTON_3['Play']:
+            ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/player/next\';\">Next</button>\n'
         ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/player/stop\';\">Stop</button>\n'
         ret += '  </body>\n'
         ret += '</html>\n'
