@@ -102,6 +102,10 @@ class Track(object):
             self._cache()
 
     @property
+    def track(self):
+        return self.path.split(os.sep)[-1]
+
+    @property
     def album(self):
         print(self.track)
         return Album.objects.get(track=self.track)
