@@ -21,7 +21,12 @@ STANDARD_COVER = '/data/django/jukeoroni/player/static/cover_std.png'
 PIMORONI_FONT = '/data/django/jukeoroni/player/static/gotham-black.ttf'
 
 
-
+player = Player()
+player.buttons_watcher_thread()
+player.state_watcher_thread()
+player.pimoroni_watcher_thread()
+player.track_loader_thread()
+player.set_image()
 
 
 # Create your views here.
@@ -33,16 +38,17 @@ class PlayerView(View):
 
     def __init__(self):
         super().__init__()
-        self.player = Player()
+        global player
+        self.player = player
 
-        self.init_player()
+        # self.init_player()
 
-    def init_player(self):
-        self.player.buttons_watcher_thread()
-        self.player.state_watcher_thread()
-        self.player.pimoroni_watcher_thread()
-        self.player.track_loader_thread()
-        self.player.set_image()
+    # def init_player(self):
+    #     self.player.buttons_watcher_thread()
+    #     self.player.state_watcher_thread()
+    #     self.player.pimoroni_watcher_thread()
+    #     self.player.track_loader_thread()
+    #     self.player.set_image()
 
     def get(self, request):
         return HttpResponse(f'{str(self.player.playing_track)}')
