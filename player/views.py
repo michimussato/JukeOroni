@@ -51,7 +51,8 @@ class PlayerView(View):
             ret += f'<img src=\"{str(player.playing_track.cover_album)}\" alt=\"{str(player.playing_track.path)}\">'
             ret += f'<img src=\"{str(player.playing_track.cover_artist)}\" alt=\"{str(player.playing_track.path)}\">'
             ret += f'</div>'
-            ret += f'<div>{str(player.playing_track.path)}</div>'
+            ret += f'<div>Artist: {str(player.playing_track.artist)}</div>'
+            ret += f'<div>Album: {str(player.playing_track.album)}</div>'
         if not player.tracks and bool(player.loading_process):
             ret += f'<div><img src=\"{_LOADING_IMAGE}\" alt=\"Loading...\"></div>'
         if player.button_3_value == BUTTON_3['Next']:
