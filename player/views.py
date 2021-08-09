@@ -53,13 +53,21 @@ class PlayerView(View):
     def get(self, request):
         global player
         print(player.playing_track)
-        return HttpResponse(f'{str(player.playing_track)}')
+        return HttpResponse(f'{str(player.playing_track.path)}')
 
     def play(self):
         global player
         # button_3_value = self.player.button_3_value
 
         player.button_3_value = BUTTON_3['Play']
+        return HttpResponseRedirect('/player')
+
+    def next(self):
+        global player
+        # button_3_value = self.player.button_3_value
+        if player._playback_thread is not None:
+            player.next()
+            # player.button_3_value = BUTTON_3['Play']
         return HttpResponseRedirect('/player')
 
     def stop(self):
