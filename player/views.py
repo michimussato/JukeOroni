@@ -9,7 +9,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.views import View
 from player.displays import Player as PlayerLayout
 import radio.models
-# from .player import player
+from player.player import Player
 from .models import Channel
 
 
@@ -21,13 +21,26 @@ STANDARD_COVER = '/data/django/jukeoroni/player/static/cover_std.png'
 PIMORONI_FONT = '/data/django/jukeoroni/player/static/gotham-black.ttf'
 
 
-# player()
+
 
 
 # Create your views here.
 # def index(request):
 #     return HttpResponse('Player page')
 class PlayerView(View):
+    def __init__(self):
+        super().__init__()
+        self.player = Player()
+
+        self.init_player()
+
+    def init_player(self):
+        self.player.buttons_watcher_thread()
+        self.player.state_watcher_thread()
+        self.player.pimoroni_watcher_thread()
+        self.player.track_loader_thread()
+        self.player.set_image()
+
     def get(self, request):
         return HttpResponse('Player page')
 
