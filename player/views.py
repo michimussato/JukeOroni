@@ -52,6 +52,7 @@ class PlayerView(View):
 
     def get(self, request):
         global player
+        print(player.playing_track)
         return HttpResponse(f'{str(player.playing_track)}')
 
     def play(self):
