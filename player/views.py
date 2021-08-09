@@ -41,6 +41,7 @@ class PlayerView(View):
         if player.playing_track is None:
             ret += f'<div>{str(player.playing_track)}</div>'
         else:
+            ret += f'<div><img src=\"{str(player.playing_track.cover_album)}\" alt=\"{str(player.playing_track.path)}\"></div>'
             ret += f'<div>{str(player.playing_track.path)}</div>'
         ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/player/play\';\">Play</button>\n'
         ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/player/next\';\">Next</button>\n'
