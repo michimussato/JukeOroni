@@ -54,7 +54,10 @@ class PlayerView(View):
     def get(self, request):
         global player
         print(player.playing_track)
-        return HttpResponse(f'{str(player.playing_track.path)}')
+        if player.playing_track is None:
+            return HttpResponse(f'{str(player.playing_track)}')
+        else:
+            return HttpResponse(f'{str(player.playing_track.path)}')
 
     def play(self):
         global player
