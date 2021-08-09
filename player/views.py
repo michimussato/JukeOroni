@@ -37,6 +37,9 @@ class PlayerView(View):
         global player
 
         ret = '<html>\n'
+        ret += '  <head>\n'
+        ret += '    <meta http-equiv="refresh" content="10" >\n'
+        ret += '  </head>\n'
         ret += '  <body>\n'
         if player.playing_track is None:
             ret += f'<div>{str(player.playing_track)}</div>'
