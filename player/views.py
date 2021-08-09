@@ -43,7 +43,7 @@ class PlayerView(View):
         ret += '  <body>\n'
 
         # else:
-        if player.tracks and bool(player.loading_process):
+        if not player.tracks and bool(player.loading_process):
             ret += f'<div><img src=\"{_LOADING_IMAGE}\" alt=\"Loading...\"></div>'
         elif player.playing_track is None:
             ret += f'<div>{str(player.playing_track)}</div>'
