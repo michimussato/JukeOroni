@@ -31,33 +31,30 @@ player.set_image()
 
 
 # Create your views here.
-# def index(request):
-#     return HttpResponse('Player page')
 class PlayerView(View):
-
-    # player = Player()
-
-    # def __init__(self):
-    #     super().__init__()
-    #     global player
-    #     self.player = player
-
-        # self.init_player()
-
-    # def init_player(self):
-    #     self.player.buttons_watcher_thread()
-    #     self.player.state_watcher_thread()
-    #     self.player.pimoroni_watcher_thread()
-    #     self.player.track_loader_thread()
-    #     self.player.set_image()
 
     def get(self, request):
         global player
-        print(player.playing_track)
+
+        ret = '<html>\n'
+        ret += '  <body>\n'
         if player.playing_track is None:
-            return HttpResponse(f'{str(player.playing_track)}')
+            ret += f'<div>{str(player.playing_track)}</div>'
         else:
-            return HttpResponse(f'{str(player.playing_track.path)}')
+            ret += f'<div>{str(player.playing_track.path)}</div>'
+        ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/player/play\';\">Play</button>\n'
+        ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/player/next\';\">Next</button>\n'
+        ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/player/stop\';\">Stop</button>\n'
+        ret += '  </body>\n'
+        ret += '</html>\n'
+        return HttpResponse(ret)
+
+        # global player
+        # print(player.playing_track)
+        # if player.playing_track is None:
+        #     return HttpResponse(f'{str(player.playing_track)}')
+        # else:
+        #     return HttpResponse(f'{str(player.playing_track.path)}')
 
     def play(self):
         global player
