@@ -10,7 +10,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.views import View
 from player.displays import Player as PlayerLayout
 import radio.models
-from player.player import Player, BUTTON_4, BUTTON_3, BUTTON_2, BUTTON_1
+from player.player import Player, BUTTON_4, BUTTON_3, BUTTON_2, BUTTON_1, _LOADING_IMAGE
 from .models import Channel
 
 
@@ -44,9 +44,12 @@ class PlayerView(View):
         if player.playing_track is None:
             ret += f'<div>{str(player.playing_track)}</div>'
         else:
-            ret += f'<div><img src=\"{str(player.playing_track.cover_album)}\" alt=\"{str(player.playing_track.path)}\"></div>'
-            ret += f'<div><img src=\"{str(player.playing_track.artist_album)}\" alt=\"{str(player.playing_track.path)}\"></div>'
-            ret += f'<div>{str(player.playing_track.path)}</div>'
+            if player.tracks and bool(player.loading_process):
+                ret += f'<div><img src=\"{_LOADING_IMAGE}\" alt=\"Loading...\"></div>'
+            else:
+                ret += f'<div><img src=\"{str(player.playing_track.cover_album)}\" alt=\"{str(player.playing_track.path)}\"></div>'
+                ret += f'<div><img src=\"{str(player.playing_track.cover_artist)}\" alt=\"{str(player.playing_track.path)}\"></div>'
+                ret += f'<div>{str(player.playing_track.path)}</div>'
         ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/player/play\';\">Play</button>\n'
         ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/player/next\';\">Next</button>\n'
         ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/player/stop\';\">Stop</button>\n'
