@@ -669,6 +669,54 @@ class Player(object):
                         hdr = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64)'}
                         req = urllib.request.Request(cover_album, headers=hdr)
                         response = urllib.request.urlopen(req)
+                        """
+                        [Sun Aug 08 10:52:39.082943 2021] [wsgi:error] [pid 1567:tid 2779243552] Exception in thread Set Image Thread:
+                        [Sun Aug 08 10:52:39.083072 2021] [wsgi:error] [pid 1567:tid 2779243552] Traceback (most recent call last):
+                        [Sun Aug 08 10:52:39.083117 2021] [wsgi:error] [pid 1567:tid 2779243552]   File "/usr/lib/python3.7/urllib/request.py", line 1324, in do_open
+                        [Sun Aug 08 10:52:39.083214 2021] [wsgi:error] [pid 1567:tid 2779243552]     encode_chunked=req.has_header('Transfer-encoding'))
+                        [Sun Aug 08 10:52:39.083251 2021] [wsgi:error] [pid 1567:tid 2779243552]   File "/usr/lib/python3.7/http/client.py", line 1260, in request
+                        [Sun Aug 08 10:52:39.083285 2021] [wsgi:error] [pid 1567:tid 2779243552]     self._send_request(method, url, body, headers, encode_chunked)
+                        [Sun Aug 08 10:52:39.083318 2021] [wsgi:error] [pid 1567:tid 2779243552]   File "/usr/lib/python3.7/http/client.py", line 1306, in _send_request
+                        [Sun Aug 08 10:52:39.083351 2021] [wsgi:error] [pid 1567:tid 2779243552]     self.endheaders(body, encode_chunked=encode_chunked)
+                        [Sun Aug 08 10:52:39.083384 2021] [wsgi:error] [pid 1567:tid 2779243552]   File "/usr/lib/python3.7/http/client.py", line 1255, in endheaders
+                        [Sun Aug 08 10:52:39.083417 2021] [wsgi:error] [pid 1567:tid 2779243552]     self._send_output(message_body, encode_chunked=encode_chunked)
+                        [Sun Aug 08 10:52:39.083449 2021] [wsgi:error] [pid 1567:tid 2779243552]   File "/usr/lib/python3.7/http/client.py", line 1030, in _send_output
+                        [Sun Aug 08 10:52:39.083482 2021] [wsgi:error] [pid 1567:tid 2779243552]     self.send(msg)
+                        [Sun Aug 08 10:52:39.083515 2021] [wsgi:error] [pid 1567:tid 2779243552]   File "/usr/lib/python3.7/http/client.py", line 970, in send
+                        [Sun Aug 08 10:52:39.083548 2021] [wsgi:error] [pid 1567:tid 2779243552]     self.connect()
+                        [Sun Aug 08 10:52:39.083581 2021] [wsgi:error] [pid 1567:tid 2779243552]   File "/usr/lib/python3.7/http/client.py", line 1415, in connect
+                        [Sun Aug 08 10:52:39.083616 2021] [wsgi:error] [pid 1567:tid 2779243552]     super().connect()
+                        [Sun Aug 08 10:52:39.083649 2021] [wsgi:error] [pid 1567:tid 2779243552]   File "/usr/lib/python3.7/http/client.py", line 942, in connect
+                        [Sun Aug 08 10:52:39.083684 2021] [wsgi:error] [pid 1567:tid 2779243552]     (self.host,self.port), self.timeout, self.source_address)
+                        [Sun Aug 08 10:52:39.083719 2021] [wsgi:error] [pid 1567:tid 2779243552]   File "/usr/lib/python3.7/socket.py", line 707, in create_connection
+                        [Sun Aug 08 10:52:39.083753 2021] [wsgi:error] [pid 1567:tid 2779243552]     for res in getaddrinfo(host, port, 0, SOCK_STREAM):
+                        [Sun Aug 08 10:52:39.083788 2021] [wsgi:error] [pid 1567:tid 2779243552]   File "/usr/lib/python3.7/socket.py", line 748, in getaddrinfo
+                        [Sun Aug 08 10:52:39.083822 2021] [wsgi:error] [pid 1567:tid 2779243552]     for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+                        [Sun Aug 08 10:52:39.083856 2021] [wsgi:error] [pid 1567:tid 2779243552] socket.gaierror: [Errno -3] Temporary failure in name resolution
+                        [Sun Aug 08 10:52:39.083889 2021] [wsgi:error] [pid 1567:tid 2779243552] 
+                        [Sun Aug 08 10:52:39.083921 2021] [wsgi:error] [pid 1567:tid 2779243552] During handling of the above exception, another exception occurred:
+                        [Sun Aug 08 10:52:39.083954 2021] [wsgi:error] [pid 1567:tid 2779243552] 
+                        [Sun Aug 08 10:52:39.083988 2021] [wsgi:error] [pid 1567:tid 2779243552] Traceback (most recent call last):
+                        [Sun Aug 08 10:52:39.084023 2021] [wsgi:error] [pid 1567:tid 2779243552]   File "/usr/lib/python3.7/threading.py", line 917, in _bootstrap_inner
+                        [Sun Aug 08 10:52:39.084057 2021] [wsgi:error] [pid 1567:tid 2779243552]     self.run()
+                        [Sun Aug 08 10:52:39.084090 2021] [wsgi:error] [pid 1567:tid 2779243552]   File "/usr/lib/python3.7/threading.py", line 865, in run
+                        [Sun Aug 08 10:52:39.084123 2021] [wsgi:error] [pid 1567:tid 2779243552]     self._target(*self._args, **self._kwargs)
+                        [Sun Aug 08 10:52:39.084156 2021] [wsgi:error] [pid 1567:tid 2779243552]   File "/data/django/jukeoroni/player/player.py", line 671, in task_pimoroni_set_image
+                        [Sun Aug 08 10:52:39.084190 2021] [wsgi:error] [pid 1567:tid 2779243552]     response = urllib.request.urlopen(req)
+                        [Sun Aug 08 10:52:39.084223 2021] [wsgi:error] [pid 1567:tid 2779243552]   File "/usr/lib/python3.7/urllib/request.py", line 222, in urlopen
+                        [Sun Aug 08 10:52:39.084256 2021] [wsgi:error] [pid 1567:tid 2779243552]     return opener.open(url, data, timeout)
+                        [Sun Aug 08 10:52:39.084290 2021] [wsgi:error] [pid 1567:tid 2779243552]   File "/usr/lib/python3.7/urllib/request.py", line 525, in open
+                        [Sun Aug 08 10:52:39.084371 2021] [wsgi:error] [pid 1567:tid 2779243552]     response = self._open(req, data)
+                        [Sun Aug 08 10:52:39.084407 2021] [wsgi:error] [pid 1567:tid 2779243552]   File "/usr/lib/python3.7/urllib/request.py", line 543, in _open
+                        [Sun Aug 08 10:52:39.084440 2021] [wsgi:error] [pid 1567:tid 2779243552]     '_open', req)
+                        [Sun Aug 08 10:52:39.084473 2021] [wsgi:error] [pid 1567:tid 2779243552]   File "/usr/lib/python3.7/urllib/request.py", line 503, in _call_chain
+                        [Sun Aug 08 10:52:39.084506 2021] [wsgi:error] [pid 1567:tid 2779243552]     result = func(*args)
+                        [Sun Aug 08 10:52:39.084539 2021] [wsgi:error] [pid 1567:tid 2779243552]   File "/usr/lib/python3.7/urllib/request.py", line 1367, in https_open
+                        [Sun Aug 08 10:52:39.084573 2021] [wsgi:error] [pid 1567:tid 2779243552]     context=self._context, check_hostname=self._check_hostname)
+                        [Sun Aug 08 10:52:39.084606 2021] [wsgi:error] [pid 1567:tid 2779243552]   File "/usr/lib/python3.7/urllib/request.py", line 1326, in do_open
+                        [Sun Aug 08 10:52:39.084638 2021] [wsgi:error] [pid 1567:tid 2779243552]     raise URLError(err)
+                        [Sun Aug 08 10:52:39.084671 2021] [wsgi:error] [pid 1567:tid 2779243552] urllib.error.URLError: <urlopen error [Errno -3] Temporary failure in name resolution>
+                        """
                         if response.status == 200:
                             print('using Discogs album cover')
                             cover_album = io.BytesIO(response.read())

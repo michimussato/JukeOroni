@@ -6,9 +6,10 @@ import threading
 from PIL import Image, ImageDraw, ImageFont
 from inky.inky_uc8159 import Inky, CLEAN
 from django.http import HttpResponse, HttpResponseRedirect
+from django.views import View
 from player.displays import Player as PlayerLayout
 import radio.models
-from .player import player
+# from .player import player
 from .models import Channel
 
 
@@ -20,12 +21,15 @@ STANDARD_COVER = '/data/django/jukeoroni/player/static/cover_std.png'
 PIMORONI_FONT = '/data/django/jukeoroni/player/static/gotham-black.ttf'
 
 
-player()
+# player()
 
 
 # Create your views here.
-def index(request):
-    return HttpResponse('Player page')
+# def index(request):
+#     return HttpResponse('Player page')
+class PlayerView(View):
+    def get(self, request):
+        return HttpResponse('Player page')
 
 
 def radio_index(request):
