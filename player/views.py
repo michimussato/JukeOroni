@@ -53,6 +53,7 @@ class PlayerView(View):
             ret += f'</div>'
             ret += f'<div>Artist: {str(player.playing_track.artist)}</div>'
             ret += f'<div>Album: {str(player.playing_track.album)}</div>'
+            ret += f'<div>Track: {str(player.playing_track.path).split(os.sep)[-1]}</div>'
         if not player.tracks and bool(player.loading_process):
             ret += f'<div><img src=\"{_LOADING_IMAGE}\" alt=\"Loading...\"></div>'
         if player.button_3_value == BUTTON_3['Next']:
