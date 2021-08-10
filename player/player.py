@@ -90,6 +90,14 @@ def is_string_an_url(url_string: str) -> bool:
     return True
 
 
+class Process(multiprocessing.Process):
+    def __init__(self, *args, **kwargs):
+        super().__init__(args, kwargs)
+
+    def track(self):
+        return self._kwargs['track']
+
+
 class Track(object):
     def __init__(self, track, cached=True):
         self.track = track
@@ -456,7 +464,7 @@ class Player(object):
                 # data. when the Queue handles over that cached object, it seems like
                 # it re-creates the Track object (pickle, probably) but the cached data is
                 # gone of course because __del__ was called before that already.
-                self.loading_process = multiprocessing.Process(target=self._load_track_task, kwargs={'track': next_track})
+                self.loading_process = Process(target=self._load_track_task, kwargs={'track': next_track})
                 # print(dir(self.loading_process))
                 print(self.loading_process.__dict__)
                 print(self.loading_process._kwargs['track'])
