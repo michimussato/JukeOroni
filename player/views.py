@@ -77,10 +77,10 @@ class PlayerView(View):
             ret += '<div><img src=\"file://{0}\" alt=\"Loading {1}...\"></div>'.format(_LOADING_IMAGE, str(player.loading_process.track))
         ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/player/switch_mode\';\">{0}</button>\n'.format(str(player.button_1_value))
         # ret += f'<div>State: {str(player.button_1_value)}</div>'
-        if player.button_3_value == BUTTON_3['Next']:
-            ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/player/play\';\">Play</button>\n'
-        elif player.button_3_value == BUTTON_3['Play']:
-            ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/player/next\';\">Next</button>\n'
+        # if player.button_3_value == BUTTON_3['Next']:
+        ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/player/play_next\';\">{0}</button>\n'.format(player.button_3_value)
+        # elif player.button_3_value == BUTTON_3['Play']:
+        #     ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/player/next\';\">Next</button>\n'
         ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/player/stop\';\">Stop</button>\n'
         ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/player/albums\';\">Albums</button>\n'
         ret += '  </body>\n'
@@ -107,7 +107,7 @@ class PlayerView(View):
         # elif player.button_1_value == 'Albm -> Rand':
         #     pass
 
-    def play(self):
+    def play_next(self):
         global player
 
         player.handle_button(pin=16)
@@ -116,13 +116,13 @@ class PlayerView(View):
         # # while player._playback_thread is None:
         # #     time.sleep(1.0)
         # # time.sleep(1.0)
-        # return HttpResponseRedirect('/player')
-
-    def next(self):
-        global player
-        if player._playback_thread is not None:
-            player.next()
         return HttpResponseRedirect('/player')
+
+    # def next(self):
+    #     global player
+    #     if player._playback_thread is not None:
+    #         player.next()
+    #     return HttpResponseRedirect('/player')
 
     def stop(self):
         global player
