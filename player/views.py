@@ -63,6 +63,9 @@ class PlayerView(View):
                         cover_album = f'file:/{cover_album}'
                     ret += f'<div>Album: {cover_album}</div>'
 
+                    print(cover_album)
+                    print(cover_artist)
+
                     ret += f'<div>Track: {str(player.playing_track.track_title)}</div>'
                     _success = True
                 except AttributeError as err:
