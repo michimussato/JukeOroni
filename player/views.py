@@ -110,11 +110,13 @@ class PlayerView(View):
     def play(self):
         global player
 
-        player.button_3_value = BUTTON_3['Play']
-        # while player._playback_thread is None:
-        #     time.sleep(1.0)
-        # time.sleep(1.0)
-        return HttpResponseRedirect('/player')
+        player.handle_button(pin=16)
+
+        # player.button_3_value = BUTTON_3['Play']
+        # # while player._playback_thread is None:
+        # #     time.sleep(1.0)
+        # # time.sleep(1.0)
+        # return HttpResponseRedirect('/player')
 
     def next(self):
         global player
@@ -124,13 +126,15 @@ class PlayerView(View):
 
     def stop(self):
         global player
-        if player._playback_thread is not None:
-            player.button_3_value = BUTTON_3['Next']
-            player.stop()
-            player.set_image()
-        # button_3_value = self.player.button_3_value
 
-        # player.button_3_value = BUTTON_3['Play']
+        player.handle_button(pin=6)
+        # if player._playback_thread is not None:
+        #     player.button_3_value = BUTTON_3['Next']
+        #     player.stop()
+        #     player.set_image()
+        # # button_3_value = self.player.button_3_value
+        #
+        # # player.button_3_value = BUTTON_3['Play']
         return HttpResponseRedirect('/player')
 
     def albums(self):
