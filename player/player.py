@@ -45,6 +45,7 @@ STANDARD_COVER = '/data/django/jukeoroni/player/static/cover_std.png'
 PIMORONI_FONT = '/data/django/jukeoroni/player/static/gotham-black.ttf'
 DEFAULT_TRACKLIST_REGEN_INTERVAL = 12  # in hours
 CLOCK_UPDATE_INTERVAL = 5  # in minutes
+COVER_ONLINE_PREFERENCE = False
 
 # buttons setup
 BUTTONS = [5, 6, 16, 24]
@@ -698,6 +699,8 @@ class Player(object):
         else:
             cover_album = None  # discogs
             cover_artist = None  # discogs
+            cover_album_online = None
+            cover_album_local = None
             if 'image_file' in kwargs:
                 # This if will cause an exception as we are not creating an Image.Image()
                 # object. This will have to go at some point.
@@ -761,11 +764,16 @@ class Player(object):
                         """
                         if response.status == 200:
                             print('using Discogs album cover')
-                            cover_album = io.BytesIO(response.read())
-                            cover_album = Image.open(cover_album)
+                            cover_album_online = io.BytesIO(response.read())
+                            cover_album_online = Image.open(cover_album_online)
                     else:
-                        cover_album = Image.open(cover_album)
+                        cover_album_local = Image.open(cover_album)
                         print('using local album cover')
+
+                    if COVER_ONLINE_PREFERENCE and cover_album_online:
+                        cover_album = cover_album_online
+                    else:
+                        cover_album = cover_album_local
 
                     cover_artist = kwargs['track'].cover_artist
                     print('artist: {0}'.format(cover_artist))
