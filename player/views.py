@@ -75,12 +75,8 @@ class PlayerView(View):
                     time.sleep(1.0)
         if not player.tracks and bool(player.loading_process):
             ret += '<div><img src=\"file://{0}\" alt=\"Loading {1}...\"></div>'.format(_LOADING_IMAGE, str(player.loading_process.track))
-        ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/player/switch_mode\';\">{0}</button>\n'.format(str(player.button_1_value))
-        # ret += f'<div>State: {str(player.button_1_value)}</div>'
-        # if player.button_3_value == BUTTON_3['Next']:
+        ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/player/switch_mode\';\">Switch Mode: {0}</button>\n'.format(str(player.button_1_value))
         ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/player/play_next\';\">{0}</button>\n'.format(player.button_3_value)
-        # elif player.button_3_value == BUTTON_3['Play']:
-        #     ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/player/next\';\">Next</button>\n'
         ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/player/stop\';\">Stop</button>\n'
         ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/player/albums\';\">Albums</button>\n'
         ret += '  </body>\n'
