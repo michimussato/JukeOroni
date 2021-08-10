@@ -134,7 +134,9 @@ class PlayerView(View):
         player.kill_loading_process()
         player.button_1_value = 'Albm -> Rand'
 
+        player.set_image(track=player.playing_track)
 
+        return HttpResponseRedirect('/player')
 
 
 def radio_index(request):
