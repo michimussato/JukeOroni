@@ -60,8 +60,10 @@ class PlayerView(View):
                         cover_album = f'file:/{cover_album}'
                     # ret += f'<div>Album: {cover_album}</div>'
 
-                    ret += f'<img src=\"{cover_album}\" alt=\"{str(player.playing_track.path)}\">'
-                    ret += f'<img src=\"{cover_artist}\" alt=\"{str(player.playing_track.path)}\">'
+                    # ret += f'<img src=\"{cover_album}\" alt=\"{str(player.playing_track.path)}\">'
+                    ret += f'<img src=\"{cover_album}\" alt=\"{cover_album}\">'
+                    # ret += f'<img src=\"{cover_artist}\" alt=\"{str(player.playing_track.path)}\">'
+                    ret += f'<img src=\"{cover_artist}\" alt=\"{cover_artist}\">'
                     ret += f'</div>'
                     ret += f'<div>Artist: {str(player.playing_track.artist)}</div>'
                     ret += f'<div>Album: {str(player.playing_track.album)}</div>'
