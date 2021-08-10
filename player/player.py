@@ -771,10 +771,13 @@ class Player(object):
                         print('using local album cover')
 
                     if COVER_ONLINE_PREFERENCE and cover_album_online:
+                        print('this')
                         cover_album = cover_album_online
                     elif cover_album_local == STANDARD_COVER and cover_album_online:
+                        print('here')
                         cover_album = cover_album_online
                     else:
+                        print('there')
                         cover_album = cover_album_local
                     # else:
                     #     if cover_album_local == STANDARD_COVER and cover_album_online:
@@ -801,6 +804,8 @@ class Player(object):
                             print('using no artist cover')
                             cover_artist = None
 
+            print(cover_album)
+            print(cover_album)
             print(cover_album)
             bg = self.layout_player.get_layout(labels=self.LABELS, cover=cover_album, artist=cover_artist)
 
