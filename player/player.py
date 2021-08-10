@@ -801,6 +801,7 @@ class Player(object):
                             print('using no artist cover')
                             cover_artist = None
 
+            print(cover_album)
             bg = self.layout_player.get_layout(labels=self.LABELS, cover=cover_album, artist=cover_artist)
 
         self.pimoroni.set_image(bg, saturation=PIMORONI_SATURATION)
