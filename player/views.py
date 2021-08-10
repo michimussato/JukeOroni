@@ -121,7 +121,7 @@ class PlayerView(View):
             previous_artist = album.artist_id
             # ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/player/stop\';\">Stop</button>\n'
             # ret += f'    <button style=\"width:100%\">{album.album_title}</button>\n'
-            ret += f'        <button style=\"width:100%\" onclick=\"window.location.href = \'albums/{album.id}\';\">{album.album_title}</button>\n'
+            ret += f'        <button style=\"width:100%\" onclick=\"window.location.href = \'{album.id}\';\">{album.album_title}</button>\n'
             ret += '  </div>\n'
         ret += '  </body>\n'
         ret += '</html>\n'
