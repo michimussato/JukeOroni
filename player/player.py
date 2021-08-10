@@ -95,10 +95,6 @@ class Process(multiprocessing.Process):
         super(Process, self).__init__(*args, **kwargs)
         self.track = kwargs['kwargs']['track']
 
-    # @property
-    # def track(self):
-    #     return self.kwargs['kwargs']['track']
-
 
 class Track(object):
     def __init__(self, track, cached=True):
@@ -505,6 +501,19 @@ class Player(object):
         print(f'starting thread: \"{track.audio_source}\"')
 
         try:
+            """
+            [Tue Aug 10 04:04:45.218279 2021] [wsgi:error] [pid 788:tid 2803889184] Process Track Loader Task Process:
+            [Tue Aug 10 04:04:45.236230 2021] [wsgi:error] [pid 788:tid 2803889184] Traceback (most recent call last):
+            [Tue Aug 10 04:04:45.236570 2021] [wsgi:error] [pid 788:tid 2803889184]   File "/usr/lib/python3.7/multiprocessing/process.py", line 297, in _bootstrap
+            [Tue Aug 10 04:04:45.236702 2021] [wsgi:error] [pid 788:tid 2803889184]     self.run()
+            [Tue Aug 10 04:04:45.236769 2021] [wsgi:error] [pid 788:tid 2803889184]   File "/usr/lib/python3.7/multiprocessing/process.py", line 99, in run
+            [Tue Aug 10 04:04:45.236851 2021] [wsgi:error] [pid 788:tid 2803889184]     self._target(*self._args, **self._kwargs)
+            [Tue Aug 10 04:04:45.236914 2021] [wsgi:error] [pid 788:tid 2803889184]   File "/data/django/jukeoroni/player/player.py", line 508, in _load_track_task
+            [Tue Aug 10 04:04:45.236954 2021] [wsgi:error] [pid 788:tid 2803889184]     size = os.path.getsize(track.audio_source)
+            [Tue Aug 10 04:04:45.237051 2021] [wsgi:error] [pid 788:tid 2803889184]   File "/usr/lib/python3.7/genericpath.py", line 50, in getsize
+            [Tue Aug 10 04:04:45.237091 2021] [wsgi:error] [pid 788:tid 2803889184]     return os.stat(filename).st_size
+            [Tue Aug 10 04:04:45.237451 2021] [wsgi:error] [pid 788:tid 2803889184] OSError: [Errno 5] Input/output error: '/data/googledrive/media/audio/music/on_device/Kings of Leon - 2016 - WALLS [FLAC-24:48]/04. Find Me.flac'
+            """
             size = os.path.getsize(track.audio_source)
             logging.info(f'loading track ({str(round(size / (1024*1024), 3))} MB): \"{track.audio_source}\"')
             print(f'loading track ({str(round(size / (1024*1024), 3))} MB): \"{track.audio_source}\"')
