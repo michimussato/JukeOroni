@@ -52,8 +52,17 @@ class PlayerView(View):
                     ret += f'<img src=\"{str(player.playing_track.cover_album)}\" alt=\"{str(player.playing_track.path)}\">'
                     ret += f'<img src=\"{str(player.playing_track.cover_artist)}\" alt=\"{str(player.playing_track.path)}\">'
                     ret += f'</div>'
-                    ret += f'<div>Artist: {str(player.playing_track.artist)}</div>'
-                    ret += f'<div>Album: {str(player.playing_track.album)}</div>'
+
+                    cover_artist = str(player.playing_track.artist)
+                    if cover_artist.startswith(os.sep):
+                        cover_artist = f'file:/{cover_artist}'
+                    ret += f'<div>Artist: {cover_artist}</div>'
+
+                    cover_album = str(player.playing_track.album)
+                    if cover_album.startswith(os.sep):
+                        cover_album = f'file:/{cover_album}'
+                    ret += f'<div>Album: {cover_album}</div>'
+
                     ret += f'<div>Track: {str(player.playing_track.track_title)}</div>'
                     _success = True
                 except AttributeError as err:
