@@ -92,7 +92,7 @@ def is_string_an_url(url_string: str) -> bool:
 
 class Process(multiprocessing.Process):
     def __init__(self, *args, **kwargs):
-        super().__init__(args, kwargs)
+        super(Process, self).__init__(*args, **kwargs)
 
     def track(self):
         return self._kwargs['track']
