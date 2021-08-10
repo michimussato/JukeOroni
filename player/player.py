@@ -94,6 +94,7 @@ class Process(multiprocessing.Process):
     def __init__(self, *args, **kwargs):
         super(Process, self).__init__(*args, **kwargs)
 
+    @property
     def track(self):
         return self._kwargs['track']
 
@@ -490,12 +491,12 @@ class Player(object):
 
             time.sleep(1.0)
 
-    @property
-    def loading_process_track(self):
-        if self.loading_process is None:
-            return None
-        else:
-            return self.loading_process._kwargs['track']
+    # @property
+    # def loading_process_track(self):
+    #     if self.loading_process is None:
+    #         return None
+    #     else:
+    #         return self.loading_process._kwargs['track']
 
     def _load_track_task(self, **kwargs):
         track = kwargs['track']
