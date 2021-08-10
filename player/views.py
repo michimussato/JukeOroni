@@ -53,12 +53,12 @@ class PlayerView(View):
 
                     cover_artist = str(player.playing_track.cover_artist)
                     if cover_artist.startswith(os.sep):
-                        cover_artist = parse.quote(f'file:/{cover_artist}')
+                        cover_artist = f'file:/{parse.quote(cover_artist)}'
                     # ret += f'<div>Artist: {cover_artist}</div>'
 
                     cover_album = str(player.playing_track.cover_album)
                     if cover_album.startswith(os.sep):
-                        cover_album = parse.quote(f'file:/{cover_album}')
+                        cover_album = f'file:/{parse.quote(cover_album)}'
                     # ret += f'<div>Album: {cover_album}</div>'
 
                     # ret += f'<img src=\"{cover_album}\" alt=\"{str(player.playing_track.path)}\">'

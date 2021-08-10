@@ -164,7 +164,7 @@ class Track(object):
             self.track.played += 1
             self.track.save()
             self.is_playing = True
-            print(multiprocessing.current_process().pid)
+            # print(multiprocessing.current_process().pid)
             # TODO: now this would be a classic
             #  subprocess example: calling an external
             #  application
@@ -790,9 +790,9 @@ class Player(object):
                             print('using no artist cover')
                             cover_artist = None
 
-            print(cover_album)
-            print(cover_album)
-            print(cover_album)
+            # print(cover_album)
+            # print(cover_album)
+            # print(cover_album)
             bg = self.layout_player.get_layout(labels=self.LABELS, cover=cover_album, artist=cover_artist)
 
         self.pimoroni.set_image(bg, saturation=PIMORONI_SATURATION)
