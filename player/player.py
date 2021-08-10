@@ -198,6 +198,7 @@ class Player(object):
         self.loading_process = None
         self.playing = False
         self.playing_track = None
+        self.requested_album_id = None
         self.sequential = False
         self._quit = False
         self._need_first_album_track = False
@@ -765,12 +766,18 @@ class Player(object):
     def track_list(self):
         return DjangoTrack.objects.all()
 
-    def get_next_track(self):
+    def get_next_track(self, album_id=None):
         # TODO: we cannot tell which track it is
         #  that is currently being loaded.
         #  because of this, we always have
         #  to start clean, even if the track
         #  is almost fully loaded
+
+        # # switch for web ui album playback start
+        # if album_id is not None:
+        #     album_tracks = DjangoTrack.objects.filter(album_id=album_id)
+        #     first_track = album_tracks[0]
+        #     return first_track
 
         if self.button_1_value == 'Rand -> Albm':
             tracks = self.track_list
@@ -797,9 +804,10 @@ class Player(object):
             if self.playing_track is None and not bool(self.tracks):
                 if bool(self.loading_process):
                     self.kill_loading_process()
-                random_album = random.choice(Album.objects.all())
+                random_album = self.requested_album_id or random.choice(Album.objects.all())
                 album_tracks = DjangoTrack.objects.filter(album_id=random_album)
                 next_track = album_tracks[0]
+                self.requested_album_id = None
                 return next_track
 
             if bool(self.tracks):
