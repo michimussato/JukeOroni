@@ -67,7 +67,7 @@ class PlayerView(View):
         elif player.button_3_value == BUTTON_3['Play']:
             ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/player/next\';\">Next</button>\n'
         ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/player/stop\';\">Stop</button>\n'
-        ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/albums\';\">Albums</button>\n'
+        ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/player/albums\';\">Albums</button>\n'
         ret += '  </body>\n'
         ret += '</html>\n'
         return HttpResponse(ret)
