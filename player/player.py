@@ -255,10 +255,10 @@ class Player(object):
 
     def _buttons_watcher_task(self):
         for pin in BUTTONS:
-            GPIO.add_event_detect(pin, GPIO.FALLING, self._handle_button, bouncetime=250)
+            GPIO.add_event_detect(pin, GPIO.FALLING, self.handle_button, bouncetime=250)
         signal.pause()
 
-    def _handle_button(self, pin):
+    def handle_button(self, pin):
         current_label = self.LABELS[BUTTONS.index(pin)]
         logging.info(f"Button press detected on pin: {pin} label: {current_label}")
         print(f"Button press detected on pin: {pin} label: {current_label}")
@@ -271,7 +271,8 @@ class Player(object):
         if current_label == self.button_1_value:
             # empty cached track list but leave current track playing
             # but update the display to reflect current Mode
-            self._need_first_album_track = True
+            if current_label == 'Rand -> Albm':
+                self._need_first_album_track = True
             self.kill_loading_process()
 
             self.button_1_value = BUTTON_1[current_label]

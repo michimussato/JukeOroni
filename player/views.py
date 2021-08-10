@@ -11,7 +11,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.views import View
 from player.displays import Player as PlayerLayout
 import radio.models
-from player.player import Player, BUTTON_4, BUTTON_3, BUTTON_2, BUTTON_1, _LOADING_IMAGE
+from player.player import Player, BUTTON_4, BUTTON_3, BUTTON_2, BUTTON_1, BUTTONS, _LOADING_IMAGE
 from .models import Channel, Album
 
 
@@ -75,6 +75,7 @@ class PlayerView(View):
                     time.sleep(1.0)
         if not player.tracks and bool(player.loading_process):
             ret += '<div><img src=\"file://{0}\" alt=\"Loading {1}...\"></div>'.format(_LOADING_IMAGE, str(player.loading_process.track))
+        ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/player/next\';\">{0}</button>\n'.format(str(player.button_1_value))
         ret += f'<div>State: {str(player.button_1_value)}</div>'
         if player.button_3_value == BUTTON_3['Next']:
             ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/player/play\';\">Play</button>\n'
@@ -92,6 +93,17 @@ class PlayerView(View):
         #     return HttpResponse(f'{str(player.playing_track)}')
         # else:
         #     return HttpResponse(f'{str(player.playing_track.path)}')
+
+    def switch_mode(self):
+        global player
+
+        player.handle_button(pin=BUTTONS[0])
+
+        # if player.button_1_value == 'Rand -> Albm':
+        #     pass
+        #
+        # elif player.button_1_value == 'Albm -> Rand':
+        #     pass
 
     def play(self):
         global player
