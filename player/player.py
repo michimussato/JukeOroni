@@ -123,7 +123,10 @@ class Track(object):
 
     @property
     def cover(self):
-        return self.album.cover_online or self.album.cover
+        if COVER_ONLINE_PREFERENCE:
+            return self.album.cover_online or self.album.cover
+        else:
+            return self.album.cover or self.album.cover_online
 
     @property
     def cover_album(self):
@@ -699,8 +702,6 @@ class Player(object):
         else:
             cover_album = None  # discogs
             cover_artist = None  # discogs
-            cover_album_online = None
-            cover_album_local = None
             if 'image_file' in kwargs:
                 # This if will cause an exception as we are not creating an Image.Image()
                 # object. This will have to go at some point.
@@ -764,26 +765,11 @@ class Player(object):
                         """
                         if response.status == 200:
                             print('using Discogs album cover')
-                            cover_album_online = io.BytesIO(response.read())
-                            cover_album_online = Image.open(cover_album_online)
+                            cover_album = io.BytesIO(response.read())
+                            cover_album = Image.open(cover_album)
                     else:
-                        cover_album_local = Image.open(cover_album)
+                        cover_album = Image.open(cover_album)
                         print('using local album cover')
-
-                    if COVER_ONLINE_PREFERENCE and cover_album_online:
-                        print('this')
-                        cover_album = cover_album_online
-                    elif cover_album_local == STANDARD_COVER and cover_album_online:
-                        print('here')
-                        cover_album = cover_album_online
-                    else:
-                        print('there')
-                        cover_album = cover_album_local
-                    # else:
-                    #     if cover_album_local == STANDARD_COVER and cover_album_online:
-                    #         cover_album = cover_album_online
-                    #     else:
-                    #         cover_album = cover_album_local
 
                     cover_artist = kwargs['track'].cover_artist
                     print('artist: {0}'.format(cover_artist))
