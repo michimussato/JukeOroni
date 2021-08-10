@@ -459,7 +459,7 @@ class Player(object):
                 self.loading_process = multiprocessing.Process(target=self._load_track_task, kwargs={'track': next_track})
                 # print(dir(self.loading_process))
                 print(self.loading_process.__dict__)
-                print(self.loading_process._kwargs)
+                print(self.loading_process._kwargs['track'])
                 self.loading_process.name = 'Track Loader Task Process'
                 self.loading_process.start()
 
@@ -481,6 +481,12 @@ class Player(object):
                 self.loading_process = None
 
             time.sleep(1.0)
+
+    def loading_process_track(self):
+        if self.loading_process is None:
+            return None
+        else:
+            return self.loading_process._kwargs['track']
 
     def _load_track_task(self, **kwargs):
         track = kwargs['track']
