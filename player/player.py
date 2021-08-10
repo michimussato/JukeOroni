@@ -482,7 +482,7 @@ class Player(object):
 
             time.sleep(1.0)
 
-    # @property
+    @property
     def loading_process_track(self):
         if self.loading_process is None:
             return None
