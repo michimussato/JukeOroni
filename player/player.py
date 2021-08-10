@@ -772,11 +772,15 @@ class Player(object):
 
                     if COVER_ONLINE_PREFERENCE and cover_album_online:
                         cover_album = cover_album_online
+                    elif cover_album_local == STANDARD_COVER and cover_album_online:
+                        cover_album = cover_album_online
                     else:
-                        if cover_album_local == STANDARD_COVER and cover_album_online:
-                            cover_album = cover_album_online
-                        else:
-                            cover_album = cover_album_local
+                        cover_album = cover_album_local
+                    # else:
+                    #     if cover_album_local == STANDARD_COVER and cover_album_online:
+                    #         cover_album = cover_album_online
+                    #     else:
+                    #         cover_album = cover_album_local
 
                     cover_artist = kwargs['track'].cover_artist
                     print('artist: {0}'.format(cover_artist))
