@@ -116,7 +116,7 @@ class PlayerView(View):
         previous_artist = None
         for album in albums:
             ret += '  <div>\n'
-            if album.artist_id == previous_artist:
+            if album.artist_id != previous_artist:
                 ret += f'{album.artist_id}'
             previous_artist = album.artist_id
             # ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/player/stop\';\">Stop</button>\n'
