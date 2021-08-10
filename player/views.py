@@ -60,7 +60,7 @@ class PlayerView(View):
                     print(err)
                     time.sleep(1.0)
         if not player.tracks and bool(player.loading_process):
-            ret += '<div><img src=\"{0}\" alt=\"Loading {1}...\"></div>'.format(_LOADING_IMAGE, str(player.loading_process.track))
+            ret += '<div><img src=\"{0}\" alt=\"Loading {1}...\"></div>'.format(_LOADING_IMAGE, str(player.loading_process.kwargs))
         ret += f'<div>State: {str(player.button_1_value)}</div>'
         if player.button_3_value == BUTTON_3['Next']:
             ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/player/play\';\">Play</button>\n'
