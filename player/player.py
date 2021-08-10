@@ -457,6 +457,9 @@ class Player(object):
                 # it re-creates the Track object (pickle, probably) but the cached data is
                 # gone of course because __del__ was called before that already.
                 self.loading_process = multiprocessing.Process(target=self._load_track_task, kwargs={'track': next_track})
+                print(dir(self.loading_process))
+                print(self.loading_process.__dict__)
+                print(self.loading_process.kwargs)
                 self.loading_process.name = 'Track Loader Task Process'
                 self.loading_process.start()
 
