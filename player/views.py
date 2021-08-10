@@ -11,7 +11,7 @@ from django.views import View
 from player.displays import Player as PlayerLayout
 import radio.models
 from player.player import Player, BUTTON_4, BUTTON_3, BUTTON_2, BUTTON_1, _LOADING_IMAGE
-from .models import Channel
+from .models import Channel, Album
 
 
 PIMORONI_SATURATION = 1.0
@@ -41,10 +41,6 @@ class PlayerView(View):
         ret += '    <meta http-equiv="refresh" content="10" >\n'
         ret += '  </head>\n'
         ret += '  <body>\n'
-
-        # else:
-
-
 
         if player.playing_track is None:
             ret += f'<div>{str(player.playing_track)}</div>'
@@ -107,6 +103,26 @@ class PlayerView(View):
 
         # player.button_3_value = BUTTON_3['Play']
         return HttpResponseRedirect('/player')
+
+    def albums(self):
+        global player
+        albums = Album.objects.all()
+
+        ret = '<html>\n'
+        # ret += '  <head>\n'
+        # ret += '    <meta http-equiv="refresh" content="10" >\n'
+        # ret += '  </head>\n'
+        ret += '  <body>\n'
+        for album in albums:
+            ret += '  <div>\n'
+            # ret += f'{album.album_title}'
+            # ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/player/stop\';\">Stop</button>\n'
+            ret += f'    <button style=\"width:100%\">{album.album_title}</button>\n'
+            ret += '  </div>\n'
+        ret += '  </body>\n'
+        ret += '</html>\n'
+        return HttpResponse(ret)
+
 
 
 def radio_index(request):
