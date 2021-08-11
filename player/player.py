@@ -58,7 +58,7 @@ _BUTTON_PINS = [5, 6, 16, 24]
 BUTTON_STOP_BACK_PIN = _BUTTON_PINS[3]
 BUTTON_PLAY_NEXT_PIN = _BUTTON_PINS[2]
 BUTTON_RAND_ALBM_PIN = _BUTTON_PINS[1]
-# BUTTON_SHFL_SCRN_PIN = BUTTONS[0]
+BUTTON_SHFL_SCRN_PIN = _BUTTON_PINS[0]
 
 # # this will be the next layout:
 # BUTTON_STOP_BACK_PIN = BUTTONS[3]
@@ -85,7 +85,7 @@ BUTTON_PLAY_NEXT_LABELS = {
             }
 BUTTON_4_LABELS = {
             # 'Stop': 'Strm',
-            'Strm': 'Strm',
+            'N//A': 'N//A',
             # 'back': 'Back',
             }
 
@@ -217,7 +217,7 @@ class Player(object):
         self.button_rand_albm_value = BUTTON_RAND_ALBM_LABELS['Albm -> Rand']
         self.button_stop_value = BUTTON_STOP_LABELS['Stop']
         self.button_play_next_value = BUTTON_PLAY_NEXT_LABELS['Next']
-        self.button_4_value = BUTTON_4_LABELS['Strm']
+        self.button_4_value = BUTTON_4_LABELS['N//A']
 
         self.auto_update_tracklist = auto_update_tracklist
         self.tracks = []
