@@ -49,10 +49,15 @@ COVER_ONLINE_PREFERENCE = False
 
 # buttons setup
 # in portrait mode: from right to left
-BUTTONS = [5, 6, 16, 24]
-BUTTON_STOP_BACK_PIN = BUTTONS[3]
-BUTTON_PLAY_NEXT_PIN = BUTTONS[2]
-BUTTON_RAND_ALBM_PIN = BUTTONS[1]
+_BUTTON_PINS = [5, 6, 16, 24]
+# highest index top, lowest index bottom
+# (move items up and down for readability)
+# also, the order here should be reflected
+# in the order of the Player.LABELS property
+# in order show up in the right order
+BUTTON_STOP_BACK_PIN = _BUTTON_PINS[3]
+BUTTON_PLAY_NEXT_PIN = _BUTTON_PINS[2]
+BUTTON_RAND_ALBM_PIN = _BUTTON_PINS[1]
 # BUTTON_SHFL_SCRN_PIN = BUTTONS[0]
 
 # # this will be the next layout:
@@ -85,7 +90,7 @@ BUTTON_4_LABELS = {
             }
 
 GPIO.setmode(GPIO.BCM)
-GPIO.setup(BUTTONS, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.setup(_BUTTON_PINS, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 # Audio files to index:
 AUDIO_FILES = ['.dsf', '.flac', '.wav', '.dff']
 
@@ -255,6 +260,13 @@ class Player(object):
 
     @property
     def LABELS(self):
+        # this will be sent to the display module
+        # _BUTTONS is from right to left, but this
+        # one should correspond to the the indexes
+        # assigned to each button label: highest
+        # index left, lowest index right
+        # and here: top will be left on the screen,
+        # bottom will be right on the screen
         return [
                    self.button_stop_value,
                    self.button_play_next_value,
@@ -271,12 +283,12 @@ class Player(object):
         self._buttons_watcher_thread.start()
 
     def _buttons_watcher_task(self):
-        for pin in BUTTONS:
+        for pin in _BUTTON_PINS:
             GPIO.add_event_detect(pin, GPIO.FALLING, self.handle_button, bouncetime=250)
         signal.pause()
 
     def handle_button(self, pin):
-        current_label = self.LABELS[BUTTONS.index(pin)]
+        current_label = self.LABELS[_BUTTON_PINS.index(pin)]
         logging.info(f"Button press detected on pin: {pin} label: {current_label}")
         print(f"Button press detected on pin: {pin} label: {current_label}")
 
@@ -311,7 +323,8 @@ class Player(object):
             else:
                 print('ignored')
         else:
-            print('ignored')
+            pass
+        #     print('ignored')
 
         # Play/Next button
         if current_label == self.button_play_next_value:
