@@ -255,7 +255,13 @@ class Player(object):
 
     @property
     def LABELS(self):
-        return [self.button_rand_albm_value, self.button_stop_value, self.button_play_next_value, self.button_4_value]
+        # return [self.button_rand_albm_value, self.button_stop_value, self.button_play_next_value, self.button_4_value]
+        return [
+                   self.button_4_value,
+                   self.button_play_next_value,
+                   self.button_stop_value,
+                   self.button_rand_albm_value,
+               ][::-1]
 
     ############################################
     # buttons
