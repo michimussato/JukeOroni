@@ -61,9 +61,9 @@ def buttons_img_overlay(labels, stby=False):
     draw_buttons = ImageDraw.Draw(widget_buttons)
     draw_buttons.rectangle([(0, 0), (448, BUTTONS_HEIGHT)], fill=(0, 0, 0, 128), outline=None, width=1)
     draw_buttons.text((0, 0), '       {0}               {1}               {2}           {3}'.format(
-        '    ',  # self.button_4_value,  # Just hide the label for now as the button has no effect
+        labels[3],  # '    ',  # self.button_4_value,  # Just hide the label for now as the button has no effect
         labels[2],
-        '    ' if stby else labels[1],
+        labels[1],  # '    ' if stby else labels[1],
         labels[0],
     ), fill=(255, 255, 255, 255))
 
