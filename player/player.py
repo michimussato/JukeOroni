@@ -48,14 +48,12 @@ CLOCK_UPDATE_INTERVAL = 5  # in minutes
 COVER_ONLINE_PREFERENCE = False
 
 # buttons setup
-# the button functions and their positions should
-# be defined here by changing the pin indexes
 # in portrait mode: from right to left
 BUTTONS = [5, 6, 16, 24]
 BUTTON_STOP_BACK_PIN = BUTTONS[3]
 BUTTON_PLAY_NEXT_PIN = BUTTONS[2]
 BUTTON_RAND_ALBM_PIN = BUTTONS[1]
-# BUTTON_SHFL_SCRN_PIN = BUTTONS[0]
+# BUTTON_SHFL_SCRN_PIN = BUTTONS[3]
 
 # # this will be the next layout:
 # BUTTON_STOP_BACK_PIN = BUTTONS[3]
@@ -258,10 +256,10 @@ class Player(object):
     @property
     def LABELS(self):
         return [
-                   self.button_4_value,
-                   self.button_play_next_value,
                    self.button_stop_value,
+                   self.button_play_next_value,
                    self.button_rand_albm_value,
+                   self.button_4_value,
                ][::-1]  # reversed for readabilty (from left to right)
 
     ############################################
