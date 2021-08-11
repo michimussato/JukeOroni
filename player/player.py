@@ -48,24 +48,37 @@ CLOCK_UPDATE_INTERVAL = 5  # in minutes
 COVER_ONLINE_PREFERENCE = False
 
 # buttons setup
+# in portrait mode: from right to left
 BUTTONS = [5, 6, 16, 24]
+BUTTON_STOP_BACK_PIN = BUTTONS[1]
+BUTTON_PLAY_NEXT_PIN = BUTTONS[2]
+BUTTON_RAND_ALBM_PIN = BUTTONS[0]
+# BUTTON_SHFL_SCRN_PIN = BUTTONS[0]
+
+# # this will be the next layout:
+# BUTTON_STOP_BACK_PIN = BUTTONS[3]
+# BUTTON_PLAY_NEXT_PIN = BUTTONS[2]
+# BUTTON_RAND_ALBM_PIN = BUTTONS[1]
+# BUTTON_SHFL_SCRN_PIN = BUTTONS[0]
 
 # Toggles:
+# TODO: this is a brainfuck...have to think upside down
+#  let's find a better way to toggle
 # https://stackoverflow.com/questions/8381735/how-to-toggle-a-value
-BUTTON_1 = {
+BUTTON_RAND_ALBM_LABELS = {
             #'Albm': 'Rand',
             'Albm -> Rand': 'Rand -> Albm',
             #'Rand': 'Albm',
             'Rand -> Albm': 'Albm -> Rand',
             }
-BUTTON_2 = {
+BUTTON_STOP_LABELS = {
             'Stop': 'Stop',
             }
-BUTTON_3 = {
+BUTTON_PLAY_NEXT_LABELS = {
             'Next': 'Play',
             'Play': 'Next'
             }
-BUTTON_4 = {
+BUTTON_4_LABELS = {
             # 'Stop': 'Strm',
             'Strm': 'Strm',
             # 'back': 'Back',
@@ -114,7 +127,6 @@ class Track(object):
 
     @property
     def album(self):
-        # print(self.track)
         return Album.objects.get(track=self.track)
 
     @property
@@ -164,7 +176,6 @@ class Track(object):
             self.track.played += 1
             self.track.save()
             self.is_playing = True
-            # print(multiprocessing.current_process().pid)
             # TODO: now this would be a classic
             #  subprocess example: calling an external
             #  application
@@ -186,6 +197,7 @@ class Track(object):
 class Player(object):
     _instance = None
 
+    # TODO: is this still necessary?
     def __new__(cls):
         if cls._instance is None:
             print('Creating the object')
@@ -197,10 +209,10 @@ class Player(object):
         logging.info('initializing player...')
         print('initializing player...')
         # assert state in LABELS, "state should be one of {0}".format(LABELS)
-        self.button_1_value = BUTTON_1['Albm -> Rand']
-        self.button_2_value = BUTTON_2['Stop']
-        self.button_3_value = BUTTON_3['Next']
-        self.button_4_value = BUTTON_4['Strm']
+        self.button_rand_albm_value = BUTTON_RAND_ALBM_LABELS['Albm -> Rand']
+        self.button_stop_value = BUTTON_STOP_LABELS['Stop']
+        self.button_play_next_value = BUTTON_PLAY_NEXT_LABELS['Next']
+        self.button_4_value = BUTTON_4_LABELS['Strm']
 
         self.auto_update_tracklist = auto_update_tracklist
         self.tracks = []
@@ -243,7 +255,7 @@ class Player(object):
 
     @property
     def LABELS(self):
-        return [self.button_1_value, self.button_2_value, self.button_3_value, self.button_4_value]
+        return [self.button_rand_albm_value, self.button_stop_value, self.button_play_next_value, self.button_4_value]
 
     ############################################
     # buttons
@@ -268,26 +280,26 @@ class Player(object):
         # because if we switch in non-playing mode
         # we get a problem with the track loader for now
         # if self.button_3_value == 'Next':
-        if current_label == self.button_1_value:
+        if current_label == self.button_rand_albm_value:
             # empty cached track list but leave current track playing
             # but update the display to reflect current Mode
             if current_label == 'Rand -> Albm':
                 self._need_first_album_track = True
             self.kill_loading_process()
 
-            self.button_1_value = BUTTON_1[current_label]
+            self.button_rand_albm_value = BUTTON_RAND_ALBM_LABELS[current_label]
 
             self.set_image(track=self.playing_track)
-            print(f'Playback mode is now {self.button_1_value}.')
-            logging.info(f'Playback mode is now {self.button_1_value}.')
+            print(f'Playback mode is now {self.button_rand_albm_value}.')
+            logging.info(f'Playback mode is now {self.button_rand_albm_value}.')
             return
         # Stop button
         # only in play mode active
-        elif current_label == self.button_2_value:
+        elif current_label == self.button_stop_value:
             if self._playback_thread is not None:
                 print('Playback stopped.')
                 logging.info('Playback stopped.')
-                self.button_3_value = BUTTON_3['Next']  # Switch button back to Play
+                self.button_play_next_value = BUTTON_PLAY_NEXT_LABELS['Next']  # Switch button back to Play
                 self.stop()
                 self.set_image()
                 return
@@ -297,11 +309,11 @@ class Player(object):
             print('ignored')
 
         # Play/Next button
-        if current_label == self.button_3_value:
+        if current_label == self.button_play_next_value:
             if current_label == 'Play':
                 print('Starting playback.')
                 logging.info('Starting playback.')
-                self.button_3_value = BUTTON_3[current_label]
+                self.button_play_next_value = BUTTON_PLAY_NEXT_LABELS[current_label]
                 return
             elif current_label == 'Next':
                 print('Next track.')
@@ -571,7 +583,7 @@ class Player(object):
 
             new_time = localtime(now())
 
-            if self.button_3_value == 'Next':  # equals: in Play mode
+            if self.button_play_next_value == 'Next':  # equals: in Play mode
                 # TODO implement Play/Next combo
                 if self._playback_thread is None:
                     self.play()
@@ -698,7 +710,7 @@ class Player(object):
         sys.exit(0)
 
     def task_pimoroni_set_image(self, **kwargs):
-        if self.button_3_value != 'Next':
+        if self.button_play_next_value != 'Next':
             bg = self.layout_standby.get_layout(labels=self.LABELS)
         else:
             cover_album = None  # discogs
@@ -816,14 +828,14 @@ class Player(object):
         #     first_track = album_tracks[0]
         #     return first_track
 
-        if self.button_1_value == 'Rand -> Albm':
+        if self.button_rand_albm_value == 'Rand -> Albm':
             tracks = self.track_list
             if not bool(tracks):
                 return None
             next_track = random.choice(tracks)
             return next_track
 
-        elif self.button_1_value == 'Albm -> Rand':
+        elif self.button_rand_albm_value == 'Albm -> Rand':
 
             if self._need_first_album_track and self.playing_track is not None:
                 # if we switch mode from Rand to Albm,

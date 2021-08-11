@@ -1,17 +1,11 @@
 import os
-import requests
-import urllib.parse as parse
 import time
 import subprocess
 import logging
-import threading
-from PIL import Image, ImageDraw, ImageFont
-from inky.inky_uc8159 import Inky, CLEAN
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views import View
-from player.displays import Player as PlayerLayout
 import radio.models
-from player.player import Player, BUTTON_4, BUTTON_3, BUTTON_2, BUTTON_1, BUTTONS, _LOADING_IMAGE
+from player.player import Player, BUTTON_RAND_ALBM_PIN, BUTTON_PLAY_NEXT_PIN, BUTTON_STOP_BACK_PIN, _LOADING_IMAGE
 from .models import Channel, Album
 
 
@@ -75,62 +69,27 @@ class PlayerView(View):
                     time.sleep(1.0)
         if not player.tracks and bool(player.loading_process):
             ret += '<div><img src=\"file://{0}\" alt=\"Loading {1}...\"></div>'.format(_LOADING_IMAGE, str(player.loading_process.track))
-        ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/player/switch_mode\';\">Switch Mode: {0}</button>\n'.format(str(player.button_1_value))
-        ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/player/play_next\';\">{0}</button>\n'.format(player.button_3_value)
+        ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/player/switch_mode\';\">Switch Mode: {0}</button>\n'.format(str(player.button_rand_albm_value))
+        ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/player/play_next\';\">{0}</button>\n'.format(player.button_play_next_value)
         ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/player/stop\';\">Stop</button>\n'
         ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/player/albums\';\">Albums</button>\n'
         ret += '  </body>\n'
         ret += '</html>\n'
         return HttpResponse(ret)
 
-        # global player
-        # print(player.playing_track)
-        # if player.playing_track is None:
-        #     return HttpResponse(f'{str(player.playing_track)}')
-        # else:
-        #     return HttpResponse(f'{str(player.playing_track.path)}')
-
     def switch_mode(self):
         global player
-
-        player.handle_button(pin=BUTTONS[0])
-
+        player.handle_button(pin=BUTTON_RAND_ALBM_PIN)
         return HttpResponseRedirect('/player')
-
-        # if player.button_1_value == 'Rand -> Albm':
-        #     pass
-        #
-        # elif player.button_1_value == 'Albm -> Rand':
-        #     pass
 
     def play_next(self):
         global player
-
-        player.handle_button(pin=16)
-
-        # player.button_3_value = BUTTON_3['Play']
-        # # while player._playback_thread is None:
-        # #     time.sleep(1.0)
-        # # time.sleep(1.0)
+        player.handle_button(pin=BUTTON_PLAY_NEXT_PIN)
         return HttpResponseRedirect('/player')
-
-    # def next(self):
-    #     global player
-    #     if player._playback_thread is not None:
-    #         player.next()
-    #     return HttpResponseRedirect('/player')
 
     def stop(self):
         global player
-
-        player.handle_button(pin=6)
-        # if player._playback_thread is not None:
-        #     player.button_3_value = BUTTON_3['Next']
-        #     player.stop()
-        #     player.set_image()
-        # # button_3_value = self.player.button_3_value
-        #
-        # # player.button_3_value = BUTTON_3['Play']
+        player.handle_button(pin=BUTTON_STOP_BACK_PIN)
         return HttpResponseRedirect('/player')
 
     def albums(self):
@@ -161,7 +120,7 @@ class PlayerView(View):
 
         player.requested_album_id = album_id
         player.kill_loading_process()
-        player.button_1_value = 'Albm -> Rand'
+        player.button_rand_albm_value = 'Albm -> Rand'
 
         player.set_image(track=player.playing_track)
 
