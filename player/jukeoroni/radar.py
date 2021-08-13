@@ -67,11 +67,17 @@ class Radar(object):
         # self.radar_thread.start()
 
     def _radar_task(self):
+        update_interval = RADAR_UPDATE_INTERVAL*60.0
+        _waited = None
         while self.on:
-            print('Updating radar image in background...')
-            self.radar_image = self._radar_screenshot()
-            print('Radar image updated.')
-            time.sleep(RADAR_UPDATE_INTERVAL*60.0)
+            if _waited is None or _waited % update_interval == 0:
+                _waited = 0
+                print('Updating radar image in background...')
+                self.radar_image = self._radar_screenshot()
+                print('Radar image updated.')
+
+            time.sleep(1.0)
+            _waited += 1
 
     def _radar_screenshot(self):
         try:

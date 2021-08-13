@@ -143,6 +143,8 @@ class JukeOroni(object):
         print('killing self.layout_standby.radar...')
         self.layout_standby.radar.stop()
         print('self.layout_standby.radar killed')
+
+        self.pimoroni.set_image(OFF_IMAGE, saturation=PIMORONI_SATURATION)
     ############################################
 
     ############################################
@@ -157,16 +159,22 @@ class JukeOroni(object):
         self._pimoroni_watcher_thread.start()
 
     def _pimoroni_watcher_task(self):
+        update_interval = 5
+        _waited = None
         while self.on:
-            if self._pimoroni_thread_queue is not None:
-                thread = self._pimoroni_thread_queue
-                self._pimoroni_thread_queue = None
-                if not thread.is_alive():
-                    thread.start()
-                while thread.is_alive():
-                    time.sleep(1.0)
+            if _waited is None or _waited % update_interval == 0:
+                _waited = 0
+                if self._pimoroni_thread_queue is not None:
+                    thread = self._pimoroni_thread_queue
+                    self._pimoroni_thread_queue = None
+                    if not thread.is_alive():
+                        thread.start()
+                    while thread.is_alive():
+                        time.sleep(1.0)
+            # else:
 
             time.sleep(1.0)
+            _waited += 1
 
     def set_image(self, **kwargs):
         # TODO filter for types of images
@@ -214,17 +222,22 @@ class JukeOroni(object):
         self._state_watcher_thread.start()
 
     def state_watcher_task(self):
+        update_interval = CLOCK_UPDATE_INTERVAL*60
+        _waited = None
         while self.on:
-            # procedure goes in here
-            new_time = localtime(now())
+            if _waited is None or _waited % update_interval == 0:
+                _waited = 0
+                self.set_image()
 
-            if False:
-                pass
-            elif self._current_time != new_time.strftime('%H:%M'):  # in stopped state
-                if self._current_time is None or (int(new_time.strftime('%H:%M')[-2:])) % CLOCK_UPDATE_INTERVAL == 0:
-                    print('Updating standby-display')
-                    self.set_image()
-                    self._current_time = new_time.strftime('%H:%M')
+            # # procedure goes in here
+            # new_time = localtime(now())
+            #
+            # self._current_time != new_time.strftime('%H:%M'):  # in stopped state
+            # if self._current_time is None or (int(new_time.strftime('%H:%M')[-2:])) % CLOCK_UPDATE_INTERVAL == 0:
+            #     print('Updating standby-display')
+            #     self.set_image()
+            #     self._current_time = new_time.strftime('%H:%M')
 
             time.sleep(1.0)
+            _waited += 1
     ############################################
