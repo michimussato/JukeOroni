@@ -143,6 +143,7 @@ class JukeOroni(object):
         print('self.layout_standby.radar terminated')
 
         self.pimoroni.set_image(OFF_IMAGE, saturation=PIMORONI_SATURATION)
+        self.pimoroni.show(busy_wait=False)
     ############################################
 
     ############################################
