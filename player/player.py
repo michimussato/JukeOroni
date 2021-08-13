@@ -33,6 +33,7 @@ CACHE_FILE = os.path.join(MEDIA_ROOT, 'music_cache_test.txt')
 MISSING_COVERS_FILE = os.path.join(MEDIA_ROOT, 'missing_covers_test.txt')
 FAULTY_ALBUMS = os.path.join(MEDIA_ROOT, 'faulty_albums_test.txt')
 MUSIC_DIR = os.path.join(MEDIA_ROOT, 'music')
+MEDITATION_DIR = os.path.join(MEDIA_ROOT, 'meditation')
 MAX_CACHED_FILES = 3
 PIMORONI_SATURATION = 1.0
 PIMORONI_SIZE = 600, 448
