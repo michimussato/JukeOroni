@@ -112,7 +112,7 @@ class JukeOroni(object):
         # self.buttons_watcher_thread()
         self.state_watcher_thread()
         self.pimoroni_watcher_thread()
-        self.layout_standby.radar.radar_thread.start()
+        self.layout_standby.radar.start()
         self.set_image()
     ############################################
 
@@ -131,6 +131,10 @@ class JukeOroni(object):
         self._state_watcher_thread.join()
         self._state_watcher_thread = None
         print('self._state_watcher_thread killed')
+
+        print('killing self.layout_standby.radar...')
+        self.layout_standby.radar.stop()
+        print('self.layout_standby.radar killed')
     ############################################
 
     ############################################

@@ -44,6 +44,8 @@ class Radar(object):
     def __init__(self):
         super().__init__()
 
+        self.on = False
+
         # Non-Picklable objects as Image.Image()
         # must use Thread (shared memory)
         # to use multiprocessing, we could save the resulting
@@ -55,8 +57,16 @@ class Radar(object):
         # sharing memory...not know yet...indeed. need syncmanager
         self.radar_thread = _RadarThread(target=self._radar_task)
 
+    def start(self):
+        self.on = True
+        self.radar_thread.start()
+
+    def stop(self):
+        self.on = False
+        # self.radar_thread.start()
+
     def _radar_task(self):
-        while True:
+        while self.on:
             print('Updating radar image in background...')
             self.radar_image = self._radar_screenshot()
             print('Radar image updated.')
