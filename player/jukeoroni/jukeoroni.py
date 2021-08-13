@@ -2,6 +2,7 @@ import time
 import threading
 import logging
 import signal
+from django.utils.timezone import localtime, now
 import RPi.GPIO as GPIO
 from inky.inky_uc8159 import Inky  # , BLACK
 from player.jukeoroni.displays import Standby as StandbyLayout
@@ -11,6 +12,9 @@ from player.jukeoroni.settings import PIMORONI_SATURATION
 
 
 LOG = logging.getLogger(__name__)
+
+
+CLOCK_UPDATE_INTERVAL = 1  # in minutes
 
 
 # buttons setup
@@ -47,6 +51,13 @@ GPIO.setmode(GPIO.BCM)
 GPIO.setup(_BUTTON_PINS, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 
+"""
+from player.jukeoroni.jukeoroni import JukeOroni
+j = JukeOroni()
+j.turn_on()
+"""
+
+
 class JukeOroni(object):
     def __init__(self):
         # self.jukebox = JukeBox()
@@ -58,6 +69,8 @@ class JukeOroni(object):
         self.button_000X_value = BUTTON_000X_LABELS
 
         self.pimoroni = Inky()
+
+        self._current_time = None
 
         # display layouts
         self.layout_standby = StandbyLayout()
@@ -159,19 +172,28 @@ class JukeOroni(object):
     #     print(f"Button press detected on pin: {pin} button: {button}")
     # ############################################
 
-    # ############################################
-    # # State watcher (buttons)
-    # # checks if the push of buttons or actions
-    # # performed on web ui requires a state change
-    # # TODO: define states
-    # def state_watcher_thread(self):
-    #     self._state_watcher_thread = threading.Thread(target=self.state_watcher_task)
-    #     self._state_watcher_thread.name = 'State Watcher Thread'
-    #     self._state_watcher_thread.daemon = False
-    #     self._state_watcher_thread.start()
-    #
-    # def state_watcher_task(self):
-    #     while True:
-    #         # procedure goes in here
-    #         time.sleep(1.0)
-    # ############################################
+    ############################################
+    # State watcher (buttons)
+    # checks if the push of buttons or actions
+    # performed on web ui requires a state change
+    # TODO: define states
+    def state_watcher_thread(self):
+        self._state_watcher_thread = threading.Thread(target=self.state_watcher_task)
+        self._state_watcher_thread.name = 'State Watcher Thread'
+        self._state_watcher_thread.daemon = False
+        self._state_watcher_thread.start()
+
+    def state_watcher_task(self):
+        while True:
+            # procedure goes in here
+            new_time = localtime(now())
+
+            if False:
+                pass
+            elif self._current_time != new_time.strftime('%H:%M'):  # in stopped state
+                if self._current_time is None or (int(new_time.strftime('%H:%M')[-2:])) % CLOCK_UPDATE_INTERVAL == 0:
+                    self.set_image()
+                    self._current_time = new_time.strftime('%H:%M')
+
+            time.sleep(1.0)
+    ############################################
