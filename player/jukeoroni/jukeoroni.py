@@ -112,11 +112,17 @@ class JukeOroni(object):
     # startup procedure
     def turn_on(self):
         self.on = True
+        self.set_image()
+        self._start_jukeoroni()
+        self._start_modules()
+
+    def _start_jukeoroni(self):
         # self.buttons_watcher_thread()
         self.state_watcher_thread()
         self.pimoroni_watcher_thread()
+
+    def _start_modules(self):
         self.layout_standby.radar.start()
-        self.set_image()
     ############################################
 
     ############################################
@@ -124,24 +130,27 @@ class JukeOroni(object):
     def turn_off(self):
         self.on = False
 
+        self._start_jukeoroni()
+        self._stop_modules()
+
+        self.pimoroni.set_image(OFF_IMAGE, saturation=PIMORONI_SATURATION)
+        self.pimoroni.show(busy_wait=False)
+
+    def _stop_jukeoroni(self):
         print('terminating self._pimoroni_watcher_thread...')
-        # self._pimoroni_watcher_thread.kill()
         self._pimoroni_watcher_thread.join()
         self._pimoroni_watcher_thread = None
         print('self._pimoroni_watcher_thread terminated')
 
         print('terminating self._state_watcher_thread...')
-        # self._state_watcher_thread.kill()
         self._state_watcher_thread.join()
         self._state_watcher_thread = None
         print('self._state_watcher_thread terminated')
 
+    def _stop_modules(self):
         print('terminating self.layout_standby.radar...')
         self.layout_standby.radar.stop()
         print('self.layout_standby.radar terminated')
-
-        self.pimoroni.set_image(OFF_IMAGE, saturation=PIMORONI_SATURATION)
-        self.pimoroni.show(busy_wait=False)
     ############################################
 
     ############################################
