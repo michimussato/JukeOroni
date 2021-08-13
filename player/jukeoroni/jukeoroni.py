@@ -1,7 +1,7 @@
 import time
 import threading
 import logging
-import signal
+# import signal
 from django.utils.timezone import localtime, now
 import RPi.GPIO as GPIO
 from inky.inky_uc8159 import Inky  # , BLACK
@@ -83,7 +83,7 @@ class JukeOroni(object):
 
         # Watcher threads
         self._pimoroni_watcher_thread = None
-        self._buttons_watcher_thread = None
+        # self._buttons_watcher_thread = None
         self._state_watcher_thread = None
 
     @property
@@ -115,7 +115,17 @@ class JukeOroni(object):
     ############################################
     # shutdown procedure
     def turn_off(self):
-        pass
+        print('killing self._pimoroni_watcher_thread...')
+        self._pimoroni_watcher_thread.kill()
+        self._pimoroni_watcher_thread.join()
+        self._pimoroni_watcher_thread = None
+        print('self._pimoroni_watcher_thread killed')
+
+        print('killing self._state_watcher_thread...')
+        self._state_watcher_thread.kill()
+        self._state_watcher_thread.join()
+        self._state_watcher_thread = None
+        print('self._state_watcher_thread killed')
     ############################################
 
     ############################################
@@ -195,7 +205,7 @@ class JukeOroni(object):
                 pass
             elif self._current_time != new_time.strftime('%H:%M'):  # in stopped state
                 if self._current_time is None or (int(new_time.strftime('%H:%M')[-2:])) % CLOCK_UPDATE_INTERVAL == 0:
-                    print('Refreshing standby-display')
+                    print('Updating standby-display')
                     self.set_image()
                     self._current_time = new_time.strftime('%H:%M')
 
