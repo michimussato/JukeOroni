@@ -22,12 +22,12 @@ OFF_IMAGE = Image.open(_OFF_IMAGE).rotate(90, expand=True).resize((600, 448))
 
 
 # clock
-CITY = city = LocationInfo("Bern", "Switzerland", "Europe/Zurich", 46.94809, 7.44744)
+CITY = LocationInfo("Bern", "Switzerland", "Europe/Zurich", 46.94809, 7.44744)
 ANTIALIAS = 16
 ARIAL = r'/data/django/jukeoroni/player/static/arial_narrow.ttf'
 CALLIGRAPHIC = r'/data/django/jukeoroni/player/static/calligraphia-one.ttf'
-CLOCK_UPDATE_INTERVAL = 1  # in minutes
+CLOCK_UPDATE_INTERVAL = 5  # in minutes
 
 
 # radar
-RADAR_UPDATE_INTERVAL = 1  # in minutes
+RADAR_UPDATE_INTERVAL = 15  # in minutes
