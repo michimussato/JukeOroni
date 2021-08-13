@@ -1,6 +1,7 @@
 import time
 import threading
 import logging
+from PIL import Image
 # import signal
 from django.utils.timezone import localtime, now
 import RPi.GPIO as GPIO
@@ -15,6 +16,8 @@ LOG = logging.getLogger(__name__)
 
 
 CLOCK_UPDATE_INTERVAL = 1  # in minutes
+_OFF_IMAGE = '/data/django/jukeoroni/player/static/zzz.jpg'
+OFF_IMAGE = Image.open(_OFF_IMAGE)
 
 
 # buttons setup
@@ -57,6 +60,8 @@ django_shell
 from player.jukeoroni.jukeoroni import JukeOroni
 j = JukeOroni()
 j.turn_on()
+
+j.turn_off()
 """
 
 
@@ -120,6 +125,7 @@ class JukeOroni(object):
     # shutdown procedure
     def turn_off(self):
         self.on = False
+        self.set_image(image_file=OFF_IMAGE)
         print('killing self._pimoroni_watcher_thread...')
         # self._pimoroni_watcher_thread.kill()
         self._pimoroni_watcher_thread.join()
