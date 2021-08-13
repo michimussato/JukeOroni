@@ -64,7 +64,6 @@ class Radar(object):
     def stop(self):
         self.on = False
         self.radar_thread.join()
-        # self.radar_thread.start()
 
     def _radar_task(self):
         update_interval = RADAR_UPDATE_INTERVAL*60.0

@@ -122,10 +122,8 @@ class JukeOroni(object):
     ############################################
     # shutdown procedure
     def turn_off(self):
-        # self.set_image(image_file=OFF_IMAGE)
-        self.pimoroni.set_image(OFF_IMAGE, saturation=PIMORONI_SATURATION)
-
         self.on = False
+
         print('terminating self._pimoroni_watcher_thread...')
         # self._pimoroni_watcher_thread.kill()
         self._pimoroni_watcher_thread.join()
