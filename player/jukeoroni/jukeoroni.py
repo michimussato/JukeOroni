@@ -104,6 +104,7 @@ class JukeOroni(object):
     # startup procedure
     def turn_on(self):
         # self.buttons_watcher_thread()
+        self.state_watcher_thread()
         self.pimoroni_watcher_thread()
         self.layout_standby.radar.radar_thread.start()
         self.set_image()
