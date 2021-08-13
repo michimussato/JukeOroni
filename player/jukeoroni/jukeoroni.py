@@ -126,21 +126,21 @@ class JukeOroni(object):
         self.pimoroni.set_image(OFF_IMAGE, saturation=PIMORONI_SATURATION)
 
         self.on = False
-        print('killing self._pimoroni_watcher_thread...')
+        print('terminating self._pimoroni_watcher_thread...')
         # self._pimoroni_watcher_thread.kill()
         self._pimoroni_watcher_thread.join()
         self._pimoroni_watcher_thread = None
-        print('self._pimoroni_watcher_thread killed')
+        print('self._pimoroni_watcher_thread terminated')
 
-        print('killing self._state_watcher_thread...')
+        print('terminating self._state_watcher_thread...')
         # self._state_watcher_thread.kill()
         self._state_watcher_thread.join()
         self._state_watcher_thread = None
-        print('self._state_watcher_thread killed')
+        print('self._state_watcher_thread terminated')
 
-        print('killing self.layout_standby.radar...')
+        print('terminating self.layout_standby.radar...')
         self.layout_standby.radar.stop()
-        print('self.layout_standby.radar killed')
+        print('self.layout_standby.radar terminated')
 
         self.pimoroni.set_image(OFF_IMAGE, saturation=PIMORONI_SATURATION)
     ############################################
