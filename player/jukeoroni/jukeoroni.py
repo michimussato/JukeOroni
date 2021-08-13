@@ -52,6 +52,8 @@ GPIO.setup(_BUTTON_PINS, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 
 """
+django_shell
+
 from player.jukeoroni.jukeoroni import JukeOroni
 j = JukeOroni()
 j.turn_on()
@@ -193,6 +195,7 @@ class JukeOroni(object):
                 pass
             elif self._current_time != new_time.strftime('%H:%M'):  # in stopped state
                 if self._current_time is None or (int(new_time.strftime('%H:%M')[-2:])) % CLOCK_UPDATE_INTERVAL == 0:
+                    print('Refreshing standby-display')
                     self.set_image()
                     self._current_time = new_time.strftime('%H:%M')
 
