@@ -108,14 +108,11 @@ def round_resize(img, corner, scaled_by):
 
 
 class Layout(object):
-    @classmethod
-    def __init__(cls, jukeoroni=None):
-        cls.jukeoroni = jukeoroni
 
-        cls._clock = Clock()
-        cls._radar = Radar(jukeoroni=cls.jukeoroni)
-        cls.border = 4
-        cls.main_size = 420
+        _clock = Clock()
+        _radar = Radar()
+        border = 4
+        main_size = 420
 
 
 class Standby(Layout):
