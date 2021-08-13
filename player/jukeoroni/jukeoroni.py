@@ -62,6 +62,9 @@ j.turn_on()
 
 class JukeOroni(object):
     def __init__(self):
+
+        self.on = False
+
         # self.jukebox = JukeBox()
         # self.radio = Radio()
 
@@ -105,6 +108,7 @@ class JukeOroni(object):
     ############################################
     # startup procedure
     def turn_on(self):
+        self.on = True
         # self.buttons_watcher_thread()
         self.state_watcher_thread()
         self.pimoroni_watcher_thread()
@@ -115,14 +119,15 @@ class JukeOroni(object):
     ############################################
     # shutdown procedure
     def turn_off(self):
+        self.on = False
         print('killing self._pimoroni_watcher_thread...')
-        self._pimoroni_watcher_thread.kill()
+        # self._pimoroni_watcher_thread.kill()
         self._pimoroni_watcher_thread.join()
         self._pimoroni_watcher_thread = None
         print('self._pimoroni_watcher_thread killed')
 
         print('killing self._state_watcher_thread...')
-        self._state_watcher_thread.kill()
+        # self._state_watcher_thread.kill()
         self._state_watcher_thread.join()
         self._state_watcher_thread = None
         print('self._state_watcher_thread killed')
@@ -140,7 +145,7 @@ class JukeOroni(object):
         self._pimoroni_watcher_thread.start()
 
     def _pimoroni_watcher_task(self):
-        while True:
+        while self.on:
             if self._pimoroni_thread_queue is not None:
                 thread = self._pimoroni_thread_queue
                 self._pimoroni_thread_queue = None
@@ -197,7 +202,7 @@ class JukeOroni(object):
         self._state_watcher_thread.start()
 
     def state_watcher_task(self):
-        while True:
+        while self.on:
             # procedure goes in here
             new_time = localtime(now())
 
