@@ -1,7 +1,6 @@
 import time
 import threading
 import logging
-from PIL import Image
 # import signal
 from django.utils.timezone import localtime, now
 import RPi.GPIO as GPIO
@@ -9,15 +8,14 @@ from inky.inky_uc8159 import Inky  # , BLACK
 from player.jukeoroni.displays import Standby as StandbyLayout
 # from player.displays import Player as PlayerLayout
 # from player.jukeoroni.settings import BUTTONS
-from player.jukeoroni.settings import PIMORONI_SATURATION
+from player.jukeoroni.settings import PIMORONI_SATURATION, CLOCK_UPDATE_INTERVAL, OFF_IMAGE
 
 
 LOG = logging.getLogger(__name__)
 
 
-CLOCK_UPDATE_INTERVAL = 1  # in minutes
-_OFF_IMAGE = '/data/django/jukeoroni/player/static/zzz.jpg'
-OFF_IMAGE = Image.open(_OFF_IMAGE).resize((600, 448))
+# CLOCK_UPDATE_INTERVAL = 1  # in minutes
+
 
 
 # buttons setup

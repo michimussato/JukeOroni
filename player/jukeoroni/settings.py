@@ -1,5 +1,6 @@
 import os
 from astral import LocationInfo
+from PIL import Image
 
 
 # media_crawler
@@ -16,6 +17,8 @@ PIMORONI_SATURATION = 1.0
 BUTTONS = [5, 6, 16, 24]
 
 # jukeoroni
+_OFF_IMAGE = '/data/django/jukeoroni/player/static/zzz.jpg'
+OFF_IMAGE = Image.open(_OFF_IMAGE).resize((600, 448))
 
 
 # clock
@@ -23,7 +26,8 @@ CITY = city = LocationInfo("Bern", "Switzerland", "Europe/Zurich", 46.94809, 7.4
 ANTIALIAS = 16
 ARIAL = r'/data/django/jukeoroni/player/static/arial_narrow.ttf'
 CALLIGRAPHIC = r'/data/django/jukeoroni/player/static/calligraphia-one.ttf'
+CLOCK_UPDATE_INTERVAL = 1  # in minutes
 
 
 # radar
-RADAR_UPDATE_INTERVAL = 5  # in minutes
+RADAR_UPDATE_INTERVAL = 1  # in minutes
