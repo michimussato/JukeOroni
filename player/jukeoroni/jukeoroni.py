@@ -17,7 +17,7 @@ LOG = logging.getLogger(__name__)
 
 CLOCK_UPDATE_INTERVAL = 1  # in minutes
 _OFF_IMAGE = '/data/django/jukeoroni/player/static/zzz.jpg'
-OFF_IMAGE = Image.open(_OFF_IMAGE)
+OFF_IMAGE = Image.open(_OFF_IMAGE).resize((600, 448))
 
 
 # buttons setup
