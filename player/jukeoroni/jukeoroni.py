@@ -4,9 +4,9 @@ import logging
 import signal
 import RPi.GPIO as GPIO
 from inky.inky_uc8159 import Inky  # , BLACK
-from player.displays import Standby as StandbyLayout
-from player.displays import Player as PlayerLayout
-from player.jukeoroni.settings import BUTTONS
+from player.jukeoroni.displays import Standby as StandbyLayout
+# from player.displays import Player as PlayerLayout
+# from player.jukeoroni.settings import BUTTONS
 from player.jukeoroni.settings import PIMORONI_SATURATION
 
 
@@ -92,6 +92,7 @@ class JukeOroni(object):
     def turn_on(self):
         # self.buttons_watcher_thread()
         self.pimoroni_watcher_thread()
+        self.layout_standby.radar.radar_thread.start()
         self.set_image()
     ############################################
 

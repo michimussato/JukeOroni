@@ -1,10 +1,16 @@
 import datetime
+try:
+    from jukeoroni.settings import TIME_ZONE
+    tz = TIME_ZONE
+    print('using djangos timezone')
+except ImportError as err:
+    tz = "Europe/Zurich"
 from PIL import Image, ImageDraw, ImageFont
+from astral import LocationInfo
 from astral.sun import sun
-from player.jukeoroni.settings import CITY
-from player.jukeoroni.settings import ANTIALIAS
-from player.jukeoroni.settings import ARIAL
-from player.jukeoroni.settings import CALLIGRAPHIC
+
+
+ANTIALIAS = 16
 
 
 class Clock:
@@ -16,21 +22,27 @@ class Clock:
 
         assert hours in [12, 24], 'hours can only be 12 or 24'
 
-        bg = Image.new(mode='RGB', size=(_size, _size), color=(0, 0, 0))
-        image = Image.new(mode='RGB', size=(_size, _size), color=(0, 0, 0))
-        draw = ImageDraw.Draw(image)
+        bg = Image.new(mode='RGBA', size=(_size, _size), color=(0, 0, 0, 0))
+        draw_bg = ImageDraw.Draw(bg)
+        draw_bg_border = [0, round(_size * 0.050)][0]
+        draw_bg.ellipse((0+draw_bg_border,0+draw_bg_border,_size-draw_bg_border, _size-draw_bg_border), fill=(0,0,0,255))
+
+        _clock = Image.new(mode='RGBA', size=(_size, _size), color=(0, 0, 0, 0))
+
+        draw = ImageDraw.Draw(_clock)
 
         if hours == 24:
             arc_twelve = 90.0
         else:
             arc_twelve = 270.0
 
-        white = (255, 255, 255)
-        black = (0, 0, 0)
+        white = (255, 255, 255, 255)
+        black = (0, 0, 0, 64)
         toggle = {white: black, black: white}
 
         if draw_astral:
-            _sun = sun(CITY.observer, date=datetime.date.today(), tzinfo=CITY.timezone)
+            city = LocationInfo("Bern", "Switzerland", tz, 46.94809, 7.44744)
+            _sun = sun(city.observer, date=datetime.date.today(), tzinfo=city.timezone)
 
             decimal_sunrise = float(_sun["sunrise"].strftime('%H')) + float(_sun["sunrise"].strftime('%M')) / 60
             arc_length_sunrise = decimal_sunrise / hours * 360.0
@@ -40,7 +52,7 @@ class Clock:
             arc_length_sunset = decimal_sunset / hours * 360.0
             print('sunset: {0}'.format(_sun["sunset"].strftime('%H:%M')))
 
-            color = (255, 128, 0)
+            color = (255, 128, 0, 255)
             _size_astral = 0.17  # TODO: bigger means smaller circle
             _width = 0.012
             size_astral = [(round(_size * _size_astral), round(_size * _size_astral)), (round(_size - _size * _size_astral), round(_size - _size * _size_astral))]
@@ -48,6 +60,7 @@ class Clock:
             draw.arc(size_astral, start=arc_length_sunrise+arc_twelve, end=arc_length_sunset+arc_twelve, fill=color,
                      width=width_astral)
 
+        # center dot
         draw.ellipse([(round(_size * 0.482), round(_size * 0.482)), (round(_size - _size * 0.482), round(_size - _size * 0.482))], fill=white, outline=None, width=round(_size * 0.312))
 
         color = white
@@ -77,7 +90,8 @@ class Clock:
                          312.0, 318.0,
                          329.0, 331.0,
                          344.0, 346.0,
-                         357.0]
+                         357.0, 359.99,
+                         ]
         else:
             intervals = [0.0, 3.0,
                          29.0, 31.0,
@@ -91,15 +105,17 @@ class Clock:
                          267.0, 273.0,
                          299.0, 301.0,
                          329.0, 331.0,
-                         357.0]
+                         357.0, 359.99,
+                         ]
 
-        for interval in intervals[::-1]:
+        for interval in intervals[::-1]:  # reversed
             draw.arc([(round(_size * 0.022), round(_size * 0.022)), (round(_size - _size * 0.022), round(_size - _size * 0.022))], start=arc_twelve, end=(arc_twelve + interval) % 360, fill=color, width=round(_size * 0.060))
             color = toggle[color]
 
         decimal_h = float(datetime.datetime.now().strftime('%H')) + float(datetime.datetime.now().strftime('%M')) / 60
         arc_length_h = decimal_h / hours * 360.0
 
+        # indicator
         color = white
         size_h = [(round(_size * 0.112), round(_size * 0.112)), (round(_size - _size * 0.112), round(_size - _size * 0.112))]
         width = round(_size * 0.134)
@@ -107,21 +123,22 @@ class Clock:
                  width=width)
 
         if draw_logo:
-            font = ImageFont.truetype(CALLIGRAPHIC, round(_size * 0.150))
+            font = ImageFont.truetype(r'/data/django/jukeoroni/player/static/calligraphia-one.ttf', round(_size * 0.150))
             text = "JukeOroni"
             length = font.getlength(text)
             draw.text((round(_size / 2) - length / 2, round(_size * 0.536)), text, fill=white, font=font)
 
         if draw_date:
-            font = ImageFont.truetype(ARIAL, round(_size * 0.035))
+            font = ImageFont.truetype(r'/data/django/jukeoroni/player/static/arial_narrow.ttf', round(_size * 0.035))
             text = datetime.datetime.now().strftime('%A, %B %d %Y')
             length = font.getlength(text)
             draw.text((round(_size / 2) - length / 2, round(_size * 0.690)), text, fill=white, font=font)
 
-        bg.paste(image.rotate(90, expand=False))
-        bg.paste(image)
+        comp = Image.new(mode='RGBA', size=(_size, _size))
+        comp = Image.alpha_composite(comp, bg)
+        comp = Image.alpha_composite(comp, _clock)
+        comp = comp.rotate(90, expand=False)
 
-        bg = bg.rotate(90, expand=False)
-        bg = bg.resize((round(_size/ANTIALIAS), round(_size/ANTIALIAS)), Image.ANTIALIAS)
+        comp = comp.resize((round(_size/ANTIALIAS), round(_size/ANTIALIAS)), Image.ANTIALIAS)
 
-        return bg
+        return comp

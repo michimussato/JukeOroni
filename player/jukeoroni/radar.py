@@ -17,7 +17,7 @@ class _RadarThread(threading.Thread):
         super().__init__(*args, **kwargs)
         self.name = 'Radar Thread'
         self.daemon = False
-        self.start()
+        # self.start()
 
 
 class Radar(object):
