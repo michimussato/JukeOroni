@@ -18,7 +18,7 @@ BUTTONS = [5, 6, 16, 24]
 
 # jukeoroni
 _OFF_IMAGE = '/data/django/jukeoroni/player/static/zzz.jpg'
-OFF_IMAGE = Image.open(_OFF_IMAGE).resize((600, 448))
+OFF_IMAGE = Image.open(_OFF_IMAGE).rotate(90, expand=True).resize((600, 448))
 
 
 # clock
