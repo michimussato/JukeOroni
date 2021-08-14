@@ -71,7 +71,28 @@ j.turn_off()
 
 class Radio(object):
     def __init__(self):
-        pass
+        self.on = False
+
+        self.is_playing = None
+
+    #     self._radio_playback_thread = None
+    #
+    # def radio_playback_thread(self):
+    #     self._radio_playback_thread = threading.Thread(target=self.radio_playback_task)
+    #     self._radio_playback_thread.name = 'Radio Playback Thread'
+    #     self._radio_playback_thread.daemon = False
+    #     self._radio_playback_thread.start()
+    #
+    # def radio_playback_task(self):
+    #     # update_interval = CLOCK_UPDATE_INTERVAL*60
+    #     _waited = None
+    #     while self.on:
+    #         if _waited is None or _waited % update_interval == 0:
+    #             _waited = 0
+    #             self.set_image()
+    #
+    #         time.sleep(1.0)
+    #         _waited += 1
 
     @property
     def channels(self):
@@ -83,10 +104,24 @@ class Radio(object):
 
     def play(self, channel):
         assert isinstance(channel, Channel), 'can only play Channel model'
+        # self.is_playing = channel
         # j.radio.play(j.radio.last_played)
-        process = subprocess.run(FFPLAY_CMD + [channel.url], capture_output=True)
-        print(dir(process))
-        print(process)
+        # process = subprocess.run(FFPLAY_CMD + [channel.url], capture_output=True)
+        self.is_playing = subprocess.Popen(FFPLAY_CMD + [channel.url], shell=True)
+        # self.is_playing
+        print(dir(self.is_playing))
+        print(self.is_playing)
+
+    def stop(self):
+        assert isinstance(self.is_playing, subprocess.Popen), 'nothing is playing'
+
+        self.is_playing.terminate()
+        # self.is_playing.kill()
+
+        while self.is_playing.poll() is None:
+            time.sleep(1.0)
+
+
 
 
 class JukeOroni(object):
