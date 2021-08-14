@@ -1,6 +1,7 @@
 # import unittest
 from django.test import TestCase
 from player.jukeoroni.jukeoroni import JukeOroni
+from player.models import Channel
 
 
 class TestJukeOroni(TestCase):
@@ -52,4 +53,7 @@ class TestJukeOroni(TestCase):
     def test_insert(self):
         with self.assertRaises(Exception):
             self.j.insert()
+
+        with self.assertRaises(Exception):
+            self.j.insert(media=Channel.objects.all()[0])
 
