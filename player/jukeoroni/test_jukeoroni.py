@@ -1,5 +1,5 @@
 # import unittest
-from django.test import TestCase, ski
+from django.test import TestCase
 from player.jukeoroni.jukeoroni import JukeOroni
 from player.models import Channel
 
