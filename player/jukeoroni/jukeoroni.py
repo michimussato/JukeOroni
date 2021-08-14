@@ -1,11 +1,14 @@
 import time
 import threading
+import subprocess
 import logging
 # import signal
 from django.utils.timezone import localtime, now
 import RPi.GPIO as GPIO
 from inky.inky_uc8159 import Inky  # , BLACK
 from player.jukeoroni.displays import Standby as StandbyLayout
+from player.jukeoroni.displays import Radio as RadioLayout
+from player.models import Channel
 # from player.displays import Player as PlayerLayout
 # from player.jukeoroni.settings import BUTTONS
 from player.jukeoroni.settings import PIMORONI_SATURATION, CLOCK_UPDATE_INTERVAL, OFF_IMAGE
@@ -52,6 +55,9 @@ GPIO.setmode(GPIO.BCM)
 GPIO.setup(_BUTTON_PINS, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 
+FFPLAY_CMD = 'ffplay -hide_banner -autoexit -vn -nodisp -loglevel error'.split(' ')
+
+
 """
 django_shell
 
@@ -63,13 +69,33 @@ j.turn_off()
 """
 
 
+class Radio(object):
+    def __init__(self):
+        pass
+
+    @property
+    def channels(self):
+        return Channel.objects.all()
+
+    @property
+    def last_played(self):
+        return Channel.objects.get(last_played=True)
+
+    def play(self, channel):
+        assert isinstance(channel, Channel), 'can only play Channel model'
+        process = subprocess.run(FFPLAY_CMD + channel.url, capture_output=True, stdout=subprocess.PIPE,
+                                 stderr=subprocess.PIPE)
+        print(dir(process))
+        print(process)
+
+
 class JukeOroni(object):
     def __init__(self):
 
         self.on = False
 
         # self.jukebox = JukeBox()
-        # self.radio = Radio()
+        self.radio = Radio()
 
         self.button_X000_value = BUTTON_X000_LABELS
         self.button_0X00_value = BUTTON_0X00_LABELS
@@ -82,8 +108,8 @@ class JukeOroni(object):
 
         # display layouts
         self.layout_standby = StandbyLayout()
+        self.layout_radio = RadioLayout()
         # self.layout_jukebox = PlayerLayout()
-        # self.layout_radio = None
 
         self._pimoroni_thread_queue = None
 
@@ -177,7 +203,6 @@ class JukeOroni(object):
                         thread.start()
                     while thread.is_alive():
                         time.sleep(1.0)
-            # else:
 
             time.sleep(1.0)
             _waited += 1
@@ -235,15 +260,14 @@ class JukeOroni(object):
                 _waited = 0
                 self.set_image()
 
-            # # procedure goes in here
-            # new_time = localtime(now())
-            #
-            # self._current_time != new_time.strftime('%H:%M'):  # in stopped state
-            # if self._current_time is None or (int(new_time.strftime('%H:%M')[-2:])) % CLOCK_UPDATE_INTERVAL == 0:
-            #     print('Updating standby-display')
-            #     self.set_image()
-            #     self._current_time = new_time.strftime('%H:%M')
-
             time.sleep(1.0)
             _waited += 1
     ############################################
+
+    # def insert_media(self, media):
+    #     pass
+    #
+    # def eject_media(self):
+    #     pass
+
+
