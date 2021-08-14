@@ -99,8 +99,8 @@ class Radio(object):
 
 class JukeOroni(object):
 
-    PAUSE_RESUME_TOGGLE = {signal.SIGSTOP: signal.SIGCONT,
-                           signal.SIGCONT: signal.SIGSTOP}
+    # PAUSE_RESUME_TOGGLE = {signal.SIGSTOP: signal.SIGCONT,
+    #                        signal.SIGCONT: signal.SIGSTOP}
 
     def __init__(self):
 

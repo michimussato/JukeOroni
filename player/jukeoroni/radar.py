@@ -55,15 +55,17 @@ class Radar(object):
         self.radar_image = self._placeholder
         # maybe we need to pass the image here because of multiprocessing not
         # sharing memory...not know yet...indeed. need syncmanager
-        self.radar_thread = _RadarThread(target=self._radar_task)
+        self.radar_thread = None
 
     def start(self):
         self.on = True
+        self.radar_thread = _RadarThread(target=self._radar_task)
         self.radar_thread.start()
 
     def stop(self):
         self.on = False
         self.radar_thread.join()
+        self.radar_thread = None
 
     def _radar_task(self):
         update_interval = RADAR_UPDATE_INTERVAL*60.0
