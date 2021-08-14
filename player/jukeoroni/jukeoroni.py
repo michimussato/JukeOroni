@@ -83,7 +83,7 @@ class Radio(object):
 
     def play(self, channel):
         assert isinstance(channel, Channel), 'can only play Channel model'
-        process = subprocess.run(FFPLAY_CMD + channel.url, capture_output=True, stdout=subprocess.PIPE,
+        process = subprocess.run(FFPLAY_CMD + [channel.url], capture_output=True, stdout=subprocess.PIPE,
                                  stderr=subprocess.PIPE)
         print(dir(process))
         print(process)
