@@ -204,10 +204,10 @@ class Player(object):
     _instance = None
 
     # TODO: is this still necessary?
-    def __new__(cls):
+    def __new__(cls, auto_update_tracklist=False):
         if cls._instance is None:
             print('Creating the object')
-            cls._instance = super(Player, cls).__new__(cls)
+            cls._instance = super(Player, cls).__new__(cls, auto_update_tracklist)
             # Put any initialization here.
         return cls._instance
 
@@ -953,7 +953,7 @@ def player():
     p.state_watcher_thread()
     p.pimoroni_watcher_thread()
     p.set_image()
-    # p.track_list_generator_thread(auto_update_tracklist_interval=DEFAULT_TRACKLIST_REGEN_INTERVAL)  # effect only if auto_update_tracklist=True
+    p.track_list_generator_thread(auto_update_tracklist_interval=DEFAULT_TRACKLIST_REGEN_INTERVAL)  # effect only if auto_update_tracklist=True
     p.track_loader_thread()
 
 
