@@ -71,7 +71,8 @@ j.turn_off()
 
 class Radio(object):
     def __init__(self):
-        self.on = False
+        # self.on = False
+        self.is_on_air = False
 
         self.playback_proc = None
 
@@ -100,7 +101,7 @@ class Radio(object):
 class JukeOroni(object):
     def __init__(self):
 
-        self.is_on_air = False
+        # self.is_on_air = False
 
         # self.jukebox = JukeBox()
         self.radio = Radio()
