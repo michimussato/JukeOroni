@@ -5,6 +5,7 @@
       <sourceFolder url="file://$MODULE_DIR$/jukeoroni" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/venv_3.7.3" />
       <excludeFolder url="file://$MODULE_DIR$/gitignore/venv/3.7.3" />
+      <excludeFolder url="file://$MODULE_DIR$/gitignore" />
     </content>
     <orderEntry type="jdk" jdkName="Python 3.7 (JukeOroni)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
