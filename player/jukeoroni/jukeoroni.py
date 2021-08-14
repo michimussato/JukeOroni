@@ -1,4 +1,5 @@
 import os
+import typing
 import random
 import time
 import threading
@@ -81,6 +82,11 @@ class Radio(object):
     @property
     def channels(self):
         return Channel.objects.all()
+
+    @staticmethod
+    def get_channels_by_kwargs(**kwargs):
+        print(kwargs)
+        return Channel.objects.filter(kwargs)
 
     @property
     def random_channel(self):
