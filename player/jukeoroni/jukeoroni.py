@@ -141,6 +141,12 @@ class JukeOroni(object):
         ret += f'\tplayback_proc is: {str(self.playback_proc)}\n'
         return ret
 
+    def __del__(self):
+        if self.radio.is_on_air:
+            raise 'stop playback before exitting'
+        if self.inserted_media is not None:
+            raise 'eject media before exitting'
+
     ############################################
     # playback workflow
     def insert(self, media):
