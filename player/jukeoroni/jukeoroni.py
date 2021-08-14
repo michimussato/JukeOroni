@@ -127,7 +127,7 @@ class JukeOroni(object):
 
     ############################################
     # playback workflow
-    def insert_media(self, media):
+    def insert(self, media):
         # j.insert_media(j.radio.last_played)
         assert isinstance(media, (Channel)), 'can only insert Channel model'
         self.inserted_media = media
@@ -161,7 +161,7 @@ class JukeOroni(object):
         self.radio.is_on_air = False
         self.playback_proc = None
 
-    def eject_media(self):
+    def eject(self):
         assert self.playback_proc is None, 'cannot eject media while playback is active. stop() first.'
         self.inserted_media = None
     ############################################
