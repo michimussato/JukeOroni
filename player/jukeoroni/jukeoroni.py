@@ -143,7 +143,7 @@ class JukeOroni(object):
         self.playback_proc.terminate()
 
         while self.playback_proc.poll() is None:
-            time.sleep(1.0)
+            time.sleep(0.1)
 
         self.radio.is_on_air = False
 
