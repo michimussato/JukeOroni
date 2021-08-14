@@ -130,9 +130,11 @@ class JukeOroni(object):
         self._state_watcher_thread = None
 
     def play(self, media):
+        assert self.playback_proc is None, 'there is an active playback. stop it first.'
         assert isinstance(media, (Channel)), 'can only play Channel model'
 
         if isinstance(media, Channel):
+            # j.play(j.radio.last_played)
             self.radio.is_on_air = True
             self.playback_proc = subprocess.Popen(FFPLAY_CMD + [media.url], shell=False)
 
