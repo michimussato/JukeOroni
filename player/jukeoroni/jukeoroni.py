@@ -139,6 +139,7 @@ class JukeOroni(object):
         ret += f'\tinserted_media: {str(self.inserted_media)}\n'
         ret += f'\tradio is on air: {str(self.radio.is_on_air)}\n'
         ret += f'\tplayback_proc is: {str(self.playback_proc)}\n'
+        return ret
 
     ############################################
     # playback workflow
