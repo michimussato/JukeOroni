@@ -83,6 +83,7 @@ class Radio(object):
 
     def play(self, channel):
         assert isinstance(channel, Channel), 'can only play Channel model'
+        # j.radio.play(j.radio.last_played)
         process = subprocess.run(FFPLAY_CMD + [channel.url], capture_output=True)
         print(dir(process))
         print(process)
