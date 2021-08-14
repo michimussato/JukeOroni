@@ -1,14 +1,16 @@
-import unittest
+# import unittest
+from django.test import TestCase
 from player.jukeoroni.jukeoroni import JukeOroni
 
 
-class TestJukeOroni(unittest.TestCase):
+class TestJukeOroni(TestCase):
     def setUp(self):
         self.j = JukeOroni()
         # self.j.turn_on()
 
-    # def tearDown(self):
-    #     self.j.turn_off()
+    def tearDown(self):
+        # self.j.turn_off()
+        del self.j
 
     def test_turn_on(self):
         self.assertFalse(self.j.on)
