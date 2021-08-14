@@ -143,8 +143,11 @@ class JukeOroni(object):
 
     def __del__(self):
         if self.radio.is_on_air:
+            self.stop()
+            self.eject()
             raise Exception('stop playback before exitting')
         if self.inserted_media is not None:
+            self.eject()
             raise Exception('eject media before exitting')
 
     ############################################
