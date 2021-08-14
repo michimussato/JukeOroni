@@ -5,6 +5,8 @@ from player.models import Channel
 
 
 class TestJukeOroni(TestCase):
+
+    @classmethod
     def setUpClass(cls):
         channel_list = [
             ("BOBs 100", "100", True, "http://bob.hoerradar.de/radiobob-100-mp3-hq", None, False),
