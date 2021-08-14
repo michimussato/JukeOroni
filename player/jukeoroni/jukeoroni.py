@@ -1,8 +1,10 @@
+import os
+import random
 import time
 import threading
 import subprocess
 import logging
-# import signal
+import signal
 from django.utils.timezone import localtime, now
 import RPi.GPIO as GPIO
 from inky.inky_uc8159 import Inky  # , BLACK
@@ -81,32 +83,26 @@ class Radio(object):
         return Channel.objects.all()
 
     @property
+    def random_channel(self):
+        return random.choice(self.channels)
+
+    @property
     def last_played(self):
         return Channel.objects.get(last_played=True)
 
-    # def play(self, channel):
-    #     assert isinstance(channel, Channel), 'can only play Channel model'
-    #     self.playback_proc = subprocess.Popen(FFPLAY_CMD + [channel.url], shell=False)
-    #
-    # def stop(self):
-    #     assert isinstance(self.playback_proc, subprocess.Popen), 'nothing is playing'
-    #     self.playback_proc.terminate()
-    #
-    #     while self.playback_proc.poll() is None:
-    #         time.sleep(1.0)
-    #
-    #     self.playback_proc = None
-
 
 class JukeOroni(object):
-    def __init__(self):
 
-        # self.is_on_air = False
+    PAUSE_RESUME_TOGGLE = {signal.SIGSTOP: signal.SIGCONT,
+                           signal.SIGCONT: signal.SIGSTOP}
+
+    def __init__(self):
 
         # self.jukebox = JukeBox()
         self.radio = Radio()
 
         self.playback_proc = None
+        self.inserted_media = None
 
         self.button_X000_value = BUTTON_X000_LABELS
         self.button_0X00_value = BUTTON_0X00_LABELS
@@ -129,14 +125,31 @@ class JukeOroni(object):
         # self._buttons_watcher_thread = None
         self._state_watcher_thread = None
 
-    def play(self, media):
-        assert self.playback_proc is None, 'there is an active playback. stop it first.'
-        assert isinstance(media, (Channel)), 'can only play Channel model'
+    ############################################
+    # playback workflow
+    def insert_media(self, media):
+        # j.insert_media(j.radio.last_played)
+        assert isinstance(media, (Channel)), 'can only insert Channel model'
+        self.inserted_media = media
 
-        if isinstance(media, Channel):
-            # j.play(j.radio.last_played)
+    def play(self):
+        assert self.playback_proc is None, 'there is an active playback. stop() first.'
+        assert self.inserted_media is not None, 'no media inserted. insert media first.'
+
+        if isinstance(self.inserted_media, Channel):
+            # j.play()
             self.radio.is_on_air = True
-            self.playback_proc = subprocess.Popen(FFPLAY_CMD + [media.url], shell=False)
+            self.playback_proc = subprocess.Popen(FFPLAY_CMD + [self.inserted_media.url], shell=False)
+
+    def pause(self):
+        assert self.playback_proc is not None, 'no playback is active. play() media first'
+        assert self.playback_proc.poll() is None, 'playback_proc was terminated. start playback first'
+        self.playback_proc.send_signal(signal.SIGSTOP)
+
+    def resume(self):
+        assert self.playback_proc is not None, 'no playback is active. play() media first'
+        assert self.playback_proc.poll() is None, 'playback_proc was terminated. start playback first'
+        self.playback_proc.send_signal(signal.SIGCONT)
 
     def stop(self):
         assert isinstance(self.playback_proc, subprocess.Popen), 'nothing is playing'
@@ -146,8 +159,12 @@ class JukeOroni(object):
             time.sleep(0.1)
 
         self.radio.is_on_air = False
-
         self.playback_proc = None
+
+    def eject_media(self):
+        assert self.playback_proc is None, 'cannot eject media while playback is active. stop() first.'
+        self.inserted_media = None
+    ############################################
 
     @property
     def LABELS(self):
