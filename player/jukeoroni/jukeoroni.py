@@ -85,8 +85,7 @@ class Radio(object):
 
     @staticmethod
     def get_channels_by_kwargs(**kwargs):
-        print(kwargs)
-        # print(**kwargs)
+        # self.get_channels_by_kwargs(display_name_short='srf_swiss_pop')[0])
         return Channel.objects.filter(**kwargs)
 
     @property
@@ -104,6 +103,8 @@ class JukeOroni(object):
                            signal.SIGCONT: signal.SIGSTOP}
 
     def __init__(self):
+
+        self.on = False
 
         # self.jukebox = JukeBox()
         self.radio = Radio()
@@ -132,10 +133,17 @@ class JukeOroni(object):
         # self._buttons_watcher_thread = None
         self._state_watcher_thread = None
 
+    def __str__(self):
+        ret = 'JukeOroni\n'
+        ret += f'\tis on: {str(self.on)}\n'
+        ret += f'\tinserted_media: {str(self.inserted_media)}\n'
+        ret += f'\tradio is on air: {str(self.radio.is_on_air)}\n'
+        ret += f'\tplayback_proc is: {str(self.playback_proc)}\n'
+
     ############################################
     # playback workflow
     def insert(self, media):
-        # j.insert_media(j.radio.last_played)
+        # j.insert(j.radio.last_played)
         assert isinstance(media, (Channel)), 'can only insert Channel model'
         self.inserted_media = media
 
