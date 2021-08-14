@@ -161,6 +161,12 @@ class JukeOroni(object):
         self.radio.is_on_air = False
         self.playback_proc = None
 
+    def next(self):
+        raise NotImplementedError
+
+    def previous(self):
+        raise NotImplementedError
+
     def eject(self):
         assert self.playback_proc is None, 'cannot eject media while playback is active. stop() first.'
         self.inserted_media = None
