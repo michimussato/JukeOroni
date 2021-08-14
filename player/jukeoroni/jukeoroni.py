@@ -142,11 +142,13 @@ class JukeOroni(object):
             self.playback_proc = subprocess.Popen(FFPLAY_CMD + [self.inserted_media.url], shell=False)
 
     def pause(self):
+        assert self.inserted_media is not None, 'no media inserted. insert media first.'
         assert self.playback_proc is not None, 'no playback is active. play() media first'
         assert self.playback_proc.poll() is None, 'playback_proc was terminated. start playback first'
         self.playback_proc.send_signal(signal.SIGSTOP)
 
     def resume(self):
+        assert self.inserted_media is not None, 'no media inserted. insert media first.'
         assert self.playback_proc is not None, 'no playback is active. play() media first'
         assert self.playback_proc.poll() is None, 'playback_proc was terminated. start playback first'
         self.playback_proc.send_signal(signal.SIGCONT)
@@ -168,6 +170,7 @@ class JukeOroni(object):
         raise NotImplementedError
 
     def eject(self):
+        assert self.inserted_media is not None, 'no media inserted. insert media first.'
         assert self.playback_proc is None, 'cannot eject media while playback is active. stop() first.'
         self.inserted_media = None
     ############################################
