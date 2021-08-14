@@ -201,15 +201,6 @@ class Track(object):
 
 
 class Player(object):
-    # _instance = None
-    #
-    # # TODO: is this still necessary?
-    # def __new__(cls, auto_update_tracklist=False):
-    #     if cls._instance is None:
-    #         print('Creating the object')
-    #         cls._instance = super(Player, cls).__new__(cls, auto_update_tracklist)
-    #         # Put any initialization here.
-    #     return cls._instance
 
     def __init__(self, auto_update_tracklist=False):
         logging.info('initializing player...')
