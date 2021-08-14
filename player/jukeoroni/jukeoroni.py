@@ -86,7 +86,8 @@ class Radio(object):
     @staticmethod
     def get_channels_by_kwargs(**kwargs):
         print(kwargs)
-        return Channel.objects.filter(kwargs)
+        print(**kwargs)
+        return Channel.objects.filter(**kwargs)
 
     @property
     def random_channel(self):
