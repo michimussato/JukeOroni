@@ -1,4 +1,3 @@
-# import unittest
 from django.test import TestCase
 from player.jukeoroni.jukeoroni import JukeOroni
 from player.models import Channel
@@ -71,8 +70,20 @@ class TestJukeOroni(TestCase):
         with self.assertRaises(Exception):
             self.j.insert()
 
-        with self.assertRaises(Exception):
-            self.j.insert(media=Channel.objects.all()[0])
+        with self.assertRaises(AssertionError):
+            self.j.play()
+            self.j.pause()
+            self.j.resume()
+            self.j.stop()
+            self.j.eject()
 
-        self.j.insert(media=Channel.objects.all()[0])
+        with self.assertRaises(NotImplementedError):
+            self.j.next()
+            self.j.previous()
 
+        self.assertIsNone(self.j.inserted_media)
+        media = Channel.objects.all()[0]
+        self.j.insert(media=media)
+        self.assertIsNotNone(self.j.inserted_media)
+        self.assertEquals('http://bob.hoerradar.de/radiobob-100-mp3-hq',
+                          self.j.inserted_media.url)
