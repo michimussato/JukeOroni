@@ -104,17 +104,10 @@ class Radio(object):
 
     def play(self, channel):
         assert isinstance(channel, Channel), 'can only play Channel model'
-        # self.is_playing = channel
-        # j.radio.play(j.radio.last_played)
-        # process = subprocess.run(FFPLAY_CMD + [channel.url], capture_output=True)
         self.is_playing = subprocess.Popen(FFPLAY_CMD + [channel.url], shell=False)
-        # self.is_playing
-        # print(dir(self.is_playing))
-        # print(self.is_playing)
 
     def stop(self):
         assert isinstance(self.is_playing, subprocess.Popen), 'nothing is playing'
-
         self.is_playing.terminate()
 
         while self.is_playing.poll() is None:
