@@ -5,6 +5,21 @@ from player.models import Channel
 
 
 class TestJukeOroni(TestCase):
+    def setUpClass(cls):
+        channel_list = [
+            ("BOBs 100", "100", True, "http://bob.hoerradar.de/radiobob-100-mp3-hq", None, False),
+            ("BOBs 101", "101", True, "http://bob.hoerradar.de/radiobob-101-mp3-hq", None, False),
+            ("BOBs 2000er", "2000er", True, "http://bob.hoerradar.de/radiobob-2000er-mp3-hq",
+             "http://aggregatorservice.loverad.io/wp-content/uploads/2021/03/bob_2000er-rock_600x600.png", False),
+            ("BOBs Blues", "blues", True, "http://bob.hoerradar.de/radiobob-blues-mp3-hq",
+             "http://aggregatorservice.loverad.io/wp-content/uploads/2021/03/bob_2000er-rock_600x600.png", False),
+        ]
+
+        for channel in channel_list:
+            c = Channel(display_name=channel[0], display_name_short=channel[1], is_enabled=channel[2], url=channel[3],
+                        url_logo=channel[4])
+            c.save()
+
     def setUp(self):
         self.j = JukeOroni()
         # self.j.turn_on()
