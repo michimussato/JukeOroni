@@ -107,7 +107,7 @@ class Radio(object):
         # self.is_playing = channel
         # j.radio.play(j.radio.last_played)
         # process = subprocess.run(FFPLAY_CMD + [channel.url], capture_output=True)
-        self.is_playing = subprocess.Popen(FFPLAY_CMD + [channel.url], shell=True)
+        self.is_playing = subprocess.Popen(FFPLAY_CMD + [channel.url], shell=False)
         # self.is_playing
         print(dir(self.is_playing))
         print(self.is_playing)
