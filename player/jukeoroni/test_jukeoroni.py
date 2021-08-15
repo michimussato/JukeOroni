@@ -30,6 +30,7 @@ class TestJukeOroni(TestCase):
 
     def tearDown(self):
         # self.j.turn_off()
+        # self.j.turn_off()
         del self.j
 
     def test_turn_on(self):
@@ -50,6 +51,8 @@ class TestJukeOroni(TestCase):
         self.assertTrue(self.j.layout_standby.radar.on)
         self.assertIsNotNone(self.j.layout_standby.radar.radar_thread)
         self.assertTrue(self.j.layout_standby.radar.radar_thread.is_alive())
+
+        self.j.turn_off()
 
     def test_turn_off(self):
         print(inspect.getframeinfo(inspect.currentframe()).function)
