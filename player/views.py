@@ -24,62 +24,62 @@ player = None
 class PlayerView(View):
 
     def get(self, request):
-        # global player
-        #
-        # player = Player(auto_update_tracklist=True)
-        # player.buttons_watcher_thread()
-        # player.state_watcher_thread()
-        # player.pimoroni_watcher_thread()
-        # player.track_list_generator_thread(
-        #     auto_update_tracklist_interval=DEFAULT_TRACKLIST_REGEN_INTERVAL)  # effect only if auto_update_tracklist=True
-        #
-        # player.track_loader_thread()
-        # player.set_image()
-        #
+        global player
+
+        player = Player(auto_update_tracklist=True)
+        player.buttons_watcher_thread()
+        player.state_watcher_thread()
+        player.pimoroni_watcher_thread()
+        player.track_list_generator_thread(
+            auto_update_tracklist_interval=DEFAULT_TRACKLIST_REGEN_INTERVAL)  # effect only if auto_update_tracklist=True
+
+        player.track_loader_thread()
+        player.set_image()
+
         ret = '<html>\n'
-        # ret += '  <head>\n'
-        # ret += '    <meta http-equiv="refresh" content="10" >\n'
-        # ret += '  </head>\n'
-        # ret += '  <body>\n'
-        #
-        # if player.playing_track is None:
-        #     ret += f'<div>{str(player.playing_track)}</div>'
-        # else:
-        #     _success = False
-        #     while not _success:
-        #         try:
-        #             ret += f'<div>'
-        #
-        #             cover_artist = str(player.playing_track.cover_artist)
-        #             # if cover_artist.startswith(os.sep):
-        #             #     cover_artist = f'file://{parse.quote(cover_artist)}'
-        #             # # ret += f'<div>Artist: {cover_artist}</div>'
-        #
-        #             cover_album = str(player.playing_track.album.cover_online)
-        #             # if cover_album.startswith(os.sep):
-        #             #     cover_album = f'file://{cover_album}'
-        #             # # ret += f'<div>Album: {cover_album}</div>'
-        #
-        #             # ret += f'<img src=\"{cover_album}\" alt=\"{str(player.playing_track.path)}\">'
-        #             ret += f'<img src=\"{cover_album}\" alt=\"{cover_album}\">'
-        #             # ret += f'<img src=\"{cover_artist}\" alt=\"{str(player.playing_track.path)}\">'
-        #             ret += f'<img src=\"{cover_artist}\" alt=\"{cover_artist}\">'
-        #             ret += f'</div>'
-        #             ret += f'<div>Artist: {str(player.playing_track.artist)}</div>'
-        #             ret += f'<div>Album: {str(player.playing_track.album)}</div>'
-        #             ret += f'<div>Track: {str(player.playing_track.track_title)}</div>'
-        #             _success = True
-        #         except AttributeError as err:
-        #             print(err)
-        #             time.sleep(1.0)
-        # if not player.tracks and bool(player.loading_process):
-        #     ret += '<div><img src=\"file://{0}\" alt=\"Loading {1}...\"></div>'.format(_LOADING_IMAGE, str(player.loading_process.track))
-        # ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/player/switch_mode\';\">Switch Mode: {0}</button>\n'.format(str(player.button_rand_albm_value))
-        # ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/player/play_next\';\">{0}</button>\n'.format(player.button_play_next_value)
-        # ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/player/stop\';\">Stop</button>\n'
-        # ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/player/albums\';\">Albums</button>\n'
-        # ret += '  </body>\n'
-        # ret += '</html>\n'
+        ret += '  <head>\n'
+        ret += '    <meta http-equiv="refresh" content="10" >\n'
+        ret += '  </head>\n'
+        ret += '  <body>\n'
+
+        if player.playing_track is None:
+            ret += f'<div>{str(player.playing_track)}</div>'
+        else:
+            _success = False
+            while not _success:
+                try:
+                    ret += f'<div>'
+
+                    cover_artist = str(player.playing_track.cover_artist)
+                    # if cover_artist.startswith(os.sep):
+                    #     cover_artist = f'file://{parse.quote(cover_artist)}'
+                    # # ret += f'<div>Artist: {cover_artist}</div>'
+
+                    cover_album = str(player.playing_track.album.cover_online)
+                    # if cover_album.startswith(os.sep):
+                    #     cover_album = f'file://{cover_album}'
+                    # # ret += f'<div>Album: {cover_album}</div>'
+
+                    # ret += f'<img src=\"{cover_album}\" alt=\"{str(player.playing_track.path)}\">'
+                    ret += f'<img src=\"{cover_album}\" alt=\"{cover_album}\">'
+                    # ret += f'<img src=\"{cover_artist}\" alt=\"{str(player.playing_track.path)}\">'
+                    ret += f'<img src=\"{cover_artist}\" alt=\"{cover_artist}\">'
+                    ret += f'</div>'
+                    ret += f'<div>Artist: {str(player.playing_track.artist)}</div>'
+                    ret += f'<div>Album: {str(player.playing_track.album)}</div>'
+                    ret += f'<div>Track: {str(player.playing_track.track_title)}</div>'
+                    _success = True
+                except AttributeError as err:
+                    print(err)
+                    time.sleep(1.0)
+        if not player.tracks and bool(player.loading_process):
+            ret += '<div><img src=\"file://{0}\" alt=\"Loading {1}...\"></div>'.format(_LOADING_IMAGE, str(player.loading_process.track))
+        ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/player/switch_mode\';\">Switch Mode: {0}</button>\n'.format(str(player.button_rand_albm_value))
+        ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/player/play_next\';\">{0}</button>\n'.format(player.button_play_next_value)
+        ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/player/stop\';\">Stop</button>\n'
+        ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/player/albums\';\">Albums</button>\n'
+        ret += '  </body>\n'
+        ret += '</html>\n'
         return HttpResponse(ret)
 
     def switch_mode(self):
