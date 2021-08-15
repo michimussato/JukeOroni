@@ -100,6 +100,8 @@ class TestJukeOroni(TestCase):
         self.assertEquals('http://bob.hoerradar.de/radiobob-100-mp3-hq',
                           self.j.inserted_media.url)
 
+        self.j.eject()
+
     def test_play(self):
         print('\n\n############################')
         print(f'Running test: {str(inspect.getframeinfo(inspect.currentframe()).function)}\n')
@@ -119,6 +121,9 @@ class TestJukeOroni(TestCase):
         self.assertTrue(self.j.radio.is_on_air)
         self.assertIsInstance(self.j.playback_proc, Popen)
         self.assertIsNone(self.j.playback_proc.poll())
+
+        self.j.stop()
+        self.j.eject()
 
     def test_pause(self):
         pass
