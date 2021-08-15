@@ -220,8 +220,11 @@ class JukeOroni(object):
         self.set_image()
         self.state_watcher_thread()
         self.pimoroni_watcher_thread()
-        # self.buttons_watcher_thread()
-        self._buttons_watcher_task()
+
+        if self.test:
+            pass
+        else:
+            self.buttons_watcher_thread()
 
     def _start_modules(self):
         self.layout_standby.radar.start(test=self.test)
@@ -258,10 +261,13 @@ class JukeOroni(object):
         self._state_watcher_thread = None
         print('self._state_watcher_thread terminated')
 
-        print('terminating self._buttons_watcher_thread...')
-        self._buttons_watcher_thread.join()
-        self._buttons_watcher_thread = None
-        print('self._buttons_watcher_thread terminated')
+        if self.test:
+            pass
+        else:
+            print('terminating self._buttons_watcher_thread...')
+            self._buttons_watcher_thread.join()
+            self._buttons_watcher_thread = None
+            print('self._buttons_watcher_thread terminated')
 
     def _stop_modules(self):
         print('terminating self.layout_standby.radar...')
@@ -314,20 +320,16 @@ class JukeOroni(object):
 
     ############################################
     # buttons_watcher_thread
-    # def buttons_watcher_thread(self):
-    #     self._buttons_watcher_thread = threading.Thread(target=self._buttons_watcher_task)
-    #     self._buttons_watcher_thread.name = 'Buttons Watcher Thread'
-    #     self._buttons_watcher_thread.daemon = False
-    #     self._buttons_watcher_thread.start()
+    def buttons_watcher_thread(self):
+        self._buttons_watcher_thread = threading.Thread(target=self._buttons_watcher_task)
+        self._buttons_watcher_thread.name = 'Buttons Watcher Thread'
+        self._buttons_watcher_thread.daemon = False
+        self._buttons_watcher_thread.start()
 
     def _buttons_watcher_task(self):
-        # _waited = None
-        print('here')
         for pin in _BUTTON_PINS:
-            print(pin)
             GPIO.add_event_detect(pin, GPIO.FALLING, self._handle_button, bouncetime=250)
         signal.pause()
-        print('there')
 
     def _handle_button(self, pin):
         button = _BUTTON_PINS.index(pin)
