@@ -119,3 +119,71 @@ class TestJukeOroni(TestCase):
         self.assertTrue(self.j.radio.is_on_air)
         self.assertIsInstance(self.j.playback_proc, Popen)
         self.assertIsNone(self.j.playback_proc.poll())
+
+    def test_pause(self):
+        pass
+
+    def test_resume(self):
+        pass
+
+    def test_stop(self):
+
+        with self.assertRaises(AssertionError):
+            self.j.stop()
+
+        media = Channel.objects.all()[0]
+        self.j.insert(media=media)
+
+        with self.assertRaises(AssertionError):
+            self.j.stop()
+
+        self.j.play()
+
+        self.assertTrue(self.j.radio.is_on_air)
+        self.assertIsInstance(self.j.playback_proc, Popen)
+        self.assertIsNone(self.j.playback_proc.poll())
+
+        self.j.stop()
+
+        self.assertFalse(self.j.radio.is_on_air)
+        self.assertIsNone(self.j.playback_proc)
+
+    def test_next(self):
+        pass
+
+    def test_previous(self):
+        pass
+
+    def test_eject(self):
+        with self.assertRaises(AssertionError):
+            self.j.eject()
+
+        # self.assertIsNone(self.j.inserted_media)
+        # self.assertIsNone(self.j.playback_proc)
+
+        media = Channel.objects.all()[0]
+        self.j.insert(media=media)
+
+        self.assertIs(media, self.j.inserted_media)
+        self.assertIsNone(self.j.playback_proc)
+
+        self.j.eject()
+
+        self.assertIsNone(self.j.inserted_media)
+        self.assertIsNone(self.j.playback_proc)
+
+        self.j.insert(media=media)
+        self.j.play()
+
+        self.assertIsInstance(self.j.playback_proc, Popen)
+
+        with self.assertRaises(AssertionError):
+            self.j.eject()
+
+        self.j.stop()
+        self.assertIs(media, self.j.inserted_media)
+        self.assertIsNone(self.j.playback_proc)
+        self.j.eject()
+        self.assertIsNone(self.j.inserted_media)
+
+
