@@ -238,10 +238,10 @@ class JukeOroni(object):
         self._stop_jukeoroni()
         self._stop_modules()
 
-        # print('setting OFF_IMAGE...')
-        # self.pimoroni.set_image(OFF_IMAGE, saturation=PIMORONI_SATURATION)
-        # self.pimoroni.show(busy_wait=False)
-        # print('done.')
+        print('setting OFF_IMAGE...')
+        self.pimoroni.set_image(OFF_IMAGE, saturation=PIMORONI_SATURATION)
+        self.pimoroni.show(busy_wait=False)
+        print('done.')
 
     def _stop_jukeoroni(self):
         self.on = False
@@ -290,11 +290,6 @@ class JukeOroni(object):
 
             time.sleep(1.0)
             _waited += 1
-
-        # print('terminating self._pimoroni_watcher_thread...')
-        # self._pimoroni_watcher_thread.join()
-        # self._pimoroni_watcher_thread = None
-        # print('self._pimoroni_watcher_thread terminated')
 
     def set_image(self, **kwargs):
         # TODO filter for types of images
@@ -353,17 +348,4 @@ class JukeOroni(object):
 
             time.sleep(1.0)
             _waited += 1
-
-        # print('terminating self._state_watcher_thread...')
-        # self._state_watcher_thread.join()
-        # self._state_watcher_thread = None
-        # print('self._state_watcher_thread terminated')
     ############################################
-
-    # def insert_media(self, media):
-    #     pass
-    #
-    # def eject_media(self):
-    #     pass
-
-
