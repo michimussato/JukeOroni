@@ -90,11 +90,9 @@ class Radar(object):
                 # print(f'Opening {self.URL}')
                 driver.get(self.URL)
                 time.sleep(2.0)
-                # WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.ID, "onetrust-accept-btn-handler"))).click()
-                WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, "//*[@id=\"onetrust-accept-btn-handler\"]"))).click()
+                WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, "//*[@id=\"onetrust-accept-btn-handler\"]"))).click()
                 driver.refresh()
                 time.sleep(5.0)
-                # root = driver.find_element(By.ID, "mapcontainer")
                 root = driver.find_element(By.XPATH, "//*[@id=\"mapcontainer\"]")
                 png = root.screenshot_as_png
             im = Image.open(BytesIO(png))
