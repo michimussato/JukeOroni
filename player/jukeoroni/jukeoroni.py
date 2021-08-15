@@ -45,8 +45,8 @@ BUTTON_00X0_LABELS = 'N//A'
 BUTTON_000X_LABELS = 'N//A'
 
 
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(_BUTTON_PINS, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+# GPIO.setmode(GPIO.BCM)
+# GPIO.setup(_BUTTON_PINS, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 
 FFPLAY_CMD = 'ffplay -hide_banner -autoexit -vn -nodisp -loglevel error'.split(' ')
@@ -217,6 +217,8 @@ j.turn_off()
 
     def _start_jukeoroni(self):
         self.on = True
+        GPIO.setmode(GPIO.BCM)
+        GPIO.setup(_BUTTON_PINS, GPIO.IN, pull_up_down=GPIO.PUD_UP)
         self.set_image()
         self.state_watcher_thread()
         self.pimoroni_watcher_thread()
