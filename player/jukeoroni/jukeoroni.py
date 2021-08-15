@@ -220,7 +220,8 @@ class JukeOroni(object):
         self.set_image()
         self.state_watcher_thread()
         self.pimoroni_watcher_thread()
-        self.buttons_watcher_thread()
+        # self.buttons_watcher_thread()
+        self._buttons_watcher_task()
 
     def _start_modules(self):
         self.layout_standby.radar.start(test=self.test)
@@ -313,11 +314,11 @@ class JukeOroni(object):
 
     ############################################
     # buttons_watcher_thread
-    def buttons_watcher_thread(self):
-        self._buttons_watcher_thread = threading.Thread(target=self._buttons_watcher_task)
-        self._buttons_watcher_thread.name = 'Buttons Watcher Thread'
-        self._buttons_watcher_thread.daemon = False
-        self._buttons_watcher_thread.start()
+    # def buttons_watcher_thread(self):
+    #     self._buttons_watcher_thread = threading.Thread(target=self._buttons_watcher_task)
+    #     self._buttons_watcher_thread.name = 'Buttons Watcher Thread'
+    #     self._buttons_watcher_thread.daemon = False
+    #     self._buttons_watcher_thread.start()
 
     def _buttons_watcher_task(self):
         # _waited = None
@@ -325,7 +326,7 @@ class JukeOroni(object):
         for pin in _BUTTON_PINS:
             print(pin)
             GPIO.add_event_detect(pin, GPIO.FALLING, self._handle_button, bouncetime=250)
-        # signal.pause()
+        signal.pause()
         print('there')
 
     def _handle_button(self, pin):
