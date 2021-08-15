@@ -62,6 +62,7 @@ django_shell
 
 from player.jukeoroni.jukeoroni import JukeOroni
 j = JukeOroni()
+j.test = True
 j.turn_on()
 
 j.turn_off()
@@ -270,10 +271,10 @@ class JukeOroni(object):
                 if self._pimoroni_thread_queue is not None:
                     thread = self._pimoroni_thread_queue
                     self._pimoroni_thread_queue = None
-                    if not thread.is_alive():
-                        thread.start()
-                    while thread.is_alive():
-                        time.sleep(1.0)
+                    # if not thread.is_alive():
+                    thread.start()
+                    # while thread.is_alive():
+                    #     time.sleep(1.0)
 
             print(f'_pimoroni_watcher_task waited: {_waited}')
             time.sleep(1.0)
