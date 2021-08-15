@@ -100,6 +100,8 @@ class JukeOroni(object):
 
     def __init__(self):
 
+        # self.test = False
+
         self.on = False
 
         # self.jukebox = JukeBox()

@@ -44,6 +44,8 @@ class Radar(object):
     def __init__(self):
         super().__init__()
 
+        self.test = False
+
         self.on = False
 
         # Non-Picklable objects as Image.Image()
@@ -81,10 +83,10 @@ class Radar(object):
             time.sleep(1.0)
             _waited += 1
 
-    def _radar_screenshot(self, placeholder=False):
+    def _radar_screenshot(self):
         try:
-            if placeholder:
-                raise Exception('getting placeholder radar image (in test mode probably)')
+            if self.test:
+                raise Exception('getting placeholder radar image (saving time in test mode)')
             options = selenium.webdriver.firefox.options.Options()
             options.headless = True
             service_log_path = os.path.join(tempfile.gettempdir(), 'geckodriver.log')
@@ -92,7 +94,7 @@ class Radar(object):
                 # print(f'Opening {self.URL}')
                 driver.get(self.URL)
                 time.sleep(2.0)
-                WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, "//*[@id=\"onetrust-accept-btn-handler\"]"))).click()
+                WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, "//*[@id=\"onetrust-accept-btn-handler\"]"))).click()
                 driver.refresh()
                 time.sleep(5.0)
                 root = driver.find_element(By.XPATH, "//*[@id=\"mapcontainer\"]")

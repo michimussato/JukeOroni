@@ -26,6 +26,8 @@ class TestJukeOroni(TestCase):
 
     def setUp(self):
         self.j = JukeOroni()
+        # self.j.test = True
+        self.j.layout_standby.radar.test = True
         # self.j.turn_on()
 
     def tearDown(self):
