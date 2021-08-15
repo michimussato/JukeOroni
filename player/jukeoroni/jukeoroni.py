@@ -244,6 +244,16 @@ class JukeOroni(object):
     def _stop_jukeoroni(self):
         self.on = False
 
+        print('terminating self._pimoroni_watcher_thread...')
+        self._pimoroni_watcher_thread.join()
+        self._pimoroni_watcher_thread = None
+        print('self._pimoroni_watcher_thread terminated')
+
+        print('terminating self._state_watcher_thread...')
+        self._state_watcher_thread.join()
+        self._state_watcher_thread = None
+        print('self._state_watcher_thread terminated')
+
     def _stop_modules(self):
         if not self.test:
             print('terminating self.layout_standby.radar...')
@@ -279,10 +289,10 @@ class JukeOroni(object):
             time.sleep(1.0)
             _waited += 1
 
-        print('terminating self._pimoroni_watcher_thread...')
-        self._pimoroni_watcher_thread.join()
-        self._pimoroni_watcher_thread = None
-        print('self._pimoroni_watcher_thread terminated')
+        # print('terminating self._pimoroni_watcher_thread...')
+        # self._pimoroni_watcher_thread.join()
+        # self._pimoroni_watcher_thread = None
+        # print('self._pimoroni_watcher_thread terminated')
 
     def set_image(self, **kwargs):
         # TODO filter for types of images
@@ -341,10 +351,10 @@ class JukeOroni(object):
             time.sleep(1.0)
             _waited += 1
 
-        print('terminating self._state_watcher_thread...')
-        self._state_watcher_thread.join()
-        self._state_watcher_thread = None
-        print('self._state_watcher_thread terminated')
+        # print('terminating self._state_watcher_thread...')
+        # self._state_watcher_thread.join()
+        # self._state_watcher_thread = None
+        # print('self._state_watcher_thread terminated')
     ############################################
 
     # def insert_media(self, media):
