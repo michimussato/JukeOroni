@@ -247,6 +247,7 @@ j.turn_off()
             self.pimoroni.set_image(OFF_IMAGE, saturation=PIMORONI_SATURATION)
             self.pimoroni.show(busy_wait=False)
             print('done.')
+        GPIO.cleanup()
 
     def _stop_jukeoroni(self):
         self.on = False
@@ -278,7 +279,7 @@ j.turn_off()
             self._buttons_watcher_thread = None
             print('self._buttons_watcher_thread terminated')
 
-        GPIO.cleanup()
+        # GPIO.cleanup()
         # for pin in _BUTTON_PINS:
         #     GPIO.cleanup(pin, GPIO.FALLING, self._handle_button, bouncetime=250)
         # signal.pause()
