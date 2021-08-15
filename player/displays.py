@@ -110,7 +110,7 @@ def round_resize(img, corner, scaled_by):
 class Layout(object):
 
         _clock = Clock()
-        # _radar = Radar()
+        _radar = Radar()  # disable for testing
         border = 4
         main_size = 420
 
