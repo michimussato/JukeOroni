@@ -17,9 +17,6 @@ from player.jukeoroni.settings import PIMORONI_SATURATION, CLOCK_UPDATE_INTERVAL
 LOG = logging.getLogger(__name__)
 
 
-# CLOCK_UPDATE_INTERVAL = 1  # in minutes
-
-
 # buttons setup
 # in portrait mode: from right to left
 _BUTTON_PINS = [5, 6, 16, 24]
@@ -57,18 +54,6 @@ GPIO.setup(_BUTTON_PINS, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 FFPLAY_CMD = 'ffplay -hide_banner -autoexit -vn -nodisp -loglevel error'.split(' ')
 
 
-"""
-django_shell
-
-from player.jukeoroni.jukeoroni import JukeOroni
-j = JukeOroni()
-j.test = True
-j.turn_on()
-
-j.turn_off()
-"""
-
-
 class Radio(object):
     def __init__(self):
         # self.on = False
@@ -95,6 +80,18 @@ class Radio(object):
 
 
 class JukeOroni(object):
+    """
+    Django shell usage:
+
+    django_shell
+
+    from player.jukeoroni.jukeoroni import JukeOroni
+    j = JukeOroni()
+    j.test = True
+    j.turn_on()
+
+    j.turn_off()
+    """
 
     # PAUSE_RESUME_TOGGLE = {signal.SIGSTOP: signal.SIGCONT,
     #                        signal.SIGCONT: signal.SIGSTOP}
