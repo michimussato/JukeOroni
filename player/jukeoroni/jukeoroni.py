@@ -325,7 +325,7 @@ class JukeOroni(object):
         for pin in _BUTTON_PINS:
             print(pin)
             GPIO.add_event_detect(pin, GPIO.FALLING, self._handle_button, bouncetime=250)
-        signal.pause()
+        # signal.pause()
         print('there')
 
     def _handle_button(self, pin):
