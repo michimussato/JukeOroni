@@ -79,7 +79,6 @@ class Radar(object):
                 self.radar_image = self._radar_screenshot()
                 print('Radar image updated.')
 
-            print(f'waited {_waited}')
             time.sleep(1.0)
             _waited += 1
 
