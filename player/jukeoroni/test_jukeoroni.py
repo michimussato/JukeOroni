@@ -1,3 +1,4 @@
+import inspect
 from django.test import TestCase
 from player.jukeoroni.jukeoroni import JukeOroni
 from player.models import Channel
@@ -32,6 +33,7 @@ class TestJukeOroni(TestCase):
         del self.j
 
     def test_turn_on(self):
+        print(inspect.getframeinfo(inspect.currentframe()).function)
         self.assertFalse(self.j.on)
         self.assertIsNone(self.j._state_watcher_thread)
         self.assertIsNone(self.j._pimoroni_watcher_thread)
@@ -50,6 +52,7 @@ class TestJukeOroni(TestCase):
         self.assertTrue(self.j.layout_standby.radar.radar_thread.is_alive())
 
     def test_turn_off(self):
+        print(inspect.getframeinfo(inspect.currentframe()).function)
         self.j.turn_on()
 
         self.assertTrue(self.j.on)
@@ -69,6 +72,8 @@ class TestJukeOroni(TestCase):
         # self.assertFalse(self.j.layout_standby.radar.radar_thread.is_alive())
 
     def test_insert(self):
+        print(inspect.getframeinfo(inspect.currentframe()).function)
+
         with self.assertRaises(Exception):
             self.j.insert()
 
