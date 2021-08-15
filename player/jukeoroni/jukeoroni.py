@@ -268,6 +268,8 @@ j.turn_off()
             if self._buttons_watcher_thread.is_alive():
                 thread_id = self._buttons_watcher_thread.ident
                 signal.pthread_kill(thread_id, signal.SIGINT.value)
+            while bool(self._buttons_watcher_thread.is_alive()):
+                time.sleep(0.1)
             # self._buttons_watcher_thread.join()
             self._buttons_watcher_thread = None
             print('self._buttons_watcher_thread terminated')
