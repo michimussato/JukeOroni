@@ -137,8 +137,8 @@ class Standby(Layout):
 
         bg.paste(comp_clock, box=(buttons_overlay.size[0] + self.border, _clock_center), mask=comp_clock)
 
-        _radar_image = self._radar.radar_image
-
+        # _radar_image = self._radar.radar_image
+        #
         # if _radar_image is not None:
         #     _radar_image = round_resize(img=_radar_image, corner=40, scaled_by=0.45)
         #     # print(_radar_image.size) yields (151, 205) for now
@@ -191,15 +191,15 @@ class Player(Layout):
 
         bg.paste(_clock, box=_clock_bottom_left_centered, mask=_clock)
 
-        _radar_image = self._radar.radar_image
-
-        if _radar_image is not None:
-            _radar_image = round_resize(img=_radar_image, corner=40, scaled_by=0.45)
-            # print(_radar_image.size) yields (151, 205) for now
-            w, h = _radar_image.size
-            border = 4
-            _radar_bottom_right = (int(600 - w - border), border)
-            bg.paste(_radar_image, box=_radar_bottom_right, mask=_radar_image)
+        # _radar_image = self._radar.radar_image
+        #
+        # if _radar_image is not None:
+        #     _radar_image = round_resize(img=_radar_image, corner=40, scaled_by=0.45)
+        #     # print(_radar_image.size) yields (151, 205) for now
+        #     w, h = _radar_image.size
+        #     border = 4
+        #     _radar_bottom_right = (int(600 - w - border), border)
+        #     bg.paste(_radar_image, box=_radar_bottom_right, mask=_radar_image)
 
         bg.paste(buttons_overlay, box=(0, 0), mask=buttons_overlay)
 
