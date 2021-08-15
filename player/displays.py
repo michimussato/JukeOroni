@@ -110,10 +110,7 @@ def round_resize(img, corner, scaled_by):
 class Layout(object):
 
         _clock = Clock()
-        _radar = Radar()
-        print('here')
-        print('here')
-        print('here')
+        # _radar = Radar()
         border = 4
         main_size = 420
 
@@ -142,12 +139,12 @@ class Standby(Layout):
 
         _radar_image = self._radar.radar_image
 
-        if _radar_image is not None:
-            _radar_image = round_resize(img=_radar_image, corner=40, scaled_by=0.45)
-            # print(_radar_image.size) yields (151, 205) for now
-            w, h = _radar_image.size
-            _radar_bottom_right = (int(600-w-self.border), self.border)
-            bg.paste(_radar_image, _radar_bottom_right, mask=_radar_image)
+        # if _radar_image is not None:
+        #     _radar_image = round_resize(img=_radar_image, corner=40, scaled_by=0.45)
+        #     # print(_radar_image.size) yields (151, 205) for now
+        #     w, h = _radar_image.size
+        #     _radar_bottom_right = (int(600-w-self.border), self.border)
+        #     bg.paste(_radar_image, _radar_bottom_right, mask=_radar_image)
 
         bg.paste(buttons_overlay, box=(0, 0), mask=buttons_overlay)
 
