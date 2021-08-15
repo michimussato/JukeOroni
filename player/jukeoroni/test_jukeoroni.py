@@ -57,6 +57,7 @@ class TestJukeOroni(TestCase):
     def test_turn_off(self):
         print('\n\n############################')
         print(f'Running test: {str(inspect.getframeinfo(inspect.currentframe()).function)}\n')
+        print('hererererere')
 
         self.j.turn_on()
 
