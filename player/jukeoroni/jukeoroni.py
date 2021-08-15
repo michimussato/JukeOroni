@@ -79,16 +79,16 @@ class Radio(object):
 
 class JukeOroni(object):
     """
-    Django shell usage:
+Django shell usage:
 
-    django_shell
+django_shell
 
-    from player.jukeoroni.jukeoroni import JukeOroni
-    j = JukeOroni()
-    j.test = True
-    j.turn_on()
+from player.jukeoroni.jukeoroni import JukeOroni
+j = JukeOroni()
+j.test = True
+j.turn_on()
 
-    j.turn_off()
+j.turn_off()
     """
 
     # PAUSE_RESUME_TOGGLE = {signal.SIGSTOP: signal.SIGCONT,
@@ -327,9 +327,12 @@ class JukeOroni(object):
         self._buttons_watcher_thread.start()
 
     def _buttons_watcher_task(self):
-        for pin in _BUTTON_PINS:
-            GPIO.add_event_detect(pin, GPIO.FALLING, self._handle_button, bouncetime=250)
-        signal.pause()
+        while self.on:
+            for pin in _BUTTON_PINS:
+                GPIO.add_event_detect(pin, GPIO.FALLING, self._handle_button, bouncetime=250)
+            signal.pause()
+            print('here')
+            time.sleep(1.0)
 
     def _handle_button(self, pin):
         button = _BUTTON_PINS.index(pin)
