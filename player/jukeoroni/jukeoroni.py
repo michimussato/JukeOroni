@@ -238,10 +238,10 @@ class JukeOroni(object):
         self._stop_jukeoroni()
         self._stop_modules()
 
-        print('setting OFF_IMAGE...')
-        self.pimoroni.set_image(OFF_IMAGE, saturation=PIMORONI_SATURATION)
-        self.pimoroni.show(busy_wait=False)
-        print('done.')
+        # print('setting OFF_IMAGE...')
+        # self.pimoroni.set_image(OFF_IMAGE, saturation=PIMORONI_SATURATION)
+        # self.pimoroni.show(busy_wait=False)
+        # print('done.')
 
     def _stop_jukeoroni(self):
         self.on = False
