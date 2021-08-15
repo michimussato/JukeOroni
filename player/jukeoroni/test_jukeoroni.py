@@ -57,6 +57,7 @@ class TestJukeOroni(TestCase):
     def test_turn_off(self):
         print('\n\n############################')
         print(f'Running test: {str(inspect.getframeinfo(inspect.currentframe()).function)}\n')
+
         self.j.turn_on()
 
         self.assertTrue(self.j.on)
@@ -74,6 +75,11 @@ class TestJukeOroni(TestCase):
         self.assertFalse(self.j.layout_standby.radar.on)
         self.assertIsNone(self.j.layout_standby.radar.radar_thread)
         # self.assertFalse(self.j.layout_standby.radar.radar_thread.is_alive())
+        print(self.j.inserted_media)
+        print(self.j.inserted_media)
+        print(self.j.inserted_media)
+        print(self.j.inserted_media)
+        print(self.j.inserted_media)
 
     def test_insert(self):
         print('\n\n############################')
