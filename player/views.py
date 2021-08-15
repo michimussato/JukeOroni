@@ -17,12 +17,12 @@ STANDARD_COVER = '/data/django/jukeoroni/player/static/cover_std.png'
 PIMORONI_FONT = '/data/django/jukeoroni/player/static/gotham-black.ttf'
 
 
-player = Player(auto_update_tracklist=True)
+player = Player(auto_update_tracklist=False)
 player.buttons_watcher_thread()
 player.state_watcher_thread()
 player.pimoroni_watcher_thread()
-player.track_list_generator_thread(
-    auto_update_tracklist_interval=DEFAULT_TRACKLIST_REGEN_INTERVAL)  # effect only if auto_update_tracklist=True
+# player.track_list_generator_thread(
+#     auto_update_tracklist_interval=DEFAULT_TRACKLIST_REGEN_INTERVAL)  # effect only if auto_update_tracklist=True
 
 player.track_loader_thread()
 player.set_image()
