@@ -33,7 +33,7 @@ class TestJukeOroni(TestCase):
 
     def test_turn_on(self):
         print('\n\n############################')
-        print(f'\n\nRunning test: {str(inspect.getframeinfo(inspect.currentframe()).function)}\n')
+        print(f'Running test: {str(inspect.getframeinfo(inspect.currentframe()).function)}\n')
         self.assertFalse(self.j.on)
         self.assertIsNone(self.j._state_watcher_thread)
         self.assertIsNone(self.j._pimoroni_watcher_thread)
@@ -55,7 +55,7 @@ class TestJukeOroni(TestCase):
 
     def test_turn_off(self):
         print('\n\n############################')
-        print(f'\n\nRunning test: {str(inspect.getframeinfo(inspect.currentframe()).function)}\n')
+        print(f'Running test: {str(inspect.getframeinfo(inspect.currentframe()).function)}\n')
         self.j.turn_on()
 
         self.assertTrue(self.j.on)
