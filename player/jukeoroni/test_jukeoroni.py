@@ -70,8 +70,8 @@ class TestJukeOroni(TestCase):
         self.j.turn_off()
 
         self.assertFalse(self.j.on)
-        self.assertFalse(self.j._pimoroni_watcher_thread.is_alive())
-        self.assertFalse(self.j._state_watcher_thread.is_alive())
+        self.assertIsNone(self.j._pimoroni_watcher_thread)
+        self.assertIsNone(self.j._state_watcher_thread)
         self.assertFalse(self.j.layout_standby.radar.on)
         self.assertIsNone(self.j.layout_standby.radar.radar_thread)
         # self.assertFalse(self.j.layout_standby.radar.radar_thread.is_alive())
