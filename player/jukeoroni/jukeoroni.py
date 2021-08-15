@@ -85,7 +85,7 @@ django_shell
 
 from player.jukeoroni.jukeoroni import JukeOroni
 j = JukeOroni()
-j.test = True
+# j.test = True
 j.turn_on()
 
 j.turn_off()
@@ -265,6 +265,9 @@ j.turn_off()
             pass
         else:
             print('terminating self._buttons_watcher_thread...')
+            if self._buttons_watcher_thread.is_alive():
+                thread_id = self._buttons_watcher_thread.ident
+                signal.pthread_kill(thread_id, signal.SIGKILL.value)
             self._buttons_watcher_thread.join()
             self._buttons_watcher_thread = None
             print('self._buttons_watcher_thread terminated')
@@ -327,12 +330,9 @@ j.turn_off()
         self._buttons_watcher_thread.start()
 
     def _buttons_watcher_task(self):
-        while self.on:
-            for pin in _BUTTON_PINS:
-                GPIO.add_event_detect(pin, GPIO.FALLING, self._handle_button, bouncetime=250)
-            signal.pause()
-            print('here')
-            time.sleep(1.0)
+        for pin in _BUTTON_PINS:
+            GPIO.add_event_detect(pin, GPIO.FALLING, self._handle_button, bouncetime=250)
+        signal.pause()
 
     def _handle_button(self, pin):
         button = _BUTTON_PINS.index(pin)
