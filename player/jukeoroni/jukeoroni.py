@@ -222,8 +222,7 @@ class JukeOroni(object):
 
     def _start_jukeoroni(self):
         self.on = True
-        if not self.test:
-            self.set_image()
+        self.set_image()
         # self.buttons_watcher_thread()
         self.state_watcher_thread()
         self.pimoroni_watcher_thread()
@@ -239,6 +238,8 @@ class JukeOroni(object):
         self._stop_jukeoroni()
         self._stop_modules()
 
+        # TODO: will be replaced with
+        #  layout (self.task_pimoroni_set_image)
         if not self.test:
             print('setting OFF_IMAGE...')
             self.pimoroni.set_image(OFF_IMAGE, saturation=PIMORONI_SATURATION)
@@ -300,11 +301,14 @@ class JukeOroni(object):
 
     def task_pimoroni_set_image(self, **kwargs):
         # magic here...
-        print('setting Pimoroni image...')
-        bg = self.layout_standby.get_layout(labels=self.LABELS)
-        self.pimoroni.set_image(bg, saturation=PIMORONI_SATURATION)
-        self.pimoroni.show(busy_wait=False)
-        print('done.')
+        if not self.test:
+            print('setting Pimoroni image...')
+            bg = self.layout_standby.get_layout(labels=self.LABELS)
+            self.pimoroni.set_image(bg, saturation=PIMORONI_SATURATION)
+            self.pimoroni.show(busy_wait=False)
+            print('done.')
+        else:
+            print('no Pimoroni update in test mode')
     ############################################
 
     # ############################################
