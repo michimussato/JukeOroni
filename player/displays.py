@@ -111,6 +111,9 @@ class Layout(object):
 
         _clock = Clock()
         _radar = Radar()
+        print('here')
+        print('here')
+        print('here')
         border = 4
         main_size = 420
 
