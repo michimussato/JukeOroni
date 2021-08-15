@@ -1,4 +1,5 @@
 import inspect
+from subprocess import Popen
 from django.test import TestCase
 from player.jukeoroni.jukeoroni import JukeOroni
 from player.models import Channel
@@ -100,8 +101,20 @@ class TestJukeOroni(TestCase):
                           self.j.inserted_media.url)
 
     def test_play(self):
+        print('\n\n############################')
+        print(f'Running test: {str(inspect.getframeinfo(inspect.currentframe()).function)}\n')
+
         with self.assertRaises(Exception):
             self.j.play()
 
         with self.assertRaises(Exception):
             self.j.insert(media='Medium')
+
+        media = Channel.objects.all()[0]
+        self.j.insert(media=media)
+
+        self.assertFalse(self.j.radio.is_on_air)
+        self.assertIsNone(self.j.playback_proc)
+        self.j.play()
+        self.assertTrue(self.j.radio.is_on_air)
+        self.assertIsInstance(self.j.playback_proc, Popen)
