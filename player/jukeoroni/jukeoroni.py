@@ -9,8 +9,6 @@ from inky.inky_uc8159 import Inky  # , BLACK
 from player.jukeoroni.displays import Standby as StandbyLayout
 from player.jukeoroni.displays import Radio as RadioLayout
 from player.models import Channel
-# from player.displays import Player as PlayerLayout
-# from player.jukeoroni.settings import BUTTONS
 from player.jukeoroni.settings import PIMORONI_SATURATION, CLOCK_UPDATE_INTERVAL, OFF_IMAGE, PIMORONI_WATCHER_UPDATE_INTERVAL
 
 
@@ -323,10 +321,12 @@ class JukeOroni(object):
 
     def _buttons_watcher_task(self):
         # _waited = None
-
+        print('here')
         for pin in _BUTTON_PINS:
+            print(pin)
             GPIO.add_event_detect(pin, GPIO.FALLING, self._handle_button, bouncetime=250)
         signal.pause()
+        print('there')
 
     def _handle_button(self, pin):
         button = _BUTTON_PINS.index(pin)
