@@ -116,7 +116,9 @@ class Layout:
 
 class Standby(Layout):
 
-    def get_layout(self, labels):
+    def get_layout(self, labels, test=False):
+
+        self.radar.test = test
 
         buttons_overlay = buttons_img_overlay(labels=labels, stby=True)
         bg = Image.new(mode='RGBA', size=(600, 448), color=(255, 0, 0, 255))

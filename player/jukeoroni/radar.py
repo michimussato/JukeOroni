@@ -44,7 +44,8 @@ class Radar(object):
     def __init__(self):
         super().__init__()
 
-        # self.test = False
+        # handle to enable test mode from outside
+        self.test = False
 
         self.on = False
 
@@ -62,6 +63,7 @@ class Radar(object):
     def start(self):
         self.on = True
         self.radar_thread = _RadarThread(target=self._radar_task)
+        print(f'Radar test mode: {str(self.test)}')
         self.radar_thread.start()
 
     def stop(self):
@@ -76,7 +78,11 @@ class Radar(object):
             if _waited is None or _waited % update_interval == 0:
                 _waited = 0
                 print('Updating radar image in background...')
-                self.radar_image = self._radar_screenshot()
+                if self.test:
+                    self.radar_image = self._placeholder
+                    print('getting placeholder radar image (saving time in test mode)')
+                else:
+                    self.radar_image = self._radar_screenshot()
                 print('Radar image updated.')
 
             time.sleep(1.0)
