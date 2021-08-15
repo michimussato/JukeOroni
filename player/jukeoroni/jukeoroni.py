@@ -213,6 +213,7 @@ j.turn_off()
     ############################################
     # startup procedure
     def turn_on(self):
+        assert not self.on, 'JukeOroni is ON already'
         self._start_jukeoroni()
         self._start_modules()
 
