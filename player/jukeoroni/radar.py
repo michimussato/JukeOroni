@@ -44,9 +44,6 @@ class Radar(object):
     def __init__(self):
         super().__init__()
 
-        # # handle to enable test mode from outside
-        # self.test = False
-
         self.on = False
 
         # Non-Picklable objects as Image.Image()

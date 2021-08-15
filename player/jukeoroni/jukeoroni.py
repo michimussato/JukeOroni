@@ -259,10 +259,9 @@ class JukeOroni(object):
         print('self._state_watcher_thread terminated')
 
     def _stop_modules(self):
-        if not self.test:
-            print('terminating self.layout_standby.radar...')
-            self.layout_standby.radar.stop()
-            print('self.layout_standby.radar terminated')
+        print('terminating self.layout_standby.radar...')
+        self.layout_standby.radar.stop()
+        print('self.layout_standby.radar terminated')
     ############################################
 
     ############################################
