@@ -16,6 +16,7 @@ LOADING_IMAGE = '/data/django/jukeoroni/player/static/loading.jpg'
 STANDARD_COVER = '/data/django/jukeoroni/player/static/cover_std.png'
 PIMORONI_FONT = '/data/django/jukeoroni/player/static/gotham-black.ttf'
 
+
 player = Player(auto_update_tracklist=True)
 player.buttons_watcher_thread()
 player.state_watcher_thread()
@@ -26,9 +27,15 @@ player.track_list_generator_thread(
 player.track_loader_thread()
 player.set_image()
 
+# player = None
+
 
 # Create your views here.
+# TODO: rmove player for unittesting new juke
 class PlayerView(View):
+
+    # def get(self, request):
+    #     return HttpResponseRedirect('/player')
 
     def get(self, request):
         global player
