@@ -148,6 +148,7 @@ j.turn_off()
     # playback workflow
     def insert(self, media):
         # j.insert(j.radio.last_played)
+        assert self.on, 'JukeOroni is OFF. turn_on() first.'
         assert isinstance(media, (Channel)), 'can only insert Channel model'
         self.inserted_media = media
 
