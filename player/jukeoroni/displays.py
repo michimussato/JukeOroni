@@ -116,11 +116,11 @@ class Layout:
 
 class Standby(Layout):
 
-    def get_layout(self, labels, test=False):
+    def get_layout(self, labels):
 
-        print(f'layout in test: {str(test)}')
+        # print(f'layout in test: {str(test)}')
 
-        self.radar.test = test
+        # self.radar.test = test
 
         buttons_overlay = buttons_img_overlay(labels=labels, stby=True)
         bg = Image.new(mode='RGBA', size=(600, 448), color=(255, 0, 0, 255))

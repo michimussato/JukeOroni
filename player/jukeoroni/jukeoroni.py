@@ -229,7 +229,7 @@ class JukeOroni(object):
 
     def _start_modules(self):
         # if not self.test:
-        self.layout_standby.radar.start()
+        self.layout_standby.radar.start(test=self.test)
     ############################################
 
     ############################################
