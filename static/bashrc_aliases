@@ -1,0 +1,6 @@
+alias speedo='speedometer -r wlan0 -t wlan0'
+alias apache_restart_and_log='source /data/venv/bin/activate && cd /data/django/jukeoroni/ && git pull && sudo systemctl restart apache2 && tail -f /var/log/apache2/error.log'
+alias apache_stop='source /data/venv/bin/activate && cd /data/django/jukeoroni/ && git pull && sudo systemctl stop apache2'
+alias apache_error_log='tail -f /var/log/apache2/error.log'
+alias django_shell='source /data/venv/bin/activate && cd /data/django/jukeoroni && git pull && python manage.py shell'
+alias django_test='source /data/venv/bin/activate && cd /data/django/jukeoroni && git pull && python manage.py test'
