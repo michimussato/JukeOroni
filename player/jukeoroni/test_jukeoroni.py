@@ -24,77 +24,77 @@ class TestJukeOroni(TestCase):
                         url_logo=channel[4])
             c.save()
 
-    def setUp(self):
-        self.j = JukeOroni()
-        self.j.test = True
-
-    def tearDown(self):
-        del self.j
-
-    def test_turn_on(self):
-        print('\n\n############################')
-        print(f'Running test: {str(inspect.getframeinfo(inspect.currentframe()).function)}\n')
-        self.assertFalse(self.j.on)
-        self.assertIsNone(self.j._state_watcher_thread)
-        self.assertIsNone(self.j._pimoroni_watcher_thread)
-        self.assertFalse(self.j.layout_standby.radar.on)
-        self.assertIsNone(self.j.layout_standby.radar.radar_thread)
-
-        self.j.turn_on()
-
-        self.assertTrue(self.j.on)
-        self.assertIsNotNone(self.j._state_watcher_thread)
-        self.assertIsNotNone(self.j._pimoroni_watcher_thread)
-        self.assertTrue(self.j._state_watcher_thread.is_alive())
-        self.assertTrue(self.j._pimoroni_watcher_thread.is_alive())
-        self.assertTrue(self.j.layout_standby.radar.on)
-        self.assertIsNotNone(self.j.layout_standby.radar.radar_thread)
-        self.assertTrue(self.j.layout_standby.radar.radar_thread.is_alive())
-
-        self.j.turn_off()
-
-    def test_turn_off(self):
-        print('\n\n############################')
-        print(f'Running test: {str(inspect.getframeinfo(inspect.currentframe()).function)}\n')
-        self.j.turn_on()
-
-        self.assertTrue(self.j.on)
-        self.assertTrue(self.j._pimoroni_watcher_thread.is_alive())
-        self.assertTrue(self.j._state_watcher_thread.is_alive())
-        self.assertTrue(self.j.layout_standby.radar.on)
-        self.assertIsNotNone(self.j.layout_standby.radar.radar_thread)
-        self.assertTrue(self.j.layout_standby.radar.radar_thread.is_alive())
-
-        self.j.turn_off()
-
-        self.assertFalse(self.j.on)
-        self.assertIsNone(self.j._pimoroni_watcher_thread)
-        self.assertIsNone(self.j._state_watcher_thread)
-        self.assertFalse(self.j.layout_standby.radar.on)
-        self.assertIsNone(self.j.layout_standby.radar.radar_thread)
-        # self.assertFalse(self.j.layout_standby.radar.radar_thread.is_alive())
-
-    def test_insert(self):
-        print('\n\n############################')
-        print(f'Running test: {str(inspect.getframeinfo(inspect.currentframe()).function)}\n')
-
-        with self.assertRaises(Exception):
-            self.j.insert()
-
-        with self.assertRaises(AssertionError):
-            self.j.play()
-            self.j.pause()
-            self.j.resume()
-            self.j.stop()
-            self.j.eject()
-
-        with self.assertRaises(NotImplementedError):
-            self.j.next()
-            self.j.previous()
-
-        self.assertIsNone(self.j.inserted_media)
-        media = Channel.objects.all()[0]
-        self.j.insert(media=media)
-        self.assertIsNotNone(self.j.inserted_media)
-        self.assertEquals('http://bob.hoerradar.de/radiobob-100-mp3-hq',
-                          self.j.inserted_media.url)
+    # def setUp(self):
+    #     self.j = JukeOroni()
+    #     self.j.test = True
+    #
+    # def tearDown(self):
+    #     del self.j
+    #
+    # def test_turn_on(self):
+    #     print('\n\n############################')
+    #     print(f'Running test: {str(inspect.getframeinfo(inspect.currentframe()).function)}\n')
+    #     self.assertFalse(self.j.on)
+    #     self.assertIsNone(self.j._state_watcher_thread)
+    #     self.assertIsNone(self.j._pimoroni_watcher_thread)
+    #     self.assertFalse(self.j.layout_standby.radar.on)
+    #     self.assertIsNone(self.j.layout_standby.radar.radar_thread)
+    #
+    #     self.j.turn_on()
+    #
+    #     self.assertTrue(self.j.on)
+    #     self.assertIsNotNone(self.j._state_watcher_thread)
+    #     self.assertIsNotNone(self.j._pimoroni_watcher_thread)
+    #     self.assertTrue(self.j._state_watcher_thread.is_alive())
+    #     self.assertTrue(self.j._pimoroni_watcher_thread.is_alive())
+    #     self.assertTrue(self.j.layout_standby.radar.on)
+    #     self.assertIsNotNone(self.j.layout_standby.radar.radar_thread)
+    #     self.assertTrue(self.j.layout_standby.radar.radar_thread.is_alive())
+    #
+    #     self.j.turn_off()
+    #
+    # def test_turn_off(self):
+    #     print('\n\n############################')
+    #     print(f'Running test: {str(inspect.getframeinfo(inspect.currentframe()).function)}\n')
+    #     self.j.turn_on()
+    #
+    #     self.assertTrue(self.j.on)
+    #     self.assertTrue(self.j._pimoroni_watcher_thread.is_alive())
+    #     self.assertTrue(self.j._state_watcher_thread.is_alive())
+    #     self.assertTrue(self.j.layout_standby.radar.on)
+    #     self.assertIsNotNone(self.j.layout_standby.radar.radar_thread)
+    #     self.assertTrue(self.j.layout_standby.radar.radar_thread.is_alive())
+    #
+    #     self.j.turn_off()
+    #
+    #     self.assertFalse(self.j.on)
+    #     self.assertIsNone(self.j._pimoroni_watcher_thread)
+    #     self.assertIsNone(self.j._state_watcher_thread)
+    #     self.assertFalse(self.j.layout_standby.radar.on)
+    #     self.assertIsNone(self.j.layout_standby.radar.radar_thread)
+    #     # self.assertFalse(self.j.layout_standby.radar.radar_thread.is_alive())
+    #
+    # def test_insert(self):
+    #     print('\n\n############################')
+    #     print(f'Running test: {str(inspect.getframeinfo(inspect.currentframe()).function)}\n')
+    #
+    #     with self.assertRaises(Exception):
+    #         self.j.insert()
+    #
+    #     with self.assertRaises(AssertionError):
+    #         self.j.play()
+    #         self.j.pause()
+    #         self.j.resume()
+    #         self.j.stop()
+    #         self.j.eject()
+    #
+    #     with self.assertRaises(NotImplementedError):
+    #         self.j.next()
+    #         self.j.previous()
+    #
+    #     self.assertIsNone(self.j.inserted_media)
+    #     media = Channel.objects.all()[0]
+    #     self.j.insert(media=media)
+    #     self.assertIsNotNone(self.j.inserted_media)
+    #     self.assertEquals('http://bob.hoerradar.de/radiobob-100-mp3-hq',
+    #                       self.j.inserted_media.url)
