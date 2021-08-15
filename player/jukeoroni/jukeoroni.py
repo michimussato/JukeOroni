@@ -146,9 +146,6 @@ class JukeOroni(object):
             self.eject()
             raise Exception('stop playback before exitting')
         if self.inserted_media is not None:
-            print(self.inserted_media)
-            print(self.inserted_media)
-            print(self.inserted_media)
             self.eject()
             raise Exception('eject media before exitting')
 
