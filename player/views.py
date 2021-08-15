@@ -16,8 +16,15 @@ LOADING_IMAGE = '/data/django/jukeoroni/player/static/loading.jpg'
 STANDARD_COVER = '/data/django/jukeoroni/player/static/cover_std.png'
 PIMORONI_FONT = '/data/django/jukeoroni/player/static/gotham-black.ttf'
 
+player = Player(auto_update_tracklist=True)
+player.buttons_watcher_thread()
+player.state_watcher_thread()
+player.pimoroni_watcher_thread()
+player.track_list_generator_thread(
+    auto_update_tracklist_interval=DEFAULT_TRACKLIST_REGEN_INTERVAL)  # effect only if auto_update_tracklist=True
 
-player = None
+player.track_loader_thread()
+player.set_image()
 
 
 # Create your views here.
@@ -25,16 +32,6 @@ class PlayerView(View):
 
     def get(self, request):
         global player
-
-        player = Player(auto_update_tracklist=True)
-        player.buttons_watcher_thread()
-        player.state_watcher_thread()
-        player.pimoroni_watcher_thread()
-        player.track_list_generator_thread(
-            auto_update_tracklist_interval=DEFAULT_TRACKLIST_REGEN_INTERVAL)  # effect only if auto_update_tracklist=True
-
-        player.track_loader_thread()
-        player.set_image()
 
         ret = '<html>\n'
         ret += '  <head>\n'
