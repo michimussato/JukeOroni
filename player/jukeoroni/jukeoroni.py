@@ -307,9 +307,11 @@ class JukeOroni(object):
 
     def task_pimoroni_set_image(self, **kwargs):
         # magic here...
+        print('setting Pimoroni image...')
         bg = self.layout_standby.get_layout(labels=self.LABELS)
         self.pimoroni.set_image(bg, saturation=PIMORONI_SATURATION)
         self.pimoroni.show(busy_wait=False)
+        print('done.')
     ############################################
 
     # ############################################
