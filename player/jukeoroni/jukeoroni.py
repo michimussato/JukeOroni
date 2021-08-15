@@ -329,7 +329,7 @@ j.turn_off()
             print('setting Pimoroni image...')
             bg = self.layout_standby.get_layout(labels=self.LABELS)
             self.pimoroni.set_image(bg, saturation=PIMORONI_SATURATION)
-            self.pimoroni.show(busy_wait=False)
+            self.pimoroni.show(busy_wait=True)
             print('done.')
     ############################################
 
