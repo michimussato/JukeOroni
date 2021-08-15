@@ -283,10 +283,7 @@ class JukeOroni(object):
                 if self._pimoroni_thread_queue is not None:
                     thread = self._pimoroni_thread_queue
                     self._pimoroni_thread_queue = None
-                    # if not thread.is_alive():
                     thread.start()
-                    # while thread.is_alive():
-                    #     time.sleep(1.0)
 
             time.sleep(1.0)
             _waited += 1
