@@ -118,3 +118,4 @@ class TestJukeOroni(TestCase):
         self.j.play()
         self.assertTrue(self.j.radio.is_on_air)
         self.assertIsInstance(self.j.playback_proc, Popen)
+        self.assertEquals(self.j.playback_proc.poll(), 1)
