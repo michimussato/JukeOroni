@@ -118,6 +118,8 @@ class Standby(Layout):
 
     def get_layout(self, labels, test=False):
 
+        print(f'layout in test: {str(test)}')
+
         self.radar.test = test
 
         buttons_overlay = buttons_img_overlay(labels=labels, stby=True)
