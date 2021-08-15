@@ -1,12 +1,9 @@
-import os
-import typing
 import random
 import time
 import threading
 import subprocess
 import logging
 import signal
-from django.utils.timezone import localtime, now
 import RPi.GPIO as GPIO
 from inky.inky_uc8159 import Inky  # , BLACK
 from player.jukeoroni.displays import Standby as StandbyLayout
@@ -21,7 +18,6 @@ LOG = logging.getLogger(__name__)
 
 
 # CLOCK_UPDATE_INTERVAL = 1  # in minutes
-
 
 
 # buttons setup
@@ -162,7 +158,6 @@ class JukeOroni(object):
         assert self.inserted_media is not None, 'no media inserted. insert media first.'
 
         if isinstance(self.inserted_media, Channel):
-            # j.play()
             self.radio.is_on_air = True
             self.playback_proc = subprocess.Popen(FFPLAY_CMD + [self.inserted_media.url], shell=False)
 

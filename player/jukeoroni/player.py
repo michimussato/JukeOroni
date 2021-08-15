@@ -947,7 +947,7 @@ class Player(object):
 
 
 def player():
-    p = Player(auto_update_tracklist=True)
+    p = Player(auto_update_tracklist=False)
     # p.temp_cleanup()
     p.buttons_watcher_thread()
     p.state_watcher_thread()
