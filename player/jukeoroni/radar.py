@@ -81,8 +81,10 @@ class Radar(object):
             time.sleep(1.0)
             _waited += 1
 
-    def _radar_screenshot(self):
+    def _radar_screenshot(self, placeholder=False):
         try:
+            if placeholder:
+                raise Exception('getting placeholder radar image (in test mode probably)')
             options = selenium.webdriver.firefox.options.Options()
             options.headless = True
             service_log_path = os.path.join(tempfile.gettempdir(), 'geckodriver.log')
