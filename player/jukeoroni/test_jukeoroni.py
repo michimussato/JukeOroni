@@ -79,6 +79,8 @@ class TestJukeOroni(TestCase):
         print('\n\n############################')
         print(f'Running test: {str(inspect.getframeinfo(inspect.currentframe()).function)}\n')
 
+        self.j.turn_on()
+
         with self.assertRaises(Exception):
             self.j.insert()
 
@@ -102,9 +104,13 @@ class TestJukeOroni(TestCase):
 
         self.j.eject()
 
+        self.j.turn_off()
+
     def test_play(self):
         print('\n\n############################')
         print(f'Running test: {str(inspect.getframeinfo(inspect.currentframe()).function)}\n')
+
+        self.j.turn_on()
 
         with self.assertRaises(Exception):
             self.j.play()
@@ -125,13 +131,23 @@ class TestJukeOroni(TestCase):
         self.j.stop()
         self.j.eject()
 
+        self.j.turn_off()
+
     def test_pause(self):
+        print('\n\n############################')
+        print(f'Running test: {str(inspect.getframeinfo(inspect.currentframe()).function)}\n')
         pass
 
     def test_resume(self):
+        print('\n\n############################')
+        print(f'Running test: {str(inspect.getframeinfo(inspect.currentframe()).function)}\n')
         pass
 
     def test_stop(self):
+        print('\n\n############################')
+        print(f'Running test: {str(inspect.getframeinfo(inspect.currentframe()).function)}\n')
+
+        self.j.turn_on()
 
         with self.assertRaises(AssertionError):
             self.j.stop()
@@ -153,18 +169,26 @@ class TestJukeOroni(TestCase):
         self.assertFalse(self.j.radio.is_on_air)
         self.assertIsNone(self.j.playback_proc)
 
+        self.j.turn_off()
+
     def test_next(self):
+        print('\n\n############################')
+        print(f'Running test: {str(inspect.getframeinfo(inspect.currentframe()).function)}\n')
         pass
 
     def test_previous(self):
+        print('\n\n############################')
+        print(f'Running test: {str(inspect.getframeinfo(inspect.currentframe()).function)}\n')
         pass
 
     def test_eject(self):
+        print('\n\n############################')
+        print(f'Running test: {str(inspect.getframeinfo(inspect.currentframe()).function)}\n')
+
+        self.j.turn_on()
+
         with self.assertRaises(AssertionError):
             self.j.eject()
-
-        # self.assertIsNone(self.j.inserted_media)
-        # self.assertIsNone(self.j.playback_proc)
 
         media = Channel.objects.all()[0]
         self.j.insert(media=media)
@@ -191,4 +215,4 @@ class TestJukeOroni(TestCase):
         self.j.eject()
         self.assertIsNone(self.j.inserted_media)
 
-
+        self.j.turn_off()
