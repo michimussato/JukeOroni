@@ -53,7 +53,7 @@ class Radar(object):
 
     def _radar_task(self):
         while True:
-            print('Updating radar image in background...')
+            print('Updating radar image in background...YYYY')
             self.radar_image = self._radar_screenshot()
             print('Radar image updated.')
             time.sleep(self.RADAR_UPDATE_INTERVAL*60.0)
