@@ -74,7 +74,7 @@ class Radar(object):
         while self.on:
             if _waited is None or _waited % update_interval == 0:
                 _waited = 0
-                print('Updating radar image in background...XXXX')
+                print('Updating radar image in background...')
                 if kwargs['test']:
                     self.radar_image = self._placeholder
                     print('getting placeholder radar image (saving time in test mode)')
