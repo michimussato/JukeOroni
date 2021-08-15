@@ -269,10 +269,11 @@ j.turn_off()
                 if self._buttons_watcher_thread.is_alive():
                     thread_id = self._buttons_watcher_thread.ident
                     signal.pthread_kill(thread_id, signal.SIGINT.value)
-                while bool(self._buttons_watcher_thread.is_alive()):
-                    time.sleep(0.1)
-            except KeyboardInterrupt as err:
-                print(err)
+                    self._buttons_watcher_thread.join()
+                # while bool(self._buttons_watcher_thread.is_alive()):
+                #     time.sleep(0.1)
+            except KeyboardInterrupt:
+                pass
             finally:
                 # self._buttons_watcher_thread.join()
                 self._buttons_watcher_thread = None
