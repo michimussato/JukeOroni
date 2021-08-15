@@ -216,12 +216,12 @@ class JukeOroni(object):
     ############################################
     # startup procedure
     def turn_on(self):
-        self.on = True
-        self.set_image()
         self._start_jukeoroni()
         self._start_modules()
 
     def _start_jukeoroni(self):
+        self.on = True
+        self.set_image()
         # self.buttons_watcher_thread()
         self.state_watcher_thread()
         self.pimoroni_watcher_thread()
@@ -234,24 +234,14 @@ class JukeOroni(object):
     ############################################
     # shutdown procedure
     def turn_off(self):
-        self.on = False
 
-        self._stop_jukeoroni()
         self._stop_modules()
 
         self.pimoroni.set_image(OFF_IMAGE, saturation=PIMORONI_SATURATION)
         self.pimoroni.show(busy_wait=False)
 
     def _stop_jukeoroni(self):
-        print('terminating self._pimoroni_watcher_thread...')
-        self._pimoroni_watcher_thread.join()
-        self._pimoroni_watcher_thread = None
-        print('self._pimoroni_watcher_thread terminated')
-
-        print('terminating self._state_watcher_thread...')
-        self._state_watcher_thread.join()
-        self._state_watcher_thread = None
-        print('self._state_watcher_thread terminated')
+        self.on = False
 
     def _stop_modules(self):
         if not self.test:
@@ -285,8 +275,14 @@ class JukeOroni(object):
                     while thread.is_alive():
                         time.sleep(1.0)
 
+            print(f'_pimoroni_watcher_task waited: {_waited}')
             time.sleep(1.0)
             _waited += 1
+
+        print('terminating self._pimoroni_watcher_thread...')
+        self._pimoroni_watcher_thread.join()
+        self._pimoroni_watcher_thread = None
+        print('self._pimoroni_watcher_thread terminated')
 
     def set_image(self, **kwargs):
         # TODO filter for types of images
@@ -328,12 +324,12 @@ class JukeOroni(object):
     # performed on web ui requires a state change
     # TODO: define states
     def state_watcher_thread(self):
-        self._state_watcher_thread = threading.Thread(target=self.state_watcher_task)
+        self._state_watcher_thread = threading.Thread(target=self._state_watcher_task)
         self._state_watcher_thread.name = 'State Watcher Thread'
         self._state_watcher_thread.daemon = False
         self._state_watcher_thread.start()
 
-    def state_watcher_task(self):
+    def _state_watcher_task(self):
         update_interval = CLOCK_UPDATE_INTERVAL*60
         _waited = None
         while self.on:
@@ -341,8 +337,14 @@ class JukeOroni(object):
                 _waited = 0
                 self.set_image()
 
+            print(f'_state_watcher_task waited: {_waited}')
             time.sleep(1.0)
             _waited += 1
+
+        print('terminating self._state_watcher_thread...')
+        self._state_watcher_thread.join()
+        self._state_watcher_thread = None
+        print('self._state_watcher_thread terminated')
     ############################################
 
     # def insert_media(self, media):
