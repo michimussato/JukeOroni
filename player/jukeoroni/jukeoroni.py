@@ -245,7 +245,7 @@ j.turn_off()
         else:
             print('setting OFF_IMAGE...')
             self.pimoroni.set_image(OFF_IMAGE, saturation=PIMORONI_SATURATION)
-            self.pimoroni.show(busy_wait=False)
+            self.pimoroni.show(busy_wait=True)
             print('done.')
         GPIO.cleanup()
 
