@@ -98,3 +98,10 @@ class TestJukeOroni(TestCase):
         self.assertIsNotNone(self.j.inserted_media)
         self.assertEquals('http://bob.hoerradar.de/radiobob-100-mp3-hq',
                           self.j.inserted_media.url)
+
+    def test_play(self):
+        with self.assertRaises(Exception):
+            self.j.play()
+
+        with self.assertRaises(Exception):
+            self.j.insert(media='Medium')
