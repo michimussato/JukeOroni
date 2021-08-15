@@ -245,6 +245,8 @@ j.turn_off()
     def _stop_jukeoroni(self):
         self.on = False
 
+
+
         # cannot join() the threads from
         # within the threads themselves
         print('terminating self._pimoroni_watcher_thread...')
@@ -271,6 +273,11 @@ j.turn_off()
             # self._buttons_watcher_thread.join()
             self._buttons_watcher_thread = None
             print('self._buttons_watcher_thread terminated')
+
+        GPIO.cleanup()
+        # for pin in _BUTTON_PINS:
+        #     GPIO.cleanup(pin, GPIO.FALLING, self._handle_button, bouncetime=250)
+        # signal.pause()
 
     def _stop_modules(self):
         print('terminating self.layout_standby.radar...')
