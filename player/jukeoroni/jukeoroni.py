@@ -11,7 +11,7 @@ from player.jukeoroni.displays import Radio as RadioLayout
 from player.models import Channel
 # from player.displays import Player as PlayerLayout
 # from player.jukeoroni.settings import BUTTONS
-from player.jukeoroni.settings import PIMORONI_SATURATION, CLOCK_UPDATE_INTERVAL, OFF_IMAGE
+from player.jukeoroni.settings import PIMORONI_SATURATION, CLOCK_UPDATE_INTERVAL, OFF_IMAGE, PIMORONI_WATCHER_UPDATE_INTERVAL
 
 
 LOG = logging.getLogger(__name__)
@@ -253,8 +253,8 @@ class JukeOroni(object):
 
     ############################################
     # pimoroni_watcher_thread
-    # checks if display update is required
-    # display has to be updated, we submit a thread
+    # checks if display update is required.
+    # if display has to be updated, we submit a thread
     # to self._pimoroni_thread_queue by calling set_image()
     def pimoroni_watcher_thread(self):
         self._pimoroni_watcher_thread = threading.Thread(target=self._pimoroni_watcher_task)
@@ -263,10 +263,9 @@ class JukeOroni(object):
         self._pimoroni_watcher_thread.start()
 
     def _pimoroni_watcher_task(self):
-        update_interval = 5
         _waited = None
         while self.on:
-            if _waited is None or _waited % update_interval == 0:
+            if _waited is None or _waited % PIMORONI_WATCHER_UPDATE_INTERVAL == 0:
                 _waited = 0
                 if self._pimoroni_thread_queue is not None:
                     thread = self._pimoroni_thread_queue
