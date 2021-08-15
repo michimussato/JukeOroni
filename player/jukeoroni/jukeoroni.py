@@ -220,11 +220,7 @@ j.turn_off()
         self.set_image()
         self.state_watcher_thread()
         self.pimoroni_watcher_thread()
-
-        if self.test:
-            pass
-        else:
-            self.buttons_watcher_thread()
+        self.buttons_watcher_thread()
 
     def _start_modules(self):
         self.layout_standby.radar.start(test=self.test)
@@ -261,23 +257,20 @@ j.turn_off()
         self._state_watcher_thread = None
         print('self._state_watcher_thread terminated')
 
-        if self.test:
+        try:
+            print('terminating self._buttons_watcher_thread...')
+            if self._buttons_watcher_thread.is_alive():
+                thread_id = self._buttons_watcher_thread.ident
+                signal.pthread_kill(thread_id, signal.SIGINT.value)
+                self._buttons_watcher_thread.join()
+            # while bool(self._buttons_watcher_thread.is_alive()):
+            #     time.sleep(0.1)
+        except KeyboardInterrupt:
             pass
-        else:
-            try:
-                print('terminating self._buttons_watcher_thread...')
-                if self._buttons_watcher_thread.is_alive():
-                    thread_id = self._buttons_watcher_thread.ident
-                    signal.pthread_kill(thread_id, signal.SIGINT.value)
-                    self._buttons_watcher_thread.join()
-                # while bool(self._buttons_watcher_thread.is_alive()):
-                #     time.sleep(0.1)
-            except KeyboardInterrupt:
-                pass
-            finally:
-                # self._buttons_watcher_thread.join()
-                self._buttons_watcher_thread = None
-                print('self._buttons_watcher_thread terminated')
+        finally:
+            # self._buttons_watcher_thread.join()
+            self._buttons_watcher_thread = None
+            print('self._buttons_watcher_thread terminated')
 
     def _stop_modules(self):
         print('terminating self.layout_standby.radar...')
