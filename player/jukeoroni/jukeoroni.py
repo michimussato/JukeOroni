@@ -100,7 +100,7 @@ class JukeOroni(object):
 
     def __init__(self):
 
-        # self.test = False
+        self.test = False
 
         self.on = False
 
@@ -227,7 +227,8 @@ class JukeOroni(object):
         self.pimoroni_watcher_thread()
 
     def _start_modules(self):
-        self.layout_standby.radar.start()
+        if not self.test:
+            self.layout_standby.radar.start()
     ############################################
 
     ############################################
@@ -253,9 +254,10 @@ class JukeOroni(object):
         print('self._state_watcher_thread terminated')
 
     def _stop_modules(self):
-        print('terminating self.layout_standby.radar...')
-        self.layout_standby.radar.stop()
-        print('self.layout_standby.radar terminated')
+        if not self.test:
+            print('terminating self.layout_standby.radar...')
+            self.layout_standby.radar.stop()
+            print('self.layout_standby.radar terminated')
     ############################################
 
     ############################################
