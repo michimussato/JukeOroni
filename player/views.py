@@ -1,12 +1,5 @@
-import os
-import time
-import subprocess
-import logging
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from django.views import View
-import radio.models
-from player.player import Player, BUTTON_RAND_ALBM_PIN, BUTTON_PLAY_NEXT_PIN, BUTTON_STOP_BACK_PIN, _LOADING_IMAGE, DEFAULT_TRACKLIST_REGEN_INTERVAL
-from .models import Channel, Album
 
 
 PIMORONI_SATURATION = 1.0
@@ -17,19 +10,6 @@ STANDARD_COVER = '/data/django/jukeoroni/player/static/cover_std.png'
 PIMORONI_FONT = '/data/django/jukeoroni/player/static/gotham-black.ttf'
 
 
-# player = Player(auto_update_tracklist=True)
-# player.buttons_watcher_thread()
-# player.state_watcher_thread()
-# player.pimoroni_watcher_thread()
-# player.track_list_generator_thread(
-#     auto_update_tracklist_interval=DEFAULT_TRACKLIST_REGEN_INTERVAL)  # effect only if auto_update_tracklist=True
-#
-# player.track_loader_thread()
-# player.set_image()
-
-player = None
-
-
 # Create your views here.
 # TODO: rmove player for unittesting new juke
 class PlayerView(View):
@@ -38,134 +18,16 @@ class PlayerView(View):
         return HttpResponseRedirect('/player')
 
     def switch_mode(self):
-        # global player
-        # player.handle_button(pin=BUTTON_RAND_ALBM_PIN)
         return HttpResponseRedirect('/player')
 
     def play_next(self):
-        # global player
-        # player.handle_button(pin=BUTTON_PLAY_NEXT_PIN)
         return HttpResponseRedirect('/player')
 
     def stop(self):
-        # global player
-        # player.handle_button(pin=BUTTON_STOP_BACK_PIN)
         return HttpResponseRedirect('/player')
 
     def albums(self):
-        # global player
-        # albums = Album.objects.all()
-        #
-        # ret = '<html>\n'
-        # # ret += '  <head>\n'
-        # # ret += '    <meta http-equiv="refresh" content="10" >\n'
-        # # ret += '  </head>\n'
-        # ret += '  <body>\n'
-        # previous_artist = None
-        # for album in albums:
-        #     ret += '  <div>\n'
-        #     if album.artist_id != previous_artist:
-        #         ret += f'{album.artist_id}'
-        #     previous_artist = album.artist_id
-        #     # ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/player/stop\';\">Stop</button>\n'
-        #     # ret += f'    <button style=\"width:100%\">{album.album_title}</button>\n'
-        #     ret += f'        <button style=\"width:100%\" onclick=\"window.location.href = \'{album.id}\';\">{album.album_title}</button>\n'
-        #     ret += '  </div>\n'
-        # ret += '  </body>\n'
-        # ret += '</html>\n'
-        # return HttpResponse(ret)
-
         return HttpResponseRedirect('/player')
 
     def play_album(self, album_id):
-        # global player
-        #
-        # player.requested_album_id = album_id
-        # player.kill_loading_process()
-        # player.button_rand_albm_value = 'Albm -> Rand'
-        #
-        # player.set_image(track=player.playing_track)
-
         return HttpResponseRedirect('/player')
-
-
-# def radio_index(request):
-#     # channels = Channel.objects.all()
-#     #
-#     # ret = '<html>\n'
-#     # ret += '  <body>\n'
-#     # for channel in channels:
-#     #     if channel.is_enabled:
-#     #         # required to find out if and which channel is playing
-#     #         ps = subprocess.Popen(['ps -o cmd -p $(pidof ffplay) | grep -i {0}'.format(channel.url)], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-#     #         output = ps.communicate()[0].decode('utf-8').replace('\n', '')
-#     #         if output != '':
-#     #             pid = subprocess.Popen(['pidof ffplay'], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-#     #             pid_output = pid.communicate()[0].decode('utf-8').replace('\n', '')
-#     #             ret += f'        <button style=\"width:100%; background-color:green; \" onclick=\"window.location.href = \'stop/{pid_output}\';\">{channel.display_name}</button>\n'  # , channel.display_name)
-#     #         else:
-#     #             ret += f'        <button style=\"width:100%\" onclick=\"window.location.href = \'{channel.display_name_short}/play\';\">{channel.display_name}</button>\n'
-#     # ret += '  </body>\n'
-#     # ret += '</html>\n'
-#     # return HttpResponse(ret)
-#     return HttpResponseRedirect('/player')
-#
-#
-# def radio_play(request, display_name_short):
-#
-#     pid = subprocess.Popen(['pidof ffplay'], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-#     pid_output = pid.communicate()[0].decode('utf-8').replace('\n', '')
-#
-#     try:
-#         for c in Channel.objects.filter(last_played=True):
-#             c.last_played = False
-#             c.save()
-#     except radio.models.Channel.DoesNotExist:
-#         pass
-#
-#     if pid_output != '':
-#         os.system(f'kill {pid_output}')
-#     channel = Channel.objects.get(display_name_short=display_name_short)
-#     subprocess.Popen(['ffplay', '-hide_banner', '-autoexit', '-nodisp', '-vn', '-loglevel', 'quiet', channel.url])
-#     channel.last_played = True
-#     channel.save()
-#
-#     set_image(image_file=channel.url_logo, media_info=channel.display_name)
-#
-#     return HttpResponseRedirect('/player/radio')
-#
-#
-# def radio_stop(request, pid):
-#     os.system(f'kill {pid}')
-#     set_image(image_file=SLEEP_IMAGE, media_info='')
-#     return HttpResponseRedirect('/player/radio')
-#
-#
-# def set_image(image_file, media_info):
-#     logging.debug('ignoring setting image task')
-#     return
-# #     thread = threading.Thread(target=task_pimoroni_set_image, kwargs={'image_file': image_file, 'media_info': media_info})
-# #     thread.name = 'Set Image Thread'
-# #     thread.daemon = False
-# #     thread.start()
-# #
-# #
-# # def task_pimoroni_set_image(**kwargs):
-# #     pimoroni = Inky()
-# #
-# #     logging.debug('setting image...')
-# #
-# #     if kwargs['image_file'] is None:
-# #         cover = STANDARD_COVER
-# #     else:
-# #         cover = kwargs['image_file']
-# #
-# #     bg = PlayerLayout.get_layout(labels=['', '', '', ''], cover=cover)
-# #     """
-# #     File "/data/django/jukeoroni/player/views.py", line 100, in task_pimoroni_set_image
-# #       bg = PlayerLayout.get_layout(labels=['', '', '', ''], cover=cover)
-# #     TypeError: get_layout() missing 1 required positional argument: 'self'
-# #     """
-# #
-# #     pimoroni.set_image(bg, saturation=PIMORONI_SATURATION)
-# #     pimoroni.show()
