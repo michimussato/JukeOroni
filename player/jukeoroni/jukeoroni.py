@@ -126,7 +126,7 @@ class JukeOroni(object):
 
         # Watcher threads
         self._pimoroni_watcher_thread = None
-        # self._buttons_watcher_thread = None
+        self._buttons_watcher_thread = None
         self._state_watcher_thread = None
 
     def __str__(self):
@@ -220,12 +220,11 @@ class JukeOroni(object):
     def _start_jukeoroni(self):
         self.on = True
         self.set_image()
-        # self.buttons_watcher_thread()
         self.state_watcher_thread()
         self.pimoroni_watcher_thread()
+        self.buttons_watcher_thread()
 
     def _start_modules(self):
-        # if not self.test:
         self.layout_standby.radar.start(test=self.test)
     ############################################
 
@@ -237,7 +236,9 @@ class JukeOroni(object):
 
         # TODO: will be replaced with
         #  layout (self.task_pimoroni_set_image)
-        if not self.test:
+        if self.test:
+            print('Not setting OFF_IMAGE. Test mode.')
+        else:
             print('setting OFF_IMAGE...')
             self.pimoroni.set_image(OFF_IMAGE, saturation=PIMORONI_SATURATION)
             self.pimoroni.show(busy_wait=False)
@@ -257,6 +258,11 @@ class JukeOroni(object):
         self._state_watcher_thread.join()
         self._state_watcher_thread = None
         print('self._state_watcher_thread terminated')
+
+        print('terminating self._buttons_watcher_thread...')
+        self._buttons_watcher_thread.join()
+        self._buttons_watcher_thread = None
+        print('self._buttons_watcher_thread terminated')
 
     def _stop_modules(self):
         print('terminating self.layout_standby.radar...')
@@ -297,35 +303,36 @@ class JukeOroni(object):
         self._pimoroni_thread_queue = thread
 
     def task_pimoroni_set_image(self, **kwargs):
-        # magic here...
-        if not self.test:
+        if self.test:
+            print('no Pimoroni update in test mode')
+        else:
             print('setting Pimoroni image...')
             bg = self.layout_standby.get_layout(labels=self.LABELS)
             self.pimoroni.set_image(bg, saturation=PIMORONI_SATURATION)
             self.pimoroni.show(busy_wait=False)
             print('done.')
-        else:
-            print('no Pimoroni update in test mode')
     ############################################
 
-    # ############################################
-    # # buttons_watcher_thread
-    # def buttons_watcher_thread(self):
-    #     self._buttons_watcher_thread = threading.Thread(target=self._buttons_watcher_task)
-    #     self._buttons_watcher_thread.name = 'Buttons Watcher Thread'
-    #     self._buttons_watcher_thread.daemon = False
-    #     self._buttons_watcher_thread.start()
-    #
-    # def _buttons_watcher_task(self):
-    #     for pin in BUTTONS:
-    #         GPIO.add_event_detect(pin, GPIO.FALLING, self._handle_button, bouncetime=250)
-    #     signal.pause()
-    #
-    # def _handle_button(self, pin):
-    #     button = BUTTONS.index(pin)
-    #     logging.info(f"Button press detected on pin: {pin} button: {button}")
-    #     print(f"Button press detected on pin: {pin} button: {button}")
-    # ############################################
+    ############################################
+    # buttons_watcher_thread
+    def buttons_watcher_thread(self):
+        self._buttons_watcher_thread = threading.Thread(target=self._buttons_watcher_task)
+        self._buttons_watcher_thread.name = 'Buttons Watcher Thread'
+        self._buttons_watcher_thread.daemon = False
+        self._buttons_watcher_thread.start()
+
+    def _buttons_watcher_task(self):
+        # _waited = None
+
+        for pin in _BUTTON_PINS:
+            GPIO.add_event_detect(pin, GPIO.FALLING, self._handle_button, bouncetime=250)
+        signal.pause()
+
+    def _handle_button(self, pin):
+        button = _BUTTON_PINS.index(pin)
+        logging.info(f"Button press detected on pin: {pin} button: {button}")
+        print(f"Button press detected on pin: {pin} button: {button}")
+    ############################################
 
     ############################################
     # State watcher (buttons)

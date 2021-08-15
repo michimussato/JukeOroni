@@ -363,6 +363,11 @@ class Player(object):
     @staticmethod
     def create_update_track_list():
         # TODO: filter image files, m3u etc.
+
+        # TODO
+        #  [Sun Aug 15 17:12:39.274075 2021] [wsgi:error] [pid 1572:tid 3038589984] [remote 127.0.0.1:40396] track list generated successfully: 10971 tracks found
+        #  [Sun Aug 15 17:12:51.306229 2021] [wsgi:error] [pid 1572:tid 3038589984] [remote 127.0.0.1:40396] generating updated track list...
+
         logging.info('generating updated track list...')
         print('generating updated track list...')
         discogs_client = get_client()
