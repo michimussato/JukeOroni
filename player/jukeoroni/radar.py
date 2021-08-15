@@ -44,8 +44,8 @@ class Radar(object):
     def __init__(self):
         super().__init__()
 
-        # handle to enable test mode from outside
-        self.test = False
+        # # handle to enable test mode from outside
+        # self.test = False
 
         self.on = False
 
@@ -60,10 +60,10 @@ class Radar(object):
         # sharing memory...not know yet...indeed. need syncmanager
         self.radar_thread = None
 
-    def start(self):
+    def start(self, test=False):
         self.on = True
-        self.radar_thread = _RadarThread(target=self._radar_task)
-        print(f'Radar test mode: {str(self.test)}')
+        self.radar_thread = _RadarThread(target=self._radar_task, kwargs={'test': test})
+        print(f'Radar test mode: {str(test)}')
         self.radar_thread.start()
 
     def stop(self):
@@ -71,14 +71,14 @@ class Radar(object):
         self.radar_thread.join()
         self.radar_thread = None
 
-    def _radar_task(self):
+    def _radar_task(self, **kwargs):
         update_interval = RADAR_UPDATE_INTERVAL*60.0
         _waited = None
         while self.on:
             if _waited is None or _waited % update_interval == 0:
                 _waited = 0
                 print('Updating radar image in background...')
-                if self.test:
+                if kwargs['test']:
                     self.radar_image = self._placeholder
                     print('getting placeholder radar image (saving time in test mode)')
                 else:
