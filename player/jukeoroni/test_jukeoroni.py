@@ -59,6 +59,12 @@ class TestJukeOroni(TestCase):
         print(f'Running test: {str(inspect.getframeinfo(inspect.currentframe()).function)}\n')
         print('hererererere')
 
+        print(self.j.inserted_media)
+        print(self.j.inserted_media)
+        print(self.j.inserted_media)
+        print(self.j.inserted_media)
+        print(self.j.inserted_media)
+
         self.j.turn_on()
 
         self.assertTrue(self.j.on)
