@@ -236,7 +236,7 @@ class JukeOroni(object):
     def turn_off(self):
         self.on = False
 
-        self._start_jukeoroni()
+        self._stop_jukeoroni()
         self._stop_modules()
 
         self.pimoroni.set_image(OFF_IMAGE, saturation=PIMORONI_SATURATION)
