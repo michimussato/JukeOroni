@@ -231,6 +231,9 @@ j.turn_off()
     ############################################
     # shutdown procedure
     def turn_off(self):
+        assert self.playback_proc is None, 'there is an active playback. stop() first.'
+        assert self.inserted_media is None, 'media inserted. eject() first.'
+
         self._stop_jukeoroni()
         self._stop_modules()
 
@@ -246,8 +249,6 @@ j.turn_off()
 
     def _stop_jukeoroni(self):
         self.on = False
-
-
 
         # cannot join() the threads from
         # within the threads themselves
