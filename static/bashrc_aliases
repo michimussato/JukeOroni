@@ -1,3 +1,10 @@
+git_branch() {
+  git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1)/'
+}
+
+export PS1="[\u@\h \W]\[\033[00;32m\]\$(git_branch)\[\033[00m\]\$ "
+
+
 alias speedo='speedometer -r wlan0 -t wlan0'
 alias apache_restart_and_log='source /data/venv/bin/activate && cd /data/django/jukeoroni/ && git pull && sudo systemctl restart apache2 && tail -f /var/log/apache2/error.log'
 alias apache_stop='source /data/venv/bin/activate && cd /data/django/jukeoroni/ && git pull && sudo systemctl stop apache2'
