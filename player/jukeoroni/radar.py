@@ -72,6 +72,10 @@ class Radar(object):
         self.radar_thread = None
 
     def _radar_task(self, **kwargs):
+        print(kwargs)
+        print(kwargs)
+        print(kwargs)
+        print(kwargs)
         update_interval = RADAR_UPDATE_INTERVAL*60.0
         _waited = None
         while self.on:
