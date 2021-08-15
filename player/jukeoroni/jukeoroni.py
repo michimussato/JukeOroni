@@ -289,7 +289,6 @@ class JukeOroni(object):
                     # while thread.is_alive():
                     #     time.sleep(1.0)
 
-            print(f'_pimoroni_watcher_task waited: {_waited}')
             time.sleep(1.0)
             _waited += 1
 
@@ -351,7 +350,6 @@ class JukeOroni(object):
                 _waited = 0
                 self.set_image()
 
-            print(f'_state_watcher_task waited: {_waited}')
             time.sleep(1.0)
             _waited += 1
 
