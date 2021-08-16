@@ -147,6 +147,7 @@ j.turn_off()
         assert self.on, 'JukeOroni is OFF. turn_on() first.'
         assert isinstance(media, (Channel)), 'can only insert Channel model'
         self.inserted_media = media
+        print(self.inserted_media)
 
     def play(self):
         assert self.playback_proc is None, 'there is an active playback. stop() first.'
