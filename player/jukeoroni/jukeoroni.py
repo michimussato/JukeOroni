@@ -261,8 +261,6 @@ j.turn_off()
     def _stop_jukeoroni(self):
         self.on = False
 
-        self.set_image(image=OFF_IMAGE)
-
         # cannot join() the threads from
         # within the threads themselves
         print('terminating self._pimoroni_watcher_thread...')
