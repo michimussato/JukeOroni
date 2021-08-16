@@ -182,38 +182,38 @@ class TestJukeOroni(TestCase):
         print(f'Running test: {str(inspect.getframeinfo(inspect.currentframe()).function)}\n')
         pass
 
-    def test_eject(self):
-        print('\n\n############################')
-        print(f'Running test: {str(inspect.getframeinfo(inspect.currentframe()).function)}\n')
-
-        self.j.turn_on()
-
-        with self.assertRaises(AssertionError):
-            self.j.eject()
-
-        media = Channel.objects.all()[0]
-        self.j.insert(media=media)
-
-        self.assertIs(media, self.j.inserted_media)
-        self.assertIsNone(self.j.playback_proc)
-
-        self.j.eject()
-
-        self.assertIsNone(self.j.inserted_media)
-        self.assertIsNone(self.j.playback_proc)
-
-        self.j.insert(media=media)
-        self.j.play()
-
-        self.assertIsInstance(self.j.playback_proc, Popen)
-
-        with self.assertRaises(AssertionError):
-            self.j.eject()
-
-        self.j.stop()
-        self.assertIs(media, self.j.inserted_media)
-        self.assertIsNone(self.j.playback_proc)
-        self.j.eject()
-        self.assertIsNone(self.j.inserted_media)
-
-        self.j.turn_off()
+    # def test_eject(self):
+    #     print('\n\n############################')
+    #     print(f'Running test: {str(inspect.getframeinfo(inspect.currentframe()).function)}\n')
+    #
+    #     self.j.turn_on()
+    #
+    #     with self.assertRaises(AssertionError):
+    #         self.j.eject()
+    #
+    #     media = Channel.objects.all()[0]
+    #     self.j.insert(media=media)
+    #
+    #     self.assertIs(media, self.j.inserted_media)
+    #     self.assertIsNone(self.j.playback_proc)
+    #
+    #     self.j.eject()
+    #
+    #     self.assertIsNone(self.j.inserted_media)
+    #     self.assertIsNone(self.j.playback_proc)
+    #
+    #     self.j.insert(media=media)
+    #     self.j.play()
+    #
+    #     self.assertIsInstance(self.j.playback_proc, Popen)
+    #
+    #     with self.assertRaises(AssertionError):
+    #         self.j.eject()
+    #
+    #     self.j.stop()
+    #     self.assertIs(media, self.j.inserted_media)
+    #     self.assertIsNone(self.j.playback_proc)
+    #     self.j.eject()
+    #     self.assertIsNone(self.j.inserted_media)
+    #
+    #     self.j.turn_off()
