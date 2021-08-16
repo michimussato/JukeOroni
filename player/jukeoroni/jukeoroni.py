@@ -112,6 +112,7 @@ j.turn_off()
         self.button_000X_value = BUTTON_000X_LABELS
 
         self.pimoroni = Inky()
+        self.pimoroni.setup()
         print(dir(self.pimoroni))
 
         self._current_time = None
