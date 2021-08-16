@@ -233,6 +233,7 @@ j.turn_off()
     ############################################
     # shutdown procedure
     def turn_off(self):
+        assert self.on, 'JukeOroni is OFF already'
         assert self.playback_proc is None, 'there is an active playback. stop() first.'
         assert self.inserted_media is None, 'media inserted. eject() first.'
 
