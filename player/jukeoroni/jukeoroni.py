@@ -221,13 +221,16 @@ j.turn_off()
 
     def _start_jukeoroni(self):
         self.on = True
+
         self.pimoroni.__init__()
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(_BUTTON_PINS, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+
         self.buttons_watcher_thread()
         self.pimoroni_watcher_thread()
-        self.set_image()
         self.state_watcher_thread()
+
+        self.set_image()
 
     def _start_modules(self):
         self.layout_standby.radar.start(test=self.test)
