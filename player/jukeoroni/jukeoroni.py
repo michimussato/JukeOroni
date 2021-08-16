@@ -279,8 +279,8 @@ j.turn_off()
                 thread_id = self._buttons_watcher_thread.ident
                 signal.pthread_kill(thread_id, signal.SIGINT.value)
                 self._buttons_watcher_thread.join()
-        except KeyboardInterrupt:
-            pass
+        except KeyboardInterrupt as err:
+            print(err)
         finally:
             self._buttons_watcher_thread = None
             print('self._buttons_watcher_thread terminated')
