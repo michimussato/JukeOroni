@@ -216,4 +216,4 @@ class TestJukeOroni(TestCase):
         self.j.eject()
         self.assertIsNone(self.j.inserted_media)
 
-        self.j.turn_off()
+        # self.j.turn_off()
