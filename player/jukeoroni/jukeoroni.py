@@ -224,7 +224,14 @@ j.turn_off()
         self.pimoroni_watcher_thread()
         self.state_watcher_thread()
 
-        self.set_image()
+        # self.set_image() could be used here too
+        # but setting the image manually at the beginning
+        # is quicker apparently
+        bg = self.layout_standby.get_layout(labels=self.LABELS)
+        self.pimoroni.set_image(bg, saturation=PIMORONI_SATURATION)
+        self.pimoroni.show(busy_wait=True)
+
+        # self.set_image()
 
     def _start_modules(self):
         self.layout_standby.radar.start(test=self.test)
