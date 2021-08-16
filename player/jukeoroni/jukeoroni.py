@@ -227,9 +227,7 @@ j.turn_off()
         # self.set_image() could be used here too
         # but setting the image manually at the beginning
         # is quicker apparently
-        bg = self.layout_standby.get_layout(labels=self.LABELS)
-        self.pimoroni.set_image(bg, saturation=PIMORONI_SATURATION)
-        self.pimoroni.show(busy_wait=True)
+        # self.task_pimoroni_set_image()
 
         # self.set_image()
 
