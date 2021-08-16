@@ -45,10 +45,6 @@ BUTTON_00X0_LABELS = 'N//A'
 BUTTON_000X_LABELS = 'N//A'
 
 
-# GPIO.setmode(GPIO.BCM)
-# GPIO.setup(_BUTTON_PINS, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-
-
 FFPLAY_CMD = 'ffplay -hide_banner -autoexit -vn -nodisp -loglevel error'.split(' ')
 
 
@@ -112,8 +108,6 @@ j.turn_off()
         self.button_000X_value = BUTTON_000X_LABELS
 
         self.pimoroni = Inky()
-        # self.pimoroni.setup()
-        # print(dir(self.pimoroni))
 
         self._current_time = None
 
@@ -260,8 +254,6 @@ j.turn_off()
     def _stop_jukeoroni(self):
         self.on = False
 
-        # self.pimoroni = None
-
         # cannot join() the threads from
         # within the threads themselves
         print('terminating self._pimoroni_watcher_thread...')
@@ -280,19 +272,11 @@ j.turn_off()
                 thread_id = self._buttons_watcher_thread.ident
                 signal.pthread_kill(thread_id, signal.SIGINT.value)
                 self._buttons_watcher_thread.join()
-            # while bool(self._buttons_watcher_thread.is_alive()):
-            #     time.sleep(0.1)
         except KeyboardInterrupt:
             pass
         finally:
-            # self._buttons_watcher_thread.join()
             self._buttons_watcher_thread = None
             print('self._buttons_watcher_thread terminated')
-
-        # GPIO.cleanup()
-        # for pin in _BUTTON_PINS:
-        #     GPIO.cleanup(pin, GPIO.FALLING, self._handle_button, bouncetime=250)
-        # signal.pause()
 
     def _stop_modules(self):
         print('terminating self.layout_standby.radar...')
