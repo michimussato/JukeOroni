@@ -184,6 +184,13 @@ j.turn_off()
     def previous(self):
         raise NotImplementedError
 
+    def change_media(self, media):
+        # convenience method
+        self.stop()
+        self.eject()
+        self.insert(media)
+        self.play()
+
     def eject(self):
         assert self.inserted_media is not None, 'no media inserted. insert media first.'
         assert self.playback_proc is None, 'cannot eject media while playback is active. stop() first.'
