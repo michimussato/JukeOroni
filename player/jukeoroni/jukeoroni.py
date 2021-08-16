@@ -240,6 +240,7 @@ j.turn_off()
 
         # TODO: will be replaced with
         #  layout (self.task_pimoroni_set_image)
+        #  as soon as we have a layout for this
         if self.test:
             print('Not setting OFF_IMAGE. Test mode.')
         else:
@@ -251,6 +252,8 @@ j.turn_off()
 
     def _stop_jukeoroni(self):
         self.on = False
+
+        self.set_image(image=OFF_IMAGE)
 
         # cannot join() the threads from
         # within the threads themselves
