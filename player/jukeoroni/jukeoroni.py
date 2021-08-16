@@ -112,8 +112,8 @@ j.turn_off()
         self.button_000X_value = BUTTON_000X_LABELS
 
         self.pimoroni = Inky()
-        self.pimoroni.setup()
-        print(dir(self.pimoroni))
+        # self.pimoroni.setup()
+        # print(dir(self.pimoroni))
 
         self._current_time = None
 
@@ -221,6 +221,7 @@ j.turn_off()
 
     def _start_jukeoroni(self):
         self.on = True
+        self.pimoroni.__init__()
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(_BUTTON_PINS, GPIO.IN, pull_up_down=GPIO.PUD_UP)
         self.buttons_watcher_thread()
@@ -255,6 +256,8 @@ j.turn_off()
 
     def _stop_jukeoroni(self):
         self.on = False
+
+        # self.pimoroni = None
 
         # cannot join() the threads from
         # within the threads themselves
