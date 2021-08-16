@@ -30,6 +30,7 @@ class TestJukeOroni(TestCase):
         self.j.test = True
 
     def tearDown(self):
+        self.j.turn_off()
         del self.j
 
     def test_turn_on(self):
@@ -52,28 +53,28 @@ class TestJukeOroni(TestCase):
         self.assertIsNotNone(self.j.layout_standby.radar.radar_thread)
         self.assertTrue(self.j.layout_standby.radar.radar_thread.is_alive())
 
-        self.j.turn_off()
+        # self.j.turn_off()
 
-    def test_turn_off(self):
-        print('\n\n############################')
-        print(f'Running test: {str(inspect.getframeinfo(inspect.currentframe()).function)}\n')
-
-        self.j.turn_on()
-
-        self.assertTrue(self.j.on)
-        self.assertTrue(self.j._pimoroni_watcher_thread.is_alive())
-        self.assertTrue(self.j._state_watcher_thread.is_alive())
-        self.assertTrue(self.j.layout_standby.radar.on)
-        self.assertIsNotNone(self.j.layout_standby.radar.radar_thread)
-        self.assertTrue(self.j.layout_standby.radar.radar_thread.is_alive())
-
-        self.j.turn_off()
-
-        self.assertFalse(self.j.on)
-        self.assertIsNone(self.j._pimoroni_watcher_thread)
-        self.assertIsNone(self.j._state_watcher_thread)
-        self.assertFalse(self.j.layout_standby.radar.on)
-        self.assertIsNone(self.j.layout_standby.radar.radar_thread)
+    # def test_turn_off(self):
+    #     print('\n\n############################')
+    #     print(f'Running test: {str(inspect.getframeinfo(inspect.currentframe()).function)}\n')
+    #
+    #     self.j.turn_on()
+    #
+    #     self.assertTrue(self.j.on)
+    #     self.assertTrue(self.j._pimoroni_watcher_thread.is_alive())
+    #     self.assertTrue(self.j._state_watcher_thread.is_alive())
+    #     self.assertTrue(self.j.layout_standby.radar.on)
+    #     self.assertIsNotNone(self.j.layout_standby.radar.radar_thread)
+    #     self.assertTrue(self.j.layout_standby.radar.radar_thread.is_alive())
+    #
+    #     self.j.turn_off()
+    #
+    #     self.assertFalse(self.j.on)
+    #     self.assertIsNone(self.j._pimoroni_watcher_thread)
+    #     self.assertIsNone(self.j._state_watcher_thread)
+    #     self.assertFalse(self.j.layout_standby.radar.on)
+    #     self.assertIsNone(self.j.layout_standby.radar.radar_thread)
 
     def test_insert(self):
         print('\n\n############################')
@@ -104,7 +105,7 @@ class TestJukeOroni(TestCase):
 
         self.j.eject()
 
-        self.j.turn_off()
+        # self.j.turn_off()
 
     def test_play(self):
         print('\n\n############################')
@@ -131,17 +132,17 @@ class TestJukeOroni(TestCase):
         self.j.stop()
         self.j.eject()
 
-        self.j.turn_off()
+        # self.j.turn_off()
 
-    def test_pause(self):
-        print('\n\n############################')
-        print(f'Running test: {str(inspect.getframeinfo(inspect.currentframe()).function)}\n')
-        pass
-
-    def test_resume(self):
-        print('\n\n############################')
-        print(f'Running test: {str(inspect.getframeinfo(inspect.currentframe()).function)}\n')
-        pass
+    # def test_pause(self):
+    #     print('\n\n############################')
+    #     print(f'Running test: {str(inspect.getframeinfo(inspect.currentframe()).function)}\n')
+    #     pass
+    #
+    # def test_resume(self):
+    #     print('\n\n############################')
+    #     print(f'Running test: {str(inspect.getframeinfo(inspect.currentframe()).function)}\n')
+    #     pass
 
     def test_stop(self):
         print('\n\n############################')
@@ -170,17 +171,17 @@ class TestJukeOroni(TestCase):
         self.assertIsNone(self.j.playback_proc)
 
         self.j.eject()
-        self.j.turn_off()
+        # self.j.turn_off()
 
-    def test_next(self):
-        print('\n\n############################')
-        print(f'Running test: {str(inspect.getframeinfo(inspect.currentframe()).function)}\n')
-        pass
-
-    def test_previous(self):
-        print('\n\n############################')
-        print(f'Running test: {str(inspect.getframeinfo(inspect.currentframe()).function)}\n')
-        pass
+    # def test_next(self):
+    #     print('\n\n############################')
+    #     print(f'Running test: {str(inspect.getframeinfo(inspect.currentframe()).function)}\n')
+    #     pass
+    #
+    # def test_previous(self):
+    #     print('\n\n############################')
+    #     print(f'Running test: {str(inspect.getframeinfo(inspect.currentframe()).function)}\n')
+    #     pass
 
     def test_eject(self):
         print('\n\n############################')
