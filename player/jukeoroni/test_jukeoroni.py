@@ -26,6 +26,8 @@ class TestJukeOroni(TestCase):
             c.save()
 
     def setUp(self):
+        print('hello')
+        print('hello')
         self.j = JukeOroni()
         self.j.test = True
 

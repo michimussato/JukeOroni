@@ -14,7 +14,7 @@ from player.jukeoroni.settings import PIMORONI_SATURATION, CLOCK_UPDATE_INTERVAL
 
 LOG = logging.getLogger(__name__)
 # LOG = logging.getLogger('custom')
-LOG.setLevel(logging.DEBUG)
+LOG.setLevel(logging.INFO)
 
 
 # buttons setup
@@ -85,6 +85,9 @@ from player.jukeoroni.jukeoroni import JukeOroni
 j = JukeOroni()
 # j.test = True
 j.turn_on()
+
+j.insert(j.radio.random_channel)
+j.radio.channels
 
 j.turn_off()
     """
@@ -292,8 +295,8 @@ j.turn_off()
                 thread_id = self._buttons_watcher_thread.ident
                 signal.pthread_kill(thread_id, signal.SIGINT.value)
                 self._buttons_watcher_thread.join()
-        except KeyboardInterrupt as err:
-            print(err)
+        except KeyboardInterrupt:
+            LOG.exception('_buttons_watcher_thread killed by signal.SIGINT:')
         finally:
             self._buttons_watcher_thread = None
             # print('self._buttons_watcher_thread terminated')

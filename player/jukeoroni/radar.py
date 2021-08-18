@@ -114,6 +114,6 @@ class Radar(object):
             # will result in size (456, 336) for now
             return im.rotate(90, expand=True)
 
-        except Exception as err:
+        except Exception:
             LOG.exception(f'Could not update Radar screenshot:')
             return self._placeholder

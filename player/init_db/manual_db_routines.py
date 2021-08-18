@@ -4,6 +4,7 @@
 # tuple[2]: is_enabled
 # tuple[3]: url
 # tuple[4]: url_logo
+# tuple[5]: last_played
 
 
 # radio bob streams:
@@ -95,7 +96,7 @@ channel_list = [
 def channels_write_table():
     from player.models import Channel
     for channel in channel_list:
-        c = Channel(display_name=channel[0], display_name_short=channel[1], is_enabled=channel[2], url=channel[3], url_logo=channel[4])
+        c = Channel(display_name=channel[0], display_name_short=channel[1], is_enabled=channel[2], url=channel[3], url_logo=channel[4], last_played=channel[5])
         c.save()
 
 
