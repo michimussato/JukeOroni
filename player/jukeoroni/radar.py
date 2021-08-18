@@ -2,6 +2,7 @@ import os
 import time
 import threading
 import tempfile
+import logging
 from io import BytesIO
 from PIL import Image, ImageDraw
 import selenium.common
@@ -10,6 +11,10 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from player.jukeoroni.settings import RADAR_UPDATE_INTERVAL
+
+
+LOG = logging.getLogger(__name__)
+LOG.setLevel(logging.DEBUG)
 
 
 class _RadarThread(threading.Thread):
@@ -59,8 +64,8 @@ class Radar(object):
 
     def start(self, test=False):
         self.on = True
+        LOG.info(f'Test mode Radar: {str("ON" if test else "OFF")}.')
         self.radar_thread = _RadarThread(target=self._radar_task, kwargs={'test': test})
-        print(f'Radar test mode: {str(test)}')
         self.radar_thread.start()
 
     def stop(self):
@@ -74,24 +79,24 @@ class Radar(object):
         while self.on:
             if _waited is None or _waited % update_interval == 0:
                 _waited = 0
-                print('Updating radar image in background...')
+                LOG.info(f'Updating radar image in background...')
                 if kwargs['test']:
                     self.radar_image = self._placeholder
-                    print('getting placeholder radar image (saving time in test mode)')
+                    LOG.info(f'getting placeholder radar image (saving time in test mode)')
                 else:
                     self.radar_image = self._radar_screenshot()
-                print('Radar image updated.')
+                LOG.info(f'Radar image updated.')
 
             time.sleep(1.0)
             _waited += 1
 
     def _radar_screenshot(self):
+
         try:
             options = selenium.webdriver.firefox.options.Options()
             options.headless = True
             service_log_path = os.path.join(tempfile.gettempdir(), 'geckodriver.log')
             with selenium.webdriver.Firefox(options=options, service_log_path=service_log_path) as driver:
-                # print(f'Opening {self.URL}')
                 driver.get(self.URL)
                 time.sleep(2.0)
                 WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, "//*[@id=\"onetrust-accept-btn-handler\"]"))).click()
@@ -110,5 +115,5 @@ class Radar(object):
             return im.rotate(90, expand=True)
 
         except Exception as err:
-            print(err)
+            LOG.exception(f'Could not update Radar screenshot:')
             return self._placeholder

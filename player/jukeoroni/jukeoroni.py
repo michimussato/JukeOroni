@@ -13,6 +13,8 @@ from player.jukeoroni.settings import PIMORONI_SATURATION, CLOCK_UPDATE_INTERVAL
 
 
 LOG = logging.getLogger(__name__)
+# LOG = logging.getLogger('custom')
+LOG.setLevel(logging.DEBUG)
 
 
 # buttons setup
@@ -92,7 +94,9 @@ j.turn_off()
 
     def __init__(self):
 
+        LOG.info(f'Initializing JukeOroni...')
         self.test = False
+        LOG.info(f'Test mode JukeOroni: {str("ON" if self.test else "OFF")}.')
 
         self.on = False
 
@@ -147,7 +151,8 @@ j.turn_off()
         assert self.on, 'JukeOroni is OFF. turn_on() first.'
         assert isinstance(media, (Channel)), 'can only insert Channel model'
         self.inserted_media = media
-        print(self.inserted_media)
+        LOG.info(f'Media inserted: {str(media)} (type {str(type(media))})')
+        # print(self.inserted_media)
 
     def play(self):
         assert self.playback_proc is None, 'there is an active playback. stop() first.'
@@ -250,12 +255,15 @@ j.turn_off()
         #  layout (self.task_pimoroni_set_image)
         #  as soon as we have a layout for this
         if self.test:
-            print('Not setting OFF_IMAGE. Test mode.')
+            # print('Not setting OFF_IMAGE. Test mode.')
+            LOG.info(f'Not setting OFF_IMAGE. Test mode.')
         else:
-            print('setting OFF_IMAGE...')
+            # print('setting OFF_IMAGE...')
+            LOG.info(f'Setting OFF_IMAGE...')
             self.pimoroni.set_image(OFF_IMAGE, saturation=PIMORONI_SATURATION)
             self.pimoroni.show(busy_wait=True)
-            print('done.')
+            LOG.info(f'Done.')
+            # print('done.')
         GPIO.cleanup()
 
     def _stop_jukeoroni(self):
@@ -263,18 +271,23 @@ j.turn_off()
 
         # cannot join() the threads from
         # within the threads themselves
-        print('terminating self._pimoroni_watcher_thread...')
+        # print('terminating self._pimoroni_watcher_thread...')
+        LOG.info(f'Terminating self._pimoroni_watcher_thread...')
         self._pimoroni_watcher_thread.join()
         self._pimoroni_watcher_thread = None
-        print('self._pimoroni_watcher_thread terminated')
+        # print('self._pimoroni_watcher_thread terminated')
+        LOG.info(f'self._pimoroni_watcher_thread terminated')
 
-        print('terminating self._state_watcher_thread...')
+        # print('terminating self._state_watcher_thread...')
+        LOG.info(f'Terminating self._state_watcher_thread...')
         self._state_watcher_thread.join()
         self._state_watcher_thread = None
-        print('self._state_watcher_thread terminated')
+        # print('self._state_watcher_thread terminated')
+        LOG.info(f'self._state_watcher_thread terminated')
 
         try:
-            print('terminating self._buttons_watcher_thread...')
+            # print('Terminating self._buttons_watcher_thread...')
+            LOG.info(f'Terminating self._buttons_watcher_thread...')
             if self._buttons_watcher_thread.is_alive():
                 thread_id = self._buttons_watcher_thread.ident
                 signal.pthread_kill(thread_id, signal.SIGINT.value)
@@ -283,12 +296,15 @@ j.turn_off()
             print(err)
         finally:
             self._buttons_watcher_thread = None
-            print('self._buttons_watcher_thread terminated')
+            # print('self._buttons_watcher_thread terminated')
+            LOG.info(f'self._buttons_watcher_thread terminated')
 
     def _stop_modules(self):
-        print('terminating self.layout_standby.radar...')
+        # print(f'Terminating self.layout_standby.radar...')
+        LOG.info(f'Terminating self.layout_standby.radar...')
         self.layout_standby.radar.stop()
-        print('self.layout_standby.radar terminated')
+        # print('self.layout_standby.radar terminated')
+        LOG.info(f'self.layout_standby.radar terminated')
     ############################################
 
     ############################################
@@ -325,13 +341,16 @@ j.turn_off()
 
     def task_pimoroni_set_image(self, **kwargs):
         if self.test:
-            print('no Pimoroni update in test mode')
+            # print('No Pimoroni update in test mode')
+            LOG.info(f'No Pimoroni update in test mode')
         else:
-            print('setting Pimoroni image...')
+            # print('Setting Pimoroni image...')
+            LOG.info(f'Setting Pimoroni image...')
             bg = self.layout_standby.get_layout(labels=self.LABELS)
             self.pimoroni.set_image(bg, saturation=PIMORONI_SATURATION)
             self.pimoroni.show(busy_wait=True)
-            print('done.')
+            # print('Done.')
+            LOG.info(f'Done.')
     ############################################
 
     ############################################
@@ -349,8 +368,8 @@ j.turn_off()
 
     def _handle_button(self, pin):
         button = _BUTTON_PINS.index(pin)
-        logging.info(f"Button press detected on pin: {pin} button: {button}")
-        print(f"Button press detected on pin: {pin} button: {button}")
+        LOG.info(f'Button press detected on pin: {pin} button: {button}')
+        # print(f"Button press detected on pin: {pin} button: {button}")
     ############################################
 
     ############################################

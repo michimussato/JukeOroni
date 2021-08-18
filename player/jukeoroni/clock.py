@@ -1,4 +1,5 @@
 import datetime
+import logging
 try:
     from jukeoroni.settings import TIME_ZONE
     tz = TIME_ZONE
@@ -8,6 +9,10 @@ except ImportError as err:
 from PIL import Image, ImageDraw, ImageFont
 from astral import LocationInfo
 from astral.sun import sun
+
+
+LOG = logging.getLogger(__name__)
+LOG.setLevel(logging.DEBUG)
 
 
 ANTIALIAS = 16
@@ -41,16 +46,18 @@ class Clock:
         toggle = {white: black, black: white}
 
         if draw_astral:
-            city = LocationInfo("Bern", "Switzerland", tz, 46.94809, 7.44744)
+            city = LocationInfo('Bern', 'Switzerland', tz, 46.94809, 7.44744)
             _sun = sun(city.observer, date=datetime.date.today(), tzinfo=city.timezone)
 
-            decimal_sunrise = float(_sun["sunrise"].strftime('%H')) + float(_sun["sunrise"].strftime('%M')) / 60
+            decimal_sunrise = float(_sun['sunrise'].strftime('%H')) + float(_sun['sunrise'].strftime('%M')) / 60
             arc_length_sunrise = decimal_sunrise / hours * 360.0
-            print('sunrise: {0}'.format(_sun["sunrise"].strftime('%H:%M')))
+            # print('sunrise: {0}'.format(_sun["sunrise"].strftime('%H:%M')))
+            LOG.info(f'Sunrise: {str(_sun["sunrise"].strftime("%H:%M"))}')
 
-            decimal_sunset = float(_sun["sunset"].strftime('%H')) + float(_sun["sunset"].strftime('%M')) / 60
+            decimal_sunset = float(_sun['sunset'].strftime('%H')) + float(_sun['sunset'].strftime('%M')) / 60
             arc_length_sunset = decimal_sunset / hours * 360.0
-            print('sunset: {0}'.format(_sun["sunset"].strftime('%H:%M')))
+            # print('Sunset: {0}'.format(_sun["sunset"].strftime("%H:%M")))
+            LOG.info(f'Sunset: {str(_sun["sunset"].strftime("%H:%M"))}')
 
             color = (255, 128, 0, 255)
             _size_astral = 0.17  # TODO: bigger means smaller circle
@@ -124,7 +131,7 @@ class Clock:
 
         if draw_logo:
             font = ImageFont.truetype(r'/data/django/jukeoroni/player/static/calligraphia-one.ttf', round(_size * 0.150))
-            text = "JukeOroni"
+            text = 'JukeOroni'
             length = font.getlength(text)
             draw.text((round(_size / 2) - length / 2, round(_size * 0.536)), text, fill=white, font=font)
 

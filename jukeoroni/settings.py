@@ -11,8 +11,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 from jukeoroni.secrets import DJANGO_SECRET_KEY
 from pathlib import Path
-import os
-# import logging.config
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -28,69 +27,36 @@ SECRET_KEY = DJANGO_SECRET_KEY
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+
 LOGGING = {
     'version': 1,
-    # Version of logging
     'disable_existing_loggers': False,
-    'root': {
-        'level': 'DEBUG',
-        # 'handlers': ['file', 'console']
-        'handlers': ['file']
-    },
     'formatters': {
-        'verbose': {
-            # 'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s',
+        'simple': {
             'format': '[%(asctime)s] [%(levelname)s] [%(threadName)s|%(thread)d] [%(name)s]: %(message)s',
             'datefmt': '%m-%d-%Y %H:%M:%S',
         },
     },
-    # disable logging
-    # Handlers #############################################################
     'handlers': {
-        'file': {
-            'level': 'DEBUG' if DEBUG else 'INFO',
-            'class': 'logging.FileHandler',
-            'formatter': 'verbose',
-            'filename': os.path.join(BASE_DIR, 'django.log'),
+        'console':{
+            'level':'DEBUG',
+            'class':'logging.StreamHandler',
+            'formatter': 'simple'
         },
-        ########################################################################
-        # 'console': {
-        #     'class': 'logging.StreamHandler',
-        #     'formatter': 'verbose',
-        # },
     },
-    # Loggers ####################################################################
     'loggers': {
-        'django': {
-            # 'handlers': ['file', 'console'],
-            'handlers': ['file'],
-            'level': 'DEBUG' if DEBUG else 'INFO',
-            'propagate': True,
-            'level': os.getenv('DJANGO_LOG_LEVEL', 'DEBUG')
+        'django.request':{
+            'handlers': ['console'],
+            'propagate': False,
+            'level': 'DEBUG',
         },
     },
+    'root': {
+        'level': 'DEBUG',
+        'handlers': ['console']
+    }
 }
 
-"""
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'my_log_handler': {
-            'level': 'DEBUG' if DEBUG else 'INFO',
-            'class': 'logging.FileHandler',
-            'filename': os.path.join(BASE_DIR, 'django.log'),
-        },
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['my_log_handler'],
-            'level': 'DEBUG' if DEBUG else 'INFO',
-            'propagate': True,
-        },
-    },
-}
-"""
 
 ALLOWED_HOSTS = ['*']
 
