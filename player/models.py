@@ -2,15 +2,15 @@ from django.db import models
 
 
 # Create your models here.
-class MediaType(models.Model):
-    """
-    type can "music", "meditation", "audiobook" etc.
-    (maybe even "channel"?? "channel" is not a local media though... we'll see)
-    """
-    media_type = models.CharField(max_length=200, unique=True, blank=False, null=False, default=None)
+#class MediaType(models.Model):
+#    """
+#    type can "music", "meditation", "audiobook" etc.
+#    (maybe even "channel"?? "channel" is not a local media though... we'll see)
+#    """
+#    media_type = models.CharField(max_length=200, unique=True, blank=False, null=False, default=None)#
 
-    def __str__(self):
-        return self.media_type
+#    def __str__(self):
+#        return self.media_type
 
 
 class Artist(models.Model):
@@ -38,7 +38,7 @@ class Album(models.Model):
 
 class Track(models.Model):
     album_id = models.ForeignKey(Album, on_delete=models.PROTECT, null=True)
-    media_type = models.ForeignKey(MediaType, on_delete=models.PROTECT, null=True)
+#    media_type = models.ForeignKey(MediaType, on_delete=models.PROTECT, null=True)
     # track_title = models.CharField(max_length=200, unique=False)
     audio_source = models.CharField(max_length=200, unique=True, blank=False, null=False)
     # title = models.CharField(max_length=200, unique=False, blank=False, null=False)
