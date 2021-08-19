@@ -11,3 +11,4 @@ alias apache_stop='source /data/venv/bin/activate && cd /data/django/jukeoroni/ 
 alias apache_error_log='tail -f /var/log/apache2/error.log'
 alias django_shell='source /data/venv/bin/activate && cd /data/django/jukeoroni && git pull && python manage.py shell'
 alias django_test='source /data/venv/bin/activate && cd /data/django/jukeoroni && git pull && python manage.py test'
+alias django_dev_test='source /data/venv/bin/activate && cd /data/django/dev/pycharm_project_jukeoroni_develop'

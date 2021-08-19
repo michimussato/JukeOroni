@@ -1,8 +1,14 @@
 import inspect
+import logging
+import unittest
 from subprocess import Popen
 from django.test import TestCase
 from player.jukeoroni.jukeoroni import JukeOroni
 from player.models import Channel
+
+
+LOG = logging.getLogger(__name__)
+LOG.setLevel(logging.INFO)
 
 
 class TestJukeOroni(TestCase):
@@ -11,7 +17,7 @@ class TestJukeOroni(TestCase):
     def setUpClass(cls):
         super(TestJukeOroni, cls).setUpClass()
 
-        channel_list = [
+        _fixture_channel_list = [
             ("BOBs 100", "100", True, "http://bob.hoerradar.de/radiobob-100-mp3-hq", None, False),
             ("BOBs 101", "101", True, "http://bob.hoerradar.de/radiobob-101-mp3-hq", None, False),
             ("BOBs 2000er", "2000er", True, "http://bob.hoerradar.de/radiobob-2000er-mp3-hq",
@@ -20,24 +26,37 @@ class TestJukeOroni(TestCase):
              "http://aggregatorservice.loverad.io/wp-content/uploads/2021/03/bob_2000er-rock_600x600.png", False),
         ]
 
-        for channel in channel_list:
+        for channel in _fixture_channel_list:
             c = Channel(display_name=channel[0], display_name_short=channel[1], is_enabled=channel[2], url=channel[3],
                         url_logo=channel[4])
             c.save()
 
     def setUp(self):
-        print('hello')
-        print('hello')
         self.j = JukeOroni()
         self.j.test = True
 
     def tearDown(self):
-        self.j.turn_off()
-        del self.j
+        # try/except is only here to make sure
+        # that the tests don't hang if turn_off()
+        # procedure cannot be executed for some
+        # reason. In that case, the
+        # j._buttons_watcher_thread will hang
+        # and the test won't finish.
+        try:
+            self.j.stop()
+        except:
+            pass
+        try:
+            self.j.eject()
+        except:
+            pass
+        try:
+            self.j.turn_off()
+        except:
+            pass
 
     def test_turn_on(self):
-        print('\n\n############################')
-        print(f'Running test: {str(inspect.getframeinfo(inspect.currentframe()).function)}\n')
+        LOG.info(f'\n############################\nRunning test: {str(inspect.getframeinfo(inspect.currentframe()).function)}\n')
         self.assertFalse(self.j.on)
         self.assertIsNone(self.j._state_watcher_thread)
         self.assertIsNone(self.j._pimoroni_watcher_thread)
@@ -55,32 +74,30 @@ class TestJukeOroni(TestCase):
         self.assertIsNotNone(self.j.layout_standby.radar.radar_thread)
         self.assertTrue(self.j.layout_standby.radar.radar_thread.is_alive())
 
-        # self.j.turn_off()
+        self.j.turn_off()
 
-    # def test_turn_off(self):
-    #     print('\n\n############################')
-    #     print(f'Running test: {str(inspect.getframeinfo(inspect.currentframe()).function)}\n')
-    #
-    #     self.j.turn_on()
-    #
-    #     self.assertTrue(self.j.on)
-    #     self.assertTrue(self.j._pimoroni_watcher_thread.is_alive())
-    #     self.assertTrue(self.j._state_watcher_thread.is_alive())
-    #     self.assertTrue(self.j.layout_standby.radar.on)
-    #     self.assertIsNotNone(self.j.layout_standby.radar.radar_thread)
-    #     self.assertTrue(self.j.layout_standby.radar.radar_thread.is_alive())
-    #
-    #     self.j.turn_off()
-    #
-    #     self.assertFalse(self.j.on)
-    #     self.assertIsNone(self.j._pimoroni_watcher_thread)
-    #     self.assertIsNone(self.j._state_watcher_thread)
-    #     self.assertFalse(self.j.layout_standby.radar.on)
-    #     self.assertIsNone(self.j.layout_standby.radar.radar_thread)
+    def test_turn_off(self):
+        LOG.info(f'\n############################\nRunning test: {str(inspect.getframeinfo(inspect.currentframe()).function)}\n')
+
+        self.j.turn_on()
+
+        self.assertTrue(self.j.on)
+        self.assertTrue(self.j._pimoroni_watcher_thread.is_alive())
+        self.assertTrue(self.j._state_watcher_thread.is_alive())
+        self.assertTrue(self.j.layout_standby.radar.on)
+        self.assertIsNotNone(self.j.layout_standby.radar.radar_thread)
+        self.assertTrue(self.j.layout_standby.radar.radar_thread.is_alive())
+
+        self.j.turn_off()
+
+        self.assertFalse(self.j.on)
+        self.assertIsNone(self.j._pimoroni_watcher_thread)
+        self.assertIsNone(self.j._state_watcher_thread)
+        self.assertFalse(self.j.layout_standby.radar.on)
+        self.assertIsNone(self.j.layout_standby.radar.radar_thread)
 
     def test_insert(self):
-        print('\n\n############################')
-        print(f'Running test: {str(inspect.getframeinfo(inspect.currentframe()).function)}\n')
+        LOG.info(f'\n############################\nRunning test: {str(inspect.getframeinfo(inspect.currentframe()).function)}\n')
 
         self.j.turn_on()
 
@@ -107,11 +124,10 @@ class TestJukeOroni(TestCase):
 
         self.j.eject()
 
-        # self.j.turn_off()
+        self.j.turn_off()
 
     def test_play(self):
-        print('\n\n############################')
-        print(f'Running test: {str(inspect.getframeinfo(inspect.currentframe()).function)}\n')
+        LOG.info(f'\n############################\nRunning test: {str(inspect.getframeinfo(inspect.currentframe()).function)}\n')
 
         self.j.turn_on()
 
@@ -134,21 +150,20 @@ class TestJukeOroni(TestCase):
         self.j.stop()
         self.j.eject()
 
-        # self.j.turn_off()
+        self.j.turn_off()
 
-    # def test_pause(self):
-    #     print('\n\n############################')
-    #     print(f'Running test: {str(inspect.getframeinfo(inspect.currentframe()).function)}\n')
-    #     pass
-    #
-    # def test_resume(self):
-    #     print('\n\n############################')
-    #     print(f'Running test: {str(inspect.getframeinfo(inspect.currentframe()).function)}\n')
-    #     pass
+    @unittest.skip
+    def test_pause(self):
+        LOG.info(f'\n############################\nRunning test: {str(inspect.getframeinfo(inspect.currentframe()).function)}\n')
+        raise NotImplementedError
+
+    @unittest.skip
+    def test_resume(self):
+        LOG.info(f'\n############################\nRunning test: {str(inspect.getframeinfo(inspect.currentframe()).function)}\n')
+        raise NotImplementedError
 
     def test_stop(self):
-        print('\n\n############################')
-        print(f'Running test: {str(inspect.getframeinfo(inspect.currentframe()).function)}\n')
+        LOG.info(f'\n############################\nRunning test: {str(inspect.getframeinfo(inspect.currentframe()).function)}\n')
 
         self.j.turn_on()
 
@@ -173,21 +188,20 @@ class TestJukeOroni(TestCase):
         self.assertIsNone(self.j.playback_proc)
 
         self.j.eject()
-        # self.j.turn_off()
+        self.j.turn_off()
 
-    # def test_next(self):
-    #     print('\n\n############################')
-    #     print(f'Running test: {str(inspect.getframeinfo(inspect.currentframe()).function)}\n')
-    #     pass
-    #
-    # def test_previous(self):
-    #     print('\n\n############################')
-    #     print(f'Running test: {str(inspect.getframeinfo(inspect.currentframe()).function)}\n')
-    #     pass
+    @unittest.skip
+    def test_next(self):
+        LOG.info(f'\n############################\nRunning test: {str(inspect.getframeinfo(inspect.currentframe()).function)}\n')
+        raise NotImplementedError
+
+    @unittest.skip
+    def test_previous(self):
+        LOG.info(f'\n############################\nRunning test: {str(inspect.getframeinfo(inspect.currentframe()).function)}\n')
+        raise NotImplementedError
 
     def test_eject(self):
-        print('\n\n############################')
-        print(f'Running test: {str(inspect.getframeinfo(inspect.currentframe()).function)}\n')
+        LOG.info(f'\n############################\nRunning test: {str(inspect.getframeinfo(inspect.currentframe()).function)}\n')
 
         self.j.turn_on()
 
@@ -219,4 +233,36 @@ class TestJukeOroni(TestCase):
         self.j.eject()
         self.assertIsNone(self.j.inserted_media)
 
-        # self.j.turn_off()
+        self.j.turn_off()
+
+    def test_change_media(self):
+        LOG.info(f'\n############################\nRunning test: {str(inspect.getframeinfo(inspect.currentframe()).function)}\n')
+
+        self.j.turn_on()
+
+        media_1 = Channel.objects.all()[0]
+        media_2 = Channel.objects.all()[1]
+
+        # while not playing
+        self.j.insert(media=media_1)
+        self.assertFalse(self.j.radio.is_on_air)
+        self.assertEqual(self.j.inserted_media, media_1)
+        self.j.change_media(media=media_2)
+        self.assertFalse(self.j.radio.is_on_air)
+
+        self.assertEqual(self.j.inserted_media, media_2)
+
+        self.j.eject()
+
+        # while playing
+        self.j.insert(media=media_1)
+        self.j.play()
+        self.assertTrue(self.j.radio.is_on_air)
+        self.assertEqual(self.j.inserted_media, media_1)
+        self.j.change_media(media=media_2)
+        self.assertTrue(self.j.radio.is_on_air)
+        self.assertEqual(self.j.inserted_media, media_2)
+
+        self.j.stop()
+        self.j.eject()
+        self.j.turn_off()

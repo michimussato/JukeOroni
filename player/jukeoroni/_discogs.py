@@ -1,5 +1,10 @@
+import logging
 import discogs_client
 import jukeoroni.secrets as secrets
+
+
+LOG = logging.getLogger(__name__)
+LOG.setLevel(logging.INFO)
 
 
 # https://github.com/joalla/discogs_client
@@ -17,8 +22,7 @@ def get_artist(client, artist):
         cover_square = results[0].images[0]['uri150']
         return cover_square
     except Exception as err:
-        print(f'discogs could not look up artist: {err}')
-        # print(err)
+        LOG.info(f'discogs could not look up artist: {err}')
         return None
 
 
@@ -28,6 +32,5 @@ def get_album(client, artist, album):
         cover_square = results[0].images[0]['uri150']
         return cover_square
     except Exception as err:
-        print(f'discogs could not look up album {album} (by {artist}): {err}')
-        # print(err)
+        LOG.info(f'discogs could not look up album {album} (by {artist}): {err}')
         return None

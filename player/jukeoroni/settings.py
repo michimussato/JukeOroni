@@ -1,6 +1,11 @@
+import logging
 import os
 from astral import LocationInfo
 from PIL import Image
+
+
+LOG = logging.getLogger(__name__)
+LOG.setLevel(logging.INFO)
 
 
 # media_crawler

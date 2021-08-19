@@ -1,6 +1,11 @@
+import logging
 from PIL import Image, ImageDraw
 from player.jukeoroni.clock import Clock
 from player.jukeoroni.radar import Radar
+
+
+LOG = logging.getLogger(__name__)
+LOG.setLevel(logging.INFO)
 
 
 """
@@ -118,10 +123,6 @@ class Standby(Layout):
 
     def get_layout(self, labels):
 
-        # print(f'layout in test: {str(test)}')
-
-        # self.radar.test = test
-
         buttons_overlay = buttons_img_overlay(labels=labels, stby=True)
         bg = Image.new(mode='RGBA', size=(600, 448), color=(255, 0, 0, 255))
         widget_clock = Image.new(mode='RGBA', size=(self.main_size, self.main_size), color=(0, 0, 0, 0))
@@ -144,7 +145,7 @@ class Standby(Layout):
 
         if _radar_image is not None:
             _radar_image = round_resize(img=_radar_image, corner=40, scaled_by=0.45)
-            # print(_radar_image.size) yields (151, 205) for now
+            LOG.info(f'_radar_image.size is {str(_radar_image.size)}')
             w, h = _radar_image.size
             _radar_bottom_right = (int(600-w-self.border), self.border)
             bg.paste(_radar_image, _radar_bottom_right, mask=_radar_image)
@@ -198,7 +199,7 @@ class Player(Layout):
 
         if _radar_image is not None:
             _radar_image = round_resize(img=_radar_image, corner=40, scaled_by=0.45)
-            # print(_radar_image.size) yields (151, 205) for now
+            LOG.info(f'_radar_image.size is {str(_radar_image.size)}')
             w, h = _radar_image.size
             border = 4
             _radar_bottom_right = (int(600 - w - border), border)
@@ -242,7 +243,7 @@ class Radio(Layout):
 
         if _radar_image is not None:
             _radar_image = round_resize(img=_radar_image, corner=40, scaled_by=0.45)
-            # print(_radar_image.size) yields (151, 205) for now
+            LOG.info(f'_radar_image.size is {str(_radar_image.size)}')
             w, h = _radar_image.size
             border = 4
             _radar_bottom_right = (int(600 - w - border), border)

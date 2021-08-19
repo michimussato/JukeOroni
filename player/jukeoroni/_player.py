@@ -201,6 +201,15 @@ class Track(object):
 
 
 class Player(object):
+    _instance = None
+
+    # TODO: is this still necessary?
+    def __new__(cls):
+        if cls._instance is None:
+            print('Creating the object')
+            cls._instance = super(Player, cls).__new__(cls)
+            # Put any initialization here.
+        return cls._instance
 
     def __init__(self, auto_update_tracklist=False):
         logging.info('initializing player...')
@@ -363,11 +372,6 @@ class Player(object):
     @staticmethod
     def create_update_track_list():
         # TODO: filter image files, m3u etc.
-
-        # TODO
-        #  [Sun Aug 15 17:12:39.274075 2021] [wsgi:error] [pid 1572:tid 3038589984] [remote 127.0.0.1:40396] track list generated successfully: 10971 tracks found
-        #  [Sun Aug 15 17:12:51.306229 2021] [wsgi:error] [pid 1572:tid 3038589984] [remote 127.0.0.1:40396] generating updated track list...
-
         logging.info('generating updated track list...')
         print('generating updated track list...')
         discogs_client = get_client()
@@ -943,13 +947,13 @@ class Player(object):
 
 
 def player():
-    p = Player(auto_update_tracklist=True)
+    p = Player(auto_update_tracklist=False)
     # p.temp_cleanup()
     p.buttons_watcher_thread()
     p.state_watcher_thread()
     p.pimoroni_watcher_thread()
     p.set_image()
-    p.track_list_generator_thread(auto_update_tracklist_interval=DEFAULT_TRACKLIST_REGEN_INTERVAL)  # effect only if auto_update_tracklist=True
+    # p.track_list_generator_thread(auto_update_tracklist_interval=DEFAULT_TRACKLIST_REGEN_INTERVAL)  # effect only if auto_update_tracklist=True
     p.track_loader_thread()
 
 

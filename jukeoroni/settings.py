@@ -28,47 +28,37 @@ SECRET_KEY = DJANGO_SECRET_KEY
 DEBUG = True
 
 
-print('asdfasdfasfcaerysgfa')
-print('asdfasdfasfcaerysgfa')
-print('asdfasdfasfcaerysgfa')
-print('asdfasdfasfcaerysgfa')
-print('asdfasdfasfcaerysgfa')
-print('asdfasdfasfcaerysgfa')
-print('asdfasdfasfcaerysgfa')
-print('asdfasdfasfcaerysgfa')
-print('asdfasdfasfcaerysgfa')
-
-# LOGGING = {
-#     'version': 1,
-#     'disable_existing_loggers': False,
-#     'formatters': {
-#         'simple': {
-#             'format': '[%(asctime)s] [%(levelname)s] [%(threadName)s|%(thread)d] [%(name)s]: %(message)s',
-#             'datefmt': '%m-%d-%Y %H:%M:%S',
-#         },
-#     },
-#     'handlers': {
-#         'console': {
-#             'level': 'DEBUG',
-#             'class': 'logging.StreamHandler',
-#             'formatter': 'simple'
-#         },
-#     },
-#     'loggers': {
-#         'django.request': {
-#             'handlers': ['console'],
-#             'propagate': False,
-#             'level': 'DEBUG',
-#         },
-#         'asyncio': {
-#             'level': 'WARNING',
-#         },
-#     },
-#     'root': {
-#         'level': 'DEBUG',
-#         'handlers': ['console']
-#     }
-# }
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'simple': {
+            'format': '[%(asctime)s] [%(levelname)s] [%(threadName)s|%(thread)d] [%(name)s]: %(message)s',
+            'datefmt': '%m-%d-%Y %H:%M:%S',
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple'
+        },
+    },
+    'loggers': {
+        'django.request': {
+            'handlers': ['console'],
+            'propagate': False,
+            'level': 'DEBUG',
+        },
+        'asyncio': {
+            'level': 'WARNING',
+        },
+    },
+    'root': {
+        'level': 'DEBUG',
+        'handlers': ['console']
+    }
+}
 
 
 ALLOWED_HOSTS = ['*']
@@ -124,8 +114,8 @@ WSGI_APPLICATION = 'jukeoroni.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-        # 'NAME': '/data/django/jukeoroni/db.sqlite3',
+        # 'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': '/data/django/dev/pycharm_project_jukeoroni_develop/db.sqlite3',
     }
 }
 
