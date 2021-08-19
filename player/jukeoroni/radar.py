@@ -97,6 +97,27 @@ class Radar(object):
             options.headless = True
             service_log_path = os.path.join(tempfile.gettempdir(), 'geckodriver.log')
             with selenium.webdriver.Firefox(options=options, service_log_path=service_log_path) as driver:
+                """
+Traceback (most recent call last):
+  File "/data/venv/lib/python3.7/site-packages/selenium/webdriver/common/service.py", line 76, in start
+    stdin=PIPE)
+  File "/usr/lib/python3.7/subprocess.py", line 775, in __init__
+    restore_signals, start_new_session)
+  File "/usr/lib/python3.7/subprocess.py", line 1522, in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+PermissionError: [Errno 13] Permission denied: 'geckodriver'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/data/django/jukeoroni/player/jukeoroni/radar.py", line 99, in _radar_screenshot
+    with selenium.webdriver.Firefox(options=options, service_log_path=service_log_path) as driver:
+  File "/data/venv/lib/python3.7/site-packages/selenium/webdriver/firefox/webdriver.py", line 164, in __init__
+    self.service.start()
+  File "/data/venv/lib/python3.7/site-packages/selenium/webdriver/common/service.py", line 88, in start
+    os.path.basename(self.path), self.start_error_message)
+selenium.common.exceptions.WebDriverException: Message: 'geckodriver' executable may have wrong permissions.
+                """
                 driver.get(self.URL)
                 time.sleep(2.0)
                 WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, "//*[@id=\"onetrust-accept-btn-handler\"]"))).click()
