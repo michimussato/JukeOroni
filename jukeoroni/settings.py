@@ -153,7 +153,7 @@ DATABASES = {
     }
 }
 
-print(f'USING DB {str(DATABASES["default"]["NAME"])}')
+print(f'USING DB {str(os.path.abspath(DATABASES["default"]["NAME"]))}')
 
 
 # Password validation
