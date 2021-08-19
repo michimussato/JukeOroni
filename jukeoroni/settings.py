@@ -145,7 +145,7 @@ WSGI_APPLICATION = 'jukeoroni.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / '..' / 'db.sqlite3',
+        'NAME': BASE_DIR / '..' / 'db_old.sqlite3',
         # 'NAME': '/data/django/jukeoroni/db.sqlite3',
     }
 }
