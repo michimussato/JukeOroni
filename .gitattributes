@@ -1,1 +1,2 @@
 secrets.py filter=git-crypt diff=git-crypt
+custom_secrets.py filter=git-crypt diff=git-crypt
