@@ -44,7 +44,7 @@ LOADING_IMAGE = Image.open(_LOADING_IMAGE)
 STANDARD_COVER = '/data/django/jukeoroni/player/static/cover_std.png'
 # STANDARD_COVER = Image.open(_STANDARD_COVER)
 PIMORONI_FONT = '/data/django/jukeoroni/player/static/gotham-black.ttf'
-DEFAULT_TRACKLIST_REGEN_INTERVAL = 12  # in hours
+DEFAULT_TRACKLIST_REGEN_INTERVAL = 24  # in hours
 CLOCK_UPDATE_INTERVAL = 5  # in minutes
 COVER_ONLINE_PREFERENCE = False
 
