@@ -14,6 +14,9 @@ from pathlib import Path
 import os
 # import logging.config
 
+print('THIS IS THE OLD BRANCH.')
+print('UNITTESTS DONT WORK HERE.')
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -28,48 +31,48 @@ SECRET_KEY = DJANGO_SECRET_KEY
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-LOGGING = {
-    'version': 1,
-    # Version of logging
-    'disable_existing_loggers': False,
-    'root': {
-        'level': 'DEBUG',
-        # 'handlers': ['file', 'console']
-        'handlers': ['file']
-    },
-    'formatters': {
-        'verbose': {
-            # 'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s',
-            'format': '[%(asctime)s] [%(levelname)s] [%(threadName)s|%(thread)d] [%(name)s]: %(message)s',
-            'datefmt': '%m-%d-%Y %H:%M:%S',
-        },
-    },
-    # disable logging
-    # Handlers #############################################################
-    'handlers': {
-        'file': {
-            'level': 'DEBUG' if DEBUG else 'INFO',
-            'class': 'logging.FileHandler',
-            'formatter': 'verbose',
-            'filename': os.path.join(BASE_DIR, 'django.log'),
-        },
-        ########################################################################
-        # 'console': {
-        #     'class': 'logging.StreamHandler',
-        #     'formatter': 'verbose',
-        # },
-    },
-    # Loggers ####################################################################
-    'loggers': {
-        'django': {
-            # 'handlers': ['file', 'console'],
-            'handlers': ['file'],
-            'level': 'DEBUG' if DEBUG else 'INFO',
-            'propagate': True,
-            'level': os.getenv('DJANGO_LOG_LEVEL', 'DEBUG')
-        },
-    },
-}
+# LOGGING = {
+#     'version': 1,
+#     # Version of logging
+#     'disable_existing_loggers': False,
+#     'root': {
+#         'level': 'DEBUG',
+#         # 'handlers': ['file', 'console']
+#         'handlers': ['file']
+#     },
+#     'formatters': {
+#         'verbose': {
+#             # 'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s',
+#             'format': '[%(asctime)s] [%(levelname)s] [%(threadName)s|%(thread)d] [%(name)s]: %(message)s',
+#             'datefmt': '%m-%d-%Y %H:%M:%S',
+#         },
+#     },
+#     # disable logging
+#     # Handlers #############################################################
+#     'handlers': {
+#         'file': {
+#             'level': 'DEBUG' if DEBUG else 'INFO',
+#             'class': 'logging.FileHandler',
+#             'formatter': 'verbose',
+#             'filename': os.path.join(BASE_DIR, 'django.log'),
+#         },
+#         ########################################################################
+#         # 'console': {
+#         #     'class': 'logging.StreamHandler',
+#         #     'formatter': 'verbose',
+#         # },
+#     },
+#     # Loggers ####################################################################
+#     'loggers': {
+#         'django': {
+#             # 'handlers': ['file', 'console'],
+#             'handlers': ['file'],
+#             'level': 'DEBUG' if DEBUG else 'INFO',
+#             'propagate': True,
+#             'level': os.getenv('DJANGO_LOG_LEVEL', 'DEBUG')
+#         },
+#     },
+# }
 
 """
 LOGGING = {
@@ -149,6 +152,8 @@ DATABASES = {
         # 'NAME': '/data/django/jukeoroni/db.sqlite3',
     }
 }
+
+print(f'USING DB {str(DATABASES["default"]["NAME"])}')
 
 
 # Password validation
