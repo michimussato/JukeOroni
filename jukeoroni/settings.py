@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/3.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
-from jukeoroni.custom_secrets import DJANGO_SECRET_KEY
+from jukeoroni._secrets import DJANGO_SECRET_KEY
 from pathlib import Path
 
 
