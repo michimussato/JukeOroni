@@ -1,2 +1,5 @@
-secrets.py filter=git-crypt diff=git-crypt
+# Push .gitattributes first
+# and the actual secrets file
+# in a second push
+
 _secrets.py filter=git-crypt diff=git-crypt
