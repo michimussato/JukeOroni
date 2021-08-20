@@ -121,8 +121,10 @@ class TestJukeOroni(TestCase):
             self.j.stop()
             self.j.eject()
 
+        # with self.assertRaises(AssertionError):
+        #     self.j.next()
+
         with self.assertRaises(NotImplementedError):
-            self.j.next()
             self.j.previous()
 
         self.assertIsNone(self.j.inserted_media)
@@ -182,6 +184,29 @@ class TestJukeOroni(TestCase):
 
         self.j.turn_off()
 
+    def test_next(self):
+        LOG.info(
+            f'\n############################\nRunning test: {str(inspect.getframeinfo(inspect.currentframe()).function)}\n')
+
+        self.j.turn_on()
+
+        media1 = Channel.objects.all()[2]
+        self.j.insert(media=media1)
+
+        with self.assertRaises(AssertionError):
+            self.j.next()
+
+        media2 = Channel.objects.all()[3]
+        self.j.play()
+        self.j.next(media=media2)
+
+        self.assertTrue(self.j.inserted_media is media2)
+        self.assertIsNotNone(self.j.playback_proc)
+
+        self.j.stop()
+        self.j.eject()
+        self.j.turn_off()
+
     @unittest.skip
     def test_pause(self):
         LOG.info(f'\n############################\nRunning test: {str(inspect.getframeinfo(inspect.currentframe()).function)}\n')
@@ -219,11 +244,6 @@ class TestJukeOroni(TestCase):
 
         self.j.eject()
         self.j.turn_off()
-
-    @unittest.skip
-    def test_next(self):
-        LOG.info(f'\n############################\nRunning test: {str(inspect.getframeinfo(inspect.currentframe()).function)}\n')
-        raise NotImplementedError
 
     @unittest.skip
     def test_previous(self):
@@ -289,7 +309,11 @@ class TestJukeOroni(TestCase):
         self.j.play()
         self.assertIsInstance(self.j.radio.is_on_air, Channel)
         self.assertEqual(self.j.inserted_media, media_1)
+        with self.assertRaises(AssertionError):
+            self.j.change_media(media=media_2)
+        self.j.stop()
         self.j.change_media(media=media_2)
+        self.j.play()
         self.assertIsInstance(self.j.radio.is_on_air, Channel)
         self.assertEqual(self.j.inserted_media, media_2)
 

@@ -76,7 +76,7 @@ j.turn_on()
 
 j.insert(j.radio.random_channel)
 j.play()
-j.change_media(j.radio.random_channel)
+j.next()
 j.stop()
 j.eject()
 
@@ -291,21 +291,28 @@ j.turn_off()
 
         self.playback_proc = None
 
-    def next(self):
-        raise NotImplementedError
+    def next(self, media=None):
+        assert self.inserted_media is not None, 'Can only go to next if media is inserted.'
+        assert self.playback_proc is not None, 'Can only go to next if media is playing.'
+        assert media is None or isinstance(media, ((Channel,))), 'can only insert Channel model'
+
+        # convenience method
+        if isinstance(self.inserted_media, Channel):
+            self.stop()
+            media = media or self.radio.random_channel
+            self.change_media(media)
+            self.play()
+        else:
+            raise NotImplementedError
 
     def previous(self):
         raise NotImplementedError
 
     def change_media(self, media):
+        assert self.playback_proc is None, 'Can only change media while not playing'
         # convenience method
-        _on_air = self.radio.is_on_air
-        if self.radio.is_on_air:
-            self.stop()
         self.eject()
         self.insert(media)
-        if _on_air:
-            self.play()
 
     def eject(self):
         assert self.inserted_media is not None, 'no media inserted. insert media first.'
