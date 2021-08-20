@@ -32,6 +32,8 @@ class TestJukeOroni(TestCase):
             ("BOBs 101", "101", True, "http://bob.hoerradar.de/radiobob-101-mp3-hq", None, False),
             ("BOBs Festival", "bob-festival", True, "http://bob.hoerradar.de/radiobob-festival-mp3-hq", "http://aggregatorservice.loverad.io/wp-content/uploads/2021/01/bob_festival_600x600.png", False),
             ("BOBs Harte Saite", "bob-hartesaite", True, "http://bob.hoerradar.de/radiobob-hartesaite-mp3-hq", "http://aggregatorservice.loverad.io/wp-content/uploads/2021/01/bob_harte-saite_600x600.png", True),
+            ("BOBs 2000er", "2000er", True, "http://bob.hoerradar.de/radiobob-2000er-mp3-hq",
+             "http://aggregatorservice.loverad.io/wp-content/uploads/2021/03/bob_2000er-rock_600x600.png", False),
         ]
 
         for channel in _fixture_channel_list:
@@ -166,6 +168,16 @@ class TestJukeOroni(TestCase):
             self.j.play()
 
         self.j.stop()
+        self.j.eject()
+
+        media = Channel.objects.all()[4]
+        self.j.insert(media=media)
+        import urllib.error
+        with self.assertRaises(urllib.error.HTTPError):
+            self.j.play()
+        with self.assertRaises(AssertionError):
+            self.j.turn_off()
+
         self.j.eject()
 
         self.j.turn_off()

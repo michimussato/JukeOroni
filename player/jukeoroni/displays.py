@@ -161,7 +161,7 @@ class Player(Layout):
     def get_layout(self, labels, cover=None, artist=None):
 
         if cover is None:
-            raise NotImplementedError
+            # raise NotImplementedError
             img = '/data/django/jukeoroni/player/static/radio.png'
             cover = Image.open(img).rotate(90, expand=True).resize((448, 448))
         else:
@@ -216,15 +216,10 @@ class Player(Layout):
         return bg
 
 
-# TODO
 class Radio(Layout):
 
     def get_layout(self, labels, cover):
 
-        # if cover is None:
-        #     img = '/data/django/jukeoroni/player/static/radio.png'
-        #     cover = Image.open(img).resize((448, 448))
-        # else:
         assert isinstance(cover, Image.Image), f'Radio Channel cover type must be PIL.Image.Image() (not rotated). Got: {cover}'
 
         buttons_overlay = buttons_img_overlay(labels)
@@ -258,6 +253,49 @@ class Radio(Layout):
             border = 4
             _radar_bottom_right = (int(600 - w - border), border)
             bg.paste(_radar_image, box=_radar_bottom_right, mask=_radar_image)
+
+        bg.paste(buttons_overlay, box=(0, 0), mask=buttons_overlay)
+
+        return bg
+
+
+class Off(Layout):
+
+    def get_layout(self, labels, cover):
+
+        assert isinstance(cover, Image.Image), f'Radio Channel cover type must be PIL.Image.Image() (not rotated). Got: {cover}'
+
+        buttons_overlay = buttons_img_overlay(labels)
+        bg = Image.new(mode='RGBA', size=(600, 448), color=(0, 0, 255, 255))
+
+        # cover_size = 448 - 2 * self.border
+        cover_size = self.main_size
+
+        cover = cover.rotate(90, expand=True)
+        cover = cover.resize((cover_size, cover_size), Image.ANTIALIAS)
+        cover = round_resize(img=cover, corner=40, scaled_by=1.0)
+
+        _cover_center = round(bg.size[1] / 2 - cover_size / 2)
+        bg.paste(cover, box=(buttons_overlay.size[0] + self.border, _cover_center), mask=cover)
+
+        # clock_size = 151
+        # _clock = self._clock.get_clock(size=clock_size, draw_logo=False, draw_date=False, hours=24, draw_astral=True)
+        # _clock_bottom_left_centered = (int(600 - clock_size - self.border),
+        #                                int(228 + 228/2 + round(self.border/2) - round(clock_size/2)))
+        # _clock_bottom_left = (int(600 - clock_size - self.border),
+        #                       int(448 - clock_size - self.border))
+        #
+        # bg.paste(_clock, box=_clock_bottom_left_centered, mask=_clock)
+
+        # _radar_image = self.radar.radar_image
+
+        # if _radar_image is not None:
+        #     _radar_image = round_resize(img=_radar_image, corner=40, scaled_by=0.45)
+        #     LOG.info(f'_radar_image.size is {str(_radar_image.size)}')
+        #     w, h = _radar_image.size
+        #     border = 4
+        #     _radar_bottom_right = (int(600 - w - border), border)
+        #     bg.paste(_radar_image, box=_radar_bottom_right, mask=_radar_image)
 
         bg.paste(buttons_overlay, box=(0, 0), mask=buttons_overlay)
 

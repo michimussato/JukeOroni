@@ -12,10 +12,19 @@ import RPi.GPIO as GPIO
 from django.core.validators import URLValidator
 from django.core.exceptions import ValidationError
 from inky.inky_uc8159 import Inky  # , BLACK
+from player.jukeoroni.displays import Off as OffLayout
 from player.jukeoroni.displays import Standby as StandbyLayout
 from player.jukeoroni.displays import Radio as RadioLayout
 from player.models import Channel
-from player.jukeoroni.settings import PIMORONI_SATURATION, CLOCK_UPDATE_INTERVAL, OFF_IMAGE, PIMORONI_WATCHER_UPDATE_INTERVAL, GLOBAL_LOGGING_LEVEL
+from player.jukeoroni.settings import (
+    PIMORONI_SATURATION,
+    CLOCK_UPDATE_INTERVAL,
+    OFF_IMAGE,
+    PIMORONI_WATCHER_UPDATE_INTERVAL,
+    GLOBAL_LOGGING_LEVEL,
+    ON_AIR_DEFAULT_IMAGE,
+    RADIO_ICON_IMAGE,
+)
 
 
 LOG = logging.getLogger(__name__)
@@ -82,8 +91,7 @@ class Radio(object):
         if isinstance(self.is_on_air, Channel):
             cover = self.is_on_air.url_logo
             if cover is None:
-                img = '/data/django/jukeoroni/player/static/radio_on_air_default.jpg'
-                cover = Image.open(img).resize((448, 448))
+                cover = ON_AIR_DEFAULT_IMAGE
             elif is_string_an_url(cover):
                 try:
                     hdr = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64)'}
@@ -94,14 +102,12 @@ class Radio(object):
                         cover = Image.open(cover)
                 except Exception as err:
                     LOG.exception(f'Could not get online cover:')
-                    img = '/data/django/jukeoroni/player/static/radio_on_air_default.jpg'
-                    cover = Image.open(img).resize((448, 448))
+                    cover = ON_AIR_DEFAULT_IMAGE
 
             else:
                 cover = Image.open(cover).resize((448, 448))
         elif self.is_on_air is None:
-            img = '/data/django/jukeoroni/player/static/radio.png'
-            cover = Image.open(img).resize((448, 448))
+            cover = RADIO_ICON_IMAGE
 
         if cover is None:
             raise TypeError('Channel cover is None')
@@ -202,6 +208,7 @@ j.turn_off()
         self._current_time = None
 
         # display layouts
+        self.layout_off = OffLayout()
         self.layout_standby = StandbyLayout()
         self.layout_radio = RadioLayout()
         # self.layout_jukebox = PlayerLayout()
@@ -276,13 +283,17 @@ j.turn_off()
         """
         assert not self.on, 'JukeOroni needs to be turned off first.'
         if not self.test:
-            self.button_X000_value = None
-            self.button_0X00_value = None
-            self.button_00X0_value = None
-            self.button_000X_value = None
+            self.button_X000_value = 'On'
+            self.button_0X00_value = 'N//A'
+            self.button_00X0_value = 'N//A'
+            self.button_000X_value = 'N//A'
             self.pimoroni_init()
-            LOG.info(f'Setting OFF_IMAGE...')
-            self.pimoroni.set_image(OFF_IMAGE, saturation=PIMORONI_SATURATION)
+            LOG.info(f'Setting OFF Layout...')
+
+            bg = self.layout_off.get_layout(labels=self.LABELS, cover=OFF_IMAGE)
+            # self.set_image(image=bg)
+
+            self.pimoroni.set_image(bg, saturation=PIMORONI_SATURATION)
             self.pimoroni.show(busy_wait=True)
             LOG.info(f'Done.')
         else:
@@ -298,10 +309,9 @@ j.turn_off()
             self.button_0X00_value = self.radio.button_0X00_value
             self.button_00X0_value = self.radio.button_00X0_value
             self.button_000X_value = self.radio.button_000X_value
+
             bg = self.layout_radio.get_layout(labels=self.LABELS, cover=self.radio.cover)
             self.set_image(image=bg)
-            # self.pimoroni.set_image(bg)
-            # self.pimoroni.show(busy_wait=False)
     ############################################
 
     ############################################
@@ -313,12 +323,11 @@ j.turn_off()
         # TODO: add types to tuple
         assert isinstance(media, (Channel)), 'can only insert Channel model'
 
-        if isinstance(media, Channel):
-            self.set_mode_radio()
-            # self.set_display_radio()
-
         self.inserted_media = media
         LOG.info(f'Media inserted: {str(media)} (type {str(type(media))})')
+
+        if isinstance(media, Channel):
+            self.set_mode_radio()
 
     def play(self):
         assert self.playback_proc is None, 'there is an active playback. stop() first.'
@@ -328,13 +337,12 @@ j.turn_off()
             hdr = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64)'}
             req = urllib.request.Request(self.inserted_media.url, headers=hdr)
             try:
+                # test if url is reachable
                 response = urllib.request.urlopen(req)
             except urllib.error.HTTPError as err:
                 bad_channel = self.inserted_media
-                # self.stop()
-                # self.eject()
                 LOG.exception(f'Could not open URL: {str(bad_channel)}')
-                return
+                raise
 
             if response.status == 200:
                 self.radio.is_on_air = self.inserted_media
@@ -376,10 +384,8 @@ j.turn_off()
             time.sleep(0.1)
 
         if isinstance(self.inserted_media, Channel):
-            # self.radio.is_on_air = self.inserted_media
-            # self.playback_proc = subprocess.Popen(FFPLAY_CMD + [self.inserted_media.url], shell=False)
-            self.set_display_radio()
             self.radio.is_on_air = None
+            self.set_display_radio()
 
         self.playback_proc = None
 
@@ -481,7 +487,6 @@ j.turn_off()
                 self._buttons_watcher_thread.join()
         except KeyboardInterrupt:
             LOG.info(f'_buttons_watcher_thread killed by signal.SIGINT:')
-            # LOG.exception('_buttons_watcher_thread killed by signal.SIGINT:')
         finally:
             self._buttons_watcher_thread = None
             LOG.info(f'self._buttons_watcher_thread terminated')
@@ -529,7 +534,6 @@ j.turn_off()
             LOG.info(f'No Pimoroni update in test mode')
         else:
             LOG.info(f'Setting Pimoroni image...')
-            # if kwargs:
             if 'image' in kwargs:
                 bg = kwargs['image']
             else:
@@ -574,7 +578,6 @@ j.turn_off()
         while self.on:
             if _waited is None or _waited % update_interval == 0:
                 _waited = 0
-                # self.set_image()
 
             time.sleep(1.0)
             _waited += 1

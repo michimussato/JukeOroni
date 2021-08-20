@@ -26,8 +26,15 @@ BUTTONS = [5, 6, 16, 24]
 
 # jukeoroni
 _OFF_IMAGE = '/data/django/jukeoroni/player/static/zzz.jpg'
-OFF_IMAGE = Image.open(_OFF_IMAGE).rotate(90, expand=True).resize((600, 448))
+OFF_IMAGE = Image.open(_OFF_IMAGE).resize((600, 448))
 PIMORONI_WATCHER_UPDATE_INTERVAL = 5
+
+
+# radio
+_RADIO_ICON_IMAGE = '/data/django/jukeoroni/player/static/radio.png'
+RADIO_ICON_IMAGE = Image.open(_RADIO_ICON_IMAGE).resize((448, 448))
+_ON_AIR_DEFAULT_IMAGE = '/data/django/jukeoroni/player/static/radio_on_air_default.jpg'
+ON_AIR_DEFAULT_IMAGE = Image.open(_ON_AIR_DEFAULT_IMAGE).resize((448, 448))
 
 
 # clock
