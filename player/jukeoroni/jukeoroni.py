@@ -1,20 +1,15 @@
-import random
 import time
-import io
 import threading
 import subprocess
 import logging
 import signal
 import urllib.request
 import urllib.error
-from PIL import Image
 import RPi.GPIO as GPIO
-from django.core.validators import URLValidator
-from django.core.exceptions import ValidationError
 from inky.inky_uc8159 import Inky  # , BLACK
+from player.jukeoroni.juke_radio import Radio
 from player.jukeoroni.displays import Off as OffLayout
 from player.jukeoroni.displays import Standby as StandbyLayout
-from player.jukeoroni.displays import Radio as RadioLayout
 from player.models import Channel
 from player.jukeoroni.settings import (
     PIMORONI_SATURATION,
@@ -22,8 +17,6 @@ from player.jukeoroni.settings import (
     OFF_IMAGE,
     PIMORONI_WATCHER_UPDATE_INTERVAL,
     GLOBAL_LOGGING_LEVEL,
-    ON_AIR_DEFAULT_IMAGE,
-    RADIO_ICON_IMAGE,
 )
 
 
@@ -68,96 +61,6 @@ BUTTON_SHFL_SCRN_PIN = _BUTTON_PINS[0]
 
 
 FFPLAY_CMD = 'ffplay -hide_banner -autoexit -vn -nodisp -loglevel error'.split(' ')
-
-
-def is_string_an_url(url_string: str) -> bool:
-    validate_url = URLValidator()
-    try:
-        validate_url(url_string)
-    except ValidationError:
-        return False
-    return True
-
-
-class Radio(object):
-    def __init__(self):
-        self.is_on_air = None
-
-        self.playback_proc = None
-
-    @property
-    def cover(self):
-        cover = None
-        if isinstance(self.is_on_air, Channel):
-            cover = self.is_on_air.url_logo
-            if cover is None:
-                cover = ON_AIR_DEFAULT_IMAGE
-            elif is_string_an_url(cover):
-                try:
-                    hdr = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64)'}
-                    req = urllib.request.Request(cover, headers=hdr)
-                    response = urllib.request.urlopen(req)
-                    if response.status == 200:
-                        cover = io.BytesIO(response.read())
-                        cover = Image.open(cover)
-                except Exception as err:
-                    LOG.exception(f'Could not get online cover:')
-                    cover = ON_AIR_DEFAULT_IMAGE
-
-            else:
-                cover = Image.open(cover).resize((448, 448))
-        elif self.is_on_air is None:
-            cover = RADIO_ICON_IMAGE
-
-        if cover is None:
-            raise TypeError('Channel cover is None')
-
-        return cover
-
-    @property
-    def button_X000_value(self):
-        if self.is_on_air:
-            return 'Stop'
-        elif not self.is_on_air:
-            return 'Back'
-
-    @property
-    def button_0X00_value(self):
-        if self.is_on_air:
-            return 'Next'
-        elif not self.is_on_air:
-            return 'Play'
-
-    @property
-    def button_00X0_value(self):
-        if self.is_on_air:
-            return '00X0'
-        elif not self.is_on_air:
-            return '00X0'
-
-    @property
-    def button_000X_value(self):
-        if self.is_on_air:
-            return '000X'
-        elif not self.is_on_air:
-            return '000X'
-
-    @property
-    def channels(self):
-        return Channel.objects.all()
-
-    @staticmethod
-    def get_channels_by_kwargs(**kwargs):
-        # i.e. self.get_channels_by_kwargs(display_name_short='srf_swiss_pop')[0])
-        return Channel.objects.filter(**kwargs)
-
-    @property
-    def random_channel(self):
-        return random.choice(self.channels)
-
-    @property
-    def last_played(self):
-        return Channel.objects.get(last_played=True)
 
 
 class JukeOroni(object):
@@ -210,7 +113,7 @@ j.turn_off()
         # display layouts
         self.layout_off = OffLayout()
         self.layout_standby = StandbyLayout()
-        self.layout_radio = RadioLayout()
+        # self.layout_radio = RadioLayout()
         # self.layout_jukebox = PlayerLayout()
 
         self._pimoroni_thread_queue = None
@@ -239,7 +142,6 @@ j.turn_off()
 
     ############################################
     # set modes
-
     def set_mode_standby(self):
         self.set_display_standby()
 
@@ -310,7 +212,7 @@ j.turn_off()
             self.button_00X0_value = self.radio.button_00X0_value
             self.button_000X_value = self.radio.button_000X_value
 
-            bg = self.layout_radio.get_layout(labels=self.LABELS, cover=self.radio.cover)
+            bg = self.radio.layout.get_layout(labels=self.LABELS, cover=self.radio.cover)
             self.set_image(image=bg)
     ############################################
 

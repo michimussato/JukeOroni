@@ -4,7 +4,7 @@ import threading
 import tempfile
 import logging
 from io import BytesIO
-from PIL import Image, ImageDraw
+from PIL import Image
 import selenium.common
 import selenium.webdriver
 from selenium.webdriver.common.by import By
@@ -22,7 +22,6 @@ class _RadarThread(threading.Thread):
         super().__init__(*args, **kwargs)
         self.name = 'Radar Thread'
         self.daemon = False
-        # self.start()
 
 
 class Radar(object):
@@ -39,10 +38,6 @@ class Radar(object):
 
     # https://www.meteoschweiz.admin.ch/product/output/satellite/cloud-cover/version__20210730_1138/VLSN84.LSSW_20210730_1115.jpg
     # https://www.meteoschweiz.admin.ch/product/output/cosmo/wind/10m/forecast/version__20210730_1142/web_c1e_ch_ctrl-web_uv10m_kmh_20210731_2300.png
-
-    # import urllib.request
-    # img = io.BytesIO(urllib.request.urlopen(image_file_url).read())
-    # cover = Image.open(img)
 
     # https://zoom.earth/#view=46.51,8.171,7z/date=2021-07-30,10:00,+2  https://zoom.earth/#view=46.51,8.171,7z
 
@@ -97,27 +92,6 @@ class Radar(object):
             options.headless = True
             service_log_path = os.path.join(tempfile.gettempdir(), 'geckodriver.log')
             with selenium.webdriver.Firefox(options=options, service_log_path=service_log_path) as driver:
-                """
-Traceback (most recent call last):
-  File "/data/venv/lib/python3.7/site-packages/selenium/webdriver/common/service.py", line 76, in start
-    stdin=PIPE)
-  File "/usr/lib/python3.7/subprocess.py", line 775, in __init__
-    restore_signals, start_new_session)
-  File "/usr/lib/python3.7/subprocess.py", line 1522, in _execute_child
-    raise child_exception_type(errno_num, err_msg, err_filename)
-PermissionError: [Errno 13] Permission denied: 'geckodriver'
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "/data/django/jukeoroni/player/jukeoroni/radar.py", line 99, in _radar_screenshot
-    with selenium.webdriver.Firefox(options=options, service_log_path=service_log_path) as driver:
-  File "/data/venv/lib/python3.7/site-packages/selenium/webdriver/firefox/webdriver.py", line 164, in __init__
-    self.service.start()
-  File "/data/venv/lib/python3.7/site-packages/selenium/webdriver/common/service.py", line 88, in start
-    os.path.basename(self.path), self.start_error_message)
-selenium.common.exceptions.WebDriverException: Message: 'geckodriver' executable may have wrong permissions.
-                """
                 driver.get(self.URL)
                 time.sleep(2.0)
                 WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, "//*[@id=\"onetrust-accept-btn-handler\"]"))).click()
