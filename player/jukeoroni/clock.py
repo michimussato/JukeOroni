@@ -9,10 +9,11 @@ except ImportError as err:
 from PIL import Image, ImageDraw, ImageFont
 from astral import LocationInfo
 from astral.sun import sun
+from player.jukeoroni.settings import GLOBAL_LOGGING_LEVEL
 
 
 LOG = logging.getLogger(__name__)
-LOG.setLevel(logging.DEBUG)
+LOG.setLevel(GLOBAL_LOGGING_LEVEL)
 
 
 ANTIALIAS = 16

@@ -10,11 +10,11 @@ import selenium.webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
-from player.jukeoroni.settings import RADAR_UPDATE_INTERVAL
+from player.jukeoroni.settings import RADAR_UPDATE_INTERVAL, GLOBAL_LOGGING_LEVEL
 
 
 LOG = logging.getLogger(__name__)
-LOG.setLevel(logging.DEBUG)
+LOG.setLevel(GLOBAL_LOGGING_LEVEL)
 
 
 class _RadarThread(threading.Thread):

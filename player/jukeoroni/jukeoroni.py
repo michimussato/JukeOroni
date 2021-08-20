@@ -9,11 +9,11 @@ from inky.inky_uc8159 import Inky  # , BLACK
 from player.jukeoroni.displays import Standby as StandbyLayout
 from player.jukeoroni.displays import Radio as RadioLayout
 from player.models import Channel
-from player.jukeoroni.settings import PIMORONI_SATURATION, CLOCK_UPDATE_INTERVAL, OFF_IMAGE, PIMORONI_WATCHER_UPDATE_INTERVAL
+from player.jukeoroni.settings import PIMORONI_SATURATION, CLOCK_UPDATE_INTERVAL, OFF_IMAGE, PIMORONI_WATCHER_UPDATE_INTERVAL, GLOBAL_LOGGING_LEVEL
 
 
 LOG = logging.getLogger(__name__)
-LOG.setLevel(logging.INFO)
+LOG.setLevel(GLOBAL_LOGGING_LEVEL)
 
 
 # buttons setup

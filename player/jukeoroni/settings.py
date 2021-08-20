@@ -4,8 +4,11 @@ from astral import LocationInfo
 from PIL import Image
 
 
+GLOBAL_LOGGING_LEVEL = logging.INFO
+
+
 LOG = logging.getLogger(__name__)
-LOG.setLevel(logging.INFO)
+LOG.setLevel(GLOBAL_LOGGING_LEVEL)
 
 
 # media_crawler

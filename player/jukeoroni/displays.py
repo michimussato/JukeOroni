@@ -2,10 +2,11 @@ import logging
 from PIL import Image, ImageDraw
 from player.jukeoroni.clock import Clock
 from player.jukeoroni.radar import Radar
+from player.jukeoroni.settings import GLOBAL_LOGGING_LEVEL
 
 
 LOG = logging.getLogger(__name__)
-LOG.setLevel(logging.INFO)
+LOG.setLevel(GLOBAL_LOGGING_LEVEL)
 
 
 """

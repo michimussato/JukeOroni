@@ -4,11 +4,12 @@ import unittest
 from subprocess import Popen
 from django.test import TestCase
 from player.jukeoroni.jukeoroni import JukeOroni
+from player.jukeoroni.settings import GLOBAL_LOGGING_LEVEL
 from player.models import Channel
 
 
 LOG = logging.getLogger(__name__)
-LOG.setLevel(logging.INFO)
+LOG.setLevel(GLOBAL_LOGGING_LEVEL)
 
 
 class TestJukeOroni(TestCase):
