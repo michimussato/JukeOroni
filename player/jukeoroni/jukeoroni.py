@@ -76,6 +76,8 @@ j.turn_on()
 
 j.insert(j.radio.random_channel)
 j.play()
+# j.change_media(j.radio.random_channel)
+# j.next(j.radio.get_channels_by_kwargs(display_name_short='bob-metal')[0])
 j.next()
 j.stop()
 j.eject()
@@ -299,9 +301,20 @@ j.turn_off()
         # convenience method
         if isinstance(self.inserted_media, Channel):
             self.stop()
+
+            success = False
+
             media = media or self.radio.random_channel
-            self.change_media(media)
-            self.play()
+
+            while not success:
+                try:
+                    self.change_media(media)
+                    self.play()
+                    success = True
+                except urllib.error.HTTPError:
+                    # LOG.error('getting random channel. previous try failed:')
+                    LOG.exception(f'getting random channel. previous try with {str(media)} failed:')
+                    media = self.radio.random_channel
         else:
             raise NotImplementedError
 
