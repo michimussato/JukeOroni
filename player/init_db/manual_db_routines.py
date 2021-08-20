@@ -63,15 +63,15 @@ channel_list = [
     ("BOBs Sammet Rockshow", "sammet", True, "http://bob.hoerradar.de/radiobob-sammet-mp3-hq", "http://aggregatorservice.loverad.io/wp-content/uploads/2021/01/bob_tobias-sammet-rockshow_600x600.png", False),
     ("BOBs Southern Rock", "southernrock", True, "http://bob.hoerradar.de/radiobob-southernrock-mp3-hq", "http://aggregatorservice.loverad.io/wp-content/uploads/2021/01/bob_southern-rock_600x600.png", False),
     ("BOBs Symphonic Metal", "symphmetal", True, "http://bob.hoerradar.de/radiobob-symphmetal-mp3-hq", "http://aggregatorservice.loverad.io/wp-content/uploads/2020/07/bob_symphonic-metal_600x600.jpg", False),
-    ("SRF 3", "srf_3", True, "http://stream.srg-ssr.ch/drs3/aacp_96", "https://mytuner.global.ssl.fastly.net/media/tvos_radios/8S4qGytr8f.png", False),
-    ("SRF 2 Kultur", "srf_2", True, "http://stream.srg-ssr.ch/drs2/aacp_96", "https://mytuner.global.ssl.fastly.net/media/tvos_radios/XphWMbkRsU.png", False),
-    ("SRF 1", "srf_1", True, "http://stream.srg-ssr.ch/drs1/aacp_96", "https://www.liveradio.ie/files/images/105819/resized/180x172c/radioooo.png", False),
-    ("SRF 4 News", "srf_4", True, "http://stream.srg-ssr.ch/drs4news/aacp_96", "https://seeklogo.com/images/R/radio-srf-4-news-logo-D17966CFE5-seeklogo.com.png", False),
-    ("SRF Virus", "srf_virus", True, "http://stream.srg-ssr.ch/drsvirus/aacp_96", "https://i1.sndcdn.com/avatars-000028958863-4mhkle-t500x500.jpg", False),
-    ("SRF Swiss Classic", "srf_swiss_classic", True, "http://stream.srg-ssr.ch/rsc_de/aacp_96", "https://i1.sndcdn.com/artworks-000575528372-2khk7a-t500x500.jpg", False),
-    ("SRF Swiss Jazz", "srf_swiss_jazz", True, "http://stream.srg-ssr.ch/rsj/aacp_96", "https://upload.wikimedia.org/wikipedia/commons/9/9e/Radio_Swiss_Jazz_logo.png", False),
-    ("SRF Swiss Pop", "srf_swiss_pop", True, "http://stream.srg-ssr.ch/rsp/aacp_96", "https://mx3.ch/pictures/mx3/file/0033/0569/original/radioswisspop_1_rgb.jpg?1429621701", False),
-    ("SRF Couleur 3", "couleur_3", True, "http://stream.srg-ssr.ch/couleur3/aacp_96", "https://d3kle7qwymxpcy.cloudfront.net/images/broadcasts/1b/af/1489/5/c175.png", False),
+    ("SRF 3", "srf_3", True, "http://stream.srg-ssr.ch/m/drs3/aacp_96", "https://mytuner.global.ssl.fastly.net/media/tvos_radios/8S4qGytr8f.png", False),
+    ("SRF 2 Kultur", "srf_2", True, "http://stream.srg-ssr.ch/m/drs2/aacp_96", "https://mytuner.global.ssl.fastly.net/media/tvos_radios/XphWMbkRsU.png", False),
+    ("SRF 1", "srf_1", True, "http://stream.srg-ssr.ch/m/drs1/aacp_96", "https://www.liveradio.ie/files/images/105819/resized/180x172c/radioooo.png", False),
+    ("SRF 4 News", "srf_4", True, "http://stream.srg-ssr.ch/m/drs4news/aacp_96", "https://seeklogo.com/images/R/radio-srf-4-news-logo-D17966CFE5-seeklogo.com.png", False),
+    ("SRF Virus", "srf_virus", True, "http://stream.srg-ssr.ch/m/drsvirus/aacp_96", "https://i1.sndcdn.com/avatars-000028958863-4mhkle-t500x500.jpg", False),
+    ("SRF Swiss Classic", "srf_swiss_classic", True, "http://stream.srg-ssr.ch/m/rsc_de/aacp_96", "https://i1.sndcdn.com/artworks-000575528372-2khk7a-t500x500.jpg", False),
+    ("SRF Swiss Jazz", "srf_swiss_jazz", True, "http://stream.srg-ssr.ch/m/rsj/aacp_96", "https://upload.wikimedia.org/wikipedia/commons/9/9e/Radio_Swiss_Jazz_logo.png", False),
+    ("SRF Swiss Pop", "srf_swiss_pop", True, "http://stream.srg-ssr.ch/m/rsp/aacp_96", "https://mx3.ch/pictures/mx3/file/0033/0569/original/radioswisspop_1_rgb.jpg?1429621701", False),
+    ("SRF Couleur 3", "couleur_3", True, "http://stream.srg-ssr.ch/m/couleur3/aacp_96", "https://d3kle7qwymxpcy.cloudfront.net/images/broadcasts/1b/af/1489/5/c175.png", False),
     ("Rock Antenne Hamburg", "rock_antenne_hamburg", True, "http://stream.rockantenne.hamburg/rockantenne-hamburg", None, False),
     ("Rock Antenne Heavy Metal", "rock_antenne_heavy_metal", True, "http://stream.rockantenne.de/heavy-metal", None, False),
     ("Rock Antenne Hair Metal", "rock_antenne_hair_metal", True, "http://stream.rockantenne.de/hair-metal", None, False),
@@ -96,7 +96,7 @@ channel_list = [
 def channels_write_table():
     from player.models import Channel
     for channel in channel_list:
-        c = Channel(display_name=channel[0], display_name_short=channel[1], is_enabled=channel[2], url=channel[3], url_logo=channel[4], last_played=channel[5])
+        c = Channel(display_name=channel[0], display_name_short=channel[1], is_enabled=channel[2], url=channel[3], url_logo=channel[4])
         c.save()
 
 

@@ -9,6 +9,9 @@ https://docs.djangoproject.com/en/3.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
+import logging
+import os
+
 from jukeoroni._secrets import DJANGO_SECRET_KEY
 from pathlib import Path
 
@@ -59,6 +62,10 @@ LOGGING = {
         'handlers': ['console']
     }
 }
+
+
+LOG = logging.getLogger(__name__)
+LOG.setLevel(logging.INFO)
 
 
 ALLOWED_HOSTS = ['*']
@@ -117,6 +124,7 @@ DATABASES = {
     }
 }
 
+LOG.critical(f'USING DB {str(os.path.abspath(DATABASES["default"]["NAME"]))}')
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
