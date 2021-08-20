@@ -15,7 +15,7 @@
 channel_list = [
     ("BOBs 100", "100", True, "http://bob.hoerradar.de/radiobob-100-mp3-hq", None, False),
     ("BOBs 101", "101", True, "http://bob.hoerradar.de/radiobob-101-mp3-hq", None, False),
-    ("BOBs 2000er", "2000er", True, "http://bob.hoerradar.de/radiobob-2000er-mp3-hq", "http://aggregatorservice.loverad.io/wp-content/uploads/2021/03/bob_2000er-rock_600x600.png", False),
+    # ("BOBs 2000er", "2000er", True, "http://bob.hoerradar.de/radiobob-2000er-mp3-hq", "http://aggregatorservice.loverad.io/wp-content/uploads/2021/03/bob_2000er-rock_600x600.png", False),
     ("BOBs Blues", "blues", True, "http://bob.hoerradar.de/radiobob-blues-mp3-hq", "http://aggregatorservice.loverad.io/wp-content/uploads/2021/03/bob_2000er-rock_600x600.png", False),
     ("BOBs 80s Rock", "bob-80srock", True, "http://bob.hoerradar.de/radiobob-80srock-mp3-hq", "http://aggregatorservice.loverad.io/wp-content/uploads/2021/01/bob_80er-rock_600x600.png", False),
     ("BOBs 90s Rock", "bob-90srock", True, "http://bob.hoerradar.de/radiobob-90srock-mp3-hq", "http://aggregatorservice.loverad.io/wp-content/uploads/2021/01/bob_90er-rock_600x600.png", False),

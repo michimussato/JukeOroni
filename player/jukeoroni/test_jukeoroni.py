@@ -1,5 +1,7 @@
 import inspect
 import logging
+import subprocess
+import sys
 import unittest
 from subprocess import Popen
 from django.test import TestCase
@@ -11,6 +13,13 @@ from player.models import Channel
 LOG = logging.getLogger(__name__)
 LOG.setLevel(GLOBAL_LOGGING_LEVEL)
 
+ps = subprocess.Popen(['ps -o cmd -p $(pidof ffplay) | grep -i ffplay'], shell=True,
+                      stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+output = ps.communicate()[0].decode('utf-8').replace('\n', '')
+if output != '':
+    print('FFPLAY IS PLAYING! CANNOT TEST, AUDIO HARDWARE BUSY!!!')
+    sys.exit(1)
+
 
 class TestJukeOroni(TestCase):
 
@@ -21,10 +30,8 @@ class TestJukeOroni(TestCase):
         _fixture_channel_list = [
             ("BOBs 100", "100", True, "http://bob.hoerradar.de/radiobob-100-mp3-hq", None, False),
             ("BOBs 101", "101", True, "http://bob.hoerradar.de/radiobob-101-mp3-hq", None, False),
-            ("BOBs 2000er", "2000er", True, "http://bob.hoerradar.de/radiobob-2000er-mp3-hq",
-             "http://aggregatorservice.loverad.io/wp-content/uploads/2021/03/bob_2000er-rock_600x600.png", False),
-            ("BOBs Blues", "blues", True, "http://bob.hoerradar.de/radiobob-blues-mp3-hq",
-             "http://aggregatorservice.loverad.io/wp-content/uploads/2021/03/bob_2000er-rock_600x600.png", False),
+            ("BOBs Festival", "bob-festival", True, "http://bob.hoerradar.de/radiobob-festival-mp3-hq", "http://aggregatorservice.loverad.io/wp-content/uploads/2021/01/bob_festival_600x600.png", False),
+            ("BOBs Harte Saite", "bob-hartesaite", True, "http://bob.hoerradar.de/radiobob-hartesaite-mp3-hq", "http://aggregatorservice.loverad.io/wp-content/uploads/2021/01/bob_harte-saite_600x600.png", True),
         ]
 
         for channel in _fixture_channel_list:
@@ -117,11 +124,15 @@ class TestJukeOroni(TestCase):
             self.j.previous()
 
         self.assertIsNone(self.j.inserted_media)
-        media = Channel.objects.all()[0]
-        self.j.insert(media=media)
+        media1 = Channel.objects.all()[0]
+        self.j.insert(media=media1)
         self.assertIsNotNone(self.j.inserted_media)
         self.assertEquals('http://bob.hoerradar.de/radiobob-100-mp3-hq',
                           self.j.inserted_media.url)
+
+        media2 = Channel.objects.all()[1]
+        with self.assertRaises(AssertionError):
+            self.j.insert(media=media2)
 
         self.j.eject()
 
@@ -138,15 +149,21 @@ class TestJukeOroni(TestCase):
         with self.assertRaises(Exception):
             self.j.insert(media='Medium')
 
-        media = Channel.objects.all()[0]
+        media = Channel.objects.all()[2]
         self.j.insert(media=media)
 
-        self.assertFalse(self.j.radio.is_on_air)
+        self.assertIsNone(self.j.radio.is_on_air)
         self.assertIsNone(self.j.playback_proc)
         self.j.play()
-        self.assertTrue(self.j.radio.is_on_air)
+        self.assertIsInstance(self.j.radio.is_on_air, Channel)
         self.assertIsInstance(self.j.playback_proc, Popen)
         self.assertIsNone(self.j.playback_proc.poll())
+
+        # media = Channel.objects.all()[0]
+        # self.j.insert(media=media)
+
+        with self.assertRaises(Exception):
+            self.j.play()
 
         self.j.stop()
         self.j.eject()
@@ -179,13 +196,13 @@ class TestJukeOroni(TestCase):
 
         self.j.play()
 
-        self.assertTrue(self.j.radio.is_on_air)
+        self.assertIsInstance(self.j.radio.is_on_air, Channel)
         self.assertIsInstance(self.j.playback_proc, Popen)
         self.assertIsNone(self.j.playback_proc.poll())
 
         self.j.stop()
 
-        self.assertFalse(self.j.radio.is_on_air)
+        self.assertIsNone(self.j.radio.is_on_air)
         self.assertIsNone(self.j.playback_proc)
 
         self.j.eject()
@@ -209,7 +226,7 @@ class TestJukeOroni(TestCase):
         with self.assertRaises(AssertionError):
             self.j.eject()
 
-        media = Channel.objects.all()[0]
+        media = Channel.objects.all()[2]
         self.j.insert(media=media)
 
         self.assertIs(media, self.j.inserted_media)
@@ -246,10 +263,10 @@ class TestJukeOroni(TestCase):
 
         # while not playing
         self.j.insert(media=media_1)
-        self.assertFalse(self.j.radio.is_on_air)
+        self.assertIsNone(self.j.radio.is_on_air)
         self.assertEqual(self.j.inserted_media, media_1)
         self.j.change_media(media=media_2)
-        self.assertFalse(self.j.radio.is_on_air)
+        self.assertIsNone(self.j.radio.is_on_air)
 
         self.assertEqual(self.j.inserted_media, media_2)
 
@@ -258,10 +275,10 @@ class TestJukeOroni(TestCase):
         # while playing
         self.j.insert(media=media_1)
         self.j.play()
-        self.assertTrue(self.j.radio.is_on_air)
+        self.assertIsInstance(self.j.radio.is_on_air, Channel)
         self.assertEqual(self.j.inserted_media, media_1)
         self.j.change_media(media=media_2)
-        self.assertTrue(self.j.radio.is_on_air)
+        self.assertIsInstance(self.j.radio.is_on_air, Channel)
         self.assertEqual(self.j.inserted_media, media_2)
 
         self.j.stop()

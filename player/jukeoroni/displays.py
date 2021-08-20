@@ -158,9 +158,14 @@ class Standby(Layout):
 
 class Player(Layout):
 
-    def get_layout(self, labels, cover, artist=None):
+    def get_layout(self, labels, cover=None, artist=None):
 
-        assert isinstance(cover, Image.Image), f'album cover type must be PIL.Image.Image() (not rotated): {cover}'
+        if cover is None:
+            raise NotImplementedError
+            img = '/data/django/jukeoroni/player/static/radio.png'
+            cover = Image.open(img).rotate(90, expand=True).resize((448, 448))
+        else:
+            assert isinstance(cover, Image.Image), f'album cover type must be PIL.Image.Image() (not rotated): {cover}'
         if artist is None:
             pass
         else:
@@ -216,10 +221,14 @@ class Radio(Layout):
 
     def get_layout(self, labels, cover):
 
-        assert isinstance(cover, Image.Image), f'album cover type must be PIL.Image.Image() (not rotated): {cover}'
+        # if cover is None:
+        #     img = '/data/django/jukeoroni/player/static/radio.png'
+        #     cover = Image.open(img).resize((448, 448))
+        # else:
+        assert isinstance(cover, Image.Image), f'Radio Channel cover type must be PIL.Image.Image() (not rotated). Got: {cover}'
 
         buttons_overlay = buttons_img_overlay(labels)
-        bg = Image.new(mode='RGBA', size=(600, 448), color=(0, 255, 0, 255))
+        bg = Image.new(mode='RGBA', size=(600, 448), color=(0, 0, 255, 255))
 
         # cover_size = 448 - 2 * self.border
         cover_size = self.main_size
