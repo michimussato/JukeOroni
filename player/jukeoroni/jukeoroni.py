@@ -16,6 +16,7 @@ from player.jukeoroni.settings import (
     CLOCK_UPDATE_INTERVAL,
     PIMORONI_WATCHER_UPDATE_INTERVAL,
     GLOBAL_LOGGING_LEVEL,
+    MODES,
 )
 from player.jukeoroni.images import Resource
 
@@ -27,15 +28,16 @@ LOG.setLevel(GLOBAL_LOGGING_LEVEL)
 # buttons setup
 # in portrait mode: from right to left
 _BUTTON_PINS = [5, 6, 16, 24]
+_BUTTON_MAPPINGS = ['000X', '00X0', '0X00', 'X000']
 # highest index top, lowest index bottom
 # (move items up and down for readability)
 # also, the order here should be reflected
 # in the order of the Player.LABELS property
 # in order show up in the right order
-BUTTON_STOP_BACK_PIN = _BUTTON_PINS[3]
-BUTTON_PLAY_NEXT_PIN = _BUTTON_PINS[2]
-BUTTON_RAND_ALBM_PIN = _BUTTON_PINS[1]
-BUTTON_SHFL_SCRN_PIN = _BUTTON_PINS[0]
+# BUTTON_STOP_BACK_PIN = _BUTTON_PINS[3]
+# BUTTON_PLAY_NEXT_PIN = _BUTTON_PINS[2]
+# BUTTON_RAND_ALBM_PIN = _BUTTON_PINS[1]
+# BUTTON_SHFL_SCRN_PIN = _BUTTON_PINS[0]
 
 # # this will be the next layout:
 # BUTTON_STOP_BACK_PIN = BUTTONS[3]
@@ -74,7 +76,10 @@ j = JukeOroni()
 # j.test = True
 j.turn_on()
 
-j.insert(j.radio.random_channel)
+j.set_mode_radio()
+
+# j.insert(j.radio.random_channel)
+j.insert(j.radio.last_played)
 j.play()
 # j.change_media(j.radio.random_channel)
 # j.next(j.radio.get_channels_by_kwargs(display_name_short='bob-metal')[0])
@@ -96,6 +101,7 @@ j.turn_off()
         LOG.info(f'Test mode JukeOroni: {str("ON" if self.test else "OFF")}.')
 
         self.on = False
+        self.mode = MODES['jukeoroni']['off']
 
         # self.jukebox = JukeBox()
         self.radio = Radio()
@@ -115,7 +121,7 @@ j.turn_off()
         # display layouts
         self.layout_off = OffLayout()
         self.layout_standby = StandbyLayout()
-        # self.layout_radio = RadioLayout()
+        self.layout_radio = self.radio.layout
         # self.layout_jukebox = PlayerLayout()
 
         self._pimoroni_thread_queue = None
@@ -124,6 +130,8 @@ j.turn_off()
         self._pimoroni_watcher_thread = None
         self._buttons_watcher_thread = None
         self._state_watcher_thread = None
+
+        # self.set_display_turn_off()
 
     def __str__(self):
         ret = 'JukeOroni\n'
@@ -145,9 +153,14 @@ j.turn_off()
     ############################################
     # set modes
     def set_mode_standby(self):
+        self.mode = MODES['jukeoroni']['standby']
         self.set_display_standby()
 
     def set_mode_radio(self):
+        if self.radio.is_on_air:
+            self.mode = MODES['radio']['on_air']
+        elif not self.radio.is_on_air:
+            self.mode = MODES['radio']['standby']
         self.set_display_radio()
 
     def set_mode_player(self):
@@ -173,10 +186,10 @@ j.turn_off()
         """
         assert self.on, 'turn_on first.'
         if not self.test:
-            self.button_X000_value = 'Player'
-            self.button_0X00_value = 'Radio'
-            self.button_00X0_value = 'N//A'
-            self.button_000X_value = 'N//A'
+            self.button_X000_value = self.mode['buttons']['X000']
+            self.button_0X00_value = self.mode['buttons']['0X00']
+            self.button_00X0_value = self.mode['buttons']['00X0']
+            self.button_000X_value = self.mode['buttons']['000X']
             self.set_image()
         else:
             LOG.info(f'Not setting TURN_ON image. Test mode.')
@@ -187,10 +200,10 @@ j.turn_off()
         """
         assert not self.on, 'JukeOroni needs to be turned off first.'
         if not self.test:
-            self.button_X000_value = 'On'
-            self.button_0X00_value = 'N//A'
-            self.button_00X0_value = 'N//A'
-            self.button_000X_value = 'N//A'
+            self.button_X000_value = self.mode['buttons']['X000']
+            self.button_0X00_value = self.mode['buttons']['0X00']
+            self.button_00X0_value = self.mode['buttons']['00X0']
+            self.button_000X_value = self.mode['buttons']['000X']
             self.pimoroni_init()
             LOG.info(f'Setting OFF Layout...')
 
@@ -209,10 +222,10 @@ j.turn_off()
         j.set_display_radio()
         """
         if not self.test:
-            self.button_X000_value = self.radio.button_X000_value
-            self.button_0X00_value = self.radio.button_0X00_value
-            self.button_00X0_value = self.radio.button_00X0_value
-            self.button_000X_value = self.radio.button_000X_value
+            self.button_X000_value = self.mode['buttons']['X000']
+            self.button_0X00_value = self.mode['buttons']['0X00']
+            self.button_00X0_value = self.mode['buttons']['00X0']
+            self.button_000X_value = self.mode['buttons']['000X']
 
             bg = self.radio.layout.get_layout(labels=self.LABELS, cover=self.radio.cover)
             self.set_image(image=bg)
@@ -231,6 +244,7 @@ j.turn_off()
         LOG.info(f'Media inserted: {str(media)} (type {str(type(media))})')
 
         if isinstance(media, Channel):
+            # if self.mode != MODES
             self.set_mode_radio()
 
     def play(self):
@@ -256,7 +270,18 @@ j.turn_off()
                 except subprocess.TimeoutExpired:
                     # this is the expected behaviour!!
                     LOG.info(f'ffplay started successfully. playing {str(self.inserted_media.display_name)}')
-                    self.set_display_radio()
+                    self.set_mode_radio()
+
+                    if self.radio.last_played is not None:
+                        last_played_reset = self.radio.last_played
+                        last_played_reset.last_played = False
+                        last_played_reset.save()
+                    # except Channel.DoesNotExist:
+                    #     LOG.exception('Cannot reset last_played Channel:')
+
+                    self.inserted_media.last_played = True
+                    self.inserted_media.save()
+                    # self.set_display_radio()
                 else:
                     bad_channel = self.inserted_media
                     self.stop()
@@ -289,7 +314,8 @@ j.turn_off()
 
         if isinstance(self.inserted_media, Channel):
             self.radio.is_on_air = None
-            self.set_display_radio()
+            self.set_mode_radio()
+            # self.set_display_radio()
 
         self.playback_proc = None
 
@@ -358,6 +384,7 @@ j.turn_off()
 
     def _start_jukeoroni(self):
         self.on = True
+        self.mode = MODES['jukeoroni']['standby']
 
         self.pimoroni_init()
 
@@ -388,6 +415,7 @@ j.turn_off()
 
     def _stop_jukeoroni(self):
         self.on = False
+        self.mode = MODES['jukeoroni']['off']
 
         # cannot join() the threads from
         # within the threads themselves
@@ -480,7 +508,50 @@ j.turn_off()
 
     def _handle_button(self, pin):
         button = _BUTTON_PINS.index(pin)
-        LOG.info(f'Button press detected on pin: {pin} button: {button}')
+        # print(pin)
+        button_mapped = _BUTTON_MAPPINGS[button]
+        LOG.info(f'Button press detected on pin: {pin} button: {button_mapped} ({button})')
+        current_label = self.LABELS[_BUTTON_PINS.index(pin)]
+
+        if self.mode == MODES['jukeoroni']['off']:
+            if button_mapped == 'X000':
+                pass
+            elif button_mapped == '0X00':
+                pass
+            elif button_mapped == '00X0':
+                pass
+            elif button_mapped == '000X':
+                pass
+                # self.turn_on()
+        elif self.mode == MODES['jukeoroni']['standby']:
+            if button_mapped == 'X000':
+                pass
+            elif button_mapped == '0X00':
+                self.set_mode_radio()
+            elif button_mapped == '00X0':
+                pass
+            elif button_mapped == '000X':
+                pass
+        elif self.mode == MODES['radio']['standby']:
+            if button_mapped == 'X000':
+                self.set_mode_standby()
+            elif button_mapped == '0X00':
+                if self.inserted_media is None:
+                    self.insert(media=self.radio.last_played)
+                self.play()
+            elif button_mapped == '00X0':
+                pass
+            elif button_mapped == '000X':
+                pass
+        elif self.mode == MODES['radio']['on_air']:
+            if button_mapped == 'X000':
+                self.stop()
+            elif button_mapped == '0X00':
+                self.next()
+            elif button_mapped == '00X0':
+                pass
+            elif button_mapped == '000X':
+                pass
     ############################################
 
     ############################################

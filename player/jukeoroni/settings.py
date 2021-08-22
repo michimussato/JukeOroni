@@ -28,6 +28,51 @@ _OFF_IMAGE = '/data/django/jukeoroni/player/static/zzz.jpg'
 PIMORONI_WATCHER_UPDATE_INTERVAL = 5
 SMALL_WIDGET_SIZE = 150
 
+_BUTTON_MAPPINGS = ['000X', '00X0', '0X00', 'X000']
+
+MODES = {
+    'jukeoroni': {
+        'off': {
+            'numeric': 0.0,
+            'buttons': {
+                'X000': 'N//A',
+                '0X00': 'N//A',
+                '00X0': 'N//A',
+                '000X': 'ON',  # TODO: ON is not working yet
+            }
+        },
+        'standby': {
+            'numeric': 1.0,
+            'buttons': {
+                'X000': 'Player',
+                '0X00': 'Radio',
+                '00X0': 'N//A',
+                '000X': 'N//A',  # TODO cannot switch it back on after OFF
+            }
+        }
+    },
+    'radio': {
+        'standby': {
+            'numeric': 1.0,
+            'buttons': {
+                'X000': 'Back',
+                '0X00': 'Play',
+                '00X0': 'N//A',
+                '000X': 'N//A',
+            }
+        },
+        'on_air': {
+            'numeric': 1.1,
+            'buttons': {
+                'X000': 'Stop',
+                '0X00': 'Next',
+                '00X0': 'N//A',
+                '000X': 'N//A',
+            }
+        }
+    },
+}
+
 
 # radio
 _RADIO_ICON_IMAGE = '/data/django/jukeoroni/player/static/radio.png'

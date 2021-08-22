@@ -8,6 +8,7 @@ from player.jukeoroni.is_string_url import is_string_url
 from player.models import Channel
 from player.jukeoroni.settings import (
     GLOBAL_LOGGING_LEVEL,
+    MODES,
 )
 from player.jukeoroni.images import Resource
 
@@ -52,33 +53,33 @@ class Radio(object):
 
         return cover
 
-    @property
-    def button_X000_value(self):
-        if self.is_on_air:
-            return 'Stop'
-        elif not self.is_on_air:
-            return 'Back'
-
-    @property
-    def button_0X00_value(self):
-        if self.is_on_air:
-            return 'Next'
-        elif not self.is_on_air:
-            return 'Play'
-
-    @property
-    def button_00X0_value(self):
-        if self.is_on_air:
-            return '00X0'
-        elif not self.is_on_air:
-            return '00X0'
-
-    @property
-    def button_000X_value(self):
-        if self.is_on_air:
-            return '000X'
-        elif not self.is_on_air:
-            return '000X'
+    # @property
+    # def button_X000_value(self):
+    #     if self.is_on_air:
+    #         return MODES['radio']['on_air']['buttons']['X000']
+    #     elif not self.is_on_air:
+    #         return MODES['radio']['standby']['buttons']['X000']
+    #
+    # @property
+    # def button_0X00_value(self):
+    #     if self.is_on_air:
+    #         return MODES['radio']['on_air']['buttons']['0X00']
+    #     elif not self.is_on_air:
+    #         return MODES['radio']['standby']['buttons']['0X00']
+    #
+    # @property
+    # def button_00X0_value(self):
+    #     if self.is_on_air:
+    #         return MODES['radio']['on_air']['buttons']['00X0']
+    #     elif not self.is_on_air:
+    #         return MODES['radio']['standby']['buttons']['00X0']
+    #
+    # @property
+    # def button_000X_value(self):
+    #     if self.is_on_air:
+    #         return MODES['radio']['on_air']['buttons']['000X']
+    #     elif not self.is_on_air:
+    #         return MODES['radio']['standby']['buttons']['000X']
 
     @property
     def channels(self):
@@ -95,4 +96,8 @@ class Radio(object):
 
     @property
     def last_played(self):
-        return Channel.objects.get(last_played=True)
+        try:
+            return Channel.objects.get(last_played=True)
+        except Channel.DoesNotExist:
+            LOG.exception('last_played not found:')
+            return None

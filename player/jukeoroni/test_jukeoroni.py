@@ -142,6 +142,38 @@ class TestJukeOroni(TestCase):
 
         self.j.turn_off()
 
+    def test_last_played(self):
+        self.assertIsNone(self.j.radio.last_played)
+
+        self.j.turn_on()
+
+        media1 = Channel.objects.all()[2]
+        media2 = Channel.objects.all()[3]
+        self.j.insert(media=media1)
+
+        self.assertIsNone(self.j.radio.last_played)
+
+        self.j.play()
+        
+        self.assertIsNotNone(self.j.radio.last_played)
+        
+        self.assertEqual(self.j.radio.last_played, media1)
+        self.assertNotEqual(self.j.radio.last_played, media2)
+
+        self.j.stop()
+        self.j.eject()
+
+        self.j.insert(self.j.radio.last_played)
+        self.j.change_media(media=media2)
+        self.assertEqual(self.j.radio.last_played, media1)
+        self.j.play()
+        self.assertEqual(self.j.radio.last_played, media2)
+        self.assertEqual(self.j.radio.last_played.display_name_short, media2.display_name_short)
+
+        self.j.stop()
+        self.j.eject()
+        self.j.turn_off()
+
     def test_play(self):
         LOG.info(f'\n############################\nRunning test: {str(inspect.getframeinfo(inspect.currentframe()).function)}\n')
 
