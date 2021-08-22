@@ -10,7 +10,8 @@ import selenium.webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
-from player.jukeoroni.settings import RADAR_UPDATE_INTERVAL, GLOBAL_LOGGING_LEVEL
+from player.jukeoroni.settings import RADAR_UPDATE_INTERVAL, GLOBAL_LOGGING_LEVEL, SMALL_WIDGET_SIZE
+from player.jukeoroni.images import Resource
 
 
 LOG = logging.getLogger(__name__)
@@ -51,8 +52,7 @@ class Radar(object):
         # to use multiprocessing, we could save the resulting
         # radar images to disk and read it in the main thread
         # Thread is okay for now
-        self._placeholder = Image.new(mode='RGB', size=(336, 456), color=(128, 128, 128))
-        self.radar_image = self._placeholder
+        self.radar_image = Resource().PLACEHOLDER_SQUARE
         # maybe we need to pass the image here because of multiprocessing not
         # sharing memory...not know yet...indeed. need syncmanager
         self.radar_thread = None
@@ -76,7 +76,7 @@ class Radar(object):
                 _waited = 0
                 LOG.info(f'Updating radar image in background...')
                 if kwargs['test']:
-                    self.radar_image = self._placeholder
+                    self.radar_image = Resource().PLACEHOLDER_SQUARE
                     LOG.info(f'getting placeholder radar image (saving time in test mode)')
                 else:
                     self.radar_image = self._radar_screenshot()
@@ -100,15 +100,16 @@ class Radar(object):
                 root = driver.find_element(By.XPATH, "//*[@id=\"mapcontainer\"]")
                 png = root.screenshot_as_png
             im = Image.open(BytesIO(png))
-            width, height = im.size
-            left = 140
-            top = 100
-            right = width - left
-            botton = height - top
-            im = im.crop((left, top, right, botton))
+            im = Resource().squareify(image=im)
+            # width, height = im.size
+            # left = 140
+            # top = 100
+            # right = width - left
+            # bottom = height - top
+            # im = im.crop((left, top, right, bottom))
             # will result in size (456, 336) for now
             return im.rotate(90, expand=True)
 
         except Exception:
             LOG.exception(f'Could not update Radar screenshot:')
-            return self._placeholder
+            return Resource().PLACEHOLDER_SQUARE

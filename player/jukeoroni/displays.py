@@ -4,8 +4,10 @@ from player.jukeoroni.clock import Clock
 from player.jukeoroni.radar import Radar
 from player.jukeoroni.settings import (
     GLOBAL_LOGGING_LEVEL,
-    RADIO_ICON_IMAGE,
+    # RADIO_ICON_IMAGE,
+    SMALL_WIDGET_SIZE,
 )
+from player.jukeoroni.images import Resource
 
 
 LOG = logging.getLogger(__name__)
@@ -84,38 +86,6 @@ def buttons_img_overlay(labels):
     return comp_buttons
 
 
-def round_resize(img, corner, scaled_by):
-    """
-    # Resizes an image and keeps aspect ratio. Set mywidth to the desired with in pixels.
-
-    import PIL
-    from PIL import Image
-
-    mywidth = 300
-
-    img = Image.open('someimage.jpg')
-    wpercent = (mywidth/float(img.size[0]))
-    hsize = int((float(img.size[1])*float(wpercent)))
-    img = img.resize((mywidth,hsize), PIL.Image.ANTIALIAS)
-    img.save('resized.jpg')
-    """
-    if img is None:
-        return None
-    w, h = img.size
-
-    img = img.resize((round(w * scaled_by), round(h * scaled_by)))
-
-    bg = Image.new('RGBA', img.size, color=(0, 0, 0, 0))
-
-    mask = Image.new('RGBA', img.size, color=(0, 0, 0, 0))
-    mask_draw = ImageDraw.Draw(mask)
-    mask_draw.rounded_rectangle([(0, 0), img.size], corner, fill=(0, 0, 0, 255))
-
-    comp = Image.composite(img, bg, mask)
-
-    return comp
-
-
 class Layout:
     _clock = Clock()
     radar = Radar()
@@ -148,11 +118,17 @@ class Standby(Layout):
         _radar_image = self.radar.radar_image
 
         if _radar_image is not None:
-            _radar_image = round_resize(img=_radar_image, corner=40, scaled_by=0.45)
+            _radar_image = Resource().round_resize(image=_radar_image, corner=40, fixed=SMALL_WIDGET_SIZE)
             LOG.info(f'_radar_image.size is {str(_radar_image.size)}')
-            w, h = _radar_image.size
-            _radar_bottom_right = (int(600-w-self.border), self.border)
-            bg.paste(_radar_image, _radar_bottom_right, mask=_radar_image)
+
+            _radar_bottom_centered = (int(600 - SMALL_WIDGET_SIZE - self.border),
+                                      int(448 / 2 + round(self.border / 2) - round(SMALL_WIDGET_SIZE / 2)))
+
+            _radar_bottom_right_centered = (int(600 - SMALL_WIDGET_SIZE - self.border),
+                                            int(0 + 224 / 2 + round(self.border / 2) - round(SMALL_WIDGET_SIZE / 2)))
+
+            # _radar_bottom_right = (int(600-w-self.border), self.border)
+            bg.paste(_radar_image, _radar_bottom_centered, mask=_radar_image)
 
         bg.paste(buttons_overlay, box=(0, 0), mask=buttons_overlay)
 
@@ -164,7 +140,7 @@ class Player(Layout):
     def get_layout(self, labels, cover=None, artist=None):
 
         if cover is None:
-            cover = RADIO_ICON_IMAGE
+            cover = Resource().RADIO_ICON_IMAGE_SQUARE
         else:
             assert isinstance(cover, Image.Image), f'album cover type must be PIL.Image.Image() (not rotated): {cover}'
         if artist is None:
@@ -179,38 +155,39 @@ class Player(Layout):
         cover_size = self.main_size
 
         cover = cover.rotate(90, expand=True)
+        # TODO move to rounde_resize
         cover = cover.resize((cover_size, cover_size), Image.ANTIALIAS)
-        cover = round_resize(img=cover, corner=40, scaled_by=1.0)
+        cover = Resource().round_resize(image=cover, corner=40, factor=1.0)
 
         if artist:
             scale_cover_artist = 4
             cover_artist = artist.rotate(90, expand=True)
             cover_artist = cover_artist.resize((round(cover_size/scale_cover_artist), round(cover_size/scale_cover_artist)), Image.ANTIALIAS)
-            cover_artist = round_resize(img=cover_artist, corner=20, scaled_by=1.0)
+            cover_artist = Resource().round_resize(image=cover_artist, corner=20, factor=1.0)
 
             cover.paste(cover_artist, box=(round(cover_size - cover_size/scale_cover_artist)-20, 20), mask=cover_artist)
 
         _cover_center = round(bg.size[1] / 2 - cover_size / 2)
         bg.paste(cover, box=(buttons_overlay.size[0] + self.border, _cover_center), mask=cover)
 
-        clock_size = 151
-        _clock = self._clock.get_clock(size=clock_size, draw_logo=False, draw_date=False, hours=24, draw_astral=True)
-        _clock_bottom_left_centered = (int(600 - clock_size - self.border),
-                                       int(228 + 228/2 + round(self.border/2) - round(clock_size/2)))
-        _clock_bottom_left = (int(600 - clock_size - self.border),
-                              int(448 - clock_size - self.border))
+        # SMALL_WIDGET_SIZE = 151
+        _clock = self._clock.get_clock(size=SMALL_WIDGET_SIZE, draw_logo=False, draw_date=False, hours=24, draw_astral=True)
+        _clock_bottom_left_centered = (int(600 - SMALL_WIDGET_SIZE - self.border),
+                                       int(224 + 224/2 + round(self.border/2) - round(SMALL_WIDGET_SIZE/2)))
+        _clock_bottom_left = (int(600 - SMALL_WIDGET_SIZE - self.border),
+                              int(448 - SMALL_WIDGET_SIZE - self.border))
 
         bg.paste(_clock, box=_clock_bottom_left_centered, mask=_clock)
 
         _radar_image = self.radar.radar_image
 
         if _radar_image is not None:
-            _radar_image = round_resize(img=_radar_image, corner=40, scaled_by=0.45)
+            _radar_image = Resource().round_resize(image=_radar_image, corner=40, fixed=SMALL_WIDGET_SIZE)
             LOG.info(f'_radar_image.size is {str(_radar_image.size)}')
-            w, h = _radar_image.size
-            border = 4
-            _radar_bottom_right = (int(600 - w - border), border)
-            bg.paste(_radar_image, box=_radar_bottom_right, mask=_radar_image)
+            # _radar_bottom_right = (int(600 - w - self.border), self.border)
+            _radar_bottom_right_centered = (int(600 - SMALL_WIDGET_SIZE - self.border),
+                                            int(0 + 224 / 2 + round(self.border / 2) - round(SMALL_WIDGET_SIZE / 2)))
+            bg.paste(_radar_image, box=_radar_bottom_right_centered, mask=_radar_image)
 
         bg.paste(buttons_overlay, box=(0, 0), mask=buttons_overlay)
 
@@ -230,30 +207,33 @@ class Radio(Layout):
         cover_size = self.main_size
 
         cover = cover.rotate(90, expand=True)
+        # TODO move to rounde_resize
         cover = cover.resize((cover_size, cover_size), Image.ANTIALIAS)
-        cover = round_resize(img=cover, corner=40, scaled_by=1.0)
+        cover = Resource().round_resize(image=cover, corner=40, factor=1.0)
 
         _cover_center = round(bg.size[1] / 2 - cover_size / 2)
         bg.paste(cover, box=(buttons_overlay.size[0] + self.border, _cover_center), mask=cover)
 
-        clock_size = 151
-        _clock = self._clock.get_clock(size=clock_size, draw_logo=False, draw_date=False, hours=24, draw_astral=True)
-        _clock_bottom_left_centered = (int(600 - clock_size - self.border),
-                                       int(228 + 228/2 + round(self.border/2) - round(clock_size/2)))
-        _clock_bottom_left = (int(600 - clock_size - self.border),
-                              int(448 - clock_size - self.border))
+        # SMALL_WIDGET_SIZE = 151
+        _clock = self._clock.get_clock(size=SMALL_WIDGET_SIZE, draw_logo=False, draw_date=False, hours=24, draw_astral=True)
+        _clock_bottom_left_centered = (int(600 - SMALL_WIDGET_SIZE - self.border),
+                                       int(224 + 224/2 + round(self.border/2) - round(SMALL_WIDGET_SIZE/2)))
+        _clock_bottom_left = (int(600 - SMALL_WIDGET_SIZE - self.border),
+                              int(448 - SMALL_WIDGET_SIZE - self.border))
 
         bg.paste(_clock, box=_clock_bottom_left_centered, mask=_clock)
 
         _radar_image = self.radar.radar_image
 
         if _radar_image is not None:
-            _radar_image = round_resize(img=_radar_image, corner=40, scaled_by=0.45)
+            _radar_image = Resource().round_resize(image=_radar_image, corner=40, fixed=SMALL_WIDGET_SIZE)
             LOG.info(f'_radar_image.size is {str(_radar_image.size)}')
-            w, h = _radar_image.size
-            border = 4
-            _radar_bottom_right = (int(600 - w - border), border)
-            bg.paste(_radar_image, box=_radar_bottom_right, mask=_radar_image)
+
+            _radar_bottom_right_centered = (int(600 - SMALL_WIDGET_SIZE - self.border),
+                                            int(0 + 224 / 2 + round(self.border / 2) - round(SMALL_WIDGET_SIZE / 2)))
+
+            # _radar_bottom_right = (int(600 - w - self.border), self.border)
+            bg.paste(_radar_image, box=_radar_bottom_right_centered, mask=_radar_image)
 
         bg.paste(buttons_overlay, box=(0, 0), mask=buttons_overlay)
 
@@ -276,8 +256,9 @@ class Off(Layout):
         cover_size = self.main_size
 
         cover = cover.rotate(90, expand=True)
+        # TODO move to rounde_resize
         cover = cover.resize((cover_size, cover_size), Image.ANTIALIAS)
-        cover = round_resize(img=cover, corner=40, scaled_by=1.0)
+        cover = Resource().round_resize(image=cover, corner=40, factor=1.0)
 
         _cover_center = round(bg.size[1] / 2 - cover_size / 2)
         bg.paste(cover, box=(buttons_overlay.size[0] + self.border, _cover_center), mask=cover)

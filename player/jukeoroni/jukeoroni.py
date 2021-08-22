@@ -14,10 +14,10 @@ from player.models import Channel
 from player.jukeoroni.settings import (
     PIMORONI_SATURATION,
     CLOCK_UPDATE_INTERVAL,
-    OFF_IMAGE,
     PIMORONI_WATCHER_UPDATE_INTERVAL,
     GLOBAL_LOGGING_LEVEL,
 )
+from player.jukeoroni.images import Resource
 
 
 LOG = logging.getLogger(__name__)
@@ -194,7 +194,7 @@ j.turn_off()
             self.pimoroni_init()
             LOG.info(f'Setting OFF Layout...')
 
-            bg = self.layout_off.get_layout(labels=self.LABELS, cover=OFF_IMAGE)
+            bg = self.layout_off.get_layout(labels=self.LABELS, cover=Resource().OFF_IMAGE_SQUARE)
             # self.set_image(image=bg)
 
             self.pimoroni.set_image(bg, saturation=PIMORONI_SATURATION)

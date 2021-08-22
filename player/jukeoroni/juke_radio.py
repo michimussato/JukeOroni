@@ -4,13 +4,12 @@ import logging
 import urllib.request
 from PIL import Image
 from player.jukeoroni.displays import Radio as RadioLayout
-from player.jukeoroni.is_string_url import is_string_an_url
+from player.jukeoroni.is_string_url import is_string_url
 from player.models import Channel
 from player.jukeoroni.settings import (
-    ON_AIR_DEFAULT_IMAGE,
     GLOBAL_LOGGING_LEVEL,
-    RADIO_ICON_IMAGE,
 )
+from player.jukeoroni.images import Resource
 
 
 LOG = logging.getLogger(__name__)
@@ -30,8 +29,8 @@ class Radio(object):
         if isinstance(self.is_on_air, Channel):
             cover = self.is_on_air.url_logo
             if cover is None:
-                cover = ON_AIR_DEFAULT_IMAGE
-            elif is_string_an_url(cover):
+                cover = Resource().squareify(Resource().ON_AIR_DEFAULT_IMAGE)
+            elif is_string_url(cover):
                 try:
                     hdr = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64)'}
                     req = urllib.request.Request(cover, headers=hdr)
@@ -41,12 +40,12 @@ class Radio(object):
                         cover = Image.open(cover)
                 except Exception as err:
                     LOG.exception(f'Could not get online cover:')
-                    cover = ON_AIR_DEFAULT_IMAGE
+                    cover = Resource().ON_AIR_DEFAULT_IMAGE_SQUARE
 
             else:
                 cover = Image.open(cover).resize((448, 448))
         elif self.is_on_air is None:
-            cover = RADIO_ICON_IMAGE
+            cover = Resource().RADIO_ICON_IMAGE_SQUARE
 
         if cover is None:
             raise TypeError('Channel cover is None')
