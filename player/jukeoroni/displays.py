@@ -162,6 +162,7 @@ class Player(Layout):
         if artist:
             scale_cover_artist = 4
             cover_artist = artist.rotate(90, expand=True)
+            # TODO move to rounde_resize
             cover_artist = cover_artist.resize((round(cover_size/scale_cover_artist), round(cover_size/scale_cover_artist)), Image.ANTIALIAS)
             cover_artist = Resource().round_resize(image=cover_artist, corner=20, factor=1.0)
 
