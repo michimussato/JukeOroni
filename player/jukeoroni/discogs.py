@@ -1,6 +1,6 @@
 import logging
 import discogs_client
-import jukeoroni.secrets as secrets
+import jukeoroni._secrets as secrets
 
 
 LOG = logging.getLogger(__name__)

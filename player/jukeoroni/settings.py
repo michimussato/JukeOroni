@@ -11,7 +11,7 @@ LOG.setLevel(GLOBAL_LOGGING_LEVEL)
 
 
 # media_crawler
-DEFAULT_TRACKLIST_REGEN_INTERVAL = 12  # in hours
+DEFAULT_TRACKLIST_REGEN_INTERVAL = 3600 * 12  # in hours
 MEDIA_ROOT = r'/data/googledrive/media/audio/'
 MUSIC_DIR = os.path.join(MEDIA_ROOT, 'music')
 FAULTY_ALBUMS = os.path.join(MEDIA_ROOT, 'faulty_albums_test.txt')
@@ -71,7 +71,43 @@ MODES = {
             }
         }
     },
+    'jukebox': {
+        'standby_random': {
+            'numeric': 2.0,
+            'buttons': {
+                'X000': 'Back',
+                '0X00': 'Play',
+                '00X0': 'N//A',
+                '000X': 'Random -> Album',
+            }
+        },
+        'on_air_random': {
+            'numeric': 2.1,
+            'buttons': {
+                'X000': 'Stop',
+                '0X00': 'Next',
+                '00X0': 'N//A',
+                '000X': 'Random -> Album',
+            }
+        },
+        # 'on_air_album': {
+        #     'numeric': 2.2,
+        #     'buttons': {
+        #         'X000': 'Stop',
+        #         '0X00': 'Next',
+        #         '00X0': 'N//A',
+        #         '000X': 'Album -> Random',
+        #     }
+        # }
+    },
 }
+
+
+# box
+MAX_CACHED_FILES = 3
+COVER_ONLINE_PREFERENCE = False
+# AUDIO_FILES = ['.dsf', '.flac', '.wav', '.dff']
+# DEFAULT_TRACKLIST_REGEN_INTERVAL = 12  # in hours
 
 
 # radio

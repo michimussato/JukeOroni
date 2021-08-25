@@ -135,11 +135,12 @@ class Standby(Layout):
         return bg
 
 
-class Player(Layout):
+class Jukebox(Layout):
 
     def get_layout(self, labels, cover=None, artist=None):
 
         if cover is None:
+            # TODO change RADIO_ICON_IMAGE
             cover = Resource().RADIO_ICON_IMAGE_SQUARE
         else:
             assert isinstance(cover, Image.Image), f'album cover type must be PIL.Image.Image() (not rotated): {cover}'

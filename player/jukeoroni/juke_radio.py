@@ -8,7 +8,7 @@ from player.jukeoroni.is_string_url import is_string_url
 from player.models import Channel
 from player.jukeoroni.settings import (
     GLOBAL_LOGGING_LEVEL,
-    MODES,
+    # MODES,
 )
 from player.jukeoroni.images import Resource
 

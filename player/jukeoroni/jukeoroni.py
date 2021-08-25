@@ -1,3 +1,4 @@
+import os
 import time
 import threading
 import subprocess
@@ -8,12 +9,14 @@ import urllib.error
 import RPi.GPIO as GPIO
 from inky.inky_uc8159 import Inky  # , BLACK
 from player.jukeoroni.juke_radio import Radio
+from player.jukeoroni.juke_box import Box
 from player.jukeoroni.displays import Off as OffLayout
 from player.jukeoroni.displays import Standby as StandbyLayout
 from player.models import Channel
+from player.jukeoroni.juke_box import Track as JukeboxTrack
 from player.jukeoroni.settings import (
     PIMORONI_SATURATION,
-    CLOCK_UPDATE_INTERVAL,
+    # CLOCK_UPDATE_INTERVAL,
     PIMORONI_WATCHER_UPDATE_INTERVAL,
     GLOBAL_LOGGING_LEVEL,
     MODES,
@@ -76,6 +79,7 @@ j = JukeOroni()
 # j.test = True
 j.turn_on()
 
+# RADIO
 j.set_mode_radio()
 
 # j.insert(j.radio.random_channel)
@@ -86,6 +90,12 @@ j.play()
 j.next()
 j.stop()
 j.eject()
+
+# JUKEBOX
+j.set_mode_jukebox()
+
+j.insert(media=j.jukebox.next_track())
+j.play()
 
 j.turn_off()
     """
@@ -103,7 +113,7 @@ j.turn_off()
         self.on = False
         self.mode = MODES['jukeoroni']['off']
 
-        # self.jukebox = JukeBox()
+        self.jukebox = Box(parent=self, auto_update_tracklist=True)
         self.radio = Radio()
 
         self.playback_proc = None
@@ -163,8 +173,12 @@ j.turn_off()
             self.mode = MODES['radio']['standby']
         self.set_display_radio()
 
-    def set_mode_player(self):
-        raise NotImplementedError
+    def set_mode_jukebox(self):
+        if self.jukebox.is_on_air:
+            self.mode = MODES['jukebox']['on_air_random']
+        elif not self.jukebox.is_on_air:
+            self.mode = MODES['jukebox']['standby_random']
+        self.set_display_jukebox()
     ############################################
 
     ############################################
@@ -229,6 +243,19 @@ j.turn_off()
 
             bg = self.radio.layout.get_layout(labels=self.LABELS, cover=self.radio.cover)
             self.set_image(image=bg)
+
+    def set_display_jukebox(self):
+        """
+        j.set_display_jukebox()
+        """
+        if not self.test:
+            self.button_X000_value = self.mode['buttons']['X000']
+            self.button_0X00_value = self.mode['buttons']['0X00']
+            self.button_00X0_value = self.mode['buttons']['00X0']
+            self.button_000X_value = self.mode['buttons']['000X']
+
+            bg = self.jukebox.layout.get_layout(labels=self.LABELS, cover=self.inserted_media.cover_album, artist=self.inserted_media.cover_artist)
+            self.set_image(image=bg)
     ############################################
 
     ############################################
@@ -238,7 +265,7 @@ j.turn_off()
         assert self.on, 'JukeOroni is OFF. turn_on() first.'
         assert self.inserted_media is None, 'There is a medium inserted already'
         # TODO: add types to tuple
-        assert isinstance(media, (Channel)), 'can only insert Channel model'
+        assert isinstance(media, (Channel, JukeboxTrack)), 'can only insert Channel model'
 
         self.inserted_media = media
         LOG.info(f'Media inserted: {str(media)} (type {str(type(media))})')
@@ -246,6 +273,11 @@ j.turn_off()
         if isinstance(media, Channel):
             # if self.mode != MODES
             self.set_mode_radio()
+
+        if isinstance(media, JukeboxTrack):
+
+            # if self.mode != MODES
+            self.set_mode_jukebox()
 
     def play(self):
         assert self.playback_proc is None, 'there is an active playback. stop() first.'
@@ -292,6 +324,29 @@ j.turn_off()
                 LOG.error(f'Channel stream return code is not 200: {str(response.status)}')
                 raise Exception(f'Channel stream return code is not 200: {str(response.status)}')
 
+        elif isinstance(self.inserted_media, JukeboxTrack):
+            try:
+                self.jukebox.is_on_air = self.inserted_media
+                self.playback_proc = subprocess.Popen(FFPLAY_CMD + [self.inserted_media.playing_from], shell=False)
+                self.inserted_media.is_playing = True
+                self.inserted_media.track.played += 1
+                self.inserted_media.track.save()
+                LOG.info(f'ffplay started successfully. playing {str(self.inserted_media.path)}. use local cache: {str(self.inserted_media.cached)}')
+                self.set_mode_jukebox()
+                # TODO:
+                #  whithout communicate, tracks won't play
+                #  till the end
+                #  with communicate, we cannot skip
+                self.playback_proc.communicate()
+            except Exception:
+                LOG.exception('playback failed: \"{0}\"'.format(self.inserted_media.path))
+            finally:
+                self.inserted_media.is_playing = False
+                if self.inserted_media.cached:
+                    os.remove(self.inserted_media.cache)
+                    LOG.info(f'removed from local filesystem: \"{self.inserted_media.cache}\"')
+                self.next()
+
     def pause(self):
         assert self.inserted_media is not None, 'no media inserted. insert media first.'
         assert self.playback_proc is not None, 'no playback is active. play() media first'
@@ -322,9 +377,9 @@ j.turn_off()
     def next(self, media=None):
         assert self.inserted_media is not None, 'Can only go to next if media is inserted.'
         assert self.playback_proc is not None, 'Can only go to next if media is playing.'
-        assert media is None or isinstance(media, ((Channel,))), 'can only insert Channel model'
+        assert media is None or isinstance(media, (Channel, JukeboxTrack)), 'can only insert Channel model'
 
-        # convenience method
+        # convenience methods
         if isinstance(self.inserted_media, Channel):
             self.stop()
 
@@ -341,6 +396,14 @@ j.turn_off()
                     # LOG.error('getting random channel. previous try failed:')
                     LOG.exception(f'getting random channel. previous try with {str(media)} failed:')
                     media = self.radio.random_channel
+
+        if isinstance(self.inserted_media, JukeboxTrack):
+            self.stop()
+            while not bool(self.jukebox.tracks):
+                time.sleep(1.0)
+            self.change_media(media=self.jukebox.tracks.pop(0))
+            self.play()
+
         else:
             raise NotImplementedError
 
@@ -390,12 +453,16 @@ j.turn_off()
 
         self.buttons_watcher_thread()
         self.pimoroni_watcher_thread()
-        self.state_watcher_thread()
+        # self.state_watcher_thread()
 
         self.set_display_turn_on()
 
     def _start_modules(self):
+        # Radar
         self.layout_standby.radar.start(test=self.test)
+
+        # Jukebox
+        self.jukebox.start()
     ############################################
 
     ############################################
@@ -424,10 +491,10 @@ j.turn_off()
         self._pimoroni_watcher_thread = None
         LOG.info(f'self._pimoroni_watcher_thread terminated')
 
-        LOG.info(f'Terminating self._state_watcher_thread...')
-        self._state_watcher_thread.join()
-        self._state_watcher_thread = None
-        LOG.info(f'self._state_watcher_thread terminated')
+        # LOG.info(f'Terminating self._state_watcher_thread...')
+        # self._state_watcher_thread.join()
+        # self._state_watcher_thread = None
+        # LOG.info(f'self._state_watcher_thread terminated')
 
         try:
             LOG.info(f'Terminating self._buttons_watcher_thread...')
@@ -445,6 +512,10 @@ j.turn_off()
         LOG.info(f'Terminating self.layout_standby.radar...')
         self.layout_standby.radar.stop()
         LOG.info(f'self.layout_standby.radar terminated')
+
+        LOG.info(f'Terminating self.jukebox...')
+        self.jukebox.stop()
+        LOG.info(f'self.jukebox terminated')
     ############################################
 
     ############################################
@@ -554,24 +625,24 @@ j.turn_off()
                 pass
     ############################################
 
-    ############################################
-    # State watcher (buttons)
-    # checks if the push of buttons or actions
-    # performed on web ui requires a state change
-    # TODO: define states
-    def state_watcher_thread(self):
-        self._state_watcher_thread = threading.Thread(target=self._state_watcher_task)
-        self._state_watcher_thread.name = 'State Watcher Thread'
-        self._state_watcher_thread.daemon = False
-        self._state_watcher_thread.start()
-
-    def _state_watcher_task(self):
-        update_interval = CLOCK_UPDATE_INTERVAL*60
-        _waited = None
-        while self.on:
-            if _waited is None or _waited % update_interval == 0:
-                _waited = 0
-
-            time.sleep(1.0)
-            _waited += 1
-    ############################################
+    # ############################################
+    # # State watcher (buttons)
+    # # checks if the push of buttons or actions
+    # # performed on web ui requires a state change
+    # # TODO: define states
+    # def state_watcher_thread(self):
+    #     self._state_watcher_thread = threading.Thread(target=self._state_watcher_task)
+    #     self._state_watcher_thread.name = 'State Watcher Thread'
+    #     self._state_watcher_thread.daemon = False
+    #     self._state_watcher_thread.start()
+    #
+    # def _state_watcher_task(self):
+    #     update_interval = CLOCK_UPDATE_INTERVAL*60
+    #     _waited = None
+    #     while self.on:
+    #         if _waited is None or _waited % update_interval == 0:
+    #             _waited = 0
+    #
+    #         time.sleep(1.0)
+    #         _waited += 1
+    # ############################################
