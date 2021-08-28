@@ -18,11 +18,11 @@ import tempfile
 from django.utils.timezone import localtime, now
 from django.core.validators import URLValidator
 from django.core.exceptions import ValidationError
-from .models import Track as DjangoTrack
-from .models import Artist
-from .models import Album
-from .displays import Standby as StandbyLayout
-from .displays import Player as PlayerLayout
+from player.models import Track as DjangoTrack
+from player.models import Artist
+from player.models import Album
+# from .displays import Standby as StandbyLayout
+# from .displays import Player as PlayerLayout
 from .discogs import get_client, get_artist, get_album
 
 
@@ -33,7 +33,6 @@ CACHE_FILE = os.path.join(MEDIA_ROOT, 'music_cache_test.txt')
 MISSING_COVERS_FILE = os.path.join(MEDIA_ROOT, 'missing_covers_test.txt')
 FAULTY_ALBUMS = os.path.join(MEDIA_ROOT, 'faulty_albums_test.txt')
 MUSIC_DIR = os.path.join(MEDIA_ROOT, 'music')
-MEDITATION_DIR = os.path.join(MEDIA_ROOT, 'meditation')
 MAX_CACHED_FILES = 3
 PIMORONI_SATURATION = 1.0
 PIMORONI_SIZE = 600, 448
@@ -49,49 +48,31 @@ CLOCK_UPDATE_INTERVAL = 5  # in minutes
 COVER_ONLINE_PREFERENCE = False
 
 # buttons setup
-# in portrait mode: from right to left
-_BUTTON_PINS = [5, 6, 16, 24]
-# highest index top, lowest index bottom
-# (move items up and down for readability)
-# also, the order here should be reflected
-# in the order of the Player.LABELS property
-# in order show up in the right order
-BUTTON_STOP_BACK_PIN = _BUTTON_PINS[3]
-BUTTON_PLAY_NEXT_PIN = _BUTTON_PINS[2]
-BUTTON_RAND_ALBM_PIN = _BUTTON_PINS[1]
-BUTTON_SHFL_SCRN_PIN = _BUTTON_PINS[0]
-
-# # this will be the next layout:
-# BUTTON_STOP_BACK_PIN = BUTTONS[3]
-# BUTTON_PLAY_NEXT_PIN = BUTTONS[2]
-# BUTTON_RAND_ALBM_PIN = BUTTONS[1]
-# BUTTON_SHFL_SCRN_PIN = BUTTONS[0]
+BUTTONS = [5, 6, 16, 24]
 
 # Toggles:
-# TODO: this is a brainfuck...have to think upside down
-#  let's find a better way to toggle
 # https://stackoverflow.com/questions/8381735/how-to-toggle-a-value
-BUTTON_RAND_ALBM_LABELS = {
+BUTTON_1 = {
             #'Albm': 'Rand',
             'Albm -> Rand': 'Rand -> Albm',
             #'Rand': 'Albm',
             'Rand -> Albm': 'Albm -> Rand',
             }
-BUTTON_STOP_LABELS = {
+BUTTON_2 = {
             'Stop': 'Stop',
             }
-BUTTON_PLAY_NEXT_LABELS = {
+BUTTON_3 = {
             'Next': 'Play',
             'Play': 'Next'
             }
-BUTTON_4_LABELS = {
+BUTTON_4 = {
             # 'Stop': 'Strm',
-            'N//A': 'N//A',
+            'Strm': 'Strm',
             # 'back': 'Back',
             }
 
 GPIO.setmode(GPIO.BCM)
-GPIO.setup(_BUTTON_PINS, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.setup(BUTTONS, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 # Audio files to index:
 AUDIO_FILES = ['.dsf', '.flac', '.wav', '.dff']
 
@@ -167,7 +148,6 @@ class Track(object):
     def _cache(self):
         self.cache = tempfile.mkstemp()[1]
         logging.info(f'copying to local filesystem: \"{self.path}\" as \"{self.cache}\"')
-        print(f'copying to local filesystem: \"{self.path}\" as \"{self.cache}\"')
         shutil.copy(self.path, self.cache)
 
     @property
@@ -178,32 +158,27 @@ class Track(object):
         try:
             # ffplay -threads
             logging.info(f'starting playback: \"{self.path}\" from: \"{self.playing_from}\"')
-            print(f'starting playback: \"{self.path}\" from: \"{self.playing_from}\"')
             self.track.played += 1
             self.track.save()
             self.is_playing = True
+            # print(multiprocessing.current_process().pid)
             # TODO: now this would be a classic
             #  subprocess example: calling an external
             #  application
             os.system(f'ffplay -hide_banner -autoexit -vn -nodisp -loglevel error \"{self.playing_from}\"')
             logging.info(f'playback finished: \"{self.path}\"')
-            print(f'playback finished: \"{self.path}\"')
         except Exception as err:
-            print(err)
             logging.exception('playback failed: \"{0}\"'.format(self.path))
-            print('playback failed: \"{0}\"'.format(self.path))
         finally:
             self.is_playing = False
             if self.cached:
                 os.remove(self.cache)
                 logging.info(f'removed from local filesystem: \"{self.cache}\"')
-                print(f'removed from local filesystem: \"{self.cache}\"')
 
 
 class Player(object):
     _instance = None
 
-    # TODO: is this still necessary?
     def __new__(cls):
         if cls._instance is None:
             print('Creating the object')
@@ -215,10 +190,10 @@ class Player(object):
         logging.info('initializing player...')
         print('initializing player...')
         # assert state in LABELS, "state should be one of {0}".format(LABELS)
-        self.button_rand_albm_value = BUTTON_RAND_ALBM_LABELS['Albm -> Rand']
-        self.button_stop_value = BUTTON_STOP_LABELS['Stop']
-        self.button_play_next_value = BUTTON_PLAY_NEXT_LABELS['Next']
-        self.button_4_value = BUTTON_4_LABELS['N//A']
+        self.button_1_value = BUTTON_1['Albm -> Rand']
+        self.button_2_value = BUTTON_2['Stop']
+        self.button_3_value = BUTTON_3['Next']
+        self.button_4_value = BUTTON_4['Strm']
 
         self.auto_update_tracklist = auto_update_tracklist
         self.tracks = []
@@ -236,8 +211,8 @@ class Player(object):
         self.current_time = None
         self.channel_streaming = None
 
-        self.layout_standby = StandbyLayout()
-        self.layout_player = PlayerLayout()
+        # self.layout_standby = StandbyLayout()
+        # self.layout_player = PlayerLayout()
 
         self._pimoroni_thread = None
         self._playback_thread = None
@@ -261,19 +236,7 @@ class Player(object):
 
     @property
     def LABELS(self):
-        # this will be sent to the display module
-        # _BUTTONS is from right to left, but this
-        # one should correspond to the the indexes
-        # assigned to each button label: highest
-        # index left, lowest index right
-        # and here: top will be left on the screen,
-        # bottom will be right on the screen
-        return [
-                   self.button_stop_value,
-                   self.button_play_next_value,
-                   self.button_rand_albm_value,
-                   self.button_4_value,
-               ][::-1]  # reversed for readabilty (from left to right)
+        return [self.button_1_value, self.button_2_value, self.button_3_value, self.button_4_value]
 
     ############################################
     # buttons
@@ -284,12 +247,12 @@ class Player(object):
         self._buttons_watcher_thread.start()
 
     def _buttons_watcher_task(self):
-        for pin in _BUTTON_PINS:
+        for pin in BUTTONS:
             GPIO.add_event_detect(pin, GPIO.FALLING, self.handle_button, bouncetime=250)
         signal.pause()
 
     def handle_button(self, pin):
-        current_label = self.LABELS[_BUTTON_PINS.index(pin)]
+        current_label = self.LABELS[BUTTONS.index(pin)]
         logging.info(f"Button press detected on pin: {pin} label: {current_label}")
         print(f"Button press detected on pin: {pin} label: {current_label}")
 
@@ -298,41 +261,40 @@ class Player(object):
         # because if we switch in non-playing mode
         # we get a problem with the track loader for now
         # if self.button_3_value == 'Next':
-        if current_label == self.button_rand_albm_value:
+        if current_label == self.button_1_value:
             # empty cached track list but leave current track playing
             # but update the display to reflect current Mode
             if current_label == 'Rand -> Albm':
                 self._need_first_album_track = True
             self.kill_loading_process()
 
-            self.button_rand_albm_value = BUTTON_RAND_ALBM_LABELS[current_label]
+            self.button_1_value = BUTTON_1[current_label]
 
             self.set_image(track=self.playing_track)
-            print(f'Playback mode is now {self.button_rand_albm_value}.')
-            logging.info(f'Playback mode is now {self.button_rand_albm_value}.')
+            print(f'Playback mode is now {self.button_1_value}.')
+            logging.info(f'Playback mode is now {self.button_1_value}.')
             return
         # Stop button
         # only in play mode active
-        elif current_label == self.button_stop_value:
+        elif current_label == self.button_2_value:
             if self._playback_thread is not None:
                 print('Playback stopped.')
                 logging.info('Playback stopped.')
-                self.button_play_next_value = BUTTON_PLAY_NEXT_LABELS['Next']  # Switch button back to Play
+                self.button_3_value = BUTTON_3['Next']  # Switch button back to Play
                 self.stop()
                 self.set_image()
                 return
             else:
                 print('ignored')
         else:
-            pass
-        #     print('ignored')
+            print('ignored')
 
         # Play/Next button
-        if current_label == self.button_play_next_value:
+        if current_label == self.button_3_value:
             if current_label == 'Play':
                 print('Starting playback.')
                 logging.info('Starting playback.')
-                self.button_play_next_value = BUTTON_PLAY_NEXT_LABELS[current_label]
+                self.button_3_value = BUTTON_3[current_label]
                 return
             elif current_label == 'Next':
                 print('Next track.')
@@ -500,8 +462,8 @@ class Player(object):
                 # gone of course because __del__ was called before that already.
                 self.loading_process = Process(target=self._load_track_task, kwargs={'track': next_track})
                 # print(dir(self.loading_process))
-                # print(self.loading_process.__dict__)
-                # print(self.loading_process._kwargs['track'])
+                print(self.loading_process.__dict__)
+                print(self.loading_process._kwargs['track'])
                 self.loading_process.name = 'Track Loader Task Process'
                 self.loading_process.start()
 
@@ -537,19 +499,6 @@ class Player(object):
         print(f'starting thread: \"{track.audio_source}\"')
 
         try:
-            """
-            [Tue Aug 10 04:04:45.218279 2021] [wsgi:error] [pid 788:tid 2803889184] Process Track Loader Task Process:
-            [Tue Aug 10 04:04:45.236230 2021] [wsgi:error] [pid 788:tid 2803889184] Traceback (most recent call last):
-            [Tue Aug 10 04:04:45.236570 2021] [wsgi:error] [pid 788:tid 2803889184]   File "/usr/lib/python3.7/multiprocessing/process.py", line 297, in _bootstrap
-            [Tue Aug 10 04:04:45.236702 2021] [wsgi:error] [pid 788:tid 2803889184]     self.run()
-            [Tue Aug 10 04:04:45.236769 2021] [wsgi:error] [pid 788:tid 2803889184]   File "/usr/lib/python3.7/multiprocessing/process.py", line 99, in run
-            [Tue Aug 10 04:04:45.236851 2021] [wsgi:error] [pid 788:tid 2803889184]     self._target(*self._args, **self._kwargs)
-            [Tue Aug 10 04:04:45.236914 2021] [wsgi:error] [pid 788:tid 2803889184]   File "/data/django/jukeoroni/player/player.py", line 508, in _load_track_task
-            [Tue Aug 10 04:04:45.236954 2021] [wsgi:error] [pid 788:tid 2803889184]     size = os.path.getsize(track.audio_source)
-            [Tue Aug 10 04:04:45.237051 2021] [wsgi:error] [pid 788:tid 2803889184]   File "/usr/lib/python3.7/genericpath.py", line 50, in getsize
-            [Tue Aug 10 04:04:45.237091 2021] [wsgi:error] [pid 788:tid 2803889184]     return os.stat(filename).st_size
-            [Tue Aug 10 04:04:45.237451 2021] [wsgi:error] [pid 788:tid 2803889184] OSError: [Errno 5] Input/output error: '/data/googledrive/media/audio/music/on_device/Kings of Leon - 2016 - WALLS [FLAC-24:48]/04. Find Me.flac'
-            """
             size = os.path.getsize(track.audio_source)
             logging.info(f'loading track ({str(round(size / (1024*1024), 3))} MB): \"{track.audio_source}\"')
             print(f'loading track ({str(round(size / (1024*1024), 3))} MB): \"{track.audio_source}\"')
@@ -567,27 +516,27 @@ class Player(object):
         self.loading_queue.put(ret)
     ############################################
 
-    ############################################
-    # Pimoroni
-    def pimoroni_watcher_thread(self):
-        self._pimoroni_watcher_thread = threading.Thread(target=self._pimoroni_watcher_task)
-        self._pimoroni_watcher_thread.name = 'Pimoroni Watcher Thread'
-        self._pimoroni_watcher_thread.daemon = False
-        self._pimoroni_watcher_thread.start()
-
-    def _pimoroni_watcher_task(self):
-        while True:
-            if self._pimoroni_thread is not None:
-                thread = self._pimoroni_thread
-                self._pimoroni_thread = None
-                if not thread.is_alive():
-                    thread.start()
-
-                while thread.is_alive():
-                    time.sleep(1.0)
-
-            time.sleep(1.0)
-    ############################################
+    # ############################################
+    # # Pimoroni
+    # def pimoroni_watcher_thread(self):
+    #     self._pimoroni_watcher_thread = threading.Thread(target=self._pimoroni_watcher_task)
+    #     self._pimoroni_watcher_thread.name = 'Pimoroni Watcher Thread'
+    #     self._pimoroni_watcher_thread.daemon = False
+    #     self._pimoroni_watcher_thread.start()
+    #
+    # def _pimoroni_watcher_task(self):
+    #     while True:
+    #         if self._pimoroni_thread is not None:
+    #             thread = self._pimoroni_thread
+    #             self._pimoroni_thread = None
+    #             if not thread.is_alive():
+    #                 thread.start()
+    #
+    #             while thread.is_alive():
+    #                 time.sleep(1.0)
+    #
+    #         time.sleep(1.0)
+    # ############################################
 
     ############################################
     # State watcher (buttons)
@@ -602,7 +551,7 @@ class Player(object):
 
             new_time = localtime(now())
 
-            if self.button_play_next_value == 'Next':  # equals: in Play mode
+            if self.button_3_value == 'Next':  # equals: in Play mode
                 # TODO implement Play/Next combo
                 if self._playback_thread is None:
                     self.play()
@@ -665,8 +614,8 @@ class Player(object):
             self._playback_thread.daemon = False
             self._playback_thread.start()
 
-            # start playback first, then change image to prevent lag
-            self.set_image(track=track)
+            # # start playback first, then change image to prevent lag
+            # self.set_image(track=track)
 
             # so, join continues as soon as this
             # thread is finished, leaving the rest
@@ -729,7 +678,7 @@ class Player(object):
         sys.exit(0)
 
     def task_pimoroni_set_image(self, **kwargs):
-        if self.button_play_next_value != 'Next':
+        if self.button_3_value != 'Next':
             bg = self.layout_standby.get_layout(labels=self.LABELS)
         else:
             cover_album = None  # discogs
@@ -847,14 +796,14 @@ class Player(object):
         #     first_track = album_tracks[0]
         #     return first_track
 
-        if self.button_rand_albm_value == 'Rand -> Albm':
+        if self.button_1_value == 'Rand -> Albm':
             tracks = self.track_list
             if not bool(tracks):
                 return None
             next_track = random.choice(tracks)
             return next_track
 
-        elif self.button_rand_albm_value == 'Albm -> Rand':
+        elif self.button_1_value == 'Albm -> Rand':
 
             if self._need_first_album_track and self.playing_track is not None:
                 # if we switch mode from Rand to Albm,
@@ -947,7 +896,7 @@ class Player(object):
 
 
 def player():
-    p = Player(auto_update_tracklist=False)
+    p = Player(auto_update_tracklist=True)
     # p.temp_cleanup()
     p.buttons_watcher_thread()
     p.state_watcher_thread()
@@ -961,7 +910,6 @@ if __name__ == '__main__':
     player()
 
 """
-
 Exception in thread Track Loader Thread:
 Traceback (most recent call last):
   File "/usr/lib/python3.7/threading.py", line 917, in _bootstrap_inner
@@ -973,9 +921,7 @@ Traceback (most recent call last):
   File "/data/django/jukeoroni/player/player.py", line 711, in get_next_track
     previous_track_id = self.playing_track.track.id
 AttributeError: 'NoneType' object has no attribute 'track'
-
 waiting for loading thread to kick in
-
 removed from local filesystem: "/tmp/tmpgc4kybmv"
 """
 
@@ -983,14 +929,12 @@ removed from local filesystem: "/tmp/tmpgc4kybmv"
 """
 source /data/venv/bin/activate
 cd /data/django/jukeoroni/ && git pull && python manage.py shell
-
-from player.player import Player
+from player.jukeoroni._player import Player
 p = Player()
 # p.temp_cleanup()
-p.buttons_watcher_thread()
-p.state_watcher_thread()
-p.pimoroni_watcher_thread()
+# p.buttons_watcher_thread()
+# p.state_watcher_thread()
+# p.pimoroni_watcher_thread()
 p.track_loader_thread()
-p.set_image()
-
+# p.set_image()
 """

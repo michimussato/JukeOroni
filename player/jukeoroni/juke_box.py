@@ -1,23 +1,21 @@
-import os
-import io
-import shutil
-import time
-import random
-import glob
-import logging
-import threading
 import multiprocessing
+import os
+import logging
+import random
+import shutil
+import subprocess
 import tempfile
-import urllib.request
+import threading
+import time
+
 from PIL import Image
 from pydub.utils import mediainfo
+
+from player.jukeoroni.discogs import get_client, get_artist, get_album
 from player.models import Track as DjangoTrack
 from player.models import Artist
-from player.models import Album
-from player.jukeoroni.is_string_url import is_string_url
-from player.jukeoroni.images import Resource
 from player.jukeoroni.displays import Jukebox as JukeboxLayout
-from player.jukeoroni.discogs import get_client, get_artist, get_album
+from player.jukeoroni.images import Resource
 from player.jukeoroni.settings import (
     GLOBAL_LOGGING_LEVEL,
     MAX_CACHED_FILES,
@@ -28,8 +26,9 @@ from player.jukeoroni.settings import (
     FAULTY_ALBUMS,
     DEFAULT_TRACKLIST_REGEN_INTERVAL,
     MODES,
+    FFPLAY_CMD,
 )
-
+from player.models import Album
 
 LOG = logging.getLogger(__name__)
 LOG.setLevel(GLOBAL_LOGGING_LEVEL)
@@ -41,13 +40,13 @@ class Process(multiprocessing.Process):
         self.track = kwargs['kwargs']['track']
 
 
-class Track(object):
-    def __init__(self, track, cached=True):
-        self.track = track
-        self.path = self.track.audio_source
+class JukeboxTrack(object):
+    def __init__(self, django_track, cached=True):
+        self.django_track = django_track
+        self.path = self.django_track.audio_source
         self.cached = cached
         self.cache = None
-        self.is_playing = False
+        self.playing_proc = None
 
         if self.cached:
             self._cache()
@@ -58,15 +57,17 @@ class Track(object):
 
     @property
     def album(self):
-        return Album.objects.get(track=self.track)
+        return Album.objects.get(track=self.django_track)
 
     @property
     def artist(self):
         return self.album.artist_id
 
     @property
-    def cover(self):
-
+    def cover_album(self):
+        # TODO: query Discogs image here on the fly?
+        #  downside: we cannot specify the actual image
+        #  on the database if path is not stored beforehand
         if self.album.cover_online is not None:
             album_online = Resource().from_url(url=self.album.cover_online)
         else:
@@ -83,13 +84,6 @@ class Track(object):
             return cover or album_online
 
     @property
-    def cover_album(self):
-        # TODO: query Discogs image here on the fly?
-        #  downside: we cannot specify the actual image
-        #  on the database if path is not stored beforehand
-        return self.cover
-
-    @property
     def cover_artist(self):
         # TODO: query Discogs image here on the fly?
         #  downside: we cannot specify the actual image
@@ -104,68 +98,119 @@ class Track(object):
     def _cache(self):
         self.cache = tempfile.mkstemp()[1]
         LOG.info(f'copying to local filesystem: \"{self.path}\" as \"{self.cache}\"')
-        # print(f'copying to local filesystem: \"{self.path}\" as \"{self.cache}\"')
         shutil.copy(self.path, self.cache)
 
     @property
     def playing_from(self):
         return self.cache if self.cached else self.path
 
+    @property
+    def is_playing(self):
+        return bool(self.playing_proc)
 
-class Box(object):
-    def __init__(self, parent, auto_update_tracklist=False):
-        LOG.info('initializing player...')
+    def play(self):
+        try:
+            LOG.info(f'starting playback: \"{self.path}\" from: \"{self.playing_from}\"')
+            self.django_track.played += 1
+            self.django_track.save()
+            self.playing_proc = subprocess.Popen(FFPLAY_CMD + [self.playing_from], shell=False)
+            self.playing_proc.communicate()
+            LOG.info(f'playback finished: \"{self.path}\"')
+        except Exception:
+            LOG.exception('playback failed: \"{0}\"'.format(self.path))
+        finally:
+            self.playing_proc = None
+            if self.cached:
+                os.remove(self.cache)
+                LOG.info(f'removed from local filesystem: \"{self.cache}\"')
+
+
+class Jukebox(object):
+    """
+from player.jukeoroni.juke_box import Jukebox
+box = Jukebox()
+box.turn_on()
+
+box.set_auto_update_tracklist_on()
+
+
+box.turn_off()
+    """
+    def __init__(self, jukeoroni):
 
         self.on = False
+        # self.mode = None
+        # self.set_mode_standby_random()
 
-        self.is_on_air = False
+        self.jukeoroni = jukeoroni
 
         self.layout = JukeboxLayout()
 
-        self.jukeoroni = parent
-        self.auto_update_tracklist = auto_update_tracklist
-        self._track_list_generator_thread = None
-        self._track_loader_thread = None
-        self.loading_process = None
+        self.playing_track = None
+        self.is_on_air = None
+
+        self.requested_album_id = None
+        self._need_first_album_track = False
+        self._auto_update_tracklist = False
+
         self.loading_queue = multiprocessing.Queue()
         self.tracks = []
+        self.loading_process = None
 
-    def next_track(self):
-        while not bool(self.tracks) and self.on:
-            LOG.info('no track in tracks ready.')
-            time.sleep(1.0)
-        return self.tracks.pop(0)
-
-    def start(self):
-        self.on = True
-        self.track_list_generator_thread()
-        self.track_loader_thread()
-
-    def stop(self):
-        self.on = False
-
-        self.kill_loading_process()
-        self._track_loader_thread.join()
+        self._track_list_generator_thread = None
         self._track_loader_thread = None
 
-        self._track_list_generator_thread.terminate()
-        self._track_list_generator_thread.join()
-        self._track_list_generator_thread = None
+    def turn_on(self):
+        assert not self.on, 'Jukebox is already on.'
+        self.on = True
+        # self.set_mode_standby_random()
+        self.track_list_generator_thread()
 
-    @staticmethod
-    def temp_cleanup():
-        temp_dir = tempfile.gettempdir()
-        LOG.info(f'cleaning up {temp_dir}...')
-        for filename in glob.glob(os.path.join(temp_dir, 'tmp*')):
-            os.remove(filename)
-        LOG.info('cleanup done.')
+    def turn_off(self):
+        assert self.on, 'Jukebox is already off.'
+        self.on = False
+        if self._track_list_generator_thread is not None:
+            self._track_list_generator_thread.join()
+            self._track_list_generator_thread = None
+
+    # ############################################
+    # # set modes
+    # def set_mode_standby_random(self):
+    #     self.mode = MODES['jukebox']['standby_random']
+    #
+    # def set_mode_standby_album(self):
+    #     self.mode = MODES['jukebox']['standby_album']
+    #
+    # def set_mode_on_air_random(self):
+    #     self.mode = MODES['jukebox']['on_air_random']
+    #
+    # def set_mode_on_air_album(self):
+    #     self.mode = MODES['jukebox']['on_air_album']
+    # ############################################
+
+    def set_auto_update_tracklist_on(self):
+        self._auto_update_tracklist = True
+
+    def set_auto_update_tracklist_off(self):
+        self._auto_update_tracklist = False
+
+    @property
+    def playback_proc(self):
+        return self.playing_track.playback_proc
 
     ############################################
     # track list generator
+    # only start this thread if auto_update_tracklist
+    # is required. otherwise simply call create_update_track_list
+    # once.
     # this is not returning non picklable objects
     # so hopefully ideal for multiprocessing
+    # can't use multiprocessing because the main thread is
+    # altering self.on
     def track_list_generator_thread(self):
-        self._track_list_generator_thread = multiprocessing.Process(target=self.track_list_generator_task)
+        assert self.on, 'turn jukebox on first'
+        assert self._track_list_generator_thread is None, '_track_list_generator_thread already running.'
+        self._track_list_generator_thread = threading.Thread(target=self.track_list_generator_task)
         self._track_list_generator_thread.name = 'Track List Generator Process'
         self._track_list_generator_thread.daemon = False
         self._track_list_generator_thread.start()
@@ -173,32 +218,36 @@ class Box(object):
     def track_list_generator_task(self):
         _waited = None
         while self.on:
-            if _waited is None or _waited % DEFAULT_TRACKLIST_REGEN_INTERVAL == 0:  # is 12 hours
-                _waited = 0
-                if self.auto_update_tracklist:
-                    self.create_update_track_list()
-                # instead of putting it to sleep, we
-                # could schedule it maybe (so that it can finish an
-                # restart at some given time again)
+            if not self._auto_update_tracklist:
+                _waited = None
+            else:
+                if _waited is None or _waited % DEFAULT_TRACKLIST_REGEN_INTERVAL == 0:
+                    _waited = 0
+                    if self._auto_update_tracklist:
+                        self.create_update_track_list()
+                    # instead of putting it to sleep, we
+                    # could schedule it maybe (so that it can finish an
+                    # restart at some given time again)
+                    # time.sleep(DEFAULT_TRACKLIST_REGEN_INTERVAL)
+
+                _waited += 1
             time.sleep(1.0)
-            _waited += 1
 
     def create_update_track_list(self):
         # TODO: filter image files, m3u etc.
         LOG.info('generating updated track list...')
         discogs_client = get_client()
         _files = []
-
         for path, dirs, files in os.walk(MUSIC_DIR):
             if not self.on:
-                break
+                return
             album = os.path.basename(path)
             try:
                 # TODO: maybe use a better character
                 artist, year, title = album.split(' - ')
             except ValueError as err:
-                with open(FAULTY_ALBUMS, 'a+') as f:
-                    f.write(album + '\n')
+                # with open(FAULTY_ALBUMS, 'a+') as f:
+                #     f.write(album + '\n')
                 # TODO: store this somewhere to fix it
                 LOG.exception(f'not a valid album path: {album}: {err}')
                 continue
@@ -230,16 +279,14 @@ class Box(object):
             elif os.path.exists(png_path):
                 img_path = png_path
             else:
-                with open(MISSING_COVERS_FILE, 'a+') as f:
-                    f.write(cover_root + '\n')
-                logging.info(f'cover is None: {album}')
-                print(f'cover is None: {album}')
+                # with open(MISSING_COVERS_FILE, 'a+') as f:
+                #     f.write(cover_root + '\n')
+                LOG.info(f'cover is None: {album}')
                 img_path = None
 
             # need to add artist too
             cover_online = None
             title_stripped = title.split(' [')[0]
-            # print(title_stripped)
             query_album = Album.objects.filter(artist_id=model_artist, album_title__exact=title, year__exact=year)
 
             if bool(query_album):
@@ -259,9 +306,10 @@ class Box(object):
                 model_album.save()
             except Exception as err:
                 LOG.exception(f'cannot save album model {title} by {artist}: {err}')
-                print(f'cannot save album model {title} by {artist}: {err}')
 
             for _file in files:
+                if not self.on:
+                    return
                 # print('      track: ' + _file)
                 if os.path.splitext(_file)[1] in AUDIO_FILES:
                     file_path = os.path.join(path, _file)
@@ -289,13 +337,13 @@ class Box(object):
     ############################################
     # track loader
     def track_loader_thread(self):
+        assert self.on, 'jukebox must be on'
         self._track_loader_thread = threading.Thread(target=self._track_loader_task)
         self._track_loader_thread.name = 'Track Loader Thread'
         self._track_loader_thread.daemon = False
         self._track_loader_thread.start()
 
     def _track_loader_task(self):
-        # _waited = None
         while self.on:
             if len(self.tracks) + int(bool(self.loading_process)) < MAX_CACHED_FILES and not bool(self.loading_process):
                 next_track = self.get_next_track()
@@ -338,14 +386,21 @@ class Box(object):
 
             time.sleep(1.0)
 
+    # @property
+    # def loading_process_track(self):
+    #     if self.loading_process is None:
+    #         return None
+    #     else:
+    #         return self.loading_process._kwargs['track']
+
     def _load_track_task(self, **kwargs):
         track = kwargs['track']
-        LOG.info(f'starting thread: \"{track.audio_source}\"')
+        LOG.debug(f'starting thread: \"{track.audio_source}\"')
 
         try:
             size = os.path.getsize(track.audio_source)
             LOG.info(f'loading track ({str(round(size / (1024*1024), 3))} MB): \"{track.audio_source}\"')
-            processing_track = Track(track)
+            processing_track = JukeboxTrack(track)
             LOG.info(f'loading successful: \"{track.audio_source}\"')
             ret = processing_track
         except MemoryError as err:
@@ -355,10 +410,111 @@ class Box(object):
         # here, or after that, probably processing_track.__del__() is called but pickled/recreated
         # in the main process
         self.loading_queue.put(ret)
-    ############################################
+
+    @property
+    def track_list(self):
+        return DjangoTrack.objects.all()
+
+    def get_next_track(self, need_first_album_track=False):
+        # TODO: we cannot tell which track it is
+        #  that is currently being loaded.
+        #  because of this, we always have
+        #  to start clean, even if the track
+        #  is almost fully loaded
+
+        # Random mode
+        # if self.mode == MODES['jukebox']['on_air_random'] or \
+        #         self.mode == MODES['jukebox']['standby_random'] or \
+        #         True:  # TODO remove later
+        if self.jukeoroni.mode == MODES['jukebox']['standby_random'] or \
+            self.jukeoroni.mode == MODES['jukebox']['on_air_random']:
+            tracks = self.track_list
+            if not bool(tracks):
+                return None
+            next_track = random.choice(tracks)
+            return next_track
+
+        # Album mode
+        elif self.jukeoroni.mode == MODES['jukebox']['standby_album'] or \
+            self.jukeoroni.mode == MODES['jukebox']['on_air_album']:
+
+            # raise NotImplementedError
+
+            if need_first_album_track and self.playing_track is not None:
+                # if we switch mode from Rand to Albm,
+                # we always want the first track of
+                # the album, no matter what
+                track_id = self.playing_track.track.id
+                album_id = self.playing_track.track.album_id
+                album_tracks = DjangoTrack.objects.filter(album_id=album_id)
+                first_track = album_tracks[0]
+                first_track_id = first_track.id
+                # self._need_first_album_track = False
+                if track_id != first_track_id:
+                    return first_track
+
+            if self.playing_track is None and not bool(self.tracks):
+                if bool(self.loading_process):
+                    self.kill_loading_process()
+                random_album = self.requested_album_id or random.choice(Album.objects.all())
+                album_tracks = DjangoTrack.objects.filter(album_id=random_album)
+                next_track = album_tracks[0]
+                self.requested_album_id = None
+                return next_track
+
+            if bool(self.tracks):
+                # TODO: if we pressed the Next button too fast,
+                #  self.tracks will be still empty, hence,
+                #  we end up here again unintentionally
+                # we use this case to append the next track
+                # based on the last one in the self.tracks queue
+                # i.e: if playing_track has id 1 and self.tracks
+                # contains id's [2, 3, 4], we want to append
+                # id 5 once a free spot is available
+                # in album mode:
+                # get next track of album of current track
+                previous_track_id = self.tracks[-1].track.id
+                album = DjangoTrack.objects.get(id=previous_track_id).album_id
+
+                next_track = DjangoTrack.objects.get(id=previous_track_id + 1)
+
+                if next_track.album_id != album:
+                    # choose a new random album if next_track is not part
+                    # of current album anymore
+                    random_album = random.choice(Album.objects.all())
+                    album_tracks = DjangoTrack.objects.filter(album_id=random_album)
+                    next_track = album_tracks[0]
+
+                return next_track
+
+            elif self.playing_track is not None and not bool(self.tracks):
+                # in case self.tracks is empty, we want the next
+                # track id based on the one that is currently
+                # playing
+                # in album mode:
+                # get first track of album of current track
+                # if self.tracks is empty, we assume
+                # that the first track added to self.tracks must
+                # be the first track of the album
+                # but we leave the current track playing until
+                # it has finished (per default; if we want to skip
+                # the currently playing track: "Next" button)
+                playing_track_id = self.playing_track.track.id
+                next_track_id = playing_track_id+1
+                next_track = DjangoTrack.objects.get(id=next_track_id)
+
+                album = DjangoTrack.objects.get(id=playing_track_id).album_id
+
+                if next_track.album_id != album:
+                    random_album = random.choice(Album.objects.all())
+                    album_tracks = DjangoTrack.objects.filter(album_id=random_album)
+                    next_track = album_tracks[0]
+
+                return next_track
+
+        raise Exception('we should not be here, no next track!!!')
 
     def kill_loading_process(self):
-        # print('killing self.loading_process and resetting it to None')
         LOG.info('killing self.loading_process and resetting it to None')
         if self.loading_process is not None:
             self.loading_process.terminate()
@@ -375,109 +531,5 @@ class Box(object):
             if track.cached and not track.is_playing:
                 os.remove(track.cache)
         self.tracks = []
+    ############################################
 
-    @property
-    def track_list(self):
-        return DjangoTrack.objects.all()
-
-    def get_next_track(self, album_id=None):
-        # TODO: we cannot tell which track it is
-        #  that is currently being loaded.
-        #  because of this, we always have
-        #  to start clean, even if the track
-        #  is almost fully loaded
-
-        # # switch for web ui album playback start
-        # if album_id is not None:
-        #     album_tracks = DjangoTrack.objects.filter(album_id=album_id)
-        #     first_track = album_tracks[0]
-        #     return first_track
-
-        # Random mode
-        # if self.jukeoroni.mode == 'Rand -> Albm':
-        if self.jukeoroni.mode == MODES['jukebox']['on_air_random'] or \
-                self.jukeoroni.mode == MODES['jukebox']['standby_random'] or \
-                True:  # TODO remove later
-            tracks = self.track_list
-            if not bool(tracks):
-                return None
-            next_track = random.choice(tracks)
-            return next_track
-
-        # # Album mode
-        # elif self.button_rand_albm_value == 'Albm -> Rand':
-        #
-        #     if self._need_first_album_track and self.playing_track is not None:
-        #         # if we switch mode from Rand to Albm,
-        #         # we always want the first track of
-        #         # the album, no matter what
-        #         track_id = self.playing_track.track.id
-        #         album_id = self.playing_track.track.album_id
-        #         album_tracks = DjangoTrack.objects.filter(album_id=album_id)
-        #         first_track = album_tracks[0]
-        #         first_track_id = first_track.id
-        #         self._need_first_album_track = False
-        #         if track_id != first_track_id:
-        #             return first_track
-        #
-        #     if self.playing_track is None and not bool(self.tracks):
-        #         if bool(self.loading_process):
-        #             self.kill_loading_process()
-        #         random_album = self.requested_album_id or random.choice(Album.objects.all())
-        #         album_tracks = DjangoTrack.objects.filter(album_id=random_album)
-        #         next_track = album_tracks[0]
-        #         self.requested_album_id = None
-        #         return next_track
-        #
-        #     if bool(self.tracks):
-        #         # TODO: if we pressed the Next button too fast,
-        #         #  self.tracks will be still empty, hence,
-        #         #  we end up here again unintentionally
-        #         # we use this case to append the next track
-        #         # based on the last one in the self.tracks queue
-        #         # i.e: if playing_track has id 1 and self.tracks
-        #         # contains id's [2, 3, 4], we want to append
-        #         # id 5 once a free spot is available
-        #         # in album mode:
-        #         # get next track of album of current track
-        #         previous_track_id = self.tracks[-1].track.id
-        #         album = DjangoTrack.objects.get(id=previous_track_id).album_id
-        #
-        #         next_track = DjangoTrack.objects.get(id=previous_track_id + 1)
-        #
-        #         if next_track.album_id != album:
-        #             # choose a new random album if next_track is not part
-        #             # of current album anymore
-        #             random_album = random.choice(Album.objects.all())
-        #             album_tracks = DjangoTrack.objects.filter(album_id=random_album)
-        #             next_track = album_tracks[0]
-        #
-        #         return next_track
-        #
-        #     elif self.playing_track is not None and not bool(self.tracks):
-        #         # in case self.tracks is empty, we want the next
-        #         # track id based on the one that is currently
-        #         # playing
-        #         # in album mode:
-        #         # get first track of album of current track
-        #         # if self.tracks is empty, we assume
-        #         # that the first track added to self.tracks must
-        #         # be the first track of the album
-        #         # but we leave the current track playing until
-        #         # it has finished (per default; if we want to skip
-        #         # the currently playing track: "Next" button)
-        #         playing_track_id = self.playing_track.track.id
-        #         next_track_id = playing_track_id+1
-        #         next_track = DjangoTrack.objects.get(id=next_track_id)
-        #
-        #         album = DjangoTrack.objects.get(id=playing_track_id).album_id
-        #
-        #         if next_track.album_id != album:
-        #             random_album = random.choice(Album.objects.all())
-        #             album_tracks = DjangoTrack.objects.filter(album_id=random_album)
-        #             next_track = album_tracks[0]
-        #
-        #         return next_track
-
-        print('we should not be here, no next track!!!')
-        raise Exception('we should not be here, no next track!!!')

@@ -27,6 +27,7 @@ BUTTONS = [5, 6, 16, 24]
 _OFF_IMAGE = '/data/django/jukeoroni/player/static/zzz.jpg'
 PIMORONI_WATCHER_UPDATE_INTERVAL = 5
 SMALL_WIDGET_SIZE = 150
+FFPLAY_CMD = 'ffplay -hide_banner -autoexit -vn -nodisp -loglevel error'.split(' ')
 
 _BUTTON_MAPPINGS = ['000X', '00X0', '0X00', 'X000']
 
@@ -81,8 +82,17 @@ MODES = {
                 '000X': 'Random -> Album',
             }
         },
-        'on_air_random': {
+        'standby_album': {
             'numeric': 2.1,
+            'buttons': {
+                'X000': 'Back',
+                '0X00': 'Play',
+                '00X0': 'N//A',
+                '000X': 'Random -> Album',
+            }
+        },
+        'on_air_random': {
+            'numeric': 2.2,
             'buttons': {
                 'X000': 'Stop',
                 '0X00': 'Next',
@@ -90,15 +100,15 @@ MODES = {
                 '000X': 'Random -> Album',
             }
         },
-        # 'on_air_album': {
-        #     'numeric': 2.2,
-        #     'buttons': {
-        #         'X000': 'Stop',
-        #         '0X00': 'Next',
-        #         '00X0': 'N//A',
-        #         '000X': 'Album -> Random',
-        #     }
-        # }
+        'on_air_album': {
+            'numeric': 2.3,
+            'buttons': {
+                'X000': 'Stop',
+                '0X00': 'Next',
+                '00X0': 'N//A',
+                '000X': 'Album -> Random',
+            }
+        }
     },
 }
 

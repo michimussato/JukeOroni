@@ -1,25 +1,28 @@
 import os
 import time
 import threading
+# import multiprocessing
 import subprocess
 import logging
 import signal
 import urllib.request
 import urllib.error
 import RPi.GPIO as GPIO
+from django.utils.timezone import localtime, now
 from inky.inky_uc8159 import Inky  # , BLACK
 from player.jukeoroni.juke_radio import Radio
-from player.jukeoroni.juke_box import Box
+from player.jukeoroni.juke_box import Jukebox as Box
 from player.jukeoroni.displays import Off as OffLayout
 from player.jukeoroni.displays import Standby as StandbyLayout
 from player.models import Channel
-from player.jukeoroni.juke_box import Track as JukeboxTrack
+from player.jukeoroni.juke_box import JukeboxTrack
 from player.jukeoroni.settings import (
     PIMORONI_SATURATION,
     # CLOCK_UPDATE_INTERVAL,
     PIMORONI_WATCHER_UPDATE_INTERVAL,
     GLOBAL_LOGGING_LEVEL,
     MODES,
+    FFPLAY_CMD,
 )
 from player.jukeoroni.images import Resource
 
@@ -65,7 +68,7 @@ _BUTTON_MAPPINGS = ['000X', '00X0', '0X00', 'X000']
 # BUTTON_000X_LABELS = 'N//A'
 
 
-FFPLAY_CMD = 'ffplay -hide_banner -autoexit -vn -nodisp -loglevel error'.split(' ')
+# FFPLAY_CMD = 'ffplay -hide_banner -autoexit -vn -nodisp -loglevel error'.split(' ')
 
 
 class JukeOroni(object):
@@ -76,7 +79,7 @@ django_shell
 
 from player.jukeoroni.jukeoroni import JukeOroni
 j = JukeOroni()
-# j.test = True
+j.test = True
 j.turn_on()
 
 # RADIO
@@ -93,9 +96,22 @@ j.eject()
 
 # JUKEBOX
 j.set_mode_jukebox()
+j.jukebox.turn_on()
+j.jukebox.set_auto_update_tracklist_off()
+j.state_watcher_thread()
+j.jukebox.track_loader_thread()
 
-j.insert(media=j.jukebox.next_track())
-j.play()
+from player.jukeoroni.settings import MODES
+j.mode = MODES['jukebox']['on_air_random']
+
+
+we want:
+insert()
+play()
+next()
+stop()
+etc.
+
 
 j.turn_off()
     """
@@ -111,9 +127,10 @@ j.turn_off()
         LOG.info(f'Test mode JukeOroni: {str("ON" if self.test else "OFF")}.')
 
         self.on = False
-        self.mode = MODES['jukeoroni']['off']
+        self.mode = None
+        self.set_mode_off()
 
-        self.jukebox = Box(parent=self, auto_update_tracklist=True)
+        self.jukebox = Box(jukeoroni=self)
         self.radio = Radio()
 
         self.playback_proc = None
@@ -141,6 +158,8 @@ j.turn_off()
         self._buttons_watcher_thread = None
         self._state_watcher_thread = None
 
+        self._jukebox_playback_thread = None
+
         # self.set_display_turn_off()
 
     def __str__(self):
@@ -162,6 +181,9 @@ j.turn_off()
 
     ############################################
     # set modes
+    def set_mode_off(self):
+        self.mode = MODES['jukeoroni']['off']
+
     def set_mode_standby(self):
         self.mode = MODES['jukeoroni']['standby']
         self.set_display_standby()
@@ -258,6 +280,100 @@ j.turn_off()
             self.set_image(image=bg)
     ############################################
 
+    def state_watcher_thread(self):
+        self._state_watcher_thread = threading.Thread(target=self.state_watcher_task)
+        self._state_watcher_thread.name = 'State Watcher Thread'
+        self._state_watcher_thread.daemon = False
+        self._state_watcher_thread.start()
+
+    def state_watcher_task(self):
+        assert self.jukebox.on, 'turn on jukebox before initiating state_watcher_task'
+        while self.jukebox.on:
+
+            # new_time = localtime(now())
+
+            if self.mode == MODES['jukebox']['standby_random']:
+                # not playing
+                pass
+            elif self.mode == MODES['jukebox']['on_air_random']:
+
+            # if self.button_3_value == 'Next':  # equals: in Play mode
+                # TODO implement Play/Next combo
+                if self._jukebox_playback_thread is None:
+                    self.jukebox_playback_thread()
+                elif self._jukebox_playback_thread.is_alive():
+                    pass
+
+            # elif self.current_time != new_time.strftime('%H:%M'):  # in stopped state
+            #     if self.current_time is None or (int(new_time.strftime('%H:%M')[-2:])) % CLOCK_UPDATE_INTERVAL == 0:
+            #         self.set_image()
+            #         self.current_time = new_time.strftime('%H:%M')
+
+            time.sleep(1.0)
+
+    def jukebox_playback_thread(self):
+        printed_waiting_msg = False
+        while not self.jukebox.tracks and not bool(self.jukebox.loading_process):
+            if not printed_waiting_msg:
+                LOG.info('waiting for loading thread to kick in')
+            printed_waiting_msg = True
+            time.sleep(1)
+
+        if printed_waiting_msg:
+            LOG.info('loading thread is now active')
+
+        del printed_waiting_msg
+
+        _display_loading = False
+        while not self.jukebox.tracks and bool(self.jukebox.loading_process):
+            if not _display_loading:
+                # self.set_image(image_file=LOADING_IMAGE)
+                _display_loading = True
+
+                LOG.info('loading 1st track')
+            time.sleep(1.0)
+
+        if _display_loading:
+            LOG.info('loading 1st track finished')
+
+        del _display_loading
+
+        if self.jukebox.tracks:
+            track = self.jukebox.tracks.pop(0)
+
+            """self.insert(media=track)"""
+
+            # cannot use multithreading.Process because the target wants
+            # to modify self.playing_track. only works with threading.Thread
+            self._jukebox_playback_thread = threading.Thread(target=self._playback_task, kwargs={'track': track})
+            self._jukebox_playback_thread.name = 'Playback Thread'
+            self._jukebox_playback_thread.daemon = False
+            self._jukebox_playback_thread.start()
+
+            # # start playback first, then change image to prevent lag
+            # self.set_image(track=track)
+
+            # so, join continues as soon as this
+            # thread is finished, leaving the rest
+            # of the application responsive
+            self._jukebox_playback_thread.join()
+
+            """self.eject()"""
+
+            self.playing_track = None
+            self._jukebox_playback_thread = None
+
+    def _playback_task(self, **kwargs):
+        self.playing_track = kwargs['track']
+        LOG.debug(f'starting playback thread: for {self.playing_track.path} from {self.playing_track.playing_from}')  # TODO add info
+        self.playing_track.play()
+
+        # cleanup
+        # self._playback_thread.close()
+        # self.playing_track = None
+        # self._playback_thread = None
+    ############################################
+
     ############################################
     # playback workflow
     def insert(self, media):
@@ -325,6 +441,11 @@ j.turn_off()
                 raise Exception(f'Channel stream return code is not 200: {str(response.status)}')
 
         elif isinstance(self.inserted_media, JukeboxTrack):
+
+            self.playback_thread()
+
+
+
             try:
                 self.jukebox.is_on_air = self.inserted_media
                 self.playback_proc = subprocess.Popen(FFPLAY_CMD + [self.inserted_media.playing_from], shell=False)
@@ -337,10 +458,12 @@ j.turn_off()
                 #  whithout communicate, tracks won't play
                 #  till the end
                 #  with communicate, we cannot skip
-                self.playback_proc.communicate()
+                # self.playback_proc.communicate()
             except Exception:
                 LOG.exception('playback failed: \"{0}\"'.format(self.inserted_media.path))
             finally:
+                while self.playback_proc.poll() is None:
+                    time.sleep(1.0)
                 self.inserted_media.is_playing = False
                 if self.inserted_media.cached:
                     os.remove(self.inserted_media.cache)
@@ -397,7 +520,7 @@ j.turn_off()
                     LOG.exception(f'getting random channel. previous try with {str(media)} failed:')
                     media = self.radio.random_channel
 
-        if isinstance(self.inserted_media, JukeboxTrack):
+        elif isinstance(self.inserted_media, JukeboxTrack):
             self.stop()
             while not bool(self.jukebox.tracks):
                 time.sleep(1.0)
@@ -461,8 +584,8 @@ j.turn_off()
         # Radar
         self.layout_standby.radar.start(test=self.test)
 
-        # Jukebox
-        self.jukebox.start()
+        # # Jukebox
+        # self.jukebox.start()
     ############################################
 
     ############################################
@@ -513,9 +636,9 @@ j.turn_off()
         self.layout_standby.radar.stop()
         LOG.info(f'self.layout_standby.radar terminated')
 
-        LOG.info(f'Terminating self.jukebox...')
-        self.jukebox.stop()
-        LOG.info(f'self.jukebox terminated')
+        # LOG.info(f'Terminating self.jukebox...')
+        # self.jukebox.stop()
+        # LOG.info(f'self.jukebox terminated')
     ############################################
 
     ############################################
@@ -624,6 +747,23 @@ j.turn_off()
             elif button_mapped == '000X':
                 pass
     ############################################
+
+
+
+    # ############################################
+    # # playback process
+    # def jukebox_playback_thread(self):
+    #     self._jukebox_playback_thread = multiprocessing.Process(target=self._jukebox_playback_task)
+    #     self._jukebox_playback_thread.name = 'Jukebox Playback Thread'
+    #     self._jukebox_playback_thread.daemon = False
+    #     self._jukebox_playback_thread.start()
+    #
+    # def _jukebox_playback_task(self):
+    #     while self.on and self.mode == MODES['jukebox']['on_air_random']:
+    #         self.playback_proc = subprocess.Popen(FFPLAY_CMD + [self.inserted_media.playing_from], shell=False)
+    #
+    #         time.sleep(1.0)
+    # ############################################
 
     # ############################################
     # # State watcher (buttons)
