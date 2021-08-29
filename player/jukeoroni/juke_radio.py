@@ -30,7 +30,7 @@ class Radio(object):
         if isinstance(self.is_on_air, Channel):
             cover = self.is_on_air.url_logo
             if cover is None:
-                cover = Resource().squareify(Resource().ON_AIR_DEFAULT_IMAGE)
+                cover = Resource().squareify(Resource().RADIO_ON_AIR_DEFAULT_IMAGE)
             elif is_string_url(cover):
                 try:
                     hdr = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64)'}

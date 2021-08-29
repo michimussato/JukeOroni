@@ -1,6 +1,8 @@
 from player.jukeoroni.settings import (_RADIO_ICON_IMAGE,
-                                       _ON_AIR_DEFAULT_IMAGE,
+                                       _RADIO_ON_AIR_DEFAULT_IMAGE,
+                                       _JUKEBOX_ON_AIR_DEFAULT_IMAGE,
                                        _OFF_IMAGE,
+                                       _JUKEBOX_ICON_IMAGE,
                                        GLOBAL_LOGGING_LEVEL,
                                        )
 from player.jukeoroni.is_string_url import is_string_url
@@ -20,7 +22,10 @@ class Resource(object):
     """
     OFF_IMAGE = Image.open(_OFF_IMAGE)
     RADIO_ICON_IMAGE = Image.open(_RADIO_ICON_IMAGE)
-    ON_AIR_DEFAULT_IMAGE = Image.open(_ON_AIR_DEFAULT_IMAGE)
+    RADIO_ON_AIR_DEFAULT_IMAGE = Image.open(_RADIO_ON_AIR_DEFAULT_IMAGE)
+
+    JUKEBOX_ICON_IMAGE = Image.open(_JUKEBOX_ICON_IMAGE)
+    JUKEBOX_ON_AIR_DEFAULT_IMAGE = Image.open(_JUKEBOX_ON_AIR_DEFAULT_IMAGE)
 
     @property
     def PLACEHOLDER_SQUARE(self):
@@ -39,7 +44,7 @@ class Resource(object):
 
     @property
     def ON_AIR_DEFAULT_IMAGE_SQUARE(self):
-        return self.squareify(self.ON_AIR_DEFAULT_IMAGE).resize((448, 448))
+        return self.squareify(self.RADIO_ON_AIR_DEFAULT_IMAGE).resize((448, 448))
 
     @staticmethod
     def squareify(image):
@@ -128,6 +133,6 @@ class Resource(object):
             image = Image.open(image)
         except Exception as err:
             LOG.exception(f'Could not get online cover:')
-            image = self.ON_AIR_DEFAULT_IMAGE
+            image = self.RADIO_ON_AIR_DEFAULT_IMAGE
 
         return image

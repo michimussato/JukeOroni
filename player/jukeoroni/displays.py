@@ -141,7 +141,7 @@ class Jukebox(Layout):
 
         if cover is None:
             # TODO change RADIO_ICON_IMAGE
-            cover = Resource().RADIO_ICON_IMAGE_SQUARE
+            cover = Resource().JUKEBOX_ICON_IMAGE
         else:
             assert isinstance(cover, Image.Image), f'album cover type must be PIL.Image.Image() (not rotated): {cover}'
         if artist is None:

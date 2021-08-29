@@ -76,7 +76,7 @@ class JukeboxTrack(object):
         if self.album.cover is not None:
             cover = Image.open(self.album.cover)
         else:
-            cover = None
+            cover = Resource().JUKEBOX_ON_AIR_DEFAULT_IMAGE
 
         if COVER_ONLINE_PREFERENCE:
             return album_online or cover
@@ -108,21 +108,32 @@ class JukeboxTrack(object):
     def is_playing(self):
         return bool(self.playing_proc)
 
-    def play(self):
+    # @property
+    # def next_track(self):
+    #     while not bool(self.tracks)
+    #     return self
+
+    def play(self, jukeoroni):
         try:
             LOG.info(f'starting playback: \"{self.path}\" from: \"{self.playing_from}\"')
+            # self.django_track.played += 1
+            # self.django_track.save()
+            jukeoroni.playback_proc = subprocess.Popen(FFPLAY_CMD + [self.playing_from], shell=False)
+            jukeoroni.set_mode_jukebox()
+            jukeoroni.playback_proc.communicate()
+            # jukeoroni._playback_thread.join()
+            LOG.info(f'playback finished: \"{self.path}\"')
             self.django_track.played += 1
             self.django_track.save()
-            self.playing_proc = subprocess.Popen(FFPLAY_CMD + [self.playing_from], shell=False)
-            self.playing_proc.communicate()
-            LOG.info(f'playback finished: \"{self.path}\"')
         except Exception:
             LOG.exception('playback failed: \"{0}\"'.format(self.path))
         finally:
-            self.playing_proc = None
+            # jukeoroni.playback_proc = None
             if self.cached:
                 os.remove(self.cache)
                 LOG.info(f'removed from local filesystem: \"{self.cache}\"')
+            jukeoroni.playback_proc = None
+            # jukeoroni.next(media=)
 
 
 class Jukebox(object):
@@ -139,7 +150,7 @@ box.turn_off()
     def __init__(self, jukeoroni):
 
         self.on = False
-        # self.mode = None
+        self.loader_mode = 'random'
         # self.set_mode_standby_random()
 
         self.jukeoroni = jukeoroni
@@ -160,11 +171,20 @@ box.turn_off()
         self._track_list_generator_thread = None
         self._track_loader_thread = None
 
+    @property
+    def next_track(self):
+        if not bool(self.tracks):
+            return None
+        return self.tracks.pop(0)
+
     def turn_on(self):
         assert not self.on, 'Jukebox is already on.'
         self.on = True
-        # self.set_mode_standby_random()
+
+        self.set_loader_mode_random()
+
         self.track_list_generator_thread()
+        self.track_loader_thread()
 
     def turn_off(self):
         assert self.on, 'Jukebox is already off.'
@@ -173,8 +193,15 @@ box.turn_off()
             self._track_list_generator_thread.join()
             self._track_list_generator_thread = None
 
-    # ############################################
-    # # set modes
+    ############################################
+    # set modes
+    def set_loader_mode_random(self):
+        self.loader_mode = 'random'
+
+    def set_loader_mode_album(self):
+        self.loader_mode = 'album'
+        self._need_first_album_track = True
+
     # def set_mode_standby_random(self):
     #     self.mode = MODES['jukebox']['standby_random']
     #
@@ -415,7 +442,7 @@ box.turn_off()
     def track_list(self):
         return DjangoTrack.objects.all()
 
-    def get_next_track(self, need_first_album_track=False):
+    def get_next_track(self):
         # TODO: we cannot tell which track it is
         #  that is currently being loaded.
         #  because of this, we always have
@@ -426,8 +453,9 @@ box.turn_off()
         # if self.mode == MODES['jukebox']['on_air_random'] or \
         #         self.mode == MODES['jukebox']['standby_random'] or \
         #         True:  # TODO remove later
-        if self.jukeoroni.mode == MODES['jukebox']['standby_random'] or \
-            self.jukeoroni.mode == MODES['jukebox']['on_air_random']:
+        # if self.jukeoroni.mode == MODES['jukebox']['standby_random'] or \
+        #     self.jukeoroni.mode == MODES['jukebox']['on_air_random']:
+        if self.loader_mode == 'random':
             tracks = self.track_list
             if not bool(tracks):
                 return None
@@ -435,12 +463,11 @@ box.turn_off()
             return next_track
 
         # Album mode
-        elif self.jukeoroni.mode == MODES['jukebox']['standby_album'] or \
-            self.jukeoroni.mode == MODES['jukebox']['on_air_album']:
+        elif self.loader_mode == 'album':
 
             # raise NotImplementedError
 
-            if need_first_album_track and self.playing_track is not None:
+            if self._need_first_album_track and self.playing_track is not None:
                 # if we switch mode from Rand to Albm,
                 # we always want the first track of
                 # the album, no matter what
@@ -449,7 +476,7 @@ box.turn_off()
                 album_tracks = DjangoTrack.objects.filter(album_id=album_id)
                 first_track = album_tracks[0]
                 first_track_id = first_track.id
-                # self._need_first_album_track = False
+                self._need_first_album_track = False
                 if track_id != first_track_id:
                     return first_track
 
@@ -512,7 +539,8 @@ box.turn_off()
 
                 return next_track
 
-        raise Exception('we should not be here, no next track!!!')
+        return None
+        # raise Exception('we should not be here, no next track!!!')
 
     def kill_loading_process(self):
         LOG.info('killing self.loading_process and resetting it to None')

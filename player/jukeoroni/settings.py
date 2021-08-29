@@ -73,7 +73,7 @@ MODES = {
         }
     },
     'jukebox': {
-        'standby_random': {
+        'standby': {
             'numeric': 2.0,
             'buttons': {
                 'X000': 'Back',
@@ -82,31 +82,13 @@ MODES = {
                 '000X': 'Random -> Album',
             }
         },
-        'standby_album': {
-            'numeric': 2.1,
-            'buttons': {
-                'X000': 'Back',
-                '0X00': 'Play',
-                '00X0': 'N//A',
-                '000X': 'Random -> Album',
-            }
-        },
-        'on_air_random': {
+        'on_air': {
             'numeric': 2.2,
             'buttons': {
                 'X000': 'Stop',
                 '0X00': 'Next',
                 '00X0': 'N//A',
                 '000X': 'Random -> Album',
-            }
-        },
-        'on_air_album': {
-            'numeric': 2.3,
-            'buttons': {
-                'X000': 'Stop',
-                '0X00': 'Next',
-                '00X0': 'N//A',
-                '000X': 'Album -> Random',
             }
         }
     },
@@ -116,13 +98,15 @@ MODES = {
 # box
 MAX_CACHED_FILES = 3
 COVER_ONLINE_PREFERENCE = False
+_JUKEBOX_ICON_IMAGE = '/data/django/jukeoroni/player/static/jukebox.png'
+_JUKEBOX_ON_AIR_DEFAULT_IMAGE = '/data/django/jukeoroni/player/static/jukebox_on_air_default.jpg'
 # AUDIO_FILES = ['.dsf', '.flac', '.wav', '.dff']
 # DEFAULT_TRACKLIST_REGEN_INTERVAL = 12  # in hours
 
 
 # radio
 _RADIO_ICON_IMAGE = '/data/django/jukeoroni/player/static/radio.png'
-_ON_AIR_DEFAULT_IMAGE = '/data/django/jukeoroni/player/static/radio_on_air_default.jpg'
+_RADIO_ON_AIR_DEFAULT_IMAGE = '/data/django/jukeoroni/player/static/radio_on_air_default.jpg'
 
 
 # clock
