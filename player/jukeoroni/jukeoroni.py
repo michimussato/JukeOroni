@@ -106,7 +106,9 @@ j.set_mode_jukebox()
 
 # j.insert(j.jukebox.next_track)
 j.play()
+j.stop()
 j.next()
+
 
 we want:
 insert()
@@ -471,9 +473,12 @@ j.turn_off()
             self.set_mode_radio()
             # self.set_display_radio()
 
-        # elif isinstance(self.inserted_media, JukeboxTrack):
-        #     self.mode = MODES['jukebox']['standby']
+        elif isinstance(self.inserted_media, JukeboxTrack):
+            self.mode = MODES['jukebox']['standby']
 
+        self.playback_proc.terminate()
+        while self.playback_proc.poll() is None:
+            time.sleep(0.1)
         self.playback_proc = None
 
     def next(self, media=None):
