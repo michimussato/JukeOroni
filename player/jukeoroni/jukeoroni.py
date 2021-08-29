@@ -206,6 +206,10 @@ j.turn_off()
             self.mode = MODES['jukebox']['on_air']
         elif self.playback_proc is None:
             self.mode = MODES['jukebox']['standby']
+        # wait because inserted_media can be none
+        # while playback_proc is not fully terminated
+        # maybe just a temp hack
+        time.sleep(1.0)
         self.set_display_jukebox()
 
         # if self._jukebox_playback_thread is None:
@@ -441,6 +445,7 @@ j.turn_off()
                 raise Exception(f'Channel stream return code is not 200: {str(response.status)}')
 
         else:
+            assert self.mode == MODES['jukebox']['standby'], 'jukebox is not in standby mode. do it first'
             LOG.info('setting jukebox mode to on_air')
             self.mode = MODES['jukebox']['on_air']
             # self.state_watcher_thread()
@@ -470,16 +475,26 @@ j.turn_off()
 
         if isinstance(self.inserted_media, Channel):
             self.radio.is_on_air = None
+            self.playback_proc.terminate()
+            while self.playback_proc.poll() is None:
+                time.sleep(0.1)
+            self.playback_proc = None
             self.set_mode_radio()
             # self.set_display_radio()
 
         elif isinstance(self.inserted_media, JukeboxTrack):
             self.mode = MODES['jukebox']['standby']
+            self.playback_proc.terminate()
+            while self.playback_proc.poll() is None:
+                time.sleep(0.1)
+            self.playback_proc = None
+            self.set_mode_jukebox()
 
-        self.playback_proc.terminate()
-        while self.playback_proc.poll() is None:
-            time.sleep(0.1)
-        self.playback_proc = None
+        # self.playback_proc.terminate()
+        # while self.playback_proc.poll() is None:
+        #     time.sleep(0.1)
+        # self.playback_proc = None
+        # # self.
 
     def next(self, media=None):
         assert self.inserted_media is not None, 'Can only go to next if media is inserted.'
