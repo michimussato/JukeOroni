@@ -470,8 +470,11 @@ j.turn_off()
 
         self.playback_proc.terminate()
 
-        while self.playback_proc.poll() is None:
-            time.sleep(0.1)
+        try:
+            while self.playback_proc.poll() is None:
+                time.sleep(0.1)
+        except AttributeError:
+            LOG.exception('playback_proc already terminated.')
 
         if isinstance(self.inserted_media, Channel):
             self.radio.is_on_air = None
