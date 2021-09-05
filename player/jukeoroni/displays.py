@@ -137,17 +137,21 @@ class Standby(Layout):
 
 class Jukebox(Layout):
 
-    def get_layout(self, labels, cover=None, artist=None):
+    def get_layout(self, labels, loading=False, cover=None, artist=None):
 
-        if cover is None:
-            # TODO change RADIO_ICON_IMAGE
-            cover = Resource().JUKEBOX_ICON_IMAGE
+        if loading:
+            cover = Resource().JUKEBOX_LOADING_IMAGE
+
         else:
-            assert isinstance(cover, Image.Image), f'album cover type must be PIL.Image.Image() (not rotated): {cover}'
-        if artist is None:
-            pass
-        else:
-            assert isinstance(artist, Image.Image), 'artist cover type must be PIL.Image.Image() (not rotated)'
+            if cover is None:
+                # TODO change RADIO_ICON_IMAGE
+                cover = Resource().JUKEBOX_ICON_IMAGE
+            else:
+                assert isinstance(cover, Image.Image), f'album cover type must be PIL.Image.Image() (not rotated): {cover}'
+            if artist is None:
+                pass
+            else:
+                assert isinstance(artist, Image.Image), 'artist cover type must be PIL.Image.Image() (not rotated)'
 
         buttons_overlay = buttons_img_overlay(labels)
         bg = Image.new(mode='RGBA', size=(600, 448), color=(0, 255, 0, 255))
@@ -252,7 +256,7 @@ class Off(Layout):
         assert isinstance(cover, Image.Image), f'Radio Channel cover type must be PIL.Image.Image() (not rotated). Got: {cover}'
 
         buttons_overlay = buttons_img_overlay(labels)
-        bg = Image.new(mode='RGBA', size=(600, 448), color=(0, 0, 255, 255))
+        bg = Image.new(mode='RGBA', size=(600, 448), color=(0, 0, 0, 255))
 
         # cover_size = 448 - 2 * self.border
         cover_size = self.main_size

@@ -35,62 +35,92 @@ MODES = {
     'jukeoroni': {
         'off': {
             'numeric': 0.0,
+            'name': 'off',
             'buttons': {
                 'X000': 'N//A',
                 '0X00': 'N//A',
                 '00X0': 'N//A',
                 '000X': 'ON',  # TODO: ON is not working yet
-            }
+            },
         },
         'standby': {
             'numeric': 1.0,
+            'name': 'standby',
             'buttons': {
                 'X000': 'Player',
                 '0X00': 'Radio',
                 '00X0': 'N//A',
                 '000X': 'N//A',  # TODO cannot switch it back on after OFF
-            }
-        }
+            },
+        },
     },
     'radio': {
         'standby': {
             'numeric': 1.0,
+            'name': 'radio standby',
             'buttons': {
                 'X000': 'Back',
                 '0X00': 'Play',
                 '00X0': 'N//A',
                 '000X': 'N//A',
-            }
+            },
         },
         'on_air': {
             'numeric': 1.1,
+            'name': 'radio on_air',
             'buttons': {
                 'X000': 'Stop',
                 '0X00': 'Next',
                 '00X0': 'N//A',
                 '000X': 'N//A',
-            }
-        }
+            },
+        },
     },
     'jukebox': {
         'standby': {
-            'numeric': 2.0,
-            'buttons': {
-                'X000': 'Back',
-                '0X00': 'Play',
-                '00X0': 'N//A',
-                '000X': 'Random -> Album',
-            }
+            'random': {
+                'numeric': 2.0,
+                'name': 'jukebox standby random',
+                'buttons': {
+                    'X000': 'Back',
+                    '0X00': 'Play',
+                    '00X0': 'N//A',
+                    '000X': 'Random -> Album',
+                },
+            },
+            'album': {
+                'numeric': 2.1,
+                'name': 'jukebox standby album',
+                'buttons': {
+                    'X000': 'Back',
+                    '0X00': 'Play',
+                    '00X0': 'N//A',
+                    '000X': 'Album -> Random',
+                },
+            },
         },
         'on_air': {
-            'numeric': 2.2,
-            'buttons': {
-                'X000': 'Stop',
-                '0X00': 'Next',
-                '00X0': 'N//A',
-                '000X': 'Random -> Album',
-            }
-        }
+            'random': {
+                'numeric': 2.2,
+                'name': 'jukebox on_air random',
+                'buttons': {
+                    'X000': 'Back',
+                    '0X00': 'Play',
+                    '00X0': 'N//A',
+                    '000X': 'Random -> Album',
+                },
+            },
+            'album': {
+                'numeric': 2.3,
+                'name': 'jukebox on_air album',
+                'buttons': {
+                    'X000': 'Back',
+                    '0X00': 'Play',
+                    '00X0': 'N//A',
+                    '000X': 'Album -> Random',
+                },
+            },
+        },
     },
 }
 
@@ -99,6 +129,7 @@ MODES = {
 MAX_CACHED_FILES = 3
 COVER_ONLINE_PREFERENCE = False
 _JUKEBOX_ICON_IMAGE = '/data/django/jukeoroni/player/static/jukebox.png'
+_JUKEBOX_LOADING_IMAGE = '/data/django/jukeoroni/player/static/loading.jpg'
 _JUKEBOX_ON_AIR_DEFAULT_IMAGE = '/data/django/jukeoroni/player/static/jukebox_on_air_default.jpg'
 # AUDIO_FILES = ['.dsf', '.flac', '.wav', '.dff']
 # DEFAULT_TRACKLIST_REGEN_INTERVAL = 12  # in hours

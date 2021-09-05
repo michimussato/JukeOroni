@@ -652,7 +652,7 @@ class Player(object):
         # is it a problem if self.track is still empty?
         for track in self.tracks:
             if track.cached and not track.is_playing:
-                os.remove(track.cache)
+                os.remove(track.cache_tmp)
         self.tracks = []
 
     def __del__(self):

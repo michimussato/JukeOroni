@@ -1,3 +1,4 @@
+import glob
 import multiprocessing
 import os
 import logging
@@ -21,11 +22,8 @@ from player.jukeoroni.settings import (
     MAX_CACHED_FILES,
     AUDIO_FILES,
     MUSIC_DIR,
-    MISSING_COVERS_FILE,
     COVER_ONLINE_PREFERENCE,
-    FAULTY_ALBUMS,
     DEFAULT_TRACKLIST_REGEN_INTERVAL,
-    MODES,
     FFPLAY_CMD,
 )
 from player.models import Album
@@ -45,11 +43,16 @@ class JukeboxTrack(object):
         self.django_track = django_track
         self.path = self.django_track.audio_source
         self.cached = cached
-        self.cache = None
+        self.cache_tmp = None
         self.playing_proc = None
 
+        self._size = None
+
         if self.cached:
-            self._cache()
+            self.cache()
+
+    def __str__(self):
+        return f'{self.artist} - {self.album} - {self.track_title}'
 
     @property
     def track_title(self):
@@ -96,13 +99,50 @@ class JukeboxTrack(object):
         return mediainfo(self.path)
 
     def _cache(self):
-        self.cache = tempfile.mkstemp()[1]
-        LOG.info(f'copying to local filesystem: \"{self.path}\" as \"{self.cache}\"')
-        shutil.copy(self.path, self.cache)
+        self.cache_tmp = tempfile.mkstemp()[1]
+        LOG.info(f'copying to local filesystem: \"{self.path}\" as \"{self.cache_tmp}\"')
+        shutil.copy(self.path, self.cache_tmp)
+
+    def cache(self):
+        _cache_task_thread = threading.Thread(target=self._cache)
+        _cache_task_thread.name = 'Track Cacher Progress Thread'
+        _cache_task_thread.daemon = False
+        _cache_task_thread.start()
+
+        _interval = 5
+        _waited = None
+        _size_cached = 0
+        while _cache_task_thread.is_alive():
+            if _waited is None or _waited % _interval == 0:
+                _waited = 0
+
+                _gain = self.size_cached - _size_cached
+
+                _size_cached = self.size_cached
+
+                LOG.info(f'{str(round(self.size_cached / (1024 * 1024), 3))} MB of {str(round(self.size / (1024 * 1024), 3))} MB loaded'
+                         f' ~({str(round(_gain / (1024 * 1024 * _interval), 3))} MB/s)')
+
+            time.sleep(1.0)
+            _waited += 1
+        # asdf
+
+    @property
+    def size(self):
+        if self._size is None:
+            self._size = os.path.getsize(self.path)
+        return self._size
+        # LOG.info(f'loading track ({str(round(size / (1024 * 1024), 3))} MB): \"{track.audio_source}\"')
+
+    @property
+    def size_cached(self):
+        if self.cache_tmp is None:
+            return 0
+        return os.path.getsize(self.cache_tmp)
 
     @property
     def playing_from(self):
-        return self.cache if self.cached else self.path
+        return self.cache_tmp if self.cached else self.path
 
     @property
     def is_playing(self):
@@ -120,7 +160,10 @@ class JukeboxTrack(object):
             # self.django_track.save()
             jukeoroni.playback_proc = subprocess.Popen(FFPLAY_CMD + [self.playing_from], shell=False)
             jukeoroni.set_mode_jukebox()
-            jukeoroni.playback_proc.communicate()
+            try:
+                jukeoroni.playback_proc.communicate()
+            except AttributeError:
+                LOG.exception('track playback was stopped.')
             # jukeoroni._playback_thread.join()
             LOG.info(f'playback finished: \"{self.path}\"')
             self.django_track.played += 1
@@ -130,8 +173,8 @@ class JukeboxTrack(object):
         finally:
             # jukeoroni.playback_proc = None
             if self.cached:
-                os.remove(self.cache)
-                LOG.info(f'removed from local filesystem: \"{self.cache}\"')
+                os.remove(self.cache_tmp)
+                LOG.info(f'removed from local filesystem: \"{self.cache_tmp}\"')
             jukeoroni.playback_proc = None
             # jukeoroni.next(media=)
 
@@ -171,6 +214,15 @@ box.turn_off()
         self._track_list_generator_thread = None
         self._track_loader_thread = None
 
+    def temp_cleanup(self):
+        temp_dir = tempfile.gettempdir()
+        LOG.info(f'cleaning up {temp_dir}...')
+        # print(f'cleaning up {temp_dir}...')
+        for filename in glob.glob(os.path.join(temp_dir, 'tmp*')):
+            os.remove(filename)
+        LOG.info('cleanup done.')
+        # print('cleanup done.')
+
     @property
     def next_track(self):
         if not bool(self.tracks):
@@ -179,9 +231,12 @@ box.turn_off()
 
     def turn_on(self):
         assert not self.on, 'Jukebox is already on.'
+
+        self.temp_cleanup()
+
         self.on = True
 
-        self.set_loader_mode_random()
+        # self.set_loader_mode_random()
 
         self.track_list_generator_thread()
         self.track_loader_thread()
@@ -193,12 +248,19 @@ box.turn_off()
             self._track_list_generator_thread.join()
             self._track_list_generator_thread = None
 
+        self.temp_cleanup()
+
     ############################################
     # set modes
     def set_loader_mode_random(self):
+        assert self.loader_mode != 'random', 'loader mode is already random'
+        self.kill_loading_process()
         self.loader_mode = 'random'
 
     def set_loader_mode_album(self):
+        assert self.loader_mode != 'album', 'loader mode is already album'
+        # self.tracks = []
+        self.kill_loading_process()
         self.loader_mode = 'album'
         self._need_first_album_track = True
 
@@ -430,9 +492,11 @@ box.turn_off()
             processing_track = JukeboxTrack(track)
             LOG.info(f'loading successful: \"{track.audio_source}\"')
             ret = processing_track
-        except MemoryError as err:
+        except (MemoryError, OSError) as err:
             LOG.exception(f'loading failed: \"{track.audio_source}\": {err}')
             ret = None
+        # except OSError as err:
+        #     LOG.exception(f'loading failed: \"{track.audio_source}\": {err}')
 
         # here, or after that, probably processing_track.__del__() is called but pickled/recreated
         # in the main process
@@ -471,8 +535,8 @@ box.turn_off()
                 # if we switch mode from Rand to Albm,
                 # we always want the first track of
                 # the album, no matter what
-                track_id = self.playing_track.track.id
-                album_id = self.playing_track.track.album_id
+                track_id = self.playing_track.django_track.id
+                album_id = self.playing_track.django_track.album_id
                 album_tracks = DjangoTrack.objects.filter(album_id=album_id)
                 first_track = album_tracks[0]
                 first_track_id = first_track.id
@@ -500,7 +564,7 @@ box.turn_off()
                 # id 5 once a free spot is available
                 # in album mode:
                 # get next track of album of current track
-                previous_track_id = self.tracks[-1].track.id
+                previous_track_id = self.tracks[-1].django_track.id
                 album = DjangoTrack.objects.get(id=previous_track_id).album_id
 
                 next_track = DjangoTrack.objects.get(id=previous_track_id + 1)
@@ -526,7 +590,7 @@ box.turn_off()
                 # but we leave the current track playing until
                 # it has finished (per default; if we want to skip
                 # the currently playing track: "Next" button)
-                playing_track_id = self.playing_track.track.id
+                playing_track_id = self.playing_track.django_track.id
                 next_track_id = playing_track_id+1
                 next_track = DjangoTrack.objects.get(id=next_track_id)
 
@@ -557,7 +621,7 @@ box.turn_off()
         # is it a problem if self.track is still empty?
         for track in self.tracks:
             if track.cached and not track.is_playing:
-                os.remove(track.cache)
+                os.remove(track.cache_tmp)
         self.tracks = []
     ############################################
 

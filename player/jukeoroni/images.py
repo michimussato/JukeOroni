@@ -3,6 +3,7 @@ from player.jukeoroni.settings import (_RADIO_ICON_IMAGE,
                                        _JUKEBOX_ON_AIR_DEFAULT_IMAGE,
                                        _OFF_IMAGE,
                                        _JUKEBOX_ICON_IMAGE,
+                                       _JUKEBOX_LOADING_IMAGE,
                                        GLOBAL_LOGGING_LEVEL,
                                        )
 from player.jukeoroni.is_string_url import is_string_url
@@ -25,6 +26,7 @@ class Resource(object):
     RADIO_ON_AIR_DEFAULT_IMAGE = Image.open(_RADIO_ON_AIR_DEFAULT_IMAGE)
 
     JUKEBOX_ICON_IMAGE = Image.open(_JUKEBOX_ICON_IMAGE)
+    JUKEBOX_LOADING_IMAGE = Image.open(_JUKEBOX_LOADING_IMAGE)
     JUKEBOX_ON_AIR_DEFAULT_IMAGE = Image.open(_JUKEBOX_ON_AIR_DEFAULT_IMAGE)
 
     @property
