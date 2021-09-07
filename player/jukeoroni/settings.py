@@ -104,8 +104,8 @@ MODES = {
                 'numeric': 2.2,
                 'name': 'jukebox on_air random',
                 'buttons': {
-                    'X000': 'Back',
-                    '0X00': 'Play',
+                    'X000': 'Stop',
+                    '0X00': 'Next',
                     '00X0': 'N//A',
                     '000X': 'Random -> Album',
                 },
@@ -114,8 +114,8 @@ MODES = {
                 'numeric': 2.3,
                 'name': 'jukebox on_air album',
                 'buttons': {
-                    'X000': 'Back',
-                    '0X00': 'Play',
+                    'X000': 'Stop',
+                    '0X00': 'Next',
                     '00X0': 'N//A',
                     '000X': 'Album -> Random',
                 },
