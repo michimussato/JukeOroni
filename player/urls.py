@@ -1,8 +1,8 @@
 from django.urls import path
-from player.views import PlayerView
+from player.views import JukeOroniView
 
 urlpatterns = [
-    # path('', PlayerView.as_view(), name='player_index'),
+    path('', JukeOroniView.as_view(), name='jukeoroni_index'),
     # path('play_next/', PlayerView.play_next, name='player_play_next'),
     # path('stop/', PlayerView.stop, name='player_stop'),
     # path('switch_mode/', PlayerView.switch_mode, name='player_switch_mode'),
