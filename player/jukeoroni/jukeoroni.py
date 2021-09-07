@@ -491,7 +491,8 @@ j.turn_off()
             # while self.playback_proc.poll() is None:
             #     time.sleep(0.1)
             self.playback_proc = None
-            self.set_mode_jukebox()
+            # self.set_mode_jukebox()
+            self.set_display_jukebox()
 
         # self.playback_proc.terminate()
         # while self.playback_proc.poll() is None:
