@@ -22,7 +22,7 @@ ANTIALIAS = 16
 class Clock:
 
     @staticmethod
-    def get_clock(draw_logo, draw_date, size=448, hours=12, draw_astral=False):
+    def get_clock(draw_logo, draw_date, size=448, hours=12, draw_astral=False, square=False):
 
         _size = size * ANTIALIAS
 
@@ -31,7 +31,10 @@ class Clock:
         bg = Image.new(mode='RGBA', size=(_size, _size), color=(0, 0, 0, 0))
         draw_bg = ImageDraw.Draw(bg)
         draw_bg_border = [0, round(_size * 0.050)][0]
-        draw_bg.ellipse((0+draw_bg_border,0+draw_bg_border,_size-draw_bg_border, _size-draw_bg_border), fill=(0,0,0,255))
+        if square:
+            draw_bg.rectangle((0+draw_bg_border, 0+draw_bg_border, _size-draw_bg_border, _size-draw_bg_border), fill=(0, 0, 0, 255))
+        else:
+            draw_bg.ellipse((0+draw_bg_border, 0+draw_bg_border, _size-draw_bg_border, _size-draw_bg_border), fill=(0, 0, 0, 255))
 
         _clock = Image.new(mode='RGBA', size=(_size, _size), color=(0, 0, 0, 0))
 

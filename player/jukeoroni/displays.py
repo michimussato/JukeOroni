@@ -177,7 +177,8 @@ class Jukebox(Layout):
         bg.paste(cover, box=(buttons_overlay.size[0] + self.border, _cover_center), mask=cover)
 
         # SMALL_WIDGET_SIZE = 151
-        _clock = self._clock.get_clock(size=SMALL_WIDGET_SIZE, draw_logo=False, draw_date=False, hours=24, draw_astral=True)
+        _clock = self._clock.get_clock(size=SMALL_WIDGET_SIZE, draw_logo=False, draw_date=False, hours=24, draw_astral=True, square=True)
+        _clock = Resource().round_resize(image=_clock, corner=40, fixed=SMALL_WIDGET_SIZE)
         _clock_bottom_left_centered = (int(600 - SMALL_WIDGET_SIZE - self.border),
                                        int(224 + 224/2 + round(self.border/2) - round(SMALL_WIDGET_SIZE/2)))
         _clock_bottom_left = (int(600 - SMALL_WIDGET_SIZE - self.border),
@@ -221,7 +222,8 @@ class Radio(Layout):
         bg.paste(cover, box=(buttons_overlay.size[0] + self.border, _cover_center), mask=cover)
 
         # SMALL_WIDGET_SIZE = 151
-        _clock = self._clock.get_clock(size=SMALL_WIDGET_SIZE, draw_logo=False, draw_date=False, hours=24, draw_astral=True)
+        _clock = self._clock.get_clock(size=SMALL_WIDGET_SIZE, draw_logo=False, draw_date=False, hours=24, draw_astral=True, square=True)
+        _clock = Resource().round_resize(image=_clock, corner=40, fixed=SMALL_WIDGET_SIZE)
         _clock_bottom_left_centered = (int(600 - SMALL_WIDGET_SIZE - self.border),
                                        int(224 + 224/2 + round(self.border/2) - round(SMALL_WIDGET_SIZE/2)))
         _clock_bottom_left = (int(600 - SMALL_WIDGET_SIZE - self.border),

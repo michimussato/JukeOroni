@@ -557,7 +557,6 @@ j.turn_off()
                     media = self.radio.random_channel
 
         elif isinstance(self.inserted_media, JukeboxTrack):
-            # raise NotImplementedError
             assert bool(self.jukebox.tracks), 'no jukebox track ready.'
             self.stop()
             self.eject()
@@ -683,11 +682,6 @@ j.turn_off()
         self._pimoroni_watcher_thread = None
         LOG.info(f'self._pimoroni_watcher_thread terminated')
 
-        # LOG.info(f'Terminating self._state_watcher_thread...')
-        # self._state_watcher_thread.join()
-        # self._state_watcher_thread = None
-        # LOG.info(f'self._state_watcher_thread terminated')
-
         try:
             LOG.info(f'Terminating self._buttons_watcher_thread...')
             if self._buttons_watcher_thread.is_alive():
@@ -704,10 +698,6 @@ j.turn_off()
         LOG.info(f'Terminating self.layout_standby.radar...')
         self.layout_standby.radar.stop()
         LOG.info(f'self.layout_standby.radar terminated')
-
-        # LOG.info(f'Terminating self.jukebox...')
-        # self.jukebox.stop()
-        # LOG.info(f'self.jukebox terminated')
     ############################################
 
     ############################################
@@ -774,6 +764,7 @@ j.turn_off()
         button_mapped = _BUTTON_MAPPINGS[button]
         LOG.info(f'Button press detected on pin: {pin} button: {button_mapped} ({button}), label: {self.LABELS[_BUTTON_PINS.index(pin)]}')
 
+        # JukeOroni
         if self.mode == MODES['jukeoroni']['off']:
             if button_mapped == 'X000':
                 pass
@@ -786,7 +777,6 @@ j.turn_off()
                 # self.turn_on()
         elif self.mode == MODES['jukeoroni']['standby']:
             if button_mapped == 'X000':
-                print('X000')
                 self.set_mode_jukebox()
             elif button_mapped == '0X00':
                 self.set_mode_radio()
@@ -794,8 +784,11 @@ j.turn_off()
                 pass
             elif button_mapped == '000X':
                 pass
+
+        # Radio
         elif self.mode == MODES['radio']['standby']:
             if button_mapped == 'X000':
+                self.eject()
                 self.set_mode_standby()
             elif button_mapped == '0X00':
                 if self.inserted_media is None:
@@ -814,8 +807,20 @@ j.turn_off()
                 pass
             elif button_mapped == '000X':
                 pass
-        elif self.mode == MODES['jukebox']['standby']['random'] \
-                or self.mode == MODES['jukebox']['standby']['album']:
+
+        # Jukebox
+        elif self.mode == MODES['jukebox']['standby']['random']:
+            if button_mapped == 'X000':
+                self.eject()
+                self.set_mode_standby()
+            elif button_mapped == '0X00':
+                self.play()
+            elif button_mapped == '00X0':
+                pass
+            elif button_mapped == '000X':
+                self.jukebox.set_loader_mode_album()
+                self.set_mode_jukebox()
+        elif self.mode == MODES['jukebox']['standby']['album']:
             if button_mapped == 'X000':
                 self.set_mode_standby()
             elif button_mapped == '0X00':
@@ -823,56 +828,29 @@ j.turn_off()
             elif button_mapped == '00X0':
                 pass
             elif button_mapped == '000X':
-                # random -> album; album -> random
-                pass
-        elif self.mode == MODES['jukebox']['on_air']['random'] \
-                or self.mode == MODES['jukebox']['on_air']['album']:
+                self.jukebox.set_loader_mode_random()
+                self.set_mode_jukebox()
+
+        elif self.mode == MODES['jukebox']['on_air']['random']:
             if button_mapped == 'X000':
                 self.stop()
                 self.set_mode_jukebox()
-                # self.mode = MODES['jukebox']['standby']
             elif button_mapped == '0X00':
                 self.next()
             elif button_mapped == '00X0':
                 pass
             elif button_mapped == '000X':
-                # random -> album; album -> random
+                self.jukebox.set_loader_mode_album()
+                self.set_mode_jukebox()
+        elif self.mode == MODES['jukebox']['on_air']['album']:
+            if button_mapped == 'X000':
+                self.stop()
+                self.set_mode_jukebox()
+            elif button_mapped == '0X00':
+                self.next()
+            elif button_mapped == '00X0':
                 pass
+            elif button_mapped == '000X':
+                self.jukebox.set_loader_mode_random()
+                self.set_mode_jukebox()
     ############################################
-
-    # ############################################
-    # # playback process
-    # def jukebox_playback_thread(self):
-    #     self._jukebox_playback_thread = multiprocessing.Process(target=self._jukebox_playback_task)
-    #     self._jukebox_playback_thread.name = 'Jukebox Playback Thread'
-    #     self._jukebox_playback_thread.daemon = False
-    #     self._jukebox_playback_thread.start()
-    #
-    # def _jukebox_playback_task(self):
-    #     while self.on and self.mode == MODES['jukebox']['on_air_random']:
-    #         self.playback_proc = subprocess.Popen(FFPLAY_CMD + [self.inserted_media.playing_from], shell=False)
-    #
-    #         time.sleep(1.0)
-    # ############################################
-
-    # ############################################
-    # # State watcher (buttons)
-    # # checks if the push of buttons or actions
-    # # performed on web ui requires a state change
-    # # TODO: define states
-    # def state_watcher_thread(self):
-    #     self._state_watcher_thread = threading.Thread(target=self._state_watcher_task)
-    #     self._state_watcher_thread.name = 'State Watcher Thread'
-    #     self._state_watcher_thread.daemon = False
-    #     self._state_watcher_thread.start()
-    #
-    # def _state_watcher_task(self):
-    #     update_interval = CLOCK_UPDATE_INTERVAL*60
-    #     _waited = None
-    #     while self.on:
-    #         if _waited is None or _waited % update_interval == 0:
-    #             _waited = 0
-    #
-    #         time.sleep(1.0)
-    #         _waited += 1
-    # ############################################

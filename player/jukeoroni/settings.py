@@ -59,7 +59,7 @@ MODES = {
             'numeric': 1.0,
             'name': 'radio standby',
             'buttons': {
-                'X000': 'Back',
+                'X000': 'Menu',
                 '0X00': 'Play',
                 '00X0': 'N//A',
                 '000X': 'N//A',
@@ -82,7 +82,7 @@ MODES = {
                 'numeric': 2.0,
                 'name': 'jukebox standby random',
                 'buttons': {
-                    'X000': 'Back',
+                    'X000': 'Menu',
                     '0X00': 'Play',
                     '00X0': 'N//A',
                     '000X': 'Random -> Album',
@@ -92,7 +92,7 @@ MODES = {
                 'numeric': 2.1,
                 'name': 'jukebox standby album',
                 'buttons': {
-                    'X000': 'Back',
+                    'X000': 'Menu',
                     '0X00': 'Play',
                     '00X0': 'N//A',
                     '000X': 'Album -> Random',
