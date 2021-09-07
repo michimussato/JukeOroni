@@ -468,17 +468,18 @@ j.turn_off()
                 time.sleep(0.1)
         except AttributeError:
             LOG.exception('playback_proc already terminated.')
+        self.playback_proc = None
 
         if isinstance(self.inserted_media, Channel):
             self.radio.is_on_air = None
-            self.playback_proc.terminate()
-            try:
-                while self.playback_proc.poll() is None:
-                    time.sleep(0.1)
-
-            except AttributeError:
-                # This is the expected behaviour
-                pass
+            # self.playback_proc.terminate()
+            # try:
+            #     while self.playback_proc.poll() is None:
+            #         time.sleep(0.1)
+            #
+            # except AttributeError:
+            #     # This is the expected behaviour
+            #     pass
 
             self.playback_proc = None
             self.set_mode_radio()
@@ -486,9 +487,9 @@ j.turn_off()
 
         elif isinstance(self.inserted_media, JukeboxTrack):
             self.mode = MODES['jukebox']['standby'][self.jukebox.loader_mode]
-            self.playback_proc.terminate()
-            while self.playback_proc.poll() is None:
-                time.sleep(0.1)
+            # self.playback_proc.terminate()
+            # while self.playback_proc.poll() is None:
+            #     time.sleep(0.1)
             self.playback_proc = None
             self.set_mode_jukebox()
 
@@ -521,7 +522,7 @@ j.turn_off()
                     media = self.radio.random_channel
 
         elif isinstance(self.inserted_media, JukeboxTrack):
-            assert bool(self.jukebox.tracks), 'no jukebox track ready.'
+            # assert bool(self.jukebox.tracks), 'no jukebox track ready.'
             self.stop()
             self.eject()
             self.mode = MODES['jukebox']['on_air'][self.jukebox.loader_mode]
@@ -750,6 +751,7 @@ j.turn_off()
                 pass
 
         # Radio
+        # TODO: pause/resume
         elif self.mode == MODES['radio']['standby']:
             if button_mapped == 'X000':
                 self.eject()
@@ -773,6 +775,7 @@ j.turn_off()
                 pass
 
         # Jukebox
+        # TODO: pause/resume
         elif self.mode == MODES['jukebox']['standby']['random']:
             if button_mapped == 'X000':
                 self.eject()
