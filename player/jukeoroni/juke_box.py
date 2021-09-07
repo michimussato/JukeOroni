@@ -109,7 +109,7 @@ class JukeboxTrack(object):
         _cache_task_thread.daemon = False
         _cache_task_thread.start()
 
-        _interval = 5
+        _interval = float(5)
         _waited = None
         _size_cached = 0
         while _cache_task_thread.is_alive():
@@ -120,19 +120,17 @@ class JukeboxTrack(object):
 
                 _size_cached = self.size_cached
 
-                LOG.info(f'{str(round(self.size_cached / (1024 * 1024), 3))} MB of {str(round(self.size / (1024 * 1024), 3))} MB loaded'
-                         f' ~({str(round(_gain / (1024 * 1024 * _interval), 3))} MB/s)')
+                LOG.info(f'{str(round(self.size_cached / (1024.0 * 1024.0), 3))} MB of {str(round(self.size / (1024.0 * 1024.0), 3))} MB loaded'
+                         f' ~({str(round(_gain / (1024.0 * 1024.0 * _interval), 3))} MB/s)')
 
             time.sleep(1.0)
             _waited += 1
-        # asdf
 
     @property
     def size(self):
         if self._size is None:
             self._size = os.path.getsize(self.path)
         return self._size
-        # LOG.info(f'loading track ({str(round(size / (1024 * 1024), 3))} MB): \"{track.audio_source}\"')
 
     @property
     def size_cached(self):
