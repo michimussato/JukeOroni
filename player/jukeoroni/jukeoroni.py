@@ -1,14 +1,12 @@
-import os
 import time
 import threading
-# import multiprocessing
 import subprocess
 import logging
 import signal
 import urllib.request
 import urllib.error
 import RPi.GPIO as GPIO
-from django.utils.timezone import localtime, now
+# from django.utils.timezone import localtime, now
 from inky.inky_uc8159 import Inky  # , BLACK
 from player.jukeoroni.juke_radio import Radio
 from player.jukeoroni.juke_box import Jukebox as Box
@@ -35,40 +33,6 @@ LOG.setLevel(GLOBAL_LOGGING_LEVEL)
 # in portrait mode: from right to left
 _BUTTON_PINS = [5, 6, 16, 24]
 _BUTTON_MAPPINGS = ['000X', '00X0', '0X00', 'X000']
-# highest index top, lowest index bottom
-# (move items up and down for readability)
-# also, the order here should be reflected
-# in the order of the Player.LABELS property
-# in order show up in the right order
-# BUTTON_STOP_BACK_PIN = _BUTTON_PINS[3]
-# BUTTON_PLAY_NEXT_PIN = _BUTTON_PINS[2]
-# BUTTON_RAND_ALBM_PIN = _BUTTON_PINS[1]
-# BUTTON_SHFL_SCRN_PIN = _BUTTON_PINS[0]
-
-# # this will be the next layout:
-# BUTTON_STOP_BACK_PIN = BUTTONS[3]
-# BUTTON_PLAY_NEXT_PIN = BUTTONS[2]
-# BUTTON_RAND_ALBM_PIN = BUTTONS[1]
-# BUTTON_SHFL_SCRN_PIN = BUTTONS[0]
-
-
-# Toggles:
-# TODO: this is a brainfuck...have to think upside down
-#  let's find a better way to toggle
-# https://stackoverflow.com/questions/8381735/how-to-toggle-a-value
-# # Standby
-# BUTTON_X000_LABELS = 'Player'
-# BUTTON_0X00_LABELS = 'Radio'
-# BUTTON_00X0_LABELS = 'N//A'
-# BUTTON_000X_LABELS = 'N//A'
-# # Radio
-# BUTTON_X000_LABELS = 'Back'
-# BUTTON_0X00_LABELS = 'Play'
-# BUTTON_00X0_LABELS = 'N//A'
-# BUTTON_000X_LABELS = 'N//A'
-
-
-# FFPLAY_CMD = 'ffplay -hide_banner -autoexit -vn -nodisp -loglevel error'.split(' ')
 
 
 class JukeOroni(object):
