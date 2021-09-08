@@ -1,4 +1,4 @@
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.views import View
 from player.jukeoroni.jukeoroni import JukeOroni
 
@@ -23,19 +23,19 @@ class JukeOroniView(View):
 
     def get(self, request):
         global jukeoroni
-        return HttpResponseRedirect('/player')
+        return HttpResponse('Hello JukeOroni')
 
-    def switch_mode(self):
-        return HttpResponseRedirect('/player')
-
-    def play_next(self):
-        return HttpResponseRedirect('/player')
-
-    def stop(self):
-        return HttpResponseRedirect('/player')
-
-    def albums(self):
-        return HttpResponseRedirect('/player')
-
-    def play_album(self, album_id):
-        return HttpResponseRedirect('/player')
+    # def switch_mode(self):
+    #     return HttpResponseRedirect('/player')
+    #
+    # def play_next(self):
+    #     return HttpResponseRedirect('/player')
+    #
+    # def stop(self):
+    #     return HttpResponseRedirect('/player')
+    #
+    # def albums(self):
+    #     return HttpResponseRedirect('/player')
+    #
+    # def play_album(self, album_id):
+    #     return HttpResponseRedirect('/player')
