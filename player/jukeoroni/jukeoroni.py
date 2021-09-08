@@ -420,7 +420,10 @@ j.turn_off()
     def play(self):
         assert self.playback_proc is None, 'there is an active playback. stop() first.'
 
-        if isinstance(self.inserted_media, Channel):
+        if isinstance(self.inserted_media, Channel) \
+                or self.mode == MODES['radio']['standby']:
+            # self.mode == MODES['radio']['standby']:
+            # self.insert(media=self.radio.last_played)
             assert self.inserted_media is not None, 'no media inserted. insert media first.'
             hdr = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64)'}
             req = urllib.request.Request(self.inserted_media.url, headers=hdr)
