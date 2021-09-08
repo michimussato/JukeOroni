@@ -110,7 +110,7 @@ class Standby(Layout):
         comp_clock = Image.alpha_composite(comp_clock, _clock)
 
         _clock_center = round(bg.size[1]/2 - clock_size/2)
-        # _clock_right = 0
+        # _clock_right = 0_radar_image.size is
         # _clock_left = bg.size[1] - clock_size
 
         bg.paste(comp_clock, box=(buttons_overlay.size[0] + self.border, _clock_center), mask=comp_clock)
@@ -119,6 +119,7 @@ class Standby(Layout):
 
         if _radar_image is not None:
             _radar_image = Resource().round_resize(image=_radar_image, corner=40, fixed=SMALL_WIDGET_SIZE)
+            # import pdb;pdb.set_trace()
             LOG.info(f'_radar_image.size is {str(_radar_image.size)}')
 
             _radar_bottom_centered = (int(600 - SMALL_WIDGET_SIZE - self.border),

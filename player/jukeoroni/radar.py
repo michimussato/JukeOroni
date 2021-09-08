@@ -18,11 +18,11 @@ LOG = logging.getLogger(__name__)
 LOG.setLevel(GLOBAL_LOGGING_LEVEL)
 
 
-class _RadarThread(threading.Thread):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.name = 'Radar Thread'
-        self.daemon = False
+# class _RadarThread(threading.Thread):
+#     def __init__(self, *args, **kwargs):
+#         super().__init__(*args, **kwargs)
+#         self.name = 'Radar Thread'
+#         self.daemon = False
 
 
 class Radar(object):
@@ -60,7 +60,10 @@ class Radar(object):
     def start(self, test=False):
         self.on = True
         LOG.info(f'Test mode Radar: {str("ON" if test else "OFF")}.')
-        self.radar_thread = _RadarThread(target=self._radar_task, kwargs={'test': test})
+        # self.radar_thread = _RadarThread(target=self._radar_task, kwargs={'test': test})
+        self.radar_thread = threading.Thread(target=self._radar_task, kwargs={'test': test})
+        self.radar_thread.name = 'Radar Thread'
+        self.radar_thread.daemon = False
         self.radar_thread.start()
 
     def stop(self):
@@ -69,7 +72,7 @@ class Radar(object):
         self.radar_thread = None
 
     def _radar_task(self, **kwargs):
-        update_interval = RADAR_UPDATE_INTERVAL*60.0
+        update_interval = RADAR_UPDATE_INTERVAL * 60.0
         _waited = None
         while self.on:
             if _waited is None or _waited % update_interval == 0:

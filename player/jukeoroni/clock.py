@@ -16,7 +16,7 @@ LOG = logging.getLogger(__name__)
 LOG.setLevel(GLOBAL_LOGGING_LEVEL)
 
 
-ANTIALIAS = 16
+ANTIALIAS = 1  # Warning: can slow down calculation drastically
 
 
 class Clock:
