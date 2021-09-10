@@ -63,25 +63,38 @@ https://pillow.readthedocs.io/en/stable/reference/Image.html?highlight=composite
 """
 
 
-BUTTONS_HEIGHT = 16
+BUTTONS_HEIGHT = 32
+BORDER = 4
+BUTTONS_ICONS = {
+    'Radio': '/data/django/jukeoroni/player/static/buttons_overlay/icon_radio.png',
+    'Player': '/data/django/jukeoroni/player/static/buttons_overlay/icon_player.png',
+    'Random -> Album': '/data/django/jukeoroni/player/static/buttons_overlay/icon_random.png',
+    'Album -> Random': '/data/django/jukeoroni/player/static/buttons_overlay/icon_album.png',
+    'N//A': '/data/django/jukeoroni/player/static/buttons_overlay/icon_na.png',
+    'Stop': '/data/django/jukeoroni/player/static/buttons_overlay/icon_stop.png',
+    'Play': '/data/django/jukeoroni/player/static/buttons_overlay/icon_play.png',
+    'Next': '/data/django/jukeoroni/player/static/buttons_overlay/icon_next.png',
+    'Menu': '/data/django/jukeoroni/player/static/buttons_overlay/icon_menu.png'
+}
 
 
 def buttons_img_overlay(labels):
     widget_buttons = Image.new(mode='RGBA', size=(448, 448), color=(0, 0, 0, 0))
 
-    draw_buttons = ImageDraw.Draw(widget_buttons)
-    draw_buttons.rectangle([(0, 0), (448, BUTTONS_HEIGHT)], fill=(0, 0, 0, 128), outline=None, width=1)
-    draw_buttons.text((0, 0), '       {0}               {1}               {2}           {3}'.format(
-        labels[3],
-        labels[2],
-        labels[1],
-        labels[0],
-    ), fill=(255, 255, 255, 255))
+    n = 0
+    for _label in labels[::-1]:
+        n += 1
+        label = Image.open(BUTTONS_ICONS[_label])
+        label = label.resize((BUTTONS_HEIGHT, BUTTONS_HEIGHT))
+        label_bg = Image.new(mode='RGBA', size=label.size, color=(0, 0, 0, 0))
+        label_bg = Image.alpha_composite(label_bg, label)
+
+        widget_buttons.paste(im=label_bg, box=(int(round(n*448/4 - 448/4/2 - BUTTONS_HEIGHT/2)), BORDER))
 
     comp_buttons = Image.new(mode='RGBA', size=widget_buttons.size)
     comp_buttons = Image.alpha_composite(comp_buttons, widget_buttons)
     comp_buttons = comp_buttons.rotate(90, expand=False)
-    comp_buttons = comp_buttons.crop((0, 0, BUTTONS_HEIGHT, widget_buttons.size[0]))
+    comp_buttons = comp_buttons.crop((0, 0, BUTTONS_HEIGHT + BORDER*2, widget_buttons.size[0]))
 
     return comp_buttons
 
@@ -89,8 +102,8 @@ def buttons_img_overlay(labels):
 class Layout:
     _clock = Clock()
     radar = Radar()
-    border = 4
-    main_size = 420
+    border = BORDER
+    main_size = 420 - 2*BORDER - BUTTONS_HEIGHT
 
 
 class Standby(Layout):
@@ -102,7 +115,6 @@ class Standby(Layout):
         widget_clock = Image.new(mode='RGBA', size=(self.main_size, self.main_size), color=(0, 0, 0, 0))
         comp_clock = Image.new(mode='RGBA', size=widget_clock.size)
 
-        # clock_size = 448 - 2 * self.border
         clock_size = self.main_size
         _clock = self._clock.get_clock(size=clock_size, draw_logo=True, draw_date=True, hours=24, draw_astral=True)
 

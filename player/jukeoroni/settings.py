@@ -26,7 +26,7 @@ BUTTONS = [5, 6, 16, 24]
 # jukeoroni
 _OFF_IMAGE = '/data/django/jukeoroni/player/static/zzz.jpg'
 PIMORONI_WATCHER_UPDATE_INTERVAL = 5
-SMALL_WIDGET_SIZE = 150
+SMALL_WIDGET_SIZE = 160
 FFPLAY_CMD = 'ffplay -hide_banner -autoexit -vn -nodisp -loglevel error'.split(' ')
 
 _BUTTON_MAPPINGS = ['000X', '00X0', '0X00', 'X000']
