@@ -6,11 +6,10 @@ from PIL import Image
 from player.jukeoroni.displays import Radio as RadioLayout
 from player.jukeoroni.is_string_url import is_string_url
 from player.models import Channel
+from player.jukeoroni.images import Resource
 from player.jukeoroni.settings import (
     GLOBAL_LOGGING_LEVEL,
-    # MODES,
 )
-from player.jukeoroni.images import Resource
 
 
 LOG = logging.getLogger(__name__)
@@ -39,7 +38,7 @@ class Radio(object):
                     if response.status == 200:
                         cover = io.BytesIO(response.read())
                         cover = Image.open(cover)
-                except Exception as err:
+                except Exception:
                     LOG.exception(f'Could not get online cover:')
                     cover = Resource().ON_AIR_DEFAULT_IMAGE_SQUARE
 

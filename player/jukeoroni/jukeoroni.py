@@ -735,10 +735,11 @@ j.turn_off()
                 bg = self.layout_standby.get_layout(labels=self.LABELS)
             self.pimoroni.set_image(image=bg, saturation=PIMORONI_SATURATION)
             try:
-                # self.pimoroni.show(busy_wait=True)
-                self.pimoroni.show(busy_wait=False)
+                self.pimoroni.show(busy_wait=True)
+                # self.pimoroni.show(busy_wait=False)
             except AttributeError:
-                LOG.exception('Pimoroni busy wait error')
+                pass
+                # LOG.exception('Pimoroni busy wait error')
             LOG.info(f'Setting Pimoroni image: Done.')
     ############################################
 
