@@ -241,7 +241,7 @@ j.turn_off()
             self.button_00X0_value = self.mode['buttons']['00X0']
             self.button_000X_value = self.mode['buttons']['000X']
 
-            bg = self.radio.layout.get_layout(labels=self.LABELS, cover=self.radio.cover)
+            bg = self.radio.layout.get_layout(labels=self.LABELS, cover=self.radio.cover, title=self.radio.stream_title)
             self.set_image(image=bg)
 
     def set_display_jukebox(self):
@@ -281,9 +281,11 @@ j.turn_off()
 
     def state_watcher_task(self):
         # assert self.jukebox.on, 'turn on jukebox before initiating state_watcher_task'
+        radio_media_info_title_previous = None
         while True:
 
             new_time = localtime(now())
+            # radio_media_info_title_previous = None
             # if self.mode == MODES['jukeoroni']['standby']:
             #     if self._current_time != new_time.strftime('%H:%M'):  # in stopped state
             #         if self._current_time is None or (int(new_time.strftime('%H:%M')[-2:])) % CLOCK_UPDATE_INTERVAL == 0:
@@ -352,13 +354,16 @@ j.turn_off()
                         self.set_display_jukebox()
                         self._current_time = new_time.strftime('%H:%M')
 
-            # refresh radio display to updated clock and radar
+            # refresh radio display to updated clock, stream_title and radar
             elif self.mode == MODES['radio']['standby'] \
                     or self.mode == MODES['radio']['on_air']:
                 if self._current_time != new_time.strftime('%H:%M'):  # in stopped state
-                    if self._current_time is None or (int(new_time.strftime('%H:%M')[-2:])) % CLOCK_UPDATE_INTERVAL == 0:
-                        LOG.info('Display/Clock update.')
+                    if self._current_time is None \
+                            or (int(new_time.strftime('%H:%M')[-2:])) % CLOCK_UPDATE_INTERVAL == 0 \
+                            or radio_media_info_title_previous != self.radio.stream_title:
+                        LOG.info('Display/Clock/Stream-Title update.')
                         self.set_display_radio()
+                        radio_media_info_title_previous = self.radio.stream_title
                         self._current_time = new_time.strftime('%H:%M')
 
             elif self.mode == MODES['jukeoroni']['standby']:
@@ -437,6 +442,7 @@ j.turn_off()
 
             if response.status == 200:
                 self.radio.is_on_air = self.inserted_media
+                self.radio.media_info_updater_thread()
                 self.playback_proc = subprocess.Popen(FFPLAY_CMD + [self.inserted_media.url], shell=False)
                 try:
                     self.playback_proc.communicate(timeout=2.0)

@@ -98,7 +98,7 @@ class JukeboxTrack(object):
 
     @property
     def artist(self):
-        return self.album.artist_id
+        return self.album.artist
 
     @property
     def cover_album(self):
@@ -259,6 +259,7 @@ box.turn_off()
     def next_track(self):
         if not bool(self.tracks):
             return None
+            # raise Exception('No tracks loaded yet.')
         return self.tracks.pop(0)
 
     def turn_on(self):
@@ -408,7 +409,7 @@ box.turn_off()
             # need to add artist too
             cover_online = None
             title_stripped = title.split(' [')[0]
-            query_album = Album.objects.filter(artist_id=model_artist, album_title__exact=title, year__exact=year)
+            query_album = Album.objects.filter(artist=model_artist, album_title__exact=title, year__exact=year)
 
             if bool(query_album):
                 model_album = query_album[0]
@@ -420,7 +421,7 @@ box.turn_off()
                 # print('    album found in db')
             else:
                 cover_online = get_album(discogs_client, artist, title_stripped)
-                model_album = Album(artist_id=model_artist, album_title=title, year=year, cover=img_path, cover_online=cover_online)
+                model_album = Album(artist=model_artist, album_title=title, year=year, cover=img_path, cover_online=cover_online)
                 # print('    album created in db')
 
             try:
@@ -440,7 +441,7 @@ box.turn_off()
 
                         # print('        track found in db')
                     else:
-                        model_track = DjangoTrack(album_id=model_album, audio_source=file_path)
+                        model_track = DjangoTrack(album=model_album, audio_source=file_path)
                         model_track.save()
                         # print('        track created in db')
 
@@ -568,8 +569,8 @@ box.turn_off()
                 # we always want the first track of
                 # the album, no matter what
                 track_id = self.playing_track.django_track.id
-                album_id = self.playing_track.django_track.album_id
-                album_tracks = DjangoTrack.objects.filter(album_id=album_id)
+                album_id = self.playing_track.django_track.album
+                album_tracks = DjangoTrack.objects.filter(album=album_id)
                 first_track = album_tracks[0]
                 first_track_id = first_track.id
                 self._need_first_album_track = False
@@ -580,7 +581,7 @@ box.turn_off()
                 if bool(self.loading_process):
                     self.kill_loading_process()
                 random_album = self.requested_album_id or random.choice(Album.objects.all())
-                album_tracks = DjangoTrack.objects.filter(album_id=random_album)
+                album_tracks = DjangoTrack.objects.filter(album=random_album)
                 next_track = album_tracks[0]
                 self.requested_album_id = None
                 return next_track
@@ -597,15 +598,15 @@ box.turn_off()
                 # in album mode:
                 # get next track of album of current track
                 previous_track_id = self.tracks[-1].django_track.id
-                album = DjangoTrack.objects.get(id=previous_track_id).album_id
+                album = DjangoTrack.objects.get(id=previous_track_id).album
 
                 next_track = DjangoTrack.objects.get(id=previous_track_id + 1)
 
-                if next_track.album_id != album:
+                if next_track.album != album:
                     # choose a new random album if next_track is not part
                     # of current album anymore
                     random_album = random.choice(Album.objects.all())
-                    album_tracks = DjangoTrack.objects.filter(album_id=random_album)
+                    album_tracks = DjangoTrack.objects.filter(album=random_album)
                     next_track = album_tracks[0]
 
                 return next_track
@@ -626,11 +627,11 @@ box.turn_off()
                 next_track_id = playing_track_id+1
                 next_track = DjangoTrack.objects.get(id=next_track_id)
 
-                album = DjangoTrack.objects.get(id=playing_track_id).album_id
+                album = DjangoTrack.objects.get(id=playing_track_id).album
 
-                if next_track.album_id != album:
+                if next_track.album != album:
                     random_album = random.choice(Album.objects.all())
-                    album_tracks = DjangoTrack.objects.filter(album_id=random_album)
+                    album_tracks = DjangoTrack.objects.filter(album=random_album)
                     next_track = album_tracks[0]
 
                 return next_track

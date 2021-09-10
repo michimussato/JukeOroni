@@ -1,8 +1,11 @@
 import io
 import random
 import logging
+import threading
+import time
 import urllib.request
 from PIL import Image
+from pydub.utils import mediainfo
 from player.jukeoroni.displays import Radio as RadioLayout
 from player.jukeoroni.is_string_url import is_string_url
 from player.models import Channel
@@ -22,6 +25,45 @@ class Radio(object):
         self.layout = RadioLayout()
         self.is_on_air = None
         self.playback_proc = None
+        self._media_info = None
+        self._media_info_previous = None
+        self._media_info_thread = None
+
+        self.media_info_updater_thread()
+
+    @property
+    def media_info(self):
+        return self._media_info
+
+    @property
+    def stream_name(self):
+        if self.media_info is not None:
+            return self.media_info['TAG']['icy-name']
+        else:
+            return None
+
+    @property
+    def stream_title(self):
+        if self.media_info is not None:
+            return self.media_info['TAG']['StreamTitle']
+        else:
+            return None
+
+    def media_info_updater_thread(self):
+        self._media_info_thread = threading.Thread(target=self.media_info_updater_task)
+        self._media_info_thread.name = 'Stream Info Thread'
+        self._media_info_thread.daemon = False
+        self._media_info_thread.start()
+
+    def media_info_updater_task(self):
+        while self.is_on_air is not None:
+            LOG.info('Updating stream info...')
+            self._media_info = mediainfo(self.is_on_air.url)
+            if self._media_info != self._media_info_previous:
+                self._media_info_previous = self._media_info
+            LOG.info('Stream info updated.')
+            time.sleep(20.0)
+        self._media_info = None
 
     @property
     def cover(self):
@@ -50,6 +92,9 @@ class Radio(object):
         if cover is None:
             raise TypeError('Channel cover is None')
 
+        if cover.mode == 'RGB':
+            a_channel = Image.new('L', cover.size, 255)
+            cover.putalpha(a_channel)
         return cover
 
     @property

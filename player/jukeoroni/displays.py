@@ -1,5 +1,5 @@
 import logging
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageFont, ImageOps
 from player.jukeoroni.clock import Clock
 from player.jukeoroni.radar import Radar
 from player.jukeoroni.settings import (
@@ -79,17 +79,26 @@ BUTTONS_ICONS = {
 
 
 def buttons_img_overlay(labels):
-    widget_buttons = Image.new(mode='RGBA', size=(448, 448), color=(0, 0, 0, 0))
+    widget_buttons = Image.new(mode='RGBA', size=(448, 448), color=(0, 0, 0, 180))
 
+    invert = True
     n = 0
     for _label in labels[::-1]:
         n += 1
         label = Image.open(BUTTONS_ICONS[_label])
-        label = label.resize((BUTTONS_HEIGHT, BUTTONS_HEIGHT))
-        label_bg = Image.new(mode='RGBA', size=label.size, color=(0, 0, 0, 0))
-        label_bg = Image.alpha_composite(label_bg, label)
+        if invert:
+            r, g, b, a = label.split()
+            rgb_image = Image.merge('RGB', (r, g, b))
+            inverted_image = ImageOps.invert(rgb_image)
+            r2, g2, b2 = inverted_image.split()
+            label = Image.merge('RGBA', (r2, g2, b2, a))
 
-        widget_buttons.paste(im=label_bg, box=(int(round(n*448/4 - 448/4/2 - BUTTONS_HEIGHT/2)), BORDER))
+        label = label.resize((BUTTONS_HEIGHT, BUTTONS_HEIGHT))
+        label_bg = Image.new(mode='RGBA', size=widget_buttons.size, color=(0, 0, 0, 0))
+
+        label_bg.paste(im=label, box=(int(round(n*448/4 - 448/4/2 - BUTTONS_HEIGHT/2)), BORDER))
+
+        widget_buttons = Image.alpha_composite(widget_buttons, label_bg)
 
     comp_buttons = Image.new(mode='RGBA', size=widget_buttons.size)
     comp_buttons = Image.alpha_composite(comp_buttons, widget_buttons)
@@ -216,7 +225,7 @@ class Jukebox(Layout):
 
 class Radio(Layout):
 
-    def get_layout(self, labels, cover):
+    def get_layout(self, labels, cover, title):
 
         assert isinstance(cover, Image.Image), f'Radio Channel cover type must be PIL.Image.Image() (not rotated). Got: {cover}'
 
@@ -225,6 +234,25 @@ class Radio(Layout):
 
         # cover_size = 448 - 2 * self.border
         cover_size = self.main_size
+
+        if title is not None:
+
+            font_size = 24
+            border = 10
+            border_bottom = 20
+
+            font = ImageFont.truetype(r'/data/django/jukeoroni/player/static/arial_narrow.ttf', size=font_size)
+            length = font.getlength(title)
+
+            widget_stream_title = Image.new(mode='RGBA', size=cover.size, color=(0, 0, 0, 0))
+
+            draw_stream_title = ImageDraw.Draw(widget_stream_title, mode='RGBA')
+            draw_stream_title.rounded_rectangle([(round(cover.size[0]/2 - length/2) - border, round(cover.size[1] - (font_size + border)) - border - border_bottom), (round(cover.size[0]/2 + length/2) + border, round(cover.size[1] - border) + border - border_bottom)], radius=15, fill=(0, 0, 0, 180))
+
+            draw_stream_title.text((int(round(cover.size[0]/2 - length/2)), cover.size[1] - (font_size + border) - border_bottom), title, fill=(255, 255, 255, 255), font=font)
+
+            cover = Image.alpha_composite(cover, widget_stream_title)
+
 
         cover = cover.rotate(90, expand=True)
         # TODO move to rounde_resize
