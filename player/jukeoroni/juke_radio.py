@@ -8,6 +8,7 @@ from PIL import Image
 from pydub.utils import mediainfo
 from player.jukeoroni.displays import Radio as RadioLayout
 from player.jukeoroni.is_string_url import is_string_url
+from player.jukeoroni.key_from_nested_dict import find_by_key
 from player.models import Channel
 from player.jukeoroni.images import Resource
 from player.jukeoroni.settings import (
@@ -25,45 +26,50 @@ class Radio(object):
         self.layout = RadioLayout()
         self.is_on_air = None
         self.playback_proc = None
-        self._media_info = None
-        self._media_info_previous = None
+        self._media_info = {}
+        self._media_info_previous = {}
         self._media_info_thread = None
 
-        self.media_info_updater_thread()
+        # self.media_info_updater_thread()
 
     @property
     def media_info(self):
         return self._media_info
 
     @property
+    def tag(self):
+        tag = find_by_key(self.media_info, 'TAG')
+        return tag
+
+    @property
     def stream_name(self):
-        if self.media_info is not None:
-            return self.media_info['TAG']['icy-name']
+        if bool(self.tag):
+            return self.tag.get('icy-name', None)
         else:
             return None
 
     @property
     def stream_title(self):
-        if self.media_info is not None:
-            return self.media_info['TAG']['StreamTitle']
+        if bool(self.tag):
+            return self.tag.get('StreamTitle', None)
         else:
             return None
 
-    def media_info_updater_thread(self):
-        self._media_info_thread = threading.Thread(target=self.media_info_updater_task)
+    def media_info_updater_thread(self, channel):
+        self._media_info_thread = threading.Thread(target=self.media_info_updater_task, kwargs={'Channel': channel})
         self._media_info_thread.name = 'Stream Info Thread'
         self._media_info_thread.daemon = False
         self._media_info_thread.start()
 
-    def media_info_updater_task(self):
-        while self.is_on_air is not None:
+    def media_info_updater_task(self, **kwargs):
+        channel = kwargs['Channel']
+        while channel == self.is_on_air:
             LOG.info('Updating stream info...')
             self._media_info = mediainfo(self.is_on_air.url)
-            if self._media_info != self._media_info_previous:
-                self._media_info_previous = self._media_info
             LOG.info('Stream info updated.')
             time.sleep(20.0)
-        self._media_info = None
+        LOG.info(f'Channel was changed, thread loop for channel {channel} terminated.')
+        self._media_info = {}
 
     @property
     def cover(self):
@@ -112,8 +118,20 @@ class Radio(object):
 
     @property
     def last_played(self):
+        # last_played = Channel.objects.get(last_played=True)
+        # if bool(last_played):
+        #     return last_played
+        # else:
+        #     LOG.info('no last_played channel, returning random.')
+        #     return self.random_channel
         try:
+            # for channel in Channel.objects.all():
+            #     if channel.last_played:
+            #         return channel
+            # return None
             return Channel.objects.get(last_played=True)
         except Channel.DoesNotExist:
-            LOG.exception('last_played not found:')
+            # LOG.exception('no last_played channel, returning random.')
+            LOG.info('no last_played channel, returning None.')
+            # return self.random_channel
             return None

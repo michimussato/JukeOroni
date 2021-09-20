@@ -88,12 +88,11 @@ j.turn_off()
     # PAUSE_RESUME_TOGGLE = {signal.SIGSTOP: signal.SIGCONT,
     #                        signal.SIGCONT: signal.SIGSTOP}
 
-    def __init__(self):
+    def __init__(self, test=False):
 
         LOG.info(f'Initializing JukeOroni...')
         # TODO rename to headless
-        self.test = False
-        LOG.info(f'Test mode JukeOroni: {str("ON" if self.test else "OFF")}.')
+        self.test = test
 
         self.on = False
         self.mode = None
@@ -218,7 +217,7 @@ j.turn_off()
             self.button_0X00_value = self.mode['buttons']['0X00']
             self.button_00X0_value = self.mode['buttons']['00X0']
             self.button_000X_value = self.mode['buttons']['000X']
-            self.pimoroni_init()
+            # self.pimoroni_init()
             LOG.info(f'Setting OFF Layout...')
 
             bg = self.layout_off.get_layout(labels=self.LABELS, cover=Resource().OFF_IMAGE_SQUARE)
@@ -254,11 +253,8 @@ j.turn_off()
             self.button_00X0_value = self.mode['buttons']['00X0']
             self.button_000X_value = self.mode['buttons']['000X']
 
-            # # need to add None too, otherwise we might end up with
-            # # NoneType Error for self.inserted_media.cover_album
-            # if self.inserted_media is None:
-            #     #         or self.mode == MODES['jukebox']['standby'][self.jukebox.loader_mode] \
-            #     #         or self.mode == MODES['jukebox']['on_air'][self.jukebox.loader_mode]:
+            # need to add None too, otherwise we might end up with
+            # NoneType Error for self.inserted_media.cover_album
             if self.mode == MODES['jukebox']['standby']['album'] \
                     or self.mode == MODES['jukebox']['standby']['random']:
                 bg = self.jukebox.layout.get_layout(labels=self.LABELS)
@@ -268,8 +264,6 @@ j.turn_off()
                     bg = self.jukebox.layout.get_layout(labels=self.LABELS, loading=True)
                 else:
                     bg = self.jukebox.layout.get_layout(labels=self.LABELS, cover=self.inserted_media.cover_album, artist=self.inserted_media.cover_artist)
-            # else:
-            #     bg = self.jukebox.layout.get_layout(labels=self.LABELS, loading=True)
             self.set_image(image=bg)
     ############################################
 
@@ -335,16 +329,20 @@ j.turn_off()
 
                 # TODO implement Play/Next combo
                 if self.playback_proc is None and isinstance(self.inserted_media, JukeboxTrack):
+                    LOG.debug('Starting new playback thread')
                     self.jukebox_playback_thread()
                     # setting the timer for the display
                     # update to zero after a new track
                     # started
                     new_time = localtime(now())
                 elif self.playback_proc is not None:
+                    LOG.debug('Playback thread playback_proc is not None')
                     if self.playback_proc.poll() == 0:
+                        LOG.debug('Jukebox playback not active, setting playback_proc to None.')
                         # process finished. join()?
                         self.playback_proc = None
                     elif self.playback_proc.poll() is None:
+                        LOG.debug('Jukebox playback active.')
                         # still playing
                         pass
 
@@ -361,6 +359,10 @@ j.turn_off()
                     if self._current_time is None \
                             or (int(new_time.strftime('%H:%M')[-2:])) % CLOCK_UPDATE_INTERVAL == 0 \
                             or radio_media_info_title_previous != self.radio.stream_title:
+                        if radio_media_info_title_previous != self.radio.stream_title:
+                            LOG.info('Stream info changed...')
+                            LOG.info(f'Before: {radio_media_info_title_previous}')
+                            LOG.info(f'New: {self.radio.stream_title}')
                         LOG.info('Display/Clock/Stream-Title update.')
                         self.set_display_radio()
                         radio_media_info_title_previous = self.radio.stream_title
@@ -441,8 +443,15 @@ j.turn_off()
                 raise
 
             if response.status == 200:
+
+                if self.radio.last_played is not None:
+                    last_played_reset = self.radio.last_played
+                    last_played_reset.last_played = False
+                    last_played_reset.save()
+
                 self.radio.is_on_air = self.inserted_media
-                self.radio.media_info_updater_thread()
+
+                self.radio.media_info_updater_thread(channel=self.inserted_media)
                 self.playback_proc = subprocess.Popen(FFPLAY_CMD + [self.inserted_media.url], shell=False)
                 try:
                     self.playback_proc.communicate(timeout=2.0)
@@ -451,16 +460,17 @@ j.turn_off()
                     LOG.info(f'ffplay started successfully. playing {str(self.inserted_media.display_name)}')
                     self.set_mode_radio()
 
-                    if self.radio.last_played is not None:
-                        last_played_reset = self.radio.last_played
-                        last_played_reset.last_played = False
-                        last_played_reset.save()
-                    # except Channel.DoesNotExist:
-                    #     LOG.exception('Cannot reset last_played Channel:')
-
+                    # if self.radio.last_played is not None:
+                    #     last_played_reset = self.radio.last_played
+                    #     last_played_reset.last_played = False
+                    #     last_played_reset.save()
+                    #
+                    #  # except Channel.DoesNotExist:
+                    #  #     LOG.exception('Cannot reset last_played Channel:')
+                    #
                     self.inserted_media.last_played = True
                     self.inserted_media.save()
-                    # self.set_display_radio()
+                    #  # self.set_display_radio()
                 else:
                     bad_channel = self.inserted_media
                     self.stop()
@@ -511,7 +521,8 @@ j.turn_off()
                     time.sleep(0.1)
             except AttributeError:
                 LOG.exception('playback_proc already terminated:')
-            self.playback_proc = None
+            finally:
+                self.playback_proc = None
 
         if isinstance(self.inserted_media, Channel):
             self.radio.is_on_air = None
@@ -777,7 +788,6 @@ j.turn_off()
                 pass
             elif button_mapped == '000X':
                 pass
-                # self.turn_on()
         elif self.mode == MODES['jukeoroni']['standby']:
             if button_mapped == 'X000':
                 self.set_mode_jukebox()
@@ -796,7 +806,10 @@ j.turn_off()
                 self.set_mode_standby()
             elif button_mapped == '0X00':
                 if self.inserted_media is None:
-                    self.insert(media=self.radio.last_played)
+                    if self.radio.last_played is None:
+                        self.insert(media=self.radio.random_channel)
+                    else:
+                        self.insert(media=self.radio.last_played)
                 self.play()
             elif button_mapped == '00X0':
                 pass

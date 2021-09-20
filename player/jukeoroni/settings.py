@@ -3,7 +3,7 @@ import os
 from astral import LocationInfo
 
 
-GLOBAL_LOGGING_LEVEL = logging.INFO
+GLOBAL_LOGGING_LEVEL = logging.DEBUG
 
 
 LOG = logging.getLogger(__name__)

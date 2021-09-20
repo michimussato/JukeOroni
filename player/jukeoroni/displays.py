@@ -140,7 +140,6 @@ class Standby(Layout):
 
         if _radar_image is not None:
             _radar_image = Resource().round_resize(image=_radar_image, corner=40, fixed=SMALL_WIDGET_SIZE)
-            # import pdb;pdb.set_trace()
             LOG.info(f'_radar_image.size is {str(_radar_image.size)}')
 
             _radar_bottom_centered = (int(600 - SMALL_WIDGET_SIZE - self.border),
@@ -178,12 +177,12 @@ class Jukebox(Layout):
         buttons_overlay = buttons_img_overlay(labels)
         bg = Image.new(mode='RGBA', size=(600, 448), color=(0, 255, 0, 255))
 
-        # cover_size = 448 - 2 * self.border
         cover_size = self.main_size
 
-        cover = cover.rotate(90, expand=True)
-        # TODO move to rounde_resize
         cover = cover.resize((cover_size, cover_size), Image.ANTIALIAS)
+
+        cover = cover.rotate(90, expand=True)
+
         cover = Resource().round_resize(image=cover, corner=40, factor=1.0)
 
         if artist:
@@ -232,11 +231,11 @@ class Radio(Layout):
         buttons_overlay = buttons_img_overlay(labels)
         bg = Image.new(mode='RGBA', size=(600, 448), color=(0, 0, 255, 255))
 
-        # cover_size = 448 - 2 * self.border
         cover_size = self.main_size
 
-        if title is not None:
+        cover = cover.resize((cover_size, cover_size), Image.ANTIALIAS)
 
+        if title is not None:
             font_size = 24
             border = 10
             border_bottom = 20
@@ -253,10 +252,8 @@ class Radio(Layout):
 
             cover = Image.alpha_composite(cover, widget_stream_title)
 
-
         cover = cover.rotate(90, expand=True)
-        # TODO move to rounde_resize
-        cover = cover.resize((cover_size, cover_size), Image.ANTIALIAS)
+
         cover = Resource().round_resize(image=cover, corner=40, factor=1.0)
 
         _cover_center = round(bg.size[1] / 2 - cover_size / 2)
@@ -304,9 +301,10 @@ class Off(Layout):
         # cover_size = 448 - 2 * self.border
         cover_size = self.main_size
 
-        cover = cover.rotate(90, expand=True)
-        # TODO move to rounde_resize
         cover = cover.resize((cover_size, cover_size), Image.ANTIALIAS)
+
+        cover = cover.rotate(90, expand=True)
+
         cover = Resource().round_resize(image=cover, corner=40, factor=1.0)
 
         _cover_center = round(bg.size[1] / 2 - cover_size / 2)

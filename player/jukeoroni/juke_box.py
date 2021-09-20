@@ -32,10 +32,24 @@ LOG = logging.getLogger(__name__)
 LOG.setLevel(GLOBAL_LOGGING_LEVEL)
 
 
-class Process(multiprocessing.Process):
-    def __init__(self, *args, **kwargs):
-        super(Process, self).__init__(*args, **kwargs)
-        self.track = kwargs['kwargs']['track']
+# class Process(multiprocessing.Process):
+#     def __init__(self, *args, **kwargs):
+#         super(Process, self).__init__(*args, **kwargs)
+#         self.track = kwargs['kwargs']['track']
+#     #
+#     #     self._stop = threading.Event()
+#     #
+#     # def stop(self):
+#     #     self._stop.set()
+#     #
+#     # def stopped(self):
+#     #     return self._stop.is_set()
+#     #
+#     # def run(self):
+#     #     while True:
+#     #         if self.stopped():
+#     #             return
+#     #         time.sleep(1.0)
 
 
 class JukeboxTrack(object):
@@ -94,7 +108,8 @@ class JukeboxTrack(object):
         [Wed Sep 08 12:59:39.797482 2021] [wsgi:error] [pid 2572:tid 2792354848] [09-08-2021 12:59:39] [INFO] [Track Loader Thread|2792354848] [player.jukeoroni.juke_box]: loading track (126.852 MB): "/data/googledrive/media/audio/music/new/Bob Marley - 2004 - Young Mystic [DSD]/01 - Soul Shakedown Party.dsf"
 
         """
-        return Album.objects.get(track=self.django_track)
+        return self.django_track.album
+        # return Album.objects.get(track=self.django_track)
 
     @property
     def artist(self):
@@ -188,8 +203,8 @@ class JukeboxTrack(object):
     def play(self, jukeoroni):
         try:
             LOG.info(f'starting playback: \"{self.path}\" from: \"{self.playing_from}\"')
-            # self.django_track.played += 1
-            # self.django_track.save()
+            self.django_track.played += 1
+            self.django_track.save()
             jukeoroni.playback_proc = subprocess.Popen(FFPLAY_CMD + [self.playing_from], shell=False)
             jukeoroni.set_mode_jukebox()
             try:
@@ -269,8 +284,6 @@ box.turn_off()
 
         self.on = True
 
-        # self.set_loader_mode_random()
-
         self.track_list_generator_thread()
         self.track_loader_thread()
 
@@ -286,12 +299,17 @@ box.turn_off()
     ############################################
     # set modes
     def set_loader_mode_random(self):
-        assert self.loader_mode != 'random', 'loader mode is already random'
+        # assert self.loader_mode != 'random', 'loader mode is already random'
         self.kill_loading_process()
         self.loader_mode = 'random'
 
+    def play_album(self, album_id):
+        self.requested_album_id = album_id
+        self.loader_mode = 'album'
+        self.kill_loading_process()
+
     def set_loader_mode_album(self):
-        assert self.loader_mode != 'album', 'loader mode is already album'
+        # assert self.loader_mode != 'album', 'loader mode is already album'
         # self.tracks = []
         self.kill_loading_process()
         self.loader_mode = 'album'
@@ -460,6 +478,8 @@ box.turn_off()
     # track loader
     def track_loader_thread(self):
         assert self.on, 'jukebox must be on'
+        # assert self._track_loader_thread is None, 'Track Loader Thread is already running'
+        # if self._track_loader_thread is None:
         self._track_loader_thread = threading.Thread(target=self._track_loader_task)
         self._track_loader_thread.name = 'Track Loader Thread'
         self._track_loader_thread.daemon = False
@@ -467,9 +487,13 @@ box.turn_off()
 
     def _track_loader_task(self):
         while self.on:
+            LOG.debug(f'{len(self.tracks)} of {MAX_CACHED_FILES} tracks cached.')
+            LOG.debug(f'Loading process is active: {bool(self.loading_process)}')
+
             if len(self.tracks) + int(bool(self.loading_process)) < MAX_CACHED_FILES and not bool(self.loading_process):
                 next_track = self.get_next_track()
                 if next_track is None:
+                    # print(str(next_track))
                     time.sleep(1.0)
                     continue
 
@@ -482,15 +506,16 @@ box.turn_off()
                 # data. when the Queue handles over that cached object, it seems like
                 # it re-creates the Track object (pickle, probably) but the cached data is
                 # gone of course because __del__ was called before that already.
-                self.loading_process = Process(target=self._load_track_task, kwargs={'track': next_track})
-                # print(dir(self.loading_process))
-                # print(self.loading_process.__dict__)
-                # print(self.loading_process._kwargs['track'])
+                self.loading_process = multiprocessing.Process(target=self._load_track_task, kwargs={'track': next_track})
                 self.loading_process.name = 'Track Loader Task Process'
                 self.loading_process.start()
 
-                self.loading_process.join()
+                while self.loading_process is not None and self.loading_queue.empty():
+                    LOG.debug('waiting for queue...')
+                    time.sleep(1.0)
+
                 if self.loading_process is not None:
+                    LOG.debug('Queue ready.')
                     # self.loading_process waits for a result
                     # which it won't receive in case we killed
                     # the loading process (mode switch), so
@@ -502,7 +527,11 @@ box.turn_off()
                         raise Exception('Exit code not 0')
 
                     if ret is not None:
+                        LOG.debug(f'Track appended: {ret}')
                         self.tracks.append(ret)
+
+                else:
+                    LOG.debug(f'loading process terminated: {self.loading_process is None}')
 
                 self.loading_process = None
 
@@ -517,7 +546,7 @@ box.turn_off()
 
     def _load_track_task(self, **kwargs):
         track = kwargs['track']
-        LOG.debug(f'starting thread: \"{track.audio_source}\"')
+        LOG.info(f'starting thread: \"{track.audio_source}\"')
 
         try:
             size = os.path.getsize(track.audio_source)
@@ -525,15 +554,16 @@ box.turn_off()
             processing_track = JukeboxTrack(track)
             LOG.info(f'loading successful: \"{track.audio_source}\"')
             ret = processing_track
+            self.loading_queue.put(ret)
         except (MemoryError, OSError) as err:
             LOG.exception(f'loading failed: \"{track.audio_source}\": {err}')
-            ret = None
+            # ret = None
         # except OSError as err:
         #     LOG.exception(f'loading failed: \"{track.audio_source}\": {err}')
 
         # here, or after that, probably processing_track.__del__() is called but pickled/recreated
         # in the main process
-        self.loading_queue.put(ret)
+        # self.loading_queue.put(ret)
 
     @property
     def track_list(self):
@@ -643,6 +673,7 @@ box.turn_off()
         LOG.info('killing self.loading_process and resetting it to None')
         if self.loading_process is not None:
             self.loading_process.terminate()
+            self.loading_process.join()
             # a process can be joined multiple times:
             # here: just wait for termination before proceeding
             # self.loading_process.join()
@@ -656,5 +687,6 @@ box.turn_off()
             if track.cached and not track.is_playing:
                 os.remove(track.cache_tmp)
         self.tracks = []
+        self._track_loader_thread = None
     ############################################
 
