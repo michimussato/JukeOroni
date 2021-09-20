@@ -25,7 +25,7 @@ BUTTONS = [5, 6, 16, 24]
 
 # jukeoroni
 _OFF_IMAGE = '/data/django/jukeoroni/player/static/zzz.jpg'
-PIMORONI_WATCHER_UPDATE_INTERVAL = 5
+PIMORONI_WATCHER_UPDATE_INTERVAL = 1
 SMALL_WIDGET_SIZE = 160
 FFPLAY_CMD = 'ffplay -hide_banner -autoexit -vn -nodisp -loglevel error'.split(' ')
 
@@ -47,7 +47,8 @@ MODES = {
             'numeric': 1.0,
             'name': 'standby',
             'buttons': {
-                'X000': 'Player',
+                # 'X000': 'Player',
+                'X000': 'N//A',
                 '0X00': 'Radio',
                 '00X0': 'N//A',
                 '000X': 'N//A',  # TODO cannot switch it back on after OFF

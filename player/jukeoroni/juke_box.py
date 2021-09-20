@@ -285,7 +285,7 @@ box.turn_off()
         self.on = True
 
         self.track_list_generator_thread()
-        self.track_loader_thread()
+        # self.track_loader_thread()
 
     def turn_off(self):
         assert self.on, 'Jukebox is already off.'
