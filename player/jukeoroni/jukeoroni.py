@@ -411,7 +411,7 @@ j.turn_off()
     def insert(self, media):
         # j.insert(j.radio.last_played)
         assert self.on, 'JukeOroni is OFF. turn_on() first.'
-        assert self.inserted_media is None, 'There is a medium inserted already'
+        assert self.inserted_media is None, f'There is a medium inserted already: {self.inserted_media}'
         # TODO: add types to tuple
         assert isinstance(media, (Channel, JukeboxTrack)), 'can only insert Channel model or JukeboxTrack object'
 
@@ -432,8 +432,6 @@ j.turn_off()
         assert self.playback_proc is None, 'there is an active playback. stop() first.'
 
         if self.mode == MODES['radio']['on_air']:
-            # self.mode == MODES['radio']['standby']:
-            # self.insert(media=self.radio.last_played)
             assert self.inserted_media is not None, 'no media inserted. insert media first.'
             hdr = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64)'}
             req = urllib.request.Request(self.inserted_media.url, headers=hdr)
@@ -756,7 +754,7 @@ j.turn_off()
             try:
                 self.pimoroni.show(busy_wait=True)
                 # self.pimoroni.show(busy_wait=False)
-            except AttributeError:
+            except RuntimeError:  # AttributeError?
                 pass
                 # LOG.exception('Pimoroni busy wait error')
             LOG.info(f'Setting Pimoroni image: Done.')

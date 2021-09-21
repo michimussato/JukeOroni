@@ -5,7 +5,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.views import View
 from player.jukeoroni.jukeoroni import JukeOroni
 from player.jukeoroni.juke_box import JukeboxTrack
-from player.models import Album
+from player.models import Album, Channel
 from player.jukeoroni.settings import (
     _JUKEBOX_LOADING_IMAGE,
     MODES
@@ -45,7 +45,14 @@ class JukeOroniView(View):
         ret += '  </head>\n'
         ret += '  <body>\n'
 
-        if isinstance(jukeoroni.inserted_media, JukeboxTrack):
+        # if isinstance(jukeoroni.inserted_media, JukeboxTrack):
+        if jukeoroni.mode == MODES['radio']['standby'] \
+                or jukeoroni.mode == MODES['radio']['on_air'] \
+                or True:
+
+            return HttpResponseRedirect('radio/')
+
+        else:
 
             # if self.jukeoroni.inserted_media is None:
             #     ret += f'<div>{str(self.jukeoroni.inserted_media)}</div>'
@@ -159,10 +166,7 @@ class JukeOroniView(View):
         jukeoroni.jukebox.play_album(album_id=album_id)
         # jukeoroni.set_mode_jukebox()
 
-
-
         # jukeoroni.jukebox.kill_loading_process()
-
 
         # # jukeoroni.jukebox.kill_loading_process()
         # # if not jukeoroni.jukebox.loader_mode == 'album':
@@ -186,5 +190,56 @@ class JukeOroniView(View):
         # self.jukeoroni.button_1_value = 'Albm -> Rand'
 
         # self.jukeoroni.set_image(track=self.jukeoroni.playing_track)
+
+        return HttpResponseRedirect('/jukeoroni')
+
+    def radio_index(self):
+        global jukeoroni
+
+        channels = Channel.objects.all()
+
+        ret = '<html>\n'
+        ret += '  <body>\n'
+        for channel in channels:
+            if channel.is_enabled:
+                if channel == jukeoroni.radio.is_on_air:
+                    ret += f'        <button style=\"width:100%; background-color:green; \" onclick=\"window.location.href = \'stop\';\">{channel.display_name}</button>\n'  # , channel.display_name)
+                else:
+                    ret += f'        <button style=\"width:100%\" onclick=\"window.location.href = \'{channel.display_name_short}/play\';\">{channel.display_name}</button>\n'
+        ret += '  </body>\n'
+        ret += '</html>\n'
+        return HttpResponse(ret)
+
+    def radio_play(self, display_name_short):
+        global jukeoroni
+
+        try:
+            for c in Channel.objects.filter(last_played=True):
+                c.last_played = False
+                c.save()
+        except Channel.DoesNotExist:
+            pass
+
+        channel = Channel.objects.get(display_name_short=display_name_short)
+        if jukeoroni.inserted_media is not None:
+            if jukeoroni.radio.is_on_air:
+                jukeoroni.stop()
+            jukeoroni.eject()
+        jukeoroni.insert(media=channel)
+
+        channel.last_played = True
+        channel.save()
+
+        jukeoroni.mode = MODES['radio']['on_air']
+        jukeoroni.play()
+        jukeoroni.set_display_radio()
+
+        return HttpResponseRedirect('/jukeoroni')
+
+    def radio_stop(self):
+        global jukeoroni
+
+        jukeoroni.stop()
+        jukeoroni.eject()
 
         return HttpResponseRedirect('/jukeoroni')

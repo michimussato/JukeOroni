@@ -8,7 +8,7 @@
 
 
 # radio bob streams:
-# http://streams.radiobob.de/
+# https://streams.radiobob.de/
 
 # radio srf
 # https://www.broadcast.ch/fileadmin/kundendaten/Dokumente/Internet_Streaming/2021_01_links_for_streaming_internet_radio_de_fr_it_V006.pdf
@@ -58,7 +58,7 @@ channel_list = [
     ("BOBs Mittelalter", "mittelalter", True, "http://bob.hoerradar.de/radiobob-mittelalter-mp3-hq", "http://aggregatorservice.loverad.io/wp-content/uploads/2021/01/bob_mittelalter-rock_600x600.png", False),
     ("BOBs Newcomer", "newcomer", True, "http://bob.hoerradar.de/radiobob-newcomer-mp3-hq", "http://aggregatorservice.loverad.io/wp-content/uploads/2021/01/bob_newcomer_600x600.png", False),
     ("BOBs Progressive Rock", "progrock", True, "http://bob.hoerradar.de/radiobob-progrock-mp3-hq", "http://aggregatorservice.loverad.io/wp-content/uploads/2021/04/bob_prog-rock_600x600.png", False),
-    ("BOBs Der Dunkle Parabelritter", "ritter", True, "http://bob.hoerradar.de/radiobob-ritter-mp3-hq", "http://aggregatorservice.loverad.io/wp-content/uploads/2021/01/bob_parabelritter_600x600.png", False),
+    ("BOBs Der Dunkle Parabelritter", "ritter", True, "https://bob.hoerradar.de/radiobob-dunklepritter-mp3-hq", "http://aggregatorservice.loverad.io/wp-content/uploads/2021/01/bob_parabelritter_600x600.png", False),
     ("BOBs Rock Party", "rockparty", True, "http://bob.hoerradar.de/radiobob-rockparty-mp3-hq", "http://aggregatorservice.loverad.io/wp-content/uploads/2021/01/bob_rockparty_600x600.png", False),
     ("BOBs Sammet Rockshow", "sammet", True, "http://bob.hoerradar.de/radiobob-sammet-mp3-hq", "http://aggregatorservice.loverad.io/wp-content/uploads/2021/01/bob_tobias-sammet-rockshow_600x600.png", False),
     ("BOBs Southern Rock", "southernrock", True, "http://bob.hoerradar.de/radiobob-southernrock-mp3-hq", "http://aggregatorservice.loverad.io/wp-content/uploads/2021/01/bob_southern-rock_600x600.png", False),
