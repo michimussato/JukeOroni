@@ -199,6 +199,9 @@ class JukeOroniView(View):
         channels = Channel.objects.all()
 
         ret = '<html>\n'
+        ret += '  <head>\n'
+        ret += '    <meta http-equiv="refresh" content="10" >\n'
+        ret += '  </head>\n'
         ret += '  <body>\n'
         for channel in channels:
             if channel.is_enabled:
@@ -231,7 +234,10 @@ class JukeOroniView(View):
         channel.save()
 
         jukeoroni.mode = MODES['radio']['on_air']
+        # try:
         jukeoroni.play()
+        # except Exception:
+
         jukeoroni.set_display_radio()
 
         return HttpResponseRedirect('/jukeoroni')

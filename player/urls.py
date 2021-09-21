@@ -12,6 +12,6 @@ urlpatterns = [
     # Radio
     path('radio/', JukeOroniView.radio_index, name='radio'),
     path('radio/<str:display_name_short>/play/', JukeOroniView.radio_play, name='radio_play'),
-    path('radio/stop/', JukeOroniView.radio_play, name='radio_stop'),
+    path('radio/stop/', JukeOroniView.radio_stop, name='radio_stop'),
 ]
 
