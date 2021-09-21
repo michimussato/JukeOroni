@@ -203,7 +203,7 @@ class JukeOroniView(View):
         for channel in channels:
             if channel.is_enabled:
                 if channel == jukeoroni.radio.is_on_air:
-                    ret += f'        <button style=\"width:100%; background-color:green; \" onclick=\"window.location.href = \'stop\';\">{channel.display_name}</button>\n'  # , channel.display_name)
+                    ret += f'        <button style=\"width:100%; background-color:green; \" onclick=\"window.location.href = \'stop\';\">{channel.display_name}</button>\n'
                 else:
                     ret += f'        <button style=\"width:100%\" onclick=\"window.location.href = \'{channel.display_name_short}/play\';\">{channel.display_name}</button>\n'
         ret += '  </body>\n'
