@@ -50,8 +50,14 @@ class Radio(object):
 
     @property
     def stream_title(self):
-        if bool(self.tag):
-            return self.tag.get('StreamTitle', None)
+        # if bool(self.is_on_air) is None:
+        #     return None
+
+        if bool(self.tag) and self.is_on_air is not None:
+            if self.is_on_air.show_rds:
+                return self.tag.get('StreamTitle', None)
+            else:
+                return None
         else:
             return None
 
@@ -98,9 +104,13 @@ class Radio(object):
         if cover is None:
             raise TypeError('Channel cover is None')
 
-        if cover.mode == 'RGB':
-            a_channel = Image.new('L', cover.size, 255)
-            cover.putalpha(a_channel)
+        # if cover.mode == 'RGB':
+        #     a_channel = Image.new('L', cover.size, 255)
+        #     cover.putalpha(a_channel)
+
+        if cover.mode != 'RGBA':
+            cover = cover.convert('RGBA')
+
         return cover
 
     @property

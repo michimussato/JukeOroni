@@ -196,7 +196,7 @@ class JukeOroniView(View):
     def radio_index(self):
         global jukeoroni
 
-        channels = Channel.objects.all()
+        channels = Channel.objects.all().order_by('display_name')
 
         ret = '<html>\n'
         ret += '  <head>\n'

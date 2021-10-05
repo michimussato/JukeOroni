@@ -15,7 +15,6 @@ from django.db import models
 
 class Artist(models.Model):
     name = models.CharField(max_length=200, unique=True, blank=False, null=False)
-
     cover_online = models.CharField(max_length=200, unique=False, blank=True, null=True)
 
     def __str__(self):
@@ -36,11 +35,11 @@ class Album(models.Model):
 
     def __str__(self):
         # return '{0} ({1})'.format(self.album_title, self.artist_id.name)
-        return self.album_title
+        return f'{self.album_title} ({self.artist.name})'
 
     def __repr__(self):
         # return '{0} ({1})'.format(self.album_title, self.artist_id.name)
-        return self.album_title
+        return f'{self.album_title} ({self.artist.name})'
 
 
 class Track(models.Model):
@@ -59,12 +58,13 @@ class Track(models.Model):
 
 
 class Channel(models.Model):
-    display_name = models.CharField(max_length=200, unique=True)
-    display_name_short = models.CharField(max_length=200, unique=True)
-    url = models.URLField(max_length=200, unique=True)
+    display_name = models.CharField(max_length=200, unique=True, null=False, blank=False)
+    display_name_short = models.CharField(max_length=200, unique=True, null=False, blank=False)
+    url = models.URLField(max_length=200, unique=True, null=False, blank=False)
     url_logo = models.URLField(max_length=200, unique=False, null=True, blank=True)
     is_enabled = models.BooleanField(default=True)
     last_played = models.BooleanField(default=False)
+    show_rds = models.BooleanField(default=True)
 
     def __str__(self):
         return self.display_name_short

@@ -244,7 +244,7 @@ j.turn_off()
             self.button_00X0_value = self.mode['buttons']['00X0']
             self.button_000X_value = self.mode['buttons']['000X']
 
-            bg = self.radio.layout.get_layout(labels=self.LABELS, cover=self.radio.cover, title=self.radio.stream_title)
+            bg = self.layout_radio.get_layout(labels=self.LABELS, cover=self.radio.cover, title=self.radio.stream_title)
             self.set_image(image=bg)
 
     def set_display_jukebox(self):
@@ -441,7 +441,13 @@ j.turn_off()
             except urllib.error.HTTPError as err:
                 bad_channel = self.inserted_media
                 LOG.exception(f'Could not open URL: {str(bad_channel)}')
-                raise
+                self.stop()
+                self.eject()
+                bad_channel.last_played = False
+                bad_channel.save()
+                self.mode = MODES['radio']['standby']
+                self.set_display_radio()
+                return
 
             if response.status == 200:
 
