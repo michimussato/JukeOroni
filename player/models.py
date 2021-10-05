@@ -57,7 +57,16 @@ class Track(models.Model):
         return self.audio_source
 
 
+class Station(models.Model):
+    display_name = models.CharField(max_length=200, unique=True, null=False, blank=False)
+    display_name_short = models.CharField(max_length=200, unique=True, null=False, blank=False)
+
+    def __str__(self):
+        return self.display_name_short
+
+
 class Channel(models.Model):
+    station = models.ForeignKey(Station, on_delete=models.PROTECT, null=True, blank=True)
     display_name = models.CharField(max_length=200, unique=True, null=False, blank=False)
     display_name_short = models.CharField(max_length=200, unique=True, null=False, blank=False)
     url = models.URLField(max_length=200, unique=True, null=False, blank=False)

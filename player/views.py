@@ -5,7 +5,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.views import View
 from player.jukeoroni.jukeoroni import JukeOroni
 from player.jukeoroni.juke_box import JukeboxTrack
-from player.models import Album, Channel
+from player.models import Album, Channel, Station
 from player.jukeoroni.settings import (
     _JUKEBOX_LOADING_IMAGE,
     MODES
@@ -196,19 +196,24 @@ class JukeOroniView(View):
     def radio_index(self):
         global jukeoroni
 
-        channels = Channel.objects.all().order_by('display_name')
+        stations = Station.objects.all().order_by('display_name')
+        # channels = Channel.objects.all().order_by('display_name')
 
         ret = '<html>\n'
         ret += '  <head>\n'
         ret += '    <meta http-equiv="refresh" content="10" >\n'
         ret += '  </head>\n'
         ret += '  <body>\n'
-        for channel in channels:
-            if channel.is_enabled:
-                if channel == jukeoroni.radio.is_on_air:
-                    ret += f'        <button style=\"width:100%; background-color:green; \" onclick=\"window.location.href = \'stop\';\">{channel.display_name}</button>\n'
-                else:
-                    ret += f'        <button style=\"width:100%\" onclick=\"window.location.href = \'{channel.display_name_short}/play\';\">{channel.display_name}</button>\n'
+        for station in stations:
+            channels = Channel.objects.filter(station=station).order_by('display_name')
+            if channels:
+                ret += f'<h2 style="text-align:center">{station.display_name}</h2>\n'
+            for channel in channels:
+                if channel.is_enabled:
+                    if channel == jukeoroni.radio.is_on_air:
+                        ret += f'        <button style=\"width:100%; background-color:green; \" onclick=\"window.location.href = \'stop\';\">{channel.display_name}</button>\n'
+                    else:
+                        ret += f'        <button style=\"width:100%\" onclick=\"window.location.href = \'{channel.display_name_short}/play\';\">{channel.display_name}</button>\n'
         ret += '  </body>\n'
         ret += '</html>\n'
         return HttpResponse(ret)
