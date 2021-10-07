@@ -197,13 +197,12 @@ class JukeOroniView(View):
         global jukeoroni
 
         stations = Station.objects.all().order_by('display_name')
-        # channels = Channel.objects.all().order_by('display_name')
 
         ret = '<html>\n'
-        ret += '  <head>\n'
-        ret += '    <meta http-equiv="refresh" content="10" >\n'
-        ret += '  </head>\n'
-        ret += '  <body>\n'
+        ret += '<head>\n'
+        ret += '<meta http-equiv="refresh" content="10" >\n'
+        ret += '</head>\n'
+        ret += '<body>\n'
         for station in stations:
             channels = Channel.objects.filter(station=station).order_by('display_name')
             if channels:
@@ -211,10 +210,10 @@ class JukeOroniView(View):
             for channel in channels:
                 if channel.is_enabled:
                     if channel == jukeoroni.radio.is_on_air:
-                        ret += f'        <button style=\"width:100%; background-color:green; \" onclick=\"window.location.href = \'stop\';\">{channel.display_name}</button>\n'
+                        ret += f'<button style=\"width:100%; background-color:green; \" onclick=\"window.location.href = \'stop\';\">{channel.display_name}</button>\n'
                     else:
-                        ret += f'        <button style=\"width:100%\" onclick=\"window.location.href = \'{channel.display_name_short}/play\';\">{channel.display_name}</button>\n'
-        ret += '  </body>\n'
+                        ret += f'<button style=\"width:100%\" onclick=\"window.location.href = \'{channel.display_name_short}/play\';\">{channel.display_name}</button>\n'
+        ret += '</body>\n'
         ret += '</html>\n'
         return HttpResponse(ret)
 

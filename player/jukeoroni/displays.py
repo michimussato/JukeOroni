@@ -1,4 +1,6 @@
 import logging
+import socket
+
 from PIL import Image, ImageDraw, ImageFont, ImageOps
 from player.jukeoroni.clock import Clock
 from player.jukeoroni.radar import Radar
@@ -152,6 +154,31 @@ class Standby(Layout):
             bg.paste(_radar_image, _radar_bottom_centered, mask=_radar_image)
 
         bg.paste(buttons_overlay, box=(0, 0), mask=buttons_overlay)
+
+        # host info
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        try:
+            s.connect(("8.8.8.8", 80))
+            ip = s.getsockname()[0]
+        except OSError:
+            ip = 'N/A'
+        finally:
+            s.close()
+
+        hostname = socket.gethostname()
+
+        host_info = f'{str(hostname)} ({str(ip)})'
+
+        font_size = 16
+        font = ImageFont.truetype(r'/data/django/jukeoroni/player/static/arial_narrow.ttf', size=font_size)
+        length = font.getlength(host_info)
+
+        widget_ip_overlay = Image.new(mode='RGBA', size=bg.size, color=(0, 0, 0, 128))
+        draw_ip = ImageDraw.Draw(widget_ip_overlay, mode='RGBA')
+
+        draw_ip.text((round(widget_ip_overlay.size[0] - length), 0), host_info, fill=(255, 255, 255, 255), font=font)
+
+        bg = Image.alpha_composite(bg, widget_ip_overlay)
 
         return bg
 
