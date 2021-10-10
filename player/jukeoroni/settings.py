@@ -47,10 +47,10 @@ MODES = {
             'numeric': 1.0,
             'name': 'standby',
             'buttons': {
-                # 'X000': 'Player',
-                'X000': 'N//A',
+                'X000': 'Player',
+                # 'X000': 'N//A',
                 '0X00': 'Radio',
-                '00X0': 'N//A',
+                '00X0': 'N//A',  # TODO Meditation
                 '000X': 'N//A',  # TODO cannot switch it back on after OFF
             },
         },

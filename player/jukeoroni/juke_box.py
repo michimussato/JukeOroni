@@ -4,6 +4,7 @@ import os
 import logging
 import random
 import shutil
+import signal
 import subprocess
 import tempfile
 import threading
@@ -66,6 +67,9 @@ class JukeboxTrack(object):
             self.cache()
 
     def __str__(self):
+        return f'{self.artist} - {self.album} - {self.track_title}'
+
+    def __repr__(self):
         return f'{self.artist} - {self.album} - {self.track_title}'
 
     @property
@@ -206,7 +210,7 @@ class JukeboxTrack(object):
             self.django_track.played += 1
             self.django_track.save()
             jukeoroni.playback_proc = subprocess.Popen(FFPLAY_CMD + [self.playing_from], shell=False)
-            jukeoroni.set_mode_jukebox()
+            # jukeoroni.set_mode_jukebox()
             try:
                 jukeoroni.playback_proc.communicate()
             except AttributeError:
@@ -285,7 +289,7 @@ box.turn_off()
         self.on = True
 
         self.track_list_generator_thread()
-        # self.track_loader_thread()
+        self.track_loader_thread()
 
     def turn_off(self):
         assert self.on, 'Jukebox is already off.'
@@ -487,8 +491,8 @@ box.turn_off()
 
     def _track_loader_task(self):
         while self.on:
-            LOG.debug(f'{len(self.tracks)} of {MAX_CACHED_FILES} tracks cached.')
-            LOG.debug(f'Loading process is active: {bool(self.loading_process)}')
+            LOG.debug(f'{len(self.tracks)} of {MAX_CACHED_FILES} tracks cached. Queue: {self.tracks}')
+            LOG.debug(f'Loading process active: {bool(self.loading_process)}')
 
             if len(self.tracks) + int(bool(self.loading_process)) < MAX_CACHED_FILES and not bool(self.loading_process):
                 next_track = self.get_next_track()
@@ -509,6 +513,15 @@ box.turn_off()
                 self.loading_process = multiprocessing.Process(target=self._load_track_task, kwargs={'track': next_track})
                 self.loading_process.name = 'Track Loader Task Process'
                 self.loading_process.start()
+                LOG.info(self.loading_process.pid)
+                LOG.info(self.loading_process.pid)
+                LOG.info(self.loading_process.pid)
+                LOG.info(self.loading_process.pid)
+                LOG.info(self.loading_process.pid)
+                LOG.info(self.loading_process.pid)
+                LOG.info(self.loading_process.pid)
+                LOG.info(self.loading_process.pid)
+                self.process_pid = self.loading_process.pid
 
                 while self.loading_process is not None and self.loading_queue.empty():
                     LOG.debug('waiting for queue...')
@@ -672,8 +685,14 @@ box.turn_off()
     def kill_loading_process(self):
         LOG.info('killing self.loading_process and resetting it to None')
         if self.loading_process is not None:
-            self.loading_process.terminate()
+            LOG.info('loading_process is active, trying to terminate and join...')
+            os.kill(self.process_pid, signal.SIGKILL)
+            # TODO try kill()
+            # self.loading_process.kill()  # SIGKILL
+            # self.loading_process.terminate()  # SIGTERM
+            LOG.info('loading_process terminated.')
             self.loading_process.join()
+            LOG.info('loading_process terminated and joined')
             # a process can be joined multiple times:
             # here: just wait for termination before proceeding
             # self.loading_process.join()
