@@ -174,7 +174,8 @@ class JukeboxTrack(object):
                 _size_cached = self.size_cached
 
                 LOG.info(f'{str(round(self.size_cached / (1024.0 * 1024.0), 3))} MB of {str(round(self.size / (1024.0 * 1024.0), 3))} MB loaded'
-                         f' ~({str(round(_gain / (1024.0 * 1024.0 * _interval), 3))} MB/s)')
+                         f' ~({str(round(_gain / (1024.0 * 1024.0 * _interval), 3))} MB/s)'
+                         f' ({self})')
 
             time.sleep(1.0)
             _waited += 1
@@ -250,6 +251,7 @@ box.turn_off()
         self.jukeoroni = jukeoroni
 
         self.layout = JukeboxLayout()
+        self._loading_display = False
 
         self.playing_track = None
         self.is_on_air = None
@@ -513,18 +515,18 @@ box.turn_off()
                 self.loading_process = multiprocessing.Process(target=self._load_track_task, kwargs={'track': next_track})
                 self.loading_process.name = 'Track Loader Task Process'
                 self.loading_process.start()
-                LOG.info(self.loading_process.pid)
-                LOG.info(self.loading_process.pid)
-                LOG.info(self.loading_process.pid)
-                LOG.info(self.loading_process.pid)
-                LOG.info(self.loading_process.pid)
-                LOG.info(self.loading_process.pid)
-                LOG.info(self.loading_process.pid)
-                LOG.info(self.loading_process.pid)
+                # LOG.info(self.loading_process.pid)
+                # LOG.info(self.loading_process.pid)
+                # LOG.info(self.loading_process.pid)
+                # LOG.info(self.loading_process.pid)
+                # LOG.info(self.loading_process.pid)
+                # LOG.info(self.loading_process.pid)
+                # LOG.info(self.loading_process.pid)
+                # LOG.info(self.loading_process.pid)
                 self.process_pid = self.loading_process.pid
 
                 while self.loading_process is not None and self.loading_queue.empty():
-                    LOG.debug('waiting for queue...')
+                    LOG.debug(f'waiting for queue ({len(self.tracks)} of {MAX_CACHED_FILES})...')
                     time.sleep(1.0)
 
                 if self.loading_process is not None:
@@ -686,10 +688,10 @@ box.turn_off()
         LOG.info('killing self.loading_process and resetting it to None')
         if self.loading_process is not None:
             LOG.info('loading_process is active, trying to terminate and join...')
-            os.kill(self.process_pid, signal.SIGKILL)
+            # os.kill(self.process_pid, signal.SIGKILL)
             # TODO try kill()
             # self.loading_process.kill()  # SIGKILL
-            # self.loading_process.terminate()  # SIGTERM
+            self.loading_process.terminate()  # SIGTERM
             LOG.info('loading_process terminated.')
             self.loading_process.join()
             LOG.info('loading_process terminated and joined')

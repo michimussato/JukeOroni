@@ -127,7 +127,7 @@ class Standby(Layout):
         comp_clock = Image.new(mode='RGBA', size=widget_clock.size)
 
         clock_size = self.main_size
-        _clock = self._clock.get_clock(size=clock_size, draw_logo=True, draw_date=True, hours=24, draw_astral=True)
+        _clock = self._clock.get_clock(size=clock_size, draw_logo=True, draw_moon=True, draw_date=True, hours=24, draw_astral=True)
 
         comp_clock = Image.alpha_composite(comp_clock, widget_clock)
         comp_clock = Image.alpha_composite(comp_clock, _clock)

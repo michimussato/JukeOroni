@@ -1,5 +1,9 @@
 import datetime
 import logging
+import math
+
+import astral.moon
+
 try:
     from jukeoroni.settings import TIME_ZONE
     tz = TIME_ZONE
@@ -22,7 +26,7 @@ ANTIALIAS = 1  # Warning: can slow down calculation drastically
 class Clock:
 
     @staticmethod
-    def get_clock(draw_logo, draw_date, size=448, hours=12, draw_astral=False, square=False):
+    def get_clock(draw_logo, draw_date, size=448, hours=12, draw_astral=False, draw_moon=False, square=False):
 
         _size = size * ANTIALIAS
 
@@ -68,6 +72,44 @@ class Clock:
             width_astral = round(_size * _width)
             draw.arc(size_astral, start=arc_length_sunrise+arc_twelve, end=arc_length_sunset+arc_twelve, fill=color,
                      width=width_astral)
+
+        LOG.info(f'Moon phase: {round(float(astral.moon.phase()))} / 28')
+        if draw_moon:
+            fill = (255, 0, 0, 255)
+            _moon = Image.new(mode='RGBA', size=(_size, _size), color=(0, 0, 0, 0))
+            _draw_moon = ImageDraw.Draw(_moon)
+            _draw_moon.ellipse((0, 0, _size, _size), fill=fill)
+            phase = round(float(astral.moon.phase()) / 28.0 * 2, 4)
+
+            spherical = math.cos(phase * math.pi)
+            # print(spherical)
+
+            center = _size / 2
+
+            if 0.0 <= phase <= 0.5:  # new to half moon
+                _draw_moon.rectangle((0, 0, _size / 2, _size), fill=(0, 0, 0, 0))
+
+                _draw_moon.ellipse((center - (spherical * center), 0, center + (spherical * center), _size),
+                             fill=(0, 0, 0, 0))
+            # elif phase == 0.5:  # half moon
+            # 	draw.rectangle((0, 0, _size/2, _size), fill=(0, 0, 0, 0))
+            elif 0.5 <= phase <= 1.0:  # half to full moon
+                _draw_moon.rectangle((0, 0, _size / 2, _size), fill=(0, 0, 0, 0))
+                _draw_moon.ellipse((center + (spherical * center), 0, center - (spherical * center), _size),
+                             fill=fill)
+            # elif phase == 1.0:  # full moon
+            # 	pass
+            elif 1.0 < phase <= 1.5:  # full to half moon
+                _draw_moon.rectangle((_size / 2, 0, _size, _size), fill=(0, 0, 0, 0))
+                _draw_moon.ellipse((center + (spherical * center), 0, center - (spherical * center), _size),
+                             fill=fill)
+            # draw.ellipse(((phase-0.5)*2*_size, 0, _size-((phase-0.5)*2*_size), _size), fill=(255, 255, 255, 255))
+            # elif phase == 0.75:  # half moon
+            # 	draw.rectangle((_size/2, 0, _size, _size), fill=(0, 0, 0, 0))
+            elif 1.5 < phase <= 2.0:  # half to new moon
+                _draw_moon.rectangle((_size / 2, 0, _size, _size), fill=(0, 0, 0, 0))
+                _draw_moon.ellipse((center - (spherical * center), 0, center + (spherical * center), _size),
+                             fill=(0, 0, 0, 0))
 
         # center dot
         draw.ellipse([(round(_size * 0.482), round(_size * 0.482)), (round(_size - _size * 0.482), round(_size - _size * 0.482))], fill=white, outline=None, width=round(_size * 0.312))
@@ -146,6 +188,8 @@ class Clock:
         comp = Image.new(mode='RGBA', size=(_size, _size))
         comp = Image.alpha_composite(comp, bg)
         comp = Image.alpha_composite(comp, _clock)
+        if draw_moon:
+            comp = Image.alpha_composite(comp, _moon)
         comp = comp.rotate(90, expand=False)
 
         comp = comp.resize((round(_size/ANTIALIAS), round(_size/ANTIALIAS)), Image.ANTIALIAS)

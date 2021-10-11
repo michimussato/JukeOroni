@@ -35,6 +35,7 @@ _BUTTON_PINS = [5, 6, 16, 24]
 _BUTTON_MAPPINGS = ['000X', '00X0', '0X00', 'X000']
 
 
+GPIO.setwarnings(True)
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(_BUTTON_PINS, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
@@ -113,6 +114,8 @@ j.turn_off()
         self.button_00X0_value = None
         self.button_000X_value = None
 
+        self._flag_next = False
+
         self.pimoroni = Inky()
 
         self._current_time = None
@@ -122,6 +125,7 @@ j.turn_off()
         self.layout_off = OffLayout()
         self.layout_standby = StandbyLayout()
         self.layout_radio = self.radio.layout
+        self._loading_display_activated = False
         # self.layout_jukebox = PlayerLayout()
 
         self._pimoroni_thread_queue = None
@@ -280,104 +284,212 @@ j.turn_off()
     def state_watcher_task(self):
         # assert self.jukebox.on, 'turn on jukebox before initiating state_watcher_task'
         radio_media_info_title_previous = None
+
+        previous_mode = None
+        # display_loading = False
+
         while True:
 
-            new_time = localtime(now())
-            # radio_media_info_title_previous = None
-            # if self.mode == MODES['jukeoroni']['standby']:
+            if self._flag_next:
+                self.next()
+                self._flag_next = False
+                self.set_display_jukebox()
+
+            if previous_mode == self.mode:
+                if self.mode == MODES['jukebox']['on_air'][self.jukebox.loader_mode]:
+                    # make sure, jukebox keeps playing
+                    LOG.info(f'Playing: {self.jukebox.playing_track}')
+                    self.play_jukebox()
+                time.sleep(1.0)
+                LOG.debug('Mode not changed')
+                continue
+            else:
+                LOG.info('Mode changed')
+                previous_mode = self.mode
+                LOG.debug(self.mode)
+
+            if self.mode == MODES['jukeoroni']['standby']:
+                self.set_display_standby()
+            elif self.mode == MODES['radio']['standby']:
+                self.stop()
+                self.set_display_radio()
+            elif self.mode == MODES['radio']['on_air']:
+                if self.inserted_media is None:
+                    if self.radio.last_played is None:
+                        self.insert(media=self.radio.random_channel)
+                    else:
+                        self.insert(media=self.radio.last_played)
+                self.play()
+            elif self.mode == MODES['jukebox']['standby']['random']:
+                self.stop()
+                self.eject()
+                if self.jukebox.loader_mode != 'random':
+                    self.jukebox.set_loader_mode_random()
+                self.set_display_jukebox()
+            elif self.mode == MODES['jukebox']['standby']['album']:
+                self.stop()
+                self.eject()
+                if self.jukebox.loader_mode != 'album':
+                    self.jukebox.set_loader_mode_album()
+                self.set_display_jukebox()
+            elif self.mode == MODES['jukebox']['on_air']['random']:
+                if self.jukebox.loader_mode != 'random':
+                    self.jukebox.set_loader_mode_random()
+                # self.play()
+                self.play_jukebox()
+                # LOG.info(f'Playing: {self.jukebox.playing_track}')
+                # self.set_display_jukebox()
+            elif self.mode == MODES['jukebox']['on_air']['album']:
+                if self.jukebox.loader_mode != 'album':
+                    self.jukebox.set_loader_mode_album()
+                self.play_jukebox()
+                # LOG.info(f'Playing: {self.jukebox.playing_track}')
+                # self.set_display_jukebox()
+
+    def play_jukebox(self):
+        if not bool(self.jukebox.tracks) and self.playback_proc is None:
+            LOG.info('No tracks ready')
+            if self.jukebox.loading_process is not None:
+                LOG.info('Loading 1st track...')
+                if not self._loading_display_activated:
+                    self.set_display_jukebox()
+                    self._loading_display_activated = True
+            else:
+                LOG.warning('Not loading!!!')
+            # print('no tracks ready')
+            return
+
+        self._loading_display_activated = False
+
+        if self.inserted_media is None:  # and bool(self.jukebox.tracks):
+            # try:
+            self.insert(self.jukebox.next_track)
+            # except AssertionError:
+            #     LOG.exception('No JukeBox track ready yet.')
+
+        # TODO implement Play/Next combo
+        if self.playback_proc is None and isinstance(self.inserted_media, JukeboxTrack):
+            LOG.debug('Starting new playback thread')
+            self.jukebox_playback_thread()
+            self.set_display_jukebox()
+            # setting the timer for the display
+            # update to zero after a new track
+            # started
+            # new_time = localtime(now())
+        elif self.playback_proc is not None:
+            LOG.debug('Playback thread playback_proc is not None')
+            if self.playback_proc.poll() == 0:
+                LOG.debug('Jukebox playback not active, setting playback_proc to None.')
+                # process finished. join()?
+                self.playback_proc = None
+                self.set_display_jukebox()
+            elif self.playback_proc.poll() is None:
+                LOG.debug('Jukebox playback active.')
+                # still playing
+                pass
+
+            # if self._current_time != new_time.strftime('%H:%M'):  # in stopped state
+            #     if self._current_time is None or (int(new_time.strftime('%H:%M')[-2:])) % CLOCK_UPDATE_INTERVAL == 0:
+            #         LOG.info('Display/Clock update.')
+            #         self.set_display_jukebox()
+            #         self._current_time = new_time.strftime('%H:%M')
+
+            # new_time = localtime(now())
+            # # radio_media_info_title_previous = None
+            # # if self.mode == MODES['jukeoroni']['standby']:
+            # #     if self._current_time != new_time.strftime('%H:%M'):  # in stopped state
+            # #         if self._current_time is None or (int(new_time.strftime('%H:%M')[-2:])) % CLOCK_UPDATE_INTERVAL == 0:
+            # #             LOG.info('Display/Clock update.')
+            # #             self.set_image()
+            # #             self._current_time = new_time.strftime('%H:%M')
+            #
+            # # _msg_printed = False
+            # # while not self.jukebox.tracks and self.inserted_media is None:
+            # #     if not _msg_printed:
+            # #         LOG.info('waiting for a jukebox track...')
+            # #         # if self.mode == MODES['jukebox']['standby'] \
+            # #         #         or self.mode == MODES['jukebox']['on_air']:
+            # #         #     self.set_display_jukebox()
+            # #
+            # #         _msg_printed = True
+            # #
+            # #     time.sleep(1.0)
+            # # if _msg_printed:
+            # #     LOG.info('jukebox track loaded.')
+            # #     _msg_printed = False
+            #
+            # if self.mode == MODES['jukebox']['standby']['random'] \
+            #         or self.mode == MODES['jukebox']['standby']['album'] \
+            #         or self.mode == MODES['jukebox']['on_air']['random'] \
+            #         or self.mode == MODES['jukebox']['on_air']['album']:
+            #     if self.inserted_media is None and bool(self.jukebox.tracks):
+            #         # try:
+            #         self.insert(self.jukebox.next_track)
+            #         # except AssertionError:
+            #         #     LOG.exception('No JukeBox track ready yet.')
+            #
+            # else:
+            #     if isinstance(self.inserted_media, JukeboxTrack):
+            #         self.eject()
+            #
+            # if self.mode == MODES['jukebox']['standby']['random'] \
+            #         or self.mode == MODES['jukebox']['standby']['album']:
+            #     if self._current_time != new_time.strftime('%H:%M'):
+            #         if self._current_time is None or (int(new_time.strftime('%H:%M')[-2:])) % CLOCK_UPDATE_INTERVAL == 0:
+            #             LOG.info('Display/Clock update.')
+            #             self.set_display_jukebox()
+            #             self._current_time = new_time.strftime('%H:%M')
+            #
+            # elif self.mode == MODES['jukebox']['on_air']['random'] \
+            #         or self.mode == MODES['jukebox']['on_air']['album']:
+            #
+            #     # TODO implement Play/Next combo
+            #     if self.playback_proc is None and isinstance(self.inserted_media, JukeboxTrack):
+            #         LOG.debug('Starting new playback thread')
+            #         self.jukebox_playback_thread()
+            #         # setting the timer for the display
+            #         # update to zero after a new track
+            #         # started
+            #         new_time = localtime(now())
+            #     elif self.playback_proc is not None:
+            #         LOG.debug('Playback thread playback_proc is not None')
+            #         if self.playback_proc.poll() == 0:
+            #             LOG.debug('Jukebox playback not active, setting playback_proc to None.')
+            #             # process finished. join()?
+            #             self.playback_proc = None
+            #         elif self.playback_proc.poll() is None:
+            #             LOG.debug('Jukebox playback active.')
+            #             # still playing
+            #             pass
+            #
+            #     if self._current_time != new_time.strftime('%H:%M'):  # in stopped state
+            #         if self._current_time is None or (int(new_time.strftime('%H:%M')[-2:])) % CLOCK_UPDATE_INTERVAL == 0:
+            #             LOG.info('Display/Clock update.')
+            #             self.set_display_jukebox()
+            #             self._current_time = new_time.strftime('%H:%M')
+            #
+            # # refresh radio display to updated clock, stream_title and radar
+            # elif self.mode == MODES['radio']['standby'] \
+            #         or self.mode == MODES['radio']['on_air']:
+            #     if self._current_time != new_time.strftime('%H:%M'):  # in stopped state
+            #         if self._current_time is None \
+            #                 or (int(new_time.strftime('%H:%M')[-2:])) % CLOCK_UPDATE_INTERVAL == 0 \
+            #                 or radio_media_info_title_previous != self.radio.stream_title:
+            #             if radio_media_info_title_previous != self.radio.stream_title:
+            #                 LOG.info('Stream info changed...')
+            #                 LOG.info(f'Before: {radio_media_info_title_previous}')
+            #                 LOG.info(f'New: {self.radio.stream_title}')
+            #             LOG.info('Display/Clock/Stream-Title update.')
+            #             self.set_display_radio()
+            #             radio_media_info_title_previous = self.radio.stream_title
+            #             self._current_time = new_time.strftime('%H:%M')
+            #
+            # elif self.mode == MODES['jukeoroni']['standby']:
             #     if self._current_time != new_time.strftime('%H:%M'):  # in stopped state
             #         if self._current_time is None or (int(new_time.strftime('%H:%M')[-2:])) % CLOCK_UPDATE_INTERVAL == 0:
             #             LOG.info('Display/Clock update.')
             #             self.set_image()
             #             self._current_time = new_time.strftime('%H:%M')
-
-            # _msg_printed = False
-            # while not self.jukebox.tracks and self.inserted_media is None:
-            #     if not _msg_printed:
-            #         LOG.info('waiting for a jukebox track...')
-            #         # if self.mode == MODES['jukebox']['standby'] \
-            #         #         or self.mode == MODES['jukebox']['on_air']:
-            #         #     self.set_display_jukebox()
-            #
-            #         _msg_printed = True
-            #
-            #     time.sleep(1.0)
-            # if _msg_printed:
-            #     LOG.info('jukebox track loaded.')
-            #     _msg_printed = False
-
-            if self.mode == MODES['jukebox']['standby']['random'] \
-                    or self.mode == MODES['jukebox']['standby']['album'] \
-                    or self.mode == MODES['jukebox']['on_air']['random'] \
-                    or self.mode == MODES['jukebox']['on_air']['album']:
-                if self.inserted_media is None and bool(self.jukebox.tracks):
-                    # try:
-                    self.insert(self.jukebox.next_track)
-                    # except AssertionError:
-                    #     LOG.exception('No JukeBox track ready yet.')
-
-            else:
-                if isinstance(self.inserted_media, JukeboxTrack):
-                    self.eject()
-
-            if self.mode == MODES['jukebox']['standby']['random'] \
-                    or self.mode == MODES['jukebox']['standby']['album']:
-                if self._current_time != new_time.strftime('%H:%M'):
-                    if self._current_time is None or (int(new_time.strftime('%H:%M')[-2:])) % CLOCK_UPDATE_INTERVAL == 0:
-                        LOG.info('Display/Clock update.')
-                        self.set_display_jukebox()
-                        self._current_time = new_time.strftime('%H:%M')
-
-            elif self.mode == MODES['jukebox']['on_air']['random'] \
-                    or self.mode == MODES['jukebox']['on_air']['album']:
-
-                # TODO implement Play/Next combo
-                if self.playback_proc is None and isinstance(self.inserted_media, JukeboxTrack):
-                    LOG.debug('Starting new playback thread')
-                    self.jukebox_playback_thread()
-                    # setting the timer for the display
-                    # update to zero after a new track
-                    # started
-                    new_time = localtime(now())
-                elif self.playback_proc is not None:
-                    LOG.debug('Playback thread playback_proc is not None')
-                    if self.playback_proc.poll() == 0:
-                        LOG.debug('Jukebox playback not active, setting playback_proc to None.')
-                        # process finished. join()?
-                        self.playback_proc = None
-                    elif self.playback_proc.poll() is None:
-                        LOG.debug('Jukebox playback active.')
-                        # still playing
-                        pass
-
-                if self._current_time != new_time.strftime('%H:%M'):  # in stopped state
-                    if self._current_time is None or (int(new_time.strftime('%H:%M')[-2:])) % CLOCK_UPDATE_INTERVAL == 0:
-                        LOG.info('Display/Clock update.')
-                        self.set_display_jukebox()
-                        self._current_time = new_time.strftime('%H:%M')
-
-            # refresh radio display to updated clock, stream_title and radar
-            elif self.mode == MODES['radio']['standby'] \
-                    or self.mode == MODES['radio']['on_air']:
-                if self._current_time != new_time.strftime('%H:%M'):  # in stopped state
-                    if self._current_time is None \
-                            or (int(new_time.strftime('%H:%M')[-2:])) % CLOCK_UPDATE_INTERVAL == 0 \
-                            or radio_media_info_title_previous != self.radio.stream_title:
-                        if radio_media_info_title_previous != self.radio.stream_title:
-                            LOG.info('Stream info changed...')
-                            LOG.info(f'Before: {radio_media_info_title_previous}')
-                            LOG.info(f'New: {self.radio.stream_title}')
-                        LOG.info('Display/Clock/Stream-Title update.')
-                        self.set_display_radio()
-                        radio_media_info_title_previous = self.radio.stream_title
-                        self._current_time = new_time.strftime('%H:%M')
-
-            elif self.mode == MODES['jukeoroni']['standby']:
-                if self._current_time != new_time.strftime('%H:%M'):  # in stopped state
-                    if self._current_time is None or (int(new_time.strftime('%H:%M')[-2:])) % CLOCK_UPDATE_INTERVAL == 0:
-                        LOG.info('Display/Clock update.')
-                        self.set_image()
-                        self._current_time = new_time.strftime('%H:%M')
 
             time.sleep(1.0)
 
@@ -388,7 +500,7 @@ j.turn_off()
         self._playback_thread.name = 'Playback Thread'
         self._playback_thread.daemon = False
         self._playback_thread.start()
-        self.set_display_jukebox()
+        # self.set_display_jukebox()
 
     def _playback_task(self):
         LOG.info(f'starting playback thread: for {self.inserted_media.path} from {self.inserted_media.playing_from}')  # TODO add info
@@ -400,6 +512,7 @@ j.turn_off()
         self._playback_thread = None
         self._jukebox_playback_thread = None
         self.playback_proc = None
+        # self.mode = MODES['jukebox']['standby'][self.jukebox.loader_mode]
 
         # cleanup
         # self._playback_thread.close()
@@ -489,14 +602,14 @@ j.turn_off()
                 LOG.error(f'Channel stream return code is not 200: {str(response.status)}')
                 raise Exception(f'Channel stream return code is not 200: {str(response.status)}')
 
-        elif self.mode == MODES['jukebox']['standby']['random'] \
-                or self.mode == MODES['jukebox']['standby']['album'] \
-                or self.mode == MODES['jukebox']['on_air']['random'] \
-                or self.mode == MODES['jukebox']['on_air']['album']:
+        # elif self.mode == MODES['jukebox']['standby']['random'] \
+        #         or self.mode == MODES['jukebox']['standby']['album'] \
+        #         or self.mode == MODES['jukebox']['on_air']['random'] \
+        #         or self.mode == MODES['jukebox']['on_air']['album']:
 
-            LOG.info('setting jukebox mode to on_air')
-            self.mode = MODES['jukebox']['on_air'][self.jukebox.loader_mode]
-            self.set_display_jukebox()
+            # LOG.info('setting jukebox mode to on_air')
+            # self.mode = MODES['jukebox']['on_air'][self.jukebox.loader_mode]
+            # self.set_display_jukebox()
 
     # def pause(self):
     #     assert self.inserted_media is not None, 'no media inserted. insert media first.'
@@ -538,9 +651,9 @@ j.turn_off()
         # track was inserted yet; could be still loading
         elif isinstance(self.inserted_media, JukeboxTrack) \
                 or self.mode == MODES['jukebox']['on_air'][self.jukebox.loader_mode]:
-            self.mode = MODES['jukebox']['standby'][self.jukebox.loader_mode]
+            # self.mode = MODES['jukebox']['standby'][self.jukebox.loader_mode]
             self.playback_proc = None
-            self.set_display_jukebox()
+            # self.set_display_jukebox()
 
     def next(self, media=None):
         assert self.inserted_media is not None, 'Can only go to next if media is inserted.'
@@ -774,100 +887,51 @@ j.turn_off()
     ############################################
 
     ############################################
-    # buttons_watcher_thread
+    # # buttons_watcher_thread
     # def buttons_watcher_thread(self):
     #     self._buttons_watcher_thread = threading.Thread(target=self._init_buttons_watcher_task)
     #     self._buttons_watcher_thread.name = 'Buttons Watcher Thread'
     #     self._buttons_watcher_thread.daemon = False
     #     self._buttons_watcher_thread.start()
 
+    def buttons_watcher_thread(self):
     # def buttons_watcher_thread(self):
-    # # def buttons_watcher_thread(self):
-    #     for pin in _BUTTON_PINS:
-    #         # print(type(pin))
-    #         # print(pin)
-    #         GPIO.add_event_detect(pin, GPIO.FALLING)
-    #     # signal.pause()
-    #     self._init_buttons_watcher_task()
-
-    # def cleanup_event_detect(self):
-    #     GPIO.remove_event_detect(24)
-    #     GPIO.remove_event_detect(16)
-    #     GPIO.remove_event_detect(6)
-    #     GPIO.remove_event_detect(5)
+        for pin in _BUTTON_PINS:
+            # print(type(pin))
+            # print(pin)
+            # the callback function starts a new thread in the background
+            GPIO.add_event_detect(pin, GPIO.FALLING, self._handle_button, bouncetime=500)
+            # GPIO.remove_callbacks(pin)
+        # signal.pause()
 
     # def _init_buttons_watcher_task(self):
-    def buttons_watcher_thread(self):
-        # # 16
-        # # GPIO.add_event_callback(24, self._OXXX_goto_player)
-        # GPIO.add_event_callback(24, self._print_1)
-        # GPIO.add_event_callback(16, self._button_ignore)
-        # GPIO.add_event_callback(6, self._button_ignore)
-        # GPIO.add_event_callback(5, self._button_ignore)
-        # # GPIO.add_event_detect(16, self._XOXX_goto_radio)
-        # # signal.pause()
-        GPIO.add_event_detect(24, GPIO.FALLING, self._OXXX_goto_player, bouncetime=250)
-        # GPIO.add_event_detect(16, GPIO.FALLING, self._button_ignore, bouncetime=250)
-        # GPIO.add_event_detect(6, GPIO.FALLING, self._button_ignore, bouncetime=250)
-        # GPIO.add_event_detect(5, GPIO.FALLING, self._button_ignore, bouncetime=250)
-        # GPIO.add_event_detect(pin, GPIO.FALLING, self._handle_button, bouncetime=250)
-
-    # def _print_1(self, pin):
-    #     GPIO.remove_event_detect(24)
-    #     GPIO.remove_event_detect(16)
-    #     GPIO.remove_event_detect(6)
-    #     GPIO.remove_event_detect(5)
-    #     print(1)
-    #     GPIO.add_event_detect(24, GPIO.FALLING, self._print_2, bouncetime=250)
-    #     GPIO.add_event_detect(16, GPIO.FALLING, self._button_ignore, bouncetime=250)
-    #     GPIO.add_event_detect(6, GPIO.FALLING, self._button_ignore, bouncetime=250)
-    #     GPIO.add_event_detect(5, GPIO.FALLING, self._button_ignore, bouncetime=250)
-    #     # GPIO.add_event_callback(24, self._print_2)
-    #     # signal.pause()
-
-    # def _print_2(self, pin):
-    #     GPIO.remove_event_detect(24)
-    #     GPIO.remove_event_detect(16)
-    #     GPIO.remove_event_detect(6)
-    #     GPIO.remove_event_detect(5)
-    #     print(2)
+    #     # 16
+    #     GPIO.add_event_detect(24, GPIO.FALLING, self._OXXX_goto_player, bouncetime=1000)
+    #     GPIO.add_event_detect(16, GPIO.FALLING, self._XOXX_goto_radio, bouncetime=1000)
 
     # def clear_event_detect(self):
     #     GPIO.remove_event_detect(24)
     #     GPIO.remove_event_detect(16)
 
-    def _OXXX_goto_player(self, pin):
-        # self.cleanup_event_detect()
-        GPIO.remove_event_detect(24)
-        # GPIO.remove_event_detect(16)
-        # GPIO.remove_event_detect(6)
-        # GPIO.remove_event_detect(5)
-        # GPIO.remove_event_detect(24)
-        # GPIO.remove_event_detect(16)
-        self.mode = MODES['jukebox']['standby'][self.jukebox.loader_mode]
-        self.set_display_jukebox()
-        # GPIO.add_event_callback(24, self._OXXX_set_standby)
-        # GPIO.add_event_callback(24, self._button_ignore)
-        # GPIO.add_event_callback(16, self._XOXX_jukebox_play)
-        # GPIO.add_event_callback(6, self._button_ignore)
-        # GPIO.add_event_callback(5, self._button_ignore)
-
-        # GPIO.add_event_detect(24, GPIO.FALLING, self._button_ignore, bouncetime=250)
-        GPIO.add_event_detect(16, GPIO.FALLING, self._XOXX_jukebox_play, bouncetime=250)
-        # GPIO.add_event_detect(6, GPIO.FALLING, self._button_ignore, bouncetime=250)
-        # GPIO.add_event_detect(5, GPIO.FALLING, self._button_ignore, bouncetime=250)
+    # def _OXXX_goto_player(self, pin):
+    #     GPIO.remove_event_detect(24)
+    #     GPIO.remove_event_detect(16)
+    #     self.mode = MODES['jukebox']['standby'][self.jukebox.loader_mode]
+    #     self.set_display_jukebox()
+    #     GPIO.add_event_detect(24, GPIO.FALLING, self._OXXX_set_standby, bouncetime=1000)
+    #     GPIO.add_event_detect(16, GPIO.FALLING, self._XOXX_jukebox_play, bouncetime=1000)
 
     # def _OXXX_set_standby(self, pin):
-    #     # GPIO.remove_event_detect(24)
-    #     # GPIO.remove_event_detect(16)
+    #     GPIO.remove_event_detect(24)
+    #     GPIO.remove_event_detect(16)
     #     self.eject()
     #     self.set_mode_standby()
 
     # def _XOXX_goto_radio(self, pin):
-    #     # GPIO.remove_event_detect(16)
+    #     GPIO.remove_event_detect(16)
     #     self.mode = MODES['radio']['standby']
     #     self.set_display_radio()
-    #     GPIO.add_event_detect(16, self._radio_play)
+    #     GPIO.add_event_detect(16, GPIO.FALLING, self._radio_play, bouncetime=1000)
 
     # def _radio(self, pin):
     #     GPIO.remove_event_detect(16)
@@ -884,174 +948,157 @@ j.turn_off()
     #     self.mode = MODES['radio']['on_air']
     #     self.play()
 
-    def _XOXX_jukebox_play(self, pin):
-        # self.cleanup_event_detect()
-        # GPIO.remove_event_detect(24)
-        GPIO.remove_event_detect(16)
-        # GPIO.remove_event_detect(6)
-        # GPIO.remove_event_detect(5)
-        self.play()
-        # # GPIO.add_event_callback(24, self._OXXX_jukebox_stop)
-        # # GPIO.add_event_callback(16, self._XOXX_jukebox_next)
-        # GPIO.add_event_callback(24, self._button_ignore)
-        # GPIO.add_event_callback(16, self._button_ignore)
-        # GPIO.add_event_callback(6, self._button_ignore)
-        # GPIO.add_event_callback(5, self._button_ignore)
-        # GPIO.add_event_detect(24, GPIO.FALLING, self._button_ignore, bouncetime=250)
-        # GPIO.add_event_detect(16, GPIO.FALLING, self._button_ignore, bouncetime=250)
-        # GPIO.add_event_detect(6, GPIO.FALLING, self._button_ignore, bouncetime=250)
-        # GPIO.add_event_detect(5, GPIO.FALLING, self._button_ignore, bouncetime=250)
+    # def _XOXX_jukebox_play(self, pin):
+    #     self.play()
 
-    # def _OXXX_jukebox_stop(self, pin):
-    #     self.stop()
-    #     self._OXXX_goto_player()
-    #     # GPIO.add_event_callback(24, self._button_ignore)
-    #     # GPIO.add_event_callback(16, self._button_ignore)
-    #     # GPIO.add_event_callback(6, self._button_ignore)
-    #     # GPIO.add_event_callback(5, self._button_ignore)
+    def _handle_button(self, pin):
+        # print(args)
+        # print(kwargs)
+        # return
+        button = _BUTTON_PINS.index(pin)
+        button_mapped = _BUTTON_MAPPINGS[button]
+        LOG.info(f'Button press detected on pin: {pin} button: {button_mapped} ({button}), label: {self.LABELS[_BUTTON_PINS.index(pin)]}')
 
-    # def _button_ignore(self, pin):
-    #     pass
+        # JukeOroni
+        if self.mode == MODES['jukeoroni']['off']:
+            if button_mapped == 'X000':
+                return
+            elif button_mapped == '0X00':
+                return
+            elif button_mapped == '00X0':
+                return
+            elif button_mapped == '000X':
+                return
+            return
+        elif self.mode == MODES['jukeoroni']['standby']:
+            if button_mapped == 'X000':
+                # pass
+                self.mode = MODES['jukebox']['standby'][self.jukebox.loader_mode]
+                # # self.mode = MODES['jukebox']['on_air'][self.jukebox.loader_mode]
+                # self.set_display_jukebox()
+                # # self.set_mode_jukebox()
+                return
+            elif button_mapped == '0X00':
+                self.mode = MODES['radio']['standby']
+                # self.set_display_radio()
+                # # self.set_mode_radio()
+                return
+            elif button_mapped == '00X0':
+                return
+            elif button_mapped == '000X':
+                return
+            return
 
-    # def _handle_button(self, *args, **kwargs):
-    #     print(args)
-    #     print(kwargs)
-    #     return
-    #     button = _BUTTON_PINS.index(pin)
-    #     button_mapped = _BUTTON_MAPPINGS[button]
-    #     LOG.info(f'Button press detected on pin: {pin} button: {button_mapped} ({button}), label: {self.LABELS[_BUTTON_PINS.index(pin)]}')
-    #
-    #     # JukeOroni
-    #     if self.mode == MODES['jukeoroni']['off']:
-    #         if button_mapped == 'X000':
-    #             return
-    #         elif button_mapped == '0X00':
-    #             return
-    #         elif button_mapped == '00X0':
-    #             return
-    #         elif button_mapped == '000X':
-    #             return
-    #         return
-    #     elif self.mode == MODES['jukeoroni']['standby']:
-    #         if button_mapped == 'X000':
-    #             # pass
-    #             self.mode = MODES['jukebox']['standby'][self.jukebox.loader_mode]
-    #             # self.mode = MODES['jukebox']['on_air'][self.jukebox.loader_mode]
-    #             self.set_display_jukebox()
-    #             # self.set_mode_jukebox()
-    #             return
-    #         elif button_mapped == '0X00':
-    #             self.mode = MODES['radio']['standby']
-    #             self.set_display_radio()
-    #             # self.set_mode_radio()
-    #             return
-    #         elif button_mapped == '00X0':
-    #             return
-    #         elif button_mapped == '000X':
-    #             return
-    #         return
-    #
-    #     # Radio
-    #     # TODO: pause/resume
-    #     elif self.mode == MODES['radio']['standby']:
-    #         if button_mapped == 'X000':
-    #             self.eject()
-    #             self.set_mode_standby()
-    #             return
-    #         elif button_mapped == '0X00':
-    #             if self.inserted_media is None:
-    #                 if self.radio.last_played is None:
-    #                     self.insert(media=self.radio.random_channel)
-    #                 else:
-    #                     self.insert(media=self.radio.last_played)
-    #             self.mode = MODES['radio']['on_air']
-    #             self.play()
-    #             return
-    #         elif button_mapped == '00X0':
-    #             return
-    #         elif button_mapped == '000X':
-    #             return
-    #         return
-    #     elif self.mode == MODES['radio']['on_air']:
-    #         if button_mapped == 'X000':
-    #             self.mode = MODES['radio']['standby']
-    #             self.stop()
-    #             return
-    #         elif button_mapped == '0X00':
-    #             self.next()
-    #             return
-    #         elif button_mapped == '00X0':
-    #             return
-    #         elif button_mapped == '000X':
-    #             return
-    #         return
-    #
-    #     # Jukebox
-    #     # TODO: pause/resume
-    #     elif self.mode == MODES['jukebox']['standby']['random']:
-    #         if button_mapped == 'X000':
-    #             self.eject()
-    #             self.set_mode_standby()
-    #             return
-    #         elif button_mapped == '0X00':
-    #             self.play()
-    #             return
-    #         elif button_mapped == '00X0':
-    #             return
-    #         elif button_mapped == '000X':
-    #             self.jukebox.set_loader_mode_album()
-    #             # self.mode = MODES['jukebox']['standby'][self.jukebox.loader_mode]
-    #             self.mode = MODES['jukebox']['standby']['album']
-    #             return
-    #         return
-    #     elif self.mode == MODES['jukebox']['standby']['album']:
-    #         if button_mapped == 'X000':
-    #             self.set_mode_standby()
-    #             return
-    #         elif button_mapped == '0X00':
-    #             self.play()
-    #             return
-    #         elif button_mapped == '00X0':
-    #             return
-    #         elif button_mapped == '000X':
-    #             self.jukebox.set_loader_mode_random()
-    #             # self.mode = MODES['jukebox']['standby'][self.jukebox.loader_mode]
-    #             self.mode = MODES['jukebox']['standby']['random']
-    #             return
-    #         return
-    #
-    #     elif self.mode == MODES['jukebox']['on_air']['random']:
-    #         if button_mapped == 'X000':
-    #             self.stop()
-    #             return
-    #             # self.set_mode_jukebox()
-    #             # self.mode == MODES['jukebox']['standby']['album']
-    #         elif button_mapped == '0X00':
-    #             self.next()
-    #             return
-    #         elif button_mapped == '00X0':
-    #             return
-    #         elif button_mapped == '000X':
-    #             self.jukebox.set_loader_mode_album()
-    #             self.mode = MODES['jukebox']['on_air']['album']
-    #             # self.set_mode_jukebox()
-    #             return
-    #         return
-    #     elif self.mode == MODES['jukebox']['on_air']['album']:
-    #         if button_mapped == 'X000':
-    #             self.stop()
-    #             return
-    #             # self.set_mode_jukebox()
-    #         elif button_mapped == '0X00':
-    #             self.next()
-    #             return
-    #         elif button_mapped == '00X0':
-    #             return
-    #         elif button_mapped == '000X':
-    #             self.jukebox.set_loader_mode_random()
-    #             self.mode = MODES['jukebox']['on_air']['random']
-    #             # self.set_mode_jukebox()
-    #             return
-    #         return
-    #     return
+        # Radio
+        # TODO: pause/resume
+        elif self.mode == MODES['radio']['standby']:
+            if button_mapped == 'X000':
+                # self.eject()
+                # self.set_mode_standby()
+                self.mode = MODES['jukeoroni']['standby']
+                return
+            elif button_mapped == '0X00':
+                # if self.inserted_media is None:
+                #     if self.radio.last_played is None:
+                #         self.insert(media=self.radio.random_channel)
+                #     else:
+                #         self.insert(media=self.radio.last_played)
+                self.mode = MODES['radio']['on_air']
+                # self.play()
+                return
+            elif button_mapped == '00X0':
+                return
+            elif button_mapped == '000X':
+                return
+            return
+        elif self.mode == MODES['radio']['on_air']:
+            if button_mapped == 'X000':
+                self.mode = MODES['radio']['standby']
+                # self.stop()
+                return
+            elif button_mapped == '0X00':
+                # self.next()
+                return
+            elif button_mapped == '00X0':
+                return
+            elif button_mapped == '000X':
+                return
+            return
+
+        # Jukebox
+        # TODO: pause/resume
+        elif self.mode == MODES['jukebox']['standby']['random']:
+            if button_mapped == 'X000':
+                # self.eject()
+                # self.set_mode_standby()
+                self.mode = MODES['jukeoroni']['standby']
+                return
+            elif button_mapped == '0X00':
+                # self.play()
+                self.mode = MODES['jukebox']['on_air']['random']
+                return
+            elif button_mapped == '00X0':
+                return
+            elif button_mapped == '000X':
+                # self.jukebox.set_loader_mode_album()
+                # # self.mode = MODES['jukebox']['standby'][self.jukebox.loader_mode]
+                self.mode = MODES['jukebox']['standby']['album']
+                return
+            return
+        elif self.mode == MODES['jukebox']['standby']['album']:
+            if button_mapped == 'X000':
+                # self.set_mode_standby()
+                self.mode = MODES['jukeoroni']['standby']
+                return
+            elif button_mapped == '0X00':
+                # self.play()
+                self.mode = MODES['jukebox']['on_air']['album']
+                return
+            elif button_mapped == '00X0':
+                return
+            elif button_mapped == '000X':
+                # self.jukebox.set_loader_mode_random()
+                # self.mode = MODES['jukebox']['standby'][self.jukebox.loader_mode]
+                self.mode = MODES['jukebox']['standby']['random']
+                return
+            return
+
+        elif self.mode == MODES['jukebox']['on_air']['random']:
+            if button_mapped == 'X000':
+                # self.stop()
+                self.mode = MODES['jukebox']['standby']['random']
+                return
+                # self.set_mode_jukebox()
+                # self.mode == MODES['jukebox']['standby']['album']
+            elif button_mapped == '0X00':
+                self._flag_next = True
+                # self.next()
+                return
+            elif button_mapped == '00X0':
+                return
+            elif button_mapped == '000X':
+                # self.jukebox.set_loader_mode_album()
+                self.mode = MODES['jukebox']['on_air']['album']
+                # self.set_mode_jukebox()
+                return
+            return
+        elif self.mode == MODES['jukebox']['on_air']['album']:
+            if button_mapped == 'X000':
+                # self.stop()
+                self.mode = MODES['jukebox']['standby']['album']
+                return
+                # self.set_mode_jukebox()
+            elif button_mapped == '0X00':
+                # self.next()
+                self._flag_next = True
+                return
+            elif button_mapped == '00X0':
+                return
+            elif button_mapped == '000X':
+                # self.jukebox.set_loader_mode_random()
+                self.mode = MODES['jukebox']['on_air']['random']
+                # self.set_mode_jukebox()
+                return
+            return
+        return
     ############################################
