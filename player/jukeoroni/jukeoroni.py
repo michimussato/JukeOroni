@@ -640,7 +640,7 @@ j.turn_off()
                    self.button_0X00_value,
                    self.button_00X0_value,
                    self.button_000X_value,
-               ][::-1]  # reversed for readability (from left to right)
+               ][::-1]  # reversed for readabilty (from left to right)
 
     ############################################
     # startup procedure
