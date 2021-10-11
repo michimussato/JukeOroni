@@ -4,7 +4,7 @@ import os
 import logging
 import random
 import shutil
-import signal
+# import signal
 import subprocess
 import tempfile
 import threading
@@ -263,6 +263,7 @@ box.turn_off()
         self.loading_queue = multiprocessing.Queue()
         self.tracks = []
         self.loading_process = None
+        self.loading_track = None
 
         self._track_list_generator_thread = None
         self._track_loader_thread = None
@@ -497,8 +498,8 @@ box.turn_off()
             LOG.debug(f'Loading process active: {bool(self.loading_process)}')
 
             if len(self.tracks) + int(bool(self.loading_process)) < MAX_CACHED_FILES and not bool(self.loading_process):
-                next_track = self.get_next_track()
-                if next_track is None:
+                self.loading_track = self.get_next_track()
+                if self.loading_track is None:
                     # print(str(next_track))
                     time.sleep(1.0)
                     continue
@@ -512,7 +513,7 @@ box.turn_off()
                 # data. when the Queue handles over that cached object, it seems like
                 # it re-creates the Track object (pickle, probably) but the cached data is
                 # gone of course because __del__ was called before that already.
-                self.loading_process = multiprocessing.Process(target=self._load_track_task, kwargs={'track': next_track})
+                self.loading_process = multiprocessing.Process(target=self._load_track_task, kwargs={'track': self.loading_track})
                 self.loading_process.name = 'Track Loader Task Process'
                 self.loading_process.start()
                 # LOG.info(self.loading_process.pid)
@@ -523,7 +524,7 @@ box.turn_off()
                 # LOG.info(self.loading_process.pid)
                 # LOG.info(self.loading_process.pid)
                 # LOG.info(self.loading_process.pid)
-                self.process_pid = self.loading_process.pid
+                # self.process_pid = self.loading_process.pid
 
                 while self.loading_process is not None and self.loading_queue.empty():
                     LOG.debug(f'waiting for queue ({len(self.tracks)} of {MAX_CACHED_FILES})...')
@@ -549,6 +550,7 @@ box.turn_off()
                     LOG.debug(f'loading process terminated: {self.loading_process is None}')
 
                 self.loading_process = None
+                self.loading_track = None
 
             time.sleep(1.0)
 
