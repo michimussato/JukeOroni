@@ -268,10 +268,15 @@ j.turn_off()
                 bg = self.jukebox.layout.get_layout(labels=self.LABELS)
             elif self.mode == MODES['jukebox']['on_air']['album'] \
                     or self.mode == MODES['jukebox']['on_air']['random']:
-                if self.inserted_media is None:
+                # if self.inserted_media is None:
+                try:
+                    bg = self.jukebox.layout.get_layout(labels=self.LABELS, cover=self.inserted_media.cover_album,
+                                                        artist=self.inserted_media.cover_artist)
+                except AttributeError:
                     bg = self.jukebox.layout.get_layout(labels=self.LABELS, loading=True)
-                else:
-                    bg = self.jukebox.layout.get_layout(labels=self.LABELS, cover=self.inserted_media.cover_album, artist=self.inserted_media.cover_artist)
+                    LOG.exception('inserted_media problem: ')
+                # else:
+                #     bg = self.jukebox.layout.get_layout(labels=self.LABELS, cover=self.inserted_media.cover_album, artist=self.inserted_media.cover_artist)
             self.set_image(image=bg)
     ############################################
 
