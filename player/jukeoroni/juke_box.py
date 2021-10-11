@@ -690,8 +690,8 @@ box.turn_off()
             LOG.info('loading_process is active, trying to terminate and join...')
             # os.kill(self.process_pid, signal.SIGKILL)
             # TODO try kill()
-            # self.loading_process.kill()  # SIGKILL
-            self.loading_process.terminate()  # SIGTERM
+            self.loading_process.kill()  # SIGKILL
+            # self.loading_process.terminate()  # SIGTERM Does not join
             LOG.info('loading_process terminated.')
             self.loading_process.join()
             LOG.info('loading_process terminated and joined')
