@@ -10,7 +10,7 @@ try:
     print('using djangos timezone')
 except ImportError as err:
     tz = "Europe/Zurich"
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont, ImageOps
 from astral import LocationInfo
 from astral.sun import sun
 from player.jukeoroni.settings import GLOBAL_LOGGING_LEVEL
@@ -51,48 +51,48 @@ class Clock:
 
         white = (255, 255, 255, 255)
         black = (0, 0, 0, 0)
-        toggle = {white: black, black: white}
+        # toggle = {white: black, black: white}
 
 
 
         LOG.info(f'Moon phase: {round(float(astral.moon.phase()))} / 28')
-        if draw_moon:
-            fill = (170, 0, 0, 255)
-            # _moon = Image.new(mode='RGBA', size=(_size, _size), color=(0, 0, 0, 0))
-            # _draw_moon = ImageDraw.Draw(_moon)
-            _draw_moon = draw
-            _draw_moon.ellipse((0, 0, _size, _size), fill=fill)
-            phase = round(float(astral.moon.phase()) / 28.0 * 2, 4)
-
-            spherical = math.cos(phase * math.pi)
-            # print(spherical)
-
-            center = _size / 2
-
-            if 0.0 <= phase <= 0.5:  # new to half moon
-                _draw_moon.rectangle((0, 0, _size / 2, _size), fill=(0, 0, 0, 0))
-
-                _draw_moon.ellipse((center - (spherical * center), 0, center + (spherical * center), _size),
-                             fill=(0, 0, 0, 0))
-            # elif phase == 0.5:  # half moon
-            # 	draw.rectangle((0, 0, _size/2, _size), fill=(0, 0, 0, 0))
-            elif 0.5 <= phase <= 1.0:  # half to full moon
-                _draw_moon.rectangle((0, 0, _size / 2, _size), fill=(0, 0, 0, 0))
-                _draw_moon.ellipse((center + (spherical * center), 0, center - (spherical * center), _size),
-                             fill=fill)
-            # elif phase == 1.0:  # full moon
-            # 	pass
-            elif 1.0 < phase <= 1.5:  # full to half moon
-                _draw_moon.rectangle((_size / 2, 0, _size, _size), fill=(0, 0, 0, 0))
-                _draw_moon.ellipse((center + (spherical * center), 0, center - (spherical * center), _size),
-                             fill=fill)
-            # draw.ellipse(((phase-0.5)*2*_size, 0, _size-((phase-0.5)*2*_size), _size), fill=(255, 255, 255, 255))
-            # elif phase == 0.75:  # half moon
-            # 	draw.rectangle((_size/2, 0, _size, _size), fill=(0, 0, 0, 0))
-            elif 1.5 < phase <= 2.0:  # half to new moon
-                _draw_moon.rectangle((_size / 2, 0, _size, _size), fill=(0, 0, 0, 0))
-                _draw_moon.ellipse((center - (spherical * center), 0, center + (spherical * center), _size),
-                             fill=(0, 0, 0, 0))
+        # if draw_moon:
+        #     fill = (170, 0, 0, 255)
+        #     # _moon = Image.new(mode='RGBA', size=(_size, _size), color=(0, 0, 0, 0))
+        #     # _draw_moon = ImageDraw.Draw(_moon)
+        #     _draw_moon = draw
+        #     _draw_moon.ellipse((0, 0, _size, _size), fill=fill)
+        #     phase = round(float(astral.moon.phase()) / 28.0 * 2, 4)
+        #
+        #     spherical = math.cos(phase * math.pi)
+        #     # print(spherical)
+        #
+        #     center = _size / 2
+        #
+        #     if 0.0 <= phase <= 0.5:  # new to half moon
+        #         _draw_moon.rectangle((0, 0, _size / 2, _size), fill=(0, 0, 0, 0))
+        #
+        #         _draw_moon.ellipse((center - (spherical * center), 0, center + (spherical * center), _size),
+        #                      fill=(0, 0, 0, 0))
+        #     # elif phase == 0.5:  # half moon
+        #     # 	draw.rectangle((0, 0, _size/2, _size), fill=(0, 0, 0, 0))
+        #     elif 0.5 <= phase <= 1.0:  # half to full moon
+        #         _draw_moon.rectangle((0, 0, _size / 2, _size), fill=(0, 0, 0, 0))
+        #         _draw_moon.ellipse((center + (spherical * center), 0, center - (spherical * center), _size),
+        #                      fill=fill)
+        #     # elif phase == 1.0:  # full moon
+        #     # 	pass
+        #     elif 1.0 < phase <= 1.5:  # full to half moon
+        #         _draw_moon.rectangle((_size / 2, 0, _size, _size), fill=(0, 0, 0, 0))
+        #         _draw_moon.ellipse((center + (spherical * center), 0, center - (spherical * center), _size),
+        #                      fill=fill)
+        #     # draw.ellipse(((phase-0.5)*2*_size, 0, _size-((phase-0.5)*2*_size), _size), fill=(255, 255, 255, 255))
+        #     # elif phase == 0.75:  # half moon
+        #     # 	draw.rectangle((_size/2, 0, _size, _size), fill=(0, 0, 0, 0))
+        #     elif 1.5 < phase <= 2.0:  # half to new moon
+        #         _draw_moon.rectangle((_size / 2, 0, _size, _size), fill=(0, 0, 0, 0))
+        #         _draw_moon.ellipse((center - (spherical * center), 0, center + (spherical * center), _size),
+        #                      fill=(0, 0, 0, 0))
 
         if draw_astral:
             city = LocationInfo('Bern', 'Switzerland', tz, 46.94809, 7.44744)
@@ -191,8 +191,50 @@ class Clock:
         comp = Image.new(mode='RGBA', size=(_size, _size))
         comp = Image.alpha_composite(comp, bg)
         comp = Image.alpha_composite(comp, _clock)
-        # if draw_moon:
-        #     comp = Image.alpha_composite(comp, _moon)
+        if draw_moon:
+            fill = (255, 255, 255, 255)
+            # _moon = Image.new(mode='RGBA', size=(_size, _size), color=(0, 0, 0, 0))
+            # _draw_moon = ImageDraw.Draw(_moon)
+            # bg = _clock
+            _draw_moon_image = Image.new(mode='RGBA', size=(_size, _size), color=(0, 0, 0, 0))
+            _draw_moon = ImageDraw.Draw(_draw_moon_image)
+            _draw_moon.ellipse((0, 0, _size, _size), fill=fill)
+            phase = round(float(astral.moon.phase()) / 28.0 * 2, 4)
+
+            spherical = math.cos(phase * math.pi)
+            # print(spherical)
+
+            center = _size / 2
+
+            if 0.0 <= phase <= 0.5:  # new to half moon
+                _draw_moon.rectangle((0, 0, _size / 2, _size), fill=(0, 0, 0, 0))
+
+                _draw_moon.ellipse((center - (spherical * center), 0, center + (spherical * center), _size),
+                                   fill=(0, 0, 0, 0))
+            # elif phase == 0.5:  # half moon
+            # 	draw.rectangle((0, 0, _size/2, _size), fill=(0, 0, 0, 0))
+            elif 0.5 <= phase <= 1.0:  # half to full moon
+                _draw_moon.rectangle((0, 0, _size / 2, _size), fill=(0, 0, 0, 0))
+                _draw_moon.ellipse((center + (spherical * center), 0, center - (spherical * center), _size),
+                                   fill=fill)
+            # elif phase == 1.0:  # full moon
+            # 	pass
+            elif 1.0 < phase <= 1.5:  # full to half moon
+                _draw_moon.rectangle((_size / 2, 0, _size, _size), fill=(0, 0, 0, 0))
+                _draw_moon.ellipse((center + (spherical * center), 0, center - (spherical * center), _size),
+                                   fill=fill)
+            # draw.ellipse(((phase-0.5)*2*_size, 0, _size-((phase-0.5)*2*_size), _size), fill=(255, 255, 255, 255))
+            # elif phase == 0.75:  # half moon
+            # 	draw.rectangle((_size/2, 0, _size, _size), fill=(0, 0, 0, 0))
+            elif 1.5 < phase <= 2.0:  # half to new moon
+                _draw_moon.rectangle((_size / 2, 0, _size, _size), fill=(0, 0, 0, 0))
+                _draw_moon.ellipse((center - (spherical * center), 0, center + (spherical * center), _size),
+                                   fill=(0, 0, 0, 0))
+
+            _comp_inv = ImageOps.invert(comp.convert('RGB'))
+
+            comp.paste(_comp_inv, mask=_draw_moon_image)
+
         comp = comp.rotate(90, expand=False)
 
         comp = comp.resize((round(_size/ANTIALIAS), round(_size/ANTIALIAS)), Image.ANTIALIAS)
