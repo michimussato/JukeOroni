@@ -618,8 +618,32 @@ box.turn_off()
         elif self.loader_mode == 'album':
 
             # raise NotImplementedError
+            # while self.loading_process is None:
+            #     time.sleep(1.0)
+
+            # print(self.loading_track)
+            # print(self.loading_process)
+            # print(self.loading_track)
+            # print(self.loading_track)
+            # print(self.loading_track)
+            # print(self.loading_track)
 
             if self._need_first_album_track and self.playing_track is not None:
+                
+                print('THTHTHTHTHTHTHTHT')
+                print('THTHTHTHTHTHTHTHT')
+                print('THTHTHTHTHTHTHTHT')
+                print('THTHTHTHTHTHTHTHT')
+                print('THTHTHTHTHTHTHTHT')
+                print('THTHTHTHTHTHTHTHT')
+                print(self.loading_track)
+                print(self.loading_track)
+                print(self.loading_track)
+                print(self.loading_track)
+                print(self.loading_track)
+                print(self.loading_track)
+                print(self.loading_track)
+                
                 # if we switch mode from Rand to Albm,
                 # we always want the first track of
                 # the album, no matter what
@@ -631,10 +655,30 @@ box.turn_off()
                 self._need_first_album_track = False
                 if track_id != first_track_id:
                     return first_track
+                else:
+                    # return 2nd track if playing_track is first track of album
+                    second_track = album_tracks[1]
+                    return second_track
 
             if self.playing_track is None and not bool(self.tracks):
-                if bool(self.loading_process):
-                    self.kill_loading_process()
+                print('HERERERERERERERERER')
+                print('HERERERERERERERERER')
+                print('HERERERERERERERERER')
+                print('HERERERERERERERERER')
+                print('HERERERERERERERERER')
+                print('HERERERERERERERERER')
+                print('HERERERERERERERERER')
+                print('HERERERERERERERERER')
+                print(self.loading_track)
+                print(self.loading_track)
+                print(self.loading_track)
+                print(self.loading_track)
+
+                # if bool(self.loading_process):
+
+                #     self.kill_loading_process()
+                # # if self._need_first_album_track:
+
                 random_album = self.requested_album_id or random.choice(Album.objects.all())
                 album_tracks = DjangoTrack.objects.filter(album=random_album)
                 next_track = album_tracks[0]
@@ -655,6 +699,21 @@ box.turn_off()
                 previous_track_id = self.tracks[-1].django_track.id
                 album = DjangoTrack.objects.get(id=previous_track_id).album
 
+
+                if self._need_first_album_track:
+                    self._need_first_album_track = False
+                    album_tracks = DjangoTrack.objects.filter(album=album)
+                    first_track = album_tracks[0]
+                    first_track_id = first_track.id
+                    if first_track_id != previous_track_id:
+                        return first_track
+                    else:
+                        second_track = album_tracks[1]
+                        return second_track
+
+                    # return first_track
+                    # first_track_id = first_track.id
+
                 next_track = DjangoTrack.objects.get(id=previous_track_id + 1)
 
                 if next_track.album != album:
@@ -667,6 +726,7 @@ box.turn_off()
                 return next_track
 
             elif self.playing_track is not None and not bool(self.tracks):
+                LOG.info('playing_track {0}'.format(self.playing_track))
                 # in case self.tracks is empty, we want the next
                 # track id based on the one that is currently
                 # playing
@@ -695,29 +755,33 @@ box.turn_off()
         # raise Exception('we should not be here, no next track!!!')
 
     def kill_loading_process(self):
-        LOG.info('killing self.loading_process and resetting it to None')
-        if self.loading_process is not None:
-            LOG.info('loading_process is active, trying to terminate and join...')
-            # os.kill(self.process_pid, signal.SIGKILL)
-            # TODO try kill()
-            self.loading_process.kill()  # SIGKILL
-            # self.loading_process.terminate()  # SIGTERM Does not join
-            LOG.info('loading_process terminated.')
-            self.loading_process.join()
-            LOG.info('loading_process terminated and joined')
-            # a process can be joined multiple times:
-            # here: just wait for termination before proceeding
-            # self.loading_process.join()
-        self.loading_process = None
+        LOG.info('loading_process: {0}'.format(self.loading_process))
+        # LOG.info('killing self.loading_process and resetting it to None')
+        if bool(self.tracks):
+            if self.loading_process is not None:
+                LOG.info('loading_process is active, trying to terminate and join...')
+                # os.kill(self.process_pid, signal.SIGKILL)
+                # TODO try kill()
+                self.loading_process.kill()  # SIGKILL
+                # self.loading_process.terminate()  # SIGTERM Does not join
+                LOG.info('loading_process terminated.')
+                self.loading_process.join()
+                LOG.info('loading_process terminated and joined')
+                # a process can be joined multiple times:
+                # here: just wait for termination before proceeding
+                # self.loading_process.join()
+            self.loading_process = None
+            # else:
+            #     self.jukeoroni._need_first_album_track = True
 
-        # remove all cached tracks from the filesystem except the one
-        # that is currently playing
+            # remove all cached tracks from the filesystem except the one
+            # that is currently playing
 
-        # is it a problem if self.track is still empty?
-        for track in self.tracks:
-            if track.cached and not track.is_playing:
-                os.remove(track.cache_tmp)
-        self.tracks = []
-        self._track_loader_thread = None
+            # is it a problem if self.track is still empty?
+            for track in self.tracks:
+                if track.cached and not track.is_playing:
+                    os.remove(track.cache_tmp)
+            self.tracks = []
+            self._track_loader_thread = None
     ############################################
 

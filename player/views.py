@@ -137,6 +137,8 @@ class JukeOroniView(View):
         ret += '    <meta http-equiv="refresh" content="10" >\n'
         ret += '  </head>\n'
         ret += '  <body>\n'
+        ret += f'<button style=\"width:100%; \" onclick=\"window.location.href = \'/jukeoroni/set_standby\';\">Back to Standby</button>\n'
+        ret += '<hr>\n'
 
         _success = False
 
@@ -214,11 +216,7 @@ class JukeOroniView(View):
         # if not jukeoroni.jukebox.tracks and bool(jukeoroni.jukebox.loading_process):
         #     ret += '<div><img src=\"file://{0}\" alt=\"Loading {1}...\"></div>'.format(_JUKEBOX_LOADING_IMAGE, str(jukeoroni.jukebox.loading_process._kwargs['track']))
         ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/switch_mode\';\">Mode: {0}</button>\n'.format(str(jukeoroni.jukebox.loader_mode))
-        if not jukeoroni.mode == MODES['jukebox']['on_air']['random'] \
-                and not jukeoroni.mode == MODES['jukebox']['on_air']['album']:
-            ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/play_next\';\">{0}</button>\n'.format('Play')
-        else:
-            ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/play_next\';\">{0}</button>\n'.format(jukeoroni.mode['buttons']['0X00'])
+        ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/play_next\';\">{0}</button>\n'.format(jukeoroni.mode['buttons']['0X00'])
         ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/stop\';\">Stop</button>\n'
         ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/albums\';\">Albums</button>\n'
         ret += '  </body>\n'
@@ -244,9 +242,9 @@ class JukeOroniView(View):
         if jukeoroni.mode != MODES['jukebox']['on_air'][jukeoroni.jukebox.loader_mode]:
             jukeoroni.mode = MODES['jukebox']['on_air'][jukeoroni.jukebox.loader_mode]
         else:
-            if jukeoroni.inserted_media is not None:
+            # if jukeoroni.inserted_media is not None:
                 # jukeoroni._next = channel
-                jukeoroni._flag_next = True
+            jukeoroni._flag_next = True
         # jukeoroni.play()
 
         # player.button_3_value = BUTTON_3['Play']
@@ -258,7 +256,7 @@ class JukeOroniView(View):
     def stop(self):
         global jukeoroni
 
-        jukeoroni.mode = MODES['jukebox']['on_air'][jukeoroni.jukebox.loader_mode]
+        jukeoroni.mode = MODES['jukebox']['standby'][jukeoroni.jukebox.loader_mode]
         return HttpResponseRedirect('/jukeoroni')
     #
     # def albums(self):

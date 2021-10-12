@@ -173,7 +173,7 @@ class Standby(Layout):
         font = ImageFont.truetype(r'/data/django/jukeoroni/player/static/arial_narrow.ttf', size=font_size)
         length = font.getlength(host_info)
 
-        widget_ip_overlay = Image.new(mode='RGBA', size=bg.size, color=(0, 0, 0, 128))
+        widget_ip_overlay = Image.new(mode='RGBA', size=bg.size, color=(0, 0, 0, 0))
         draw_ip = ImageDraw.Draw(widget_ip_overlay, mode='RGBA')
 
         draw_ip.text((round(widget_ip_overlay.size[0] - length), 0), host_info, fill=(255, 255, 255, 255), font=font)
