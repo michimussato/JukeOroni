@@ -144,8 +144,16 @@ class JukeboxTrack(object):
         # TODO: query Discogs image here on the fly?
         #  downside: we cannot specify the actual image
         #  on the database if path is not stored beforehand
-        artist_online = Resource().from_url(url=self.artist.cover_online)
-        return artist_online
+        if self.artist.cover_online is None:
+            return None
+        else:
+            return Resource().from_url(url=self.artist.cover_online)
+        # kjzfg...
+        # artist_online = Resource().from_url(url=self.artist.cover_online)
+        # if bool(artist_online):
+        #     return artist_online
+        # else:
+        #     return None
 
     @property
     def media_info(self):
@@ -258,7 +266,7 @@ box.turn_off()
 
         self.requested_album_id = None
         self._need_first_album_track = False
-        self._auto_update_tracklist = False
+        self._auto_update_tracklist = True
 
         self.loading_queue = multiprocessing.Queue()
         self.tracks = []

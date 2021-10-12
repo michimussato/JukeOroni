@@ -122,7 +122,9 @@ class Resource(object):
         return comp
 
     def from_url(self, url):
-        assert is_string_url(url), 'given string is not a URL'
+        if not is_string_url(url):
+            return None
+        # assert is_string_url(url), f'given string is not a URL: \"{url}\"'
 
         try:
             hdr = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64)'}

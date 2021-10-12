@@ -1,6 +1,7 @@
 import logging
 import discogs_client
 import jukeoroni._secrets as secrets
+from unidecode import unidecode
 
 
 LOG = logging.getLogger(__name__)
@@ -18,6 +19,8 @@ def get_client():
 
 def get_artist(client, artist):
     results = client.search(artist, type='artist')
+    if not results:
+        results = client.search(unidecode(artist), type='artist')
     try:
         cover_square = results[0].images[0]['uri150']
         return cover_square
@@ -28,6 +31,8 @@ def get_artist(client, artist):
 
 def get_album(client, artist, album):
     results = client.search(album, type='release', artist=artist)
+    if not results:
+        results = client.search(album, type='release', artist=unidecode(artist))
     try:
         cover_square = results[0].images[0]['uri150']
         return cover_square
