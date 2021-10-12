@@ -1,6 +1,7 @@
+import base64
 import signal
 import time
-
+import io
 from django.http import HttpResponseRedirect, HttpResponse
 from django.views import View
 from player.jukeoroni.jukeoroni import JukeOroni
@@ -51,8 +52,10 @@ class JukeOroniView(View):
 
             return HttpResponseRedirect('radio/')
 
-        elif jukeoroni.mode == MODES['jukebox']['standby'][jukeoroni.jukebox.loader_mode] \
-                or jukeoroni.mode == MODES['jukebox']['on_air'][jukeoroni.jukebox.loader_mode]:
+        elif jukeoroni.mode == MODES['jukebox']['standby']['album'] \
+                or jukeoroni.mode == MODES['jukebox']['standby']['random'] \
+                or jukeoroni.mode == MODES['jukebox']['on_air']['album'] \
+                or jukeoroni.mode == MODES['jukebox']['on_air']['random']:
 
             return HttpResponseRedirect('jukebox/')
 
@@ -67,6 +70,19 @@ class JukeOroniView(View):
             ret += '<div style=\"text-align:center\">Hello JukeOroni</div>\n'
             ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/set_jukebox\';\">Activate Jukebox</button>\n'
             ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/set_radio\';\">Activate Radio</button>\n'
+
+            data = io.BytesIO()
+            img = jukeoroni.layout_standby.get_layout(labels=jukeoroni.LABELS)
+            img = img.rotate(270, expand=True)
+            img.save(data, "PNG")
+            encoded_img_data = base64.b64encode(data.getvalue())
+
+            # print(encoded_img_data)
+            # print(encoded_img_data)
+            # print(encoded_img_data)
+            # print(encoded_img_data)
+
+            ret += '<img id="picture" style="display:block;margin-left:auto;margin-right:auto;" src="data:image/jpeg;base64,{0}">\n'.format(str(encoded_img_data).lstrip('b\'').rstrip('\''))
             ret += '</body>\n'
             ret += '</html>\n'
 
@@ -96,6 +112,19 @@ class JukeOroniView(View):
         return HttpResponseRedirect('/jukeoroni')
 
     def jukebox_index(self):
+
+        global jukeoroni
+
+        if not jukeoroni.mode == MODES['jukebox']['standby']['random'] \
+                and not jukeoroni.mode == MODES['jukebox']['standby']['album'] \
+                and not jukeoroni.mode == MODES['jukebox']['on_air']['random'] \
+                and not jukeoroni.mode == MODES['jukebox']['on_air']['album']:
+
+        # if jukeoroni.mode != MODES['radio']['standby'] \
+        #         and jukeoroni.mode != MODES['radio']['on_air']:
+
+            return HttpResponseRedirect('/jukeoroni')
+
         # if self.jukeoroni.inserted_media is None:
         #     ret += f'<div>{str(self.jukeoroni.inserted_media)}</div>'
         # else:
@@ -110,6 +139,33 @@ class JukeOroniView(View):
         ret += '  <body>\n'
 
         _success = False
+
+        data = io.BytesIO()
+        if jukeoroni.mode == MODES['jukebox']['standby']['album'] \
+                or jukeoroni.mode == MODES['jukebox']['standby']['random']:
+            img = jukeoroni.jukebox.layout.get_layout(labels=jukeoroni.LABELS)
+        elif jukeoroni.mode == MODES['jukebox']['on_air']['album'] \
+                or jukeoroni.mode == MODES['jukebox']['on_air']['random']:
+            # if self.inserted_media is None:
+            try:
+                img = jukeoroni.jukebox.layout.get_layout(labels=jukeoroni.LABELS, cover=jukeoroni.inserted_media.cover_album,
+                                                    artist=jukeoroni.inserted_media.cover_artist)
+            except AttributeError:
+                img = jukeoroni.jukebox.layout.get_layout(labels=jukeoroni.LABELS, loading=True)
+                # LOG.exception('inserted_media problem: ')
+        img = img.rotate(270, expand=True)
+        img.save(data, "PNG")
+        encoded_img_data = base64.b64encode(data.getvalue())
+
+        # print(encoded_img_data)
+        # print(encoded_img_data)
+        # print(encoded_img_data)
+        # print(encoded_img_data)
+
+        ret += '<img id="picture" style="display:block;margin-left:auto;margin-right:auto;" src="data:image/jpeg;base64,{0}">\n'.format(
+            str(encoded_img_data).lstrip('b\'').rstrip('\''))
+
+        ret += f'<hr>'
 
 
         # while not _success:
@@ -158,9 +214,7 @@ class JukeOroniView(View):
         # if not jukeoroni.jukebox.tracks and bool(jukeoroni.jukebox.loading_process):
         #     ret += '<div><img src=\"file://{0}\" alt=\"Loading {1}...\"></div>'.format(_JUKEBOX_LOADING_IMAGE, str(jukeoroni.jukebox.loading_process._kwargs['track']))
         ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/switch_mode\';\">Mode: {0}</button>\n'.format(str(jukeoroni.jukebox.loader_mode))
-        if not jukeoroni.mode == MODES['jukebox']['standby']['random'] \
-                and not jukeoroni.mode == MODES['jukebox']['standby']['album'] \
-                and not jukeoroni.mode == MODES['jukebox']['on_air']['random'] \
+        if not jukeoroni.mode == MODES['jukebox']['on_air']['random'] \
                 and not jukeoroni.mode == MODES['jukebox']['on_air']['album']:
             ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/play_next\';\">{0}</button>\n'.format('Play')
         else:
@@ -176,28 +230,36 @@ class JukeOroniView(View):
 
         if jukeoroni.jukebox.loader_mode == 'random':
             jukeoroni.jukebox.set_loader_mode_album()
+            return HttpResponseRedirect('/jukeoroni')
+            # while
         elif jukeoroni.jukebox.loader_mode == 'album':
             jukeoroni.jukebox.set_loader_mode_random()
+
+            return HttpResponseRedirect('/jukeoroni')
+
+    def play_next(self):
+        global jukeoroni
+
+        # jukeoroni.set_mode_jukebox()
+        if jukeoroni.mode != MODES['jukebox']['on_air'][jukeoroni.jukebox.loader_mode]:
+            jukeoroni.mode = MODES['jukebox']['on_air'][jukeoroni.jukebox.loader_mode]
+        else:
+            if jukeoroni.inserted_media is not None:
+                # jukeoroni._next = channel
+                jukeoroni._flag_next = True
+        # jukeoroni.play()
+
+        # player.button_3_value = BUTTON_3['Play']
+        # # while player._playback_thread is None:
+        # #     time.sleep(1.0)
+        # # time.sleep(1.0)
         return HttpResponseRedirect('/jukeoroni')
 
-    # def play_next(self):
-    #     global jukeoroni
-    #
-    #     # jukeoroni.set_mode_jukebox()
-    #     jukeoroni.mode = MODES['jukebox']['standby'][jukeoroni.jukebox.loader_mode]
-    #     jukeoroni.play()
-    #
-    #     # player.button_3_value = BUTTON_3['Play']
-    #     # # while player._playback_thread is None:
-    #     # #     time.sleep(1.0)
-    #     # # time.sleep(1.0)
-    #     return HttpResponseRedirect('/jukeoroni')
-    #
-    # def stop(self):
-    #     global jukeoroni
-    #
-    #     jukeoroni.stop()
-    #     return HttpResponseRedirect('/jukeoroni')
+    def stop(self):
+        global jukeoroni
+
+        jukeoroni.mode = MODES['jukebox']['on_air'][jukeoroni.jukebox.loader_mode]
+        return HttpResponseRedirect('/jukeoroni')
     #
     # def albums(self):
     #     global jukeoroni
@@ -271,6 +333,21 @@ class JukeOroniView(View):
         ret += '</head>\n'
         ret += '<body>\n'
         ret += f'<button style=\"width:100%; \" onclick=\"window.location.href = \'/jukeoroni/set_standby\';\">Back to Standby</button>\n'
+        ret += '<hr>\n'
+
+        data = io.BytesIO()
+        img = jukeoroni.layout_radio.get_layout(labels=jukeoroni.LABELS, cover=jukeoroni.radio.cover, title=jukeoroni.radio.stream_title)
+        img = img.rotate(270, expand=True)
+        img.save(data, "PNG")
+        encoded_img_data = base64.b64encode(data.getvalue())
+
+        # print(encoded_img_data)
+        # print(encoded_img_data)
+        # print(encoded_img_data)
+        # print(encoded_img_data)
+
+        ret += '<img id="picture" style="display:block;margin-left:auto;margin-right:auto;" src="data:image/jpeg;base64,{0}">\n'.format(
+            str(encoded_img_data).lstrip('b\'').rstrip('\''))
         ret += '<hr>\n'
         for station in stations:
             channels = Channel.objects.filter(station=station).order_by('display_name')
