@@ -63,13 +63,37 @@ class JukeOroniView(View):
             ret += '  <head>\n'
             ret += '    <meta http-equiv="refresh" content="10" >\n'
             ret += '  </head>\n'
-            ret += '  <body>Hello JukeOroni</body>\n'
+            ret += '  <body>\n'
+            ret += '<div style=\"text-align:center\">Hello JukeOroni</div>\n'
+            ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/set_jukebox\';\">Activate Jukebox</button>\n'
+            ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/set_radio\';\">Activate Radio</button>\n'
+            ret += '</body>\n'
             ret += '</html>\n'
 
             return HttpResponse(ret)
 
         # else:
         #
+    def set_jukebox(self):
+        global jukeoroni
+
+        jukeoroni.mode = MODES['jukebox']['standby'][jukeoroni.jukebox.loader_mode]
+
+        return HttpResponseRedirect('/jukeoroni/jukebox')
+
+    def set_radio(self):
+        global jukeoroni
+
+        jukeoroni.mode = MODES['radio']['standby']
+
+        return HttpResponseRedirect('/jukeoroni/radio')
+
+    def set_standby(self):
+        global jukeoroni
+
+        jukeoroni.mode = MODES['jukeoroni']['standby']
+
+        return HttpResponseRedirect('/jukeoroni')
 
     def jukebox_index(self):
         # if self.jukeoroni.inserted_media is None:
@@ -246,6 +270,8 @@ class JukeOroniView(View):
         ret += '<meta http-equiv="refresh" content="10" >\n'
         ret += '</head>\n'
         ret += '<body>\n'
+        ret += f'<button style=\"width:100%; \" onclick=\"window.location.href = \'/jukeoroni/set_standby\';\">Back to Standby</button>\n'
+        ret += '<hr>\n'
         for station in stations:
             channels = Channel.objects.filter(station=station).order_by('display_name')
             if channels:
@@ -263,36 +289,59 @@ class JukeOroniView(View):
     def radio_play(self, display_name_short):
         global jukeoroni
 
-        try:
-            for c in Channel.objects.filter(last_played=True):
-                c.last_played = False
-                c.save()
-        except Channel.DoesNotExist:
-            pass
+        # try:
+        #     for c in Channel.objects.filter(last_played=True):
+        #         c.last_played = False
+        #         c.save()
+        # except Channel.DoesNotExist:
+        #     pass
 
         channel = Channel.objects.get(display_name_short=display_name_short)
-        if jukeoroni.inserted_media is not None:
-            if jukeoroni.radio.is_on_air:
-                jukeoroni.stop()
-            jukeoroni.eject()
-        jukeoroni.insert(media=channel)
 
-        channel.last_played = True
-        channel.save()
+        # if jukeoroni.mode != MODES['radio']['standby']:
+        # jukeoroni.mode = MODES['radio']['standby']
+
+        # while jukeoroni.radio.is_on_air is not None and jukeoroni.inserted_media is not None:  # or time_out <= 0.0:
+        #     time.sleep(0.1)
+        # if jukeoroni.inserted_media is not None:
+        #     if jukeoroni.radio.is_on_air:
+        #         jukeoroni.stop()
+        #     jukeoroni.eject()
+        if jukeoroni.inserted_media is not None:
+            jukeoroni._next = channel
+            jukeoroni._flag_next = True
+        else:
+            jukeoroni._next = channel
+            # jukeoroni.insert(media=channel)
+
+        # channel.last_played = True
+        # channel.save()
 
         jukeoroni.mode = MODES['radio']['on_air']
+
+        # time_out = 10.0
+        while not jukeoroni.radio.is_on_air == channel:  # or time_out <= 0.0:
+            time.sleep(0.1)
+            # time_out -= 0.1
         # try:
-        jukeoroni.play()
+        # jukeoroni.play()
         # except Exception:
 
-        jukeoroni.set_display_radio()
+        # jukeoroni.set_display_radio()
 
         return HttpResponseRedirect('/jukeoroni')
 
     def radio_stop(self):
         global jukeoroni
 
-        jukeoroni.stop()
-        jukeoroni.eject()
+        jukeoroni.mode = MODES['radio']['standby']
+        # jukeoroni.eject()
+
+        # jukeoroni.mode = MODES['radio']['standby']
+
+        # time_out = 10.0
+        while jukeoroni.radio.is_on_air is not None:  # or time_out <= 0.0:
+            time.sleep(0.1)
+            # time_out -= 0.1
 
         return HttpResponseRedirect('/jukeoroni')

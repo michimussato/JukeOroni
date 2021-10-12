@@ -8,7 +8,7 @@
 
 
 # radio bob streams:
-# https://streams.radiobob.de/
+# https://bob.hoerradar.de/radiobob-80srock-aac-mq
 
 # radio srf
 # https://www.broadcast.ch/fileadmin/kundendaten/Dokumente/Internet_Streaming/2021_01_links_for_streaming_internet_radio_de_fr_it_V006.pdf

@@ -115,6 +115,7 @@ j.turn_off()
         self.button_000X_value = None
 
         self._flag_next = False
+        self._next = None
 
         self.pimoroni = Inky()
 
@@ -296,9 +297,10 @@ j.turn_off()
         while True:
 
             if self._flag_next:
-                self.next()
+                self.next(self._next)
                 self._flag_next = False
-                self.set_display_jukebox()
+                self._next = None
+                # self.set_display_jukebox()
 
             if previous_mode == self.mode:
                 if self.mode == MODES['jukebox']['on_air'][self.jukebox.loader_mode]:
@@ -314,17 +316,24 @@ j.turn_off()
                 LOG.debug(self.mode)
 
             if self.mode == MODES['jukeoroni']['standby']:
+                self.stop()
+                self.eject()
                 self.set_display_standby()
             elif self.mode == MODES['radio']['standby']:
                 self.stop()
+                self.eject()
                 self.set_display_radio()
             elif self.mode == MODES['radio']['on_air']:
+                if self._next is not None:
+                    self.insert(media=self._next)
+                    self._next = None
                 if self.inserted_media is None:
                     if self.radio.last_played is None:
                         self.insert(media=self.radio.random_channel)
                     else:
                         self.insert(media=self.radio.last_played)
                 self.play()
+                self.set_display_radio()
             elif self.mode == MODES['jukebox']['standby']['random']:
                 self.stop()
                 self.eject()
@@ -647,9 +656,9 @@ j.turn_off()
 
         if isinstance(self.inserted_media, Channel):
             self.radio.is_on_air = None
-            self.mode = MODES['radio']['standby']
+            # self.mode = MODES['radio']['standby']
             self.playback_proc = None
-            self.set_display_radio()
+            # self.set_display_radio()
             # self.set_mode_radio()
 
         # we need to be able to switch jukebox modes even when no
@@ -683,10 +692,13 @@ j.turn_off()
                     LOG.exception(f'getting random channel. previous try with {str(media)} failed:')
                     media = self.radio.random_channel
 
+            self.set_display_radio()
+
         elif isinstance(self.inserted_media, JukeboxTrack):
             # assert bool(self.jukebox.tracks), 'no jukebox track ready.'
             # self.stop()
             self.eject()
+            self.set_display_jukebox()
             # self.mode = MODES['jukebox']['on_air'][self.jukebox.loader_mode]
             # next track should be started by play thread
             # if not bool(self.jukebox.tracks):
@@ -1023,6 +1035,8 @@ j.turn_off()
                 return
             elif button_mapped == '0X00':
                 # self.next()
+                # self._next =
+                self._flag_next = True
                 return
             elif button_mapped == '00X0':
                 return
