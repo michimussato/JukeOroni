@@ -757,7 +757,7 @@ box.turn_off()
     def kill_loading_process(self):
         LOG.info('loading_process: {0}'.format(self.loading_process))
         # LOG.info('killing self.loading_process and resetting it to None')
-        if bool(self.tracks):
+        if bool(self.tracks) or not bool(self.tracks) and self.playing_track is not None:
             if self.loading_process is not None:
                 LOG.info('loading_process is active, trying to terminate and join...')
                 # os.kill(self.process_pid, signal.SIGKILL)

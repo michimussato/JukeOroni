@@ -109,10 +109,10 @@ j.turn_off()
         self.playback_proc = None
         self.inserted_media = None
 
-        self.button_X000_value = None
-        self.button_0X00_value = None
-        self.button_00X0_value = None
-        self.button_000X_value = None
+        # self.button_X000_value = None
+        # self.button_0X00_value = None
+        # self.button_00X0_value = None
+        # self.button_000X_value = None
 
         self._flag_next = False
         self._next = None
@@ -208,10 +208,10 @@ j.turn_off()
         """
         assert self.on, 'turn_on first.'
         if not self.test:
-            self.button_X000_value = self.mode['buttons']['X000']
-            self.button_0X00_value = self.mode['buttons']['0X00']
-            self.button_00X0_value = self.mode['buttons']['00X0']
-            self.button_000X_value = self.mode['buttons']['000X']
+            # self.button_X000_value = self.mode['buttons']['X000']
+            # self.button_0X00_value = self.mode['buttons']['0X00']
+            # self.button_00X0_value = self.mode['buttons']['00X0']
+            # self.button_000X_value = self.mode['buttons']['000X']
             self.set_image()
         else:
             LOG.info(f'Not setting TURN_ON image. Test mode.')
@@ -222,10 +222,10 @@ j.turn_off()
         """
         assert not self.on, 'JukeOroni needs to be turned off first.'
         if not self.test:
-            self.button_X000_value = self.mode['buttons']['X000']
-            self.button_0X00_value = self.mode['buttons']['0X00']
-            self.button_00X0_value = self.mode['buttons']['00X0']
-            self.button_000X_value = self.mode['buttons']['000X']
+            # self.button_X000_value = self.mode['buttons']['X000']
+            # self.button_0X00_value = self.mode['buttons']['0X00']
+            # self.button_00X0_value = self.mode['buttons']['00X0']
+            # self.button_000X_value = self.mode['buttons']['000X']
             # self.pimoroni_init()
             LOG.info(f'Setting OFF Layout...')
 
@@ -244,10 +244,10 @@ j.turn_off()
         j.set_display_radio()
         """
         if not self.test:
-            self.button_X000_value = self.mode['buttons']['X000']
-            self.button_0X00_value = self.mode['buttons']['0X00']
-            self.button_00X0_value = self.mode['buttons']['00X0']
-            self.button_000X_value = self.mode['buttons']['000X']
+            # self.button_X000_value = self.mode['buttons']['X000']
+            # self.button_0X00_value = self.mode['buttons']['0X00']
+            # self.button_00X0_value = self.mode['buttons']['00X0']
+            # self.button_000X_value = self.mode['buttons']['000X']
 
             bg = self.layout_radio.get_layout(labels=self.LABELS, cover=self.radio.cover, title=self.radio.stream_title)
             self.set_image(image=bg)
@@ -257,10 +257,10 @@ j.turn_off()
         j.set_display_jukebox()
         """
         if not self.test:
-            self.button_X000_value = self.mode['buttons']['X000']
-            self.button_0X00_value = self.mode['buttons']['0X00']
-            self.button_00X0_value = self.mode['buttons']['00X0']
-            self.button_000X_value = self.mode['buttons']['000X']
+            # self.button_X000_value = self.mode['buttons']['X000']
+            # self.button_0X00_value = self.mode['buttons']['0X00']
+            # self.button_00X0_value = self.mode['buttons']['00X0']
+            # self.button_000X_value = self.mode['buttons']['000X']
 
             # need to add None too, otherwise we might end up with
             # NoneType Error for self.inserted_media.cover_album
@@ -289,7 +289,7 @@ j.turn_off()
 
     def state_watcher_task(self):
         # assert self.jukebox.on, 'turn on jukebox before initiating state_watcher_task'
-        radio_media_info_title_previous = None
+        # radio_media_info_title_previous = None
 
         previous_mode = None
         # display_loading = False
@@ -361,7 +361,9 @@ j.turn_off()
                 # self.set_display_jukebox()
 
     def play_jukebox(self):
-        if not bool(self.jukebox.tracks) and self.playback_proc is None:
+        if self.jukebox.playing_track is not None:
+            return
+        elif not bool(self.jukebox.tracks):  # and self.playback_proc is None:
             LOG.info('No tracks ready')
             if self.jukebox.loading_process is not None:
                 LOG.info('Loading 1st track...')
@@ -369,6 +371,8 @@ j.turn_off()
                     self.set_display_jukebox()
                     self._loading_display_activated = True
             else:
+
+                # self.mode = MODES['jukebox']['standby'][self.jukebox.loader_mode]
                 LOG.warning('Not loading!!!')
             # print('no tracks ready')
             return
@@ -382,7 +386,7 @@ j.turn_off()
             #     LOG.exception('No JukeBox track ready yet.')
 
         # TODO implement Play/Next combo
-        if self.playback_proc is None and isinstance(self.inserted_media, JukeboxTrack):
+        if isinstance(self.inserted_media, JukeboxTrack):
             LOG.debug('Starting new playback thread')
             self.jukebox_playback_thread()
             self.set_display_jukebox()
@@ -390,17 +394,17 @@ j.turn_off()
             # update to zero after a new track
             # started
             # new_time = localtime(now())
-        elif self.playback_proc is not None:
-            LOG.debug('Playback thread playback_proc is not None')
-            if self.playback_proc.poll() == 0:
-                LOG.debug('Jukebox playback not active, setting playback_proc to None.')
-                # process finished. join()?
-                self.playback_proc = None
-                self.set_display_jukebox()
-            elif self.playback_proc.poll() is None:
-                LOG.debug('Jukebox playback active.')
-                # still playing
-                pass
+        # elif self.playback_proc is not None:
+        #     LOG.debug('Playback thread playback_proc is not None')
+        #     if self.playback_proc.poll() == 0:
+        #         LOG.debug('Jukebox playback not active, setting playback_proc to None.')
+        #         # process finished. join()?
+        #         self.playback_proc = None
+        #         self.set_display_jukebox()
+        #     elif self.playback_proc.poll() is None:
+        #         LOG.debug('Jukebox playback active.')
+        #         # still playing
+        #         pass
 
             # if self._current_time != new_time.strftime('%H:%M'):  # in stopped state
             #     if self._current_time is None or (int(new_time.strftime('%H:%M')[-2:])) % CLOCK_UPDATE_INTERVAL == 0:
@@ -514,18 +518,21 @@ j.turn_off()
         self._playback_thread.name = 'Playback Thread'
         self._playback_thread.daemon = False
         self._playback_thread.start()
+
         # self.set_display_jukebox()
 
     def _playback_task(self):
         LOG.info(f'starting playback thread: for {self.inserted_media.path} from {self.inserted_media.playing_from}')  # TODO add info
         # self.jukebox.playing_track = self.inserted_media
+        self.jukebox.playing_track = self.inserted_media
         self.inserted_media.play(jukeoroni=self)
+        self.jukebox.playing_track = None
         LOG.info('playback finished')
         # self.stop()
         self.eject()
         self._playback_thread = None
         self._jukebox_playback_thread = None
-        self.playback_proc = None
+        # self.playback_proc = None
         # self.mode = MODES['jukebox']['standby'][self.jukebox.loader_mode]
 
         # cleanup
@@ -671,7 +678,7 @@ j.turn_off()
 
     def next(self, media=None):
         assert self.inserted_media is not None, 'Can only go to next if media is inserted.'
-        assert self.playback_proc is not None, 'Can only go to next if media is playing.'
+        # assert self.playback_proc is not None, 'Can only go to next if media is playing.'
         assert media is None or isinstance(media, (Channel, JukeboxTrack)), 'can only insert Channel model'
 
         self.stop()
@@ -766,10 +773,13 @@ j.turn_off()
         # and here: top will be left on the screen,
         # bottom will be right on the screen
         return [
-                   self.button_X000_value,
-                   self.button_0X00_value,
-                   self.button_00X0_value,
-                   self.button_000X_value,
+                   self.mode['buttons']['X000'],
+                   self.mode['buttons']['0X00'],
+                   self.mode['buttons']['00X0'],
+                   self.mode['buttons']['000X'],
+                   # self.button_0X00_value,
+                   # self.button_00X0_value,
+                   # self.button_000X_value,
                ][::-1]  # reversed for readabilty (from left to right)
 
     ############################################
