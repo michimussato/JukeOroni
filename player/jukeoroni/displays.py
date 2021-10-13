@@ -210,6 +210,57 @@ class Jukebox(Layout):
         cover_size = self.main_size
 
         cover = cover.resize((cover_size, cover_size), Image.ANTIALIAS)
+        # TODO: corrupts PIL.Image
+        """
+Environment:
+
+
+Request Method: GET
+Request URL: http://localhost/jukeoroni/jukebox/
+
+Django Version: 3.2.5
+Python Version: 3.7.3
+Installed Applications:
+['player.apps.PlayerConfig',
+ 'django.contrib.admin',
+ 'django.contrib.auth',
+ 'django.contrib.contenttypes',
+ 'django.contrib.sessions',
+ 'django.contrib.messages',
+ 'django.contrib.staticfiles']
+Installed Middleware:
+['django.middleware.security.SecurityMiddleware',
+ 'django.contrib.sessions.middleware.SessionMiddleware',
+ 'django.middleware.common.CommonMiddleware',
+ 'django.middleware.csrf.CsrfViewMiddleware',
+ 'django.contrib.auth.middleware.AuthenticationMiddleware',
+ 'django.contrib.messages.middleware.MessageMiddleware',
+ 'django.middleware.clickjacking.XFrameOptionsMiddleware']
+
+
+
+Traceback (most recent call last):
+  File "/data/venv/lib/python3.7/site-packages/django/core/handlers/exception.py", line 47, in inner
+    response = get_response(request)
+  File "/data/venv/lib/python3.7/site-packages/django/core/handlers/base.py", line 181, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/data/django/jukeoroni/player/views.py", line 148, in jukebox_index
+    img = jukeoroni.jukebox.layout.get_layout(labels=jukeoroni.LABELS)
+  File "/data/django/jukeoroni/player/jukeoroni/displays.py", line 212, in get_layout
+    cover = cover.resize((cover_size, cover_size), Image.ANTIALIAS)
+  File "/data/venv/lib/python3.7/site-packages/PIL/Image.py", line 1978, in resize
+    im = self.convert({"LA": "La", "RGBA": "RGBa"}[self.mode])
+  File "/data/venv/lib/python3.7/site-packages/PIL/Image.py", line 915, in convert
+    self.load()
+  File "/data/venv/lib/python3.7/site-packages/PIL/ImageFile.py", line 274, in load
+    raise_oserror(err_code)
+  File "/data/venv/lib/python3.7/site-packages/PIL/ImageFile.py", line 67, in raise_oserror
+    raise OSError(message + " when reading image file")
+
+Exception Type: OSError at /jukeoroni/jukebox/
+Exception Value: unrecognized data stream contents when reading image file
+        """
+
 
         cover = cover.rotate(90, expand=True)
 

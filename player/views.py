@@ -209,28 +209,50 @@ class JukeOroniView(View):
         ret += '<div>Tracks in queue:</div>'
 
         ret += f'<ol>'
-        # TODO: button pop()
-        # TODO: button as next
+        ret += f'<table>'
         for track in jukeoroni.jukebox.tracks:
-            ret += '<li>{0}</li>'.format(track)
+            ret += f'<tr>'
+            ret += f'<td>'
+            ret += '<li>&nbsp;</li>'
+            ret += f'</td>'
+            ret += '<td>{0}</td>'.format(track)
+            ret += '<td><button onclick=\"window.location.href = \'/jukeoroni/jukebox/{0}/as_first\';\">Set 1st</button></td>'.format(str(jukeoroni.jukebox.tracks.index(track)))
+            ret += '<td><button onclick=\"window.location.href = \'/jukeoroni/jukebox/{0}/pop\';\">Remove from Queue</button></td>'.format(str(jukeoroni.jukebox.tracks.index(track)))
+            ret += f'</tr>'
+        ret += f'</table>'
         ret += f'</ol>'
         ret += f'<hr>'
         # if not jukeoroni.jukebox.tracks and bool(jukeoroni.jukebox.loading_process):
         #     ret += '<div><img src=\"file://{0}\" alt=\"Loading {1}...\"></div>'.format(_JUKEBOX_LOADING_IMAGE, str(jukeoroni.jukebox.loading_process._kwargs['track']))
-        ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/switch_mode\';\">Mode: {0}</button>\n'.format(str(jukeoroni.jukebox.loader_mode))
+        ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/jukebox/switch_mode\';\">Mode: {0}</button>\n'.format(str(jukeoroni.jukebox.loader_mode))
         # if bool(jukeoroni.jukebox.tracks):
 
-        ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/play_next\';\">{0}</button>\n'.format(jukeoroni.mode['buttons']['0X00'])
+        ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/jukebox/play_next\';\">{0}</button>\n'.format(jukeoroni.mode['buttons']['0X00'])
         # else:
         #     ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/play_next\';\" disabled>{0}</button>\n'.format(jukeoroni.mode['buttons']['0X00'])
         if jukeoroni.mode == MODES['jukebox']['on_air'][jukeoroni.jukebox.loader_mode]:
-            ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/stop\';\">Stop</button>\n'
+            ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/jukebox/stop\';\">Stop</button>\n'
         else:
-            ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/stop\';\" disabled>Stop</button>\n'
-        ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/albums\';\">Albums</button>\n'
+            ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/jukebox/stop\';\" disabled>Stop</button>\n'
+        ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/jukebox/albums\';\">Albums</button>\n'
         ret += '  </body>\n'
         ret += '</html>\n'
         return HttpResponse(ret)
+
+    def pop_track_from_queue(self, queue_index):
+        global jukeoroni
+
+        jukeoroni.jukebox.tracks.pop(queue_index)
+
+        return HttpResponseRedirect('/jukeoroni')
+
+    def set_first_in_queue(self, queue_index):
+
+        global jukeoroni
+
+        jukeoroni.jukebox.tracks.insert(0, jukeoroni.jukebox.tracks.pop(queue_index))
+
+        return HttpResponseRedirect('/jukeoroni')
 
     def switch_mode(self):
         global jukeoroni

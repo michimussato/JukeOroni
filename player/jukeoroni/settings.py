@@ -151,4 +151,4 @@ CLOCK_UPDATE_INTERVAL = 10  # in minutes
 
 
 # radar
-RADAR_UPDATE_INTERVAL = 15  # in minutes
+RADAR_UPDATE_INTERVAL = 5  # in minutes
