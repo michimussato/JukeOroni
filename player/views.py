@@ -57,7 +57,7 @@ class JukeOroniView(View):
             ret += '    <meta http-equiv="refresh" content="10" >\n'
             ret += '  </head>\n'
             ret += '  <body style="background-color:#{0};">\n'.format(bg_color)
-            ret += '<div style=\"text-align:center\">Hello JukeOroni</div>\n'
+            ret += '<center><h1>Hello JukeOroni</h1></center>\n'
             ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/set_jukebox\';\">Activate Jukebox</button>\n'
             ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/set_radio\';\">Activate Radio</button>\n'
 
@@ -117,7 +117,7 @@ class JukeOroniView(View):
         ret += '    <meta http-equiv="refresh" content="10" >\n'
         ret += '  </head>\n'
         ret += '  <body style="background-color:#{0};">\n'.format(bg_color)
-        ret += f'<button style=\"width:100%; \" onclick=\"window.location.href = \'/jukeoroni/set_standby\';\">Back to Standby</button>\n'
+        ret += f'<button style=\"width:100%; \" onclick=\"window.location.href = \'/jukeoroni/set_standby\';\">Back</button>\n'
         ret += '<hr>\n'
 
         _success = False
@@ -149,12 +149,13 @@ class JukeOroniView(View):
             ret += f'<div style="text-align: center;">{str(jukeoroni.inserted_media.track_title)}</div>'
 
         ret += f'<hr>'
-        ret += '<div>Currently loading: {0}</div>'.format(False if jukeoroni.jukebox.loading_track is None else jukeoroni.jukebox.loading_track)
+        ret += '<center><div>Loading</div></center>'
+        ret += '<center><div>{0}</div></center>'.format(False if jukeoroni.jukebox.loading_track is None else jukeoroni.jukebox.loading_track)
         ret += f'<hr>'
-        ret += '<div>Tracks in queue:</div>'
+        ret += '<center><div>Queue</div></center>'
 
         ret += f'<ol>'
-        ret += f'<table>'
+        ret += f'<center><table border="0">'
         for track in jukeoroni.jukebox.tracks:
             ret += f'<tr>'
             ret += f'<td>'
@@ -167,7 +168,7 @@ class JukeOroniView(View):
                 ret += '<td><button onclick=\"window.location.href = \'/jukeoroni/jukebox/{0}/as_first\';\">Set 1st</button></td>'.format(str(jukeoroni.jukebox.tracks.index(track)))
             ret += '<td><button onclick=\"window.location.href = \'/jukeoroni/jukebox/{0}/pop\';\">Remove from Queue</button></td>'.format(str(jukeoroni.jukebox.tracks.index(track)))
             ret += f'</tr>'
-        ret += f'</table>'
+        ret += f'</table></center>'
         ret += f'</ol>'
         ret += f'<hr>'
         ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/jukebox/switch_mode\';\">Mode: {0}</button>\n'.format(str(jukeoroni.jukebox.loader_mode))
@@ -228,6 +229,14 @@ class JukeOroniView(View):
 
     def albums(self):
         global jukeoroni
+
+        if not jukeoroni.mode == MODES['jukebox']['standby']['random'] \
+                and not jukeoroni.mode == MODES['jukebox']['standby']['album'] \
+                and not jukeoroni.mode == MODES['jukebox']['on_air']['random'] \
+                and not jukeoroni.mode == MODES['jukebox']['on_air']['album']:
+
+            return HttpResponseRedirect('/jukeoroni')
+
         artists = Artist.objects.all().order_by('name')
 
         bg_color = jukeoroni.jukebox.layout.bg_color
@@ -244,11 +253,11 @@ class JukeOroniView(View):
         for artist in artists:
             albums = Album.objects.filter(artist=artist).order_by('year', 'album_title')
             ret += f'<hr>'
-            ret += f'<center>{artist.name}</center>'
+            ret += f'<center><h1>{artist.name}</h1></center>'
             year = None
             for album in albums:
                 if year != album.year:
-                    ret += f'<center>{album.year}</center>'
+                    ret += f'<h4><center>{album.year}</center></h4>'
                     year = album.year
                 ret += '  <div>\n'
                 ret += f'        <button style=\"width:100%\" onclick=\"window.location.href = \'{album.id}\';\">{album.album_title}</button>\n'
@@ -304,7 +313,7 @@ class JukeOroniView(View):
         for station in stations:
             channels = Channel.objects.filter(station=station).order_by('display_name')
             if channels:
-                ret += f'<h2 style="text-align:center">{station.display_name}</h2>\n'
+                ret += f'<center><h1>{station.display_name}</h1></center>\n'
             for channel in channels:
                 if channel.is_enabled:
                     if channel == jukeoroni.radio.is_on_air:
