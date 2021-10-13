@@ -118,14 +118,16 @@ class Layout:
     radar = Radar()
     border = BORDER
     main_size = 420 - 2*BORDER - BUTTONS_HEIGHT
+    bg_color = (0, 0, 0, 255)
 
 
 class Standby(Layout):
+    bg_color = (255, 0, 0, 255)
 
     def get_layout(self, labels):
 
         buttons_overlay = buttons_img_overlay(labels=labels)
-        bg = Image.new(mode='RGBA', size=(600, 448), color=(255, 0, 0, 255))
+        bg = Image.new(mode='RGBA', size=(600, 448), color=self.bg_color)
         widget_clock = Image.new(mode='RGBA', size=(self.main_size, self.main_size), color=(0, 0, 0, 0))
         comp_clock = Image.new(mode='RGBA', size=widget_clock.size)
 
@@ -187,6 +189,7 @@ class Standby(Layout):
 
 
 class Jukebox(Layout):
+    bg_color = (0, 255, 0, 255)
 
     def get_layout(self, labels, loading=False, cover=None, artist=None):
 
@@ -205,7 +208,7 @@ class Jukebox(Layout):
                 assert isinstance(artist, Image.Image), 'artist cover type must be PIL.Image.Image() (not rotated)'
 
         buttons_overlay = buttons_img_overlay(labels)
-        bg = Image.new(mode='RGBA', size=(600, 448), color=(0, 255, 0, 255))
+        bg = Image.new(mode='RGBA', size=(600, 448), color=self.bg_color)
 
         cover_size = self.main_size
 
@@ -261,6 +264,30 @@ Exception Type: OSError at /jukeoroni/jukebox/
 Exception Value: unrecognized data stream contents when reading image file
         """
 
+        """
+Traceback (most recent call last):
+  File "/data/venv/lib/python3.7/site-packages/django/core/handlers/exception.py", line 47, in inner
+    response = get_response(request)
+  File "/data/venv/lib/python3.7/site-packages/django/core/handlers/base.py", line 181, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/data/django/jukeoroni/player/views.py", line 147, in jukebox_index
+    img = jukeoroni.jukebox.layout.get_layout(labels=jukeoroni.LABELS)
+  File "/data/django/jukeoroni/player/jukeoroni/displays.py", line 212, in get_layout
+    cover = cover.resize((cover_size, cover_size), Image.ANTIALIAS)
+  File "/data/venv/lib/python3.7/site-packages/PIL/Image.py", line 1978, in resize
+    im = self.convert({"LA": "La", "RGBA": "RGBa"}[self.mode])
+  File "/data/venv/lib/python3.7/site-packages/PIL/Image.py", line 915, in convert
+    self.load()
+  File "/data/venv/lib/python3.7/site-packages/PIL/ImageFile.py", line 237, in load
+    s = read(self.decodermaxblock)
+  File "/data/venv/lib/python3.7/site-packages/PIL/PngImagePlugin.py", line 896, in load_read
+    cid, pos, length = self.png.read()
+  File "/data/venv/lib/python3.7/site-packages/PIL/PngImagePlugin.py", line 166, in read
+    raise SyntaxError(f"broken PNG file (chunk {repr(cid)})")
+
+Exception Type: SyntaxError at /jukeoroni/jukebox/
+Exception Value: broken PNG file (chunk b"Em\xd5'")
+        """
 
         cover = cover.rotate(90, expand=True)
 
@@ -304,13 +331,14 @@ Exception Value: unrecognized data stream contents when reading image file
 
 
 class Radio(Layout):
+    bg_color = (0, 0, 255, 255)
 
     def get_layout(self, labels, cover, title):
 
         assert isinstance(cover, Image.Image), f'Radio Channel cover type must be PIL.Image.Image() (not rotated). Got: {cover}'
 
         buttons_overlay = buttons_img_overlay(labels)
-        bg = Image.new(mode='RGBA', size=(600, 448), color=(0, 0, 255, 255))
+        bg = Image.new(mode='RGBA', size=(600, 448), color=self.bg_color)
 
         cover_size = self.main_size
 
@@ -368,6 +396,7 @@ class Radio(Layout):
 
 
 class Off(Layout):
+    bg_color = (0, 0, 0, 255)
 
     # _clock = None
     # radar = None
@@ -377,7 +406,7 @@ class Off(Layout):
         assert isinstance(cover, Image.Image), f'Radio Channel cover type must be PIL.Image.Image() (not rotated). Got: {cover}'
 
         buttons_overlay = buttons_img_overlay(labels)
-        bg = Image.new(mode='RGBA', size=(600, 448), color=(0, 0, 0, 255))
+        bg = Image.new(mode='RGBA', size=(600, 448), color=self.bg_color)
 
         # cover_size = 448 - 2 * self.border
         cover_size = self.main_size

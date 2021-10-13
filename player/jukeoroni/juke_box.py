@@ -228,7 +228,7 @@ box.turn_off()
 
         self.requested_album_id = None
         self._need_first_album_track = False
-        self._auto_update_tracklist = True
+        self._auto_update_tracklist = False
 
         self.loading_queue = multiprocessing.Queue()
         self.tracks = []
@@ -553,7 +553,7 @@ box.turn_off()
                     second_track = album_tracks[1]
                     return second_track
 
-            if self.playing_track is None and not bool(self.tracks):
+            if self.playing_track is None and not bool(self.tracks) or self.requested_album_id is not None:
 
                 random_album = self.requested_album_id or random.choice(Album.objects.all())
                 album_tracks = DjangoTrack.objects.filter(album=random_album)
@@ -628,7 +628,9 @@ box.turn_off()
     def kill_loading_process(self):
         LOG.info('loading_process: {0}'.format(self.loading_process))
         # LOG.info('killing self.loading_process and resetting it to None')
-        if bool(self.tracks) or not bool(self.tracks) and self.playing_track is not None:
+        if bool(self.tracks) or \
+                not bool(self.tracks) and self.playing_track is not None \
+                or self.requested_album_id is not None:
             if self.loading_process is not None:
                 LOG.info('loading_process is active, trying to terminate and join...')
                 # os.kill(self.process_pid, signal.SIGKILL)
@@ -649,7 +651,8 @@ box.turn_off()
             # is it a problem if self.track is still empty?
             for track in self.tracks:
                 if track.cached and not track.is_playing:
-                    os.remove(track.cache_tmp)
+                    if os.path.exists(track.cache_tmp):
+                        os.remove(track.cache_tmp)
             self.tracks = []
             self._track_loader_thread = None
     ############################################

@@ -14,8 +14,8 @@ urlpatterns = [
     path('jukebox/stop/', JukeOroniView.stop, name='player_stop'),
     path('jukebox/switch_mode/', JukeOroniView.switch_mode, name='player_switch_mode'),
 
-    # path('jukebox/albums/<int:album_id>', JukeOroniView.play_album, name='player_play_album'),
-    # path('jukebox/albums/', JukeOroniView.albums, name='player_albums'),
+    path('jukebox/albums/<int:album_id>', JukeOroniView.play_album, name='player_play_album'),
+    path('jukebox/albums/', JukeOroniView.albums, name='player_albums'),
     # Radio
     path('radio/', JukeOroniView.radio_index, name='radio'),
     path('radio/<str:display_name_short>/play/', JukeOroniView.radio_play, name='radio_play'),
