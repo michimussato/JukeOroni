@@ -216,8 +216,14 @@ class JukeOroniView(View):
         # if not jukeoroni.jukebox.tracks and bool(jukeoroni.jukebox.loading_process):
         #     ret += '<div><img src=\"file://{0}\" alt=\"Loading {1}...\"></div>'.format(_JUKEBOX_LOADING_IMAGE, str(jukeoroni.jukebox.loading_process._kwargs['track']))
         ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/switch_mode\';\">Mode: {0}</button>\n'.format(str(jukeoroni.jukebox.loader_mode))
-        ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/play_next\';\">{0}</button>\n'.format(jukeoroni.mode['buttons']['0X00'])
-        ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/stop\';\">Stop</button>\n'
+        if bool(jukeoroni.jukebox.tracks):
+            ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/play_next\';\">{0}</button>\n'.format(jukeoroni.mode['buttons']['0X00'])
+        else:
+            ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/play_next\';\" disabled>{0}</button>\n'.format(jukeoroni.mode['buttons']['0X00'])
+        if jukeoroni.mode == MODES['jukebox']['on_air'][jukeoroni.jukebox.loader_mode]:
+            ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/stop\';\">Stop</button>\n'
+        else:
+            ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/stop\';\" disabled>Stop</button>\n'
         ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/albums\';\">Albums</button>\n'
         ret += '  </body>\n'
         ret += '</html>\n'
@@ -238,8 +244,12 @@ class JukeOroniView(View):
     def play_next(self):
         global jukeoroni
 
+        # if not bool(jukeoroni.jukebox.tracks)
+
         # jukeoroni.set_mode_jukebox()
         if jukeoroni.mode != MODES['jukebox']['on_air'][jukeoroni.jukebox.loader_mode]:
+            # if not bool(jukeoroni.jukebox.tracks):
+            #     return HttpResponseRedirect('/jukeoroni')
             jukeoroni.mode = MODES['jukebox']['on_air'][jukeoroni.jukebox.loader_mode]
         else:
             # if jukeoroni.inserted_media is not None:

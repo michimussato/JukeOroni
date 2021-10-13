@@ -72,7 +72,8 @@ BUTTONS_ICONS = {
     'Player': '/data/django/jukeoroni/player/static/buttons_overlay/icon_player.png',
     'Random -> Album': '/data/django/jukeoroni/player/static/buttons_overlay/icon_random.png',
     'Album -> Random': '/data/django/jukeoroni/player/static/buttons_overlay/icon_album.png',
-    'N//A': '/data/django/jukeoroni/player/static/buttons_overlay/icon_na.png',
+    # 'N//A': '/data/django/jukeoroni/player/static/buttons_overlay/icon_na.png',
+    'N//A': '',
     'Stop': '/data/django/jukeoroni/player/static/buttons_overlay/icon_stop.png',
     'Play': '/data/django/jukeoroni/player/static/buttons_overlay/icon_play.png',
     'Next': '/data/django/jukeoroni/player/static/buttons_overlay/icon_next.png',
@@ -87,6 +88,8 @@ def buttons_img_overlay(labels):
     n = 0
     for _label in labels[::-1]:
         n += 1
+        if not bool(BUTTONS_ICONS[_label]):
+            continue
         label = Image.open(BUTTONS_ICONS[_label])
         if invert:
             r, g, b, a = label.split()
