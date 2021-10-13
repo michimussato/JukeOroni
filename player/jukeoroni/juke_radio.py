@@ -30,8 +30,6 @@ class Radio(object):
         self._media_info_previous = {}
         self._media_info_thread = None
 
-        # self.media_info_updater_thread()
-
     @property
     def media_info(self):
         return self._media_info
@@ -50,9 +48,6 @@ class Radio(object):
 
     @property
     def stream_title(self):
-        # if bool(self.is_on_air) is None:
-        #     return None
-
         if bool(self.tag) and self.is_on_air is not None:
             if self.is_on_air.show_rds:
                 return self.tag.get('StreamTitle', None)
@@ -104,10 +99,6 @@ class Radio(object):
         if cover is None:
             raise TypeError('Channel cover is None')
 
-        # if cover.mode == 'RGB':
-        #     a_channel = Image.new('L', cover.size, 255)
-        #     cover.putalpha(a_channel)
-
         if cover.mode != 'RGBA':
             cover = cover.convert('RGBA')
 
@@ -128,20 +119,9 @@ class Radio(object):
 
     @property
     def last_played(self):
-        # last_played = Channel.objects.get(last_played=True)
-        # if bool(last_played):
-        #     return last_played
-        # else:
-        #     LOG.info('no last_played channel, returning random.')
-        #     return self.random_channel
         try:
-            # for channel in Channel.objects.all():
-            #     if channel.last_played:
-            #         return channel
-            # return None
             return Channel.objects.get(last_played=True)
         except Channel.DoesNotExist:
             # LOG.exception('no last_played channel, returning random.')
             LOG.info('no last_played channel, returning None.')
-            # return self.random_channel
             return None

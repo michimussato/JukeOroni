@@ -4,7 +4,6 @@ import os
 import logging
 import random
 import shutil
-# import signal
 import subprocess
 import tempfile
 import threading
@@ -31,26 +30,6 @@ from player.models import Album
 
 LOG = logging.getLogger(__name__)
 LOG.setLevel(GLOBAL_LOGGING_LEVEL)
-
-
-# class Process(multiprocessing.Process):
-#     def __init__(self, *args, **kwargs):
-#         super(Process, self).__init__(*args, **kwargs)
-#         self.track = kwargs['kwargs']['track']
-#     #
-#     #     self._stop = threading.Event()
-#     #
-#     # def stop(self):
-#     #     self._stop.set()
-#     #
-#     # def stopped(self):
-#     #     return self._stop.is_set()
-#     #
-#     # def run(self):
-#     #     while True:
-#     #         if self.stopped():
-#     #             return
-#     #         time.sleep(1.0)
 
 
 class JukeboxTrack(object):
@@ -113,7 +92,6 @@ class JukeboxTrack(object):
 
         """
         return self.django_track.album
-        # return Album.objects.get(track=self.django_track)
 
     @property
     def artist(self):
@@ -148,12 +126,6 @@ class JukeboxTrack(object):
             return None
         else:
             return Resource().from_url(url=self.artist.cover_online)
-        # kjzfg...
-        # artist_online = Resource().from_url(url=self.artist.cover_online)
-        # if bool(artist_online):
-        #     return artist_online
-        # else:
-        #     return None
 
     @property
     def media_info(self):
@@ -208,35 +180,26 @@ class JukeboxTrack(object):
     def is_playing(self):
         return bool(self.playing_proc)
 
-    # @property
-    # def next_track(self):
-    #     while not bool(self.tracks)
-    #     return self
-
     def play(self, jukeoroni):
         try:
             LOG.info(f'starting playback: \"{self.path}\" from: \"{self.playing_from}\"')
             self.django_track.played += 1
             self.django_track.save()
             jukeoroni.playback_proc = subprocess.Popen(FFPLAY_CMD + [self.playing_from], shell=False)
-            # jukeoroni.set_mode_jukebox()
             try:
                 jukeoroni.playback_proc.communicate()
             except AttributeError:
                 LOG.exception('track playback was stopped.')
-            # jukeoroni._playback_thread.join()
             LOG.info(f'playback finished: \"{self.path}\"')
             self.django_track.played += 1
             self.django_track.save()
         except Exception:
             LOG.exception('playback failed: \"{0}\"'.format(self.path))
         finally:
-            # jukeoroni.playback_proc = None
             if self.cached:
                 os.remove(self.cache_tmp)
                 LOG.info(f'removed from local filesystem: \"{self.cache_tmp}\"')
             jukeoroni.playback_proc = None
-            # jukeoroni.next(media=)
 
 
 class Jukebox(object):
@@ -254,7 +217,6 @@ box.turn_off()
 
         self.on = False
         self.loader_mode = 'random'
-        # self.set_mode_standby_random()
 
         self.jukeoroni = jukeoroni
 
@@ -279,17 +241,14 @@ box.turn_off()
     def temp_cleanup(self):
         temp_dir = tempfile.gettempdir()
         LOG.info(f'cleaning up {temp_dir}...')
-        # print(f'cleaning up {temp_dir}...')
         for filename in glob.glob(os.path.join(temp_dir, 'tmp*')):
             os.remove(filename)
         LOG.info('cleanup done.')
-        # print('cleanup done.')
 
     @property
     def next_track(self):
         if not bool(self.tracks):
             return None
-            # raise Exception('No tracks loaded yet.')
         return self.tracks.pop(0)
 
     def turn_on(self):
@@ -314,7 +273,6 @@ box.turn_off()
     ############################################
     # set modes
     def set_loader_mode_random(self):
-        # assert self.loader_mode != 'random', 'loader mode is already random'
         self.kill_loading_process()
         self.loader_mode = 'random'
 
@@ -324,24 +282,10 @@ box.turn_off()
         self.kill_loading_process()
 
     def set_loader_mode_album(self):
-        # assert self.loader_mode != 'album', 'loader mode is already album'
-        # self.tracks = []
         self.kill_loading_process()
         self.loader_mode = 'album'
         self._need_first_album_track = True
-
-    # def set_mode_standby_random(self):
-    #     self.mode = MODES['jukebox']['standby_random']
-    #
-    # def set_mode_standby_album(self):
-    #     self.mode = MODES['jukebox']['standby_album']
-    #
-    # def set_mode_on_air_random(self):
-    #     self.mode = MODES['jukebox']['on_air_random']
-    #
-    # def set_mode_on_air_album(self):
-    #     self.mode = MODES['jukebox']['on_air_album']
-    # ############################################
+    ############################################
 
     def set_auto_update_tracklist_on(self):
         self._auto_update_tracklist = True
@@ -493,8 +437,6 @@ box.turn_off()
     # track loader
     def track_loader_thread(self):
         assert self.on, 'jukebox must be on'
-        # assert self._track_loader_thread is None, 'Track Loader Thread is already running'
-        # if self._track_loader_thread is None:
         self._track_loader_thread = threading.Thread(target=self._track_loader_task)
         self._track_loader_thread.name = 'Track Loader Thread'
         self._track_loader_thread.daemon = False
@@ -524,15 +466,6 @@ box.turn_off()
                 self.loading_process = multiprocessing.Process(target=self._load_track_task, kwargs={'track': self.loading_track})
                 self.loading_process.name = 'Track Loader Task Process'
                 self.loading_process.start()
-                # LOG.info(self.loading_process.pid)
-                # LOG.info(self.loading_process.pid)
-                # LOG.info(self.loading_process.pid)
-                # LOG.info(self.loading_process.pid)
-                # LOG.info(self.loading_process.pid)
-                # LOG.info(self.loading_process.pid)
-                # LOG.info(self.loading_process.pid)
-                # LOG.info(self.loading_process.pid)
-                # self.process_pid = self.loading_process.pid
 
                 while self.loading_process is not None and self.loading_queue.empty():
                     LOG.debug(f'waiting for queue ({len(self.tracks)} of {MAX_CACHED_FILES})...')
@@ -562,13 +495,6 @@ box.turn_off()
 
             time.sleep(1.0)
 
-    # @property
-    # def loading_process_track(self):
-    #     if self.loading_process is None:
-    #         return None
-    #     else:
-    #         return self.loading_process._kwargs['track']
-
     def _load_track_task(self, **kwargs):
         track = kwargs['track']
         LOG.info(f'starting thread: \"{track.audio_source}\"')
@@ -582,9 +508,6 @@ box.turn_off()
             self.loading_queue.put(ret)
         except (MemoryError, OSError) as err:
             LOG.exception(f'loading failed: \"{track.audio_source}\": {err}')
-            # ret = None
-        # except OSError as err:
-        #     LOG.exception(f'loading failed: \"{track.audio_source}\": {err}')
 
         # here, or after that, probably processing_track.__del__() is called but pickled/recreated
         # in the main process
@@ -602,11 +525,6 @@ box.turn_off()
         #  is almost fully loaded
 
         # Random mode
-        # if self.mode == MODES['jukebox']['on_air_random'] or \
-        #         self.mode == MODES['jukebox']['standby_random'] or \
-        #         True:  # TODO remove later
-        # if self.jukeoroni.mode == MODES['jukebox']['standby_random'] or \
-        #     self.jukeoroni.mode == MODES['jukebox']['on_air_random']:
         if self.loader_mode == 'random':
             tracks = self.track_list
             if not bool(tracks):
@@ -617,32 +535,7 @@ box.turn_off()
         # Album mode
         elif self.loader_mode == 'album':
 
-            # raise NotImplementedError
-            # while self.loading_process is None:
-            #     time.sleep(1.0)
-
-            # print(self.loading_track)
-            # print(self.loading_process)
-            # print(self.loading_track)
-            # print(self.loading_track)
-            # print(self.loading_track)
-            # print(self.loading_track)
-
             if self._need_first_album_track and self.playing_track is not None:
-                
-                print('THTHTHTHTHTHTHTHT')
-                print('THTHTHTHTHTHTHTHT')
-                print('THTHTHTHTHTHTHTHT')
-                print('THTHTHTHTHTHTHTHT')
-                print('THTHTHTHTHTHTHTHT')
-                print('THTHTHTHTHTHTHTHT')
-                print(self.loading_track)
-                print(self.loading_track)
-                print(self.loading_track)
-                print(self.loading_track)
-                print(self.loading_track)
-                print(self.loading_track)
-                print(self.loading_track)
                 
                 # if we switch mode from Rand to Albm,
                 # we always want the first track of
@@ -661,23 +554,6 @@ box.turn_off()
                     return second_track
 
             if self.playing_track is None and not bool(self.tracks):
-                print('HERERERERERERERERER')
-                print('HERERERERERERERERER')
-                print('HERERERERERERERERER')
-                print('HERERERERERERERERER')
-                print('HERERERERERERERERER')
-                print('HERERERERERERERERER')
-                print('HERERERERERERERERER')
-                print('HERERERERERERERERER')
-                print(self.loading_track)
-                print(self.loading_track)
-                print(self.loading_track)
-                print(self.loading_track)
-
-                # if bool(self.loading_process):
-
-                #     self.kill_loading_process()
-                # # if self._need_first_album_track:
 
                 random_album = self.requested_album_id or random.choice(Album.objects.all())
                 album_tracks = DjangoTrack.objects.filter(album=random_album)
@@ -699,7 +575,6 @@ box.turn_off()
                 previous_track_id = self.tracks[-1].django_track.id
                 album = DjangoTrack.objects.get(id=previous_track_id).album
 
-
                 if self._need_first_album_track:
                     self._need_first_album_track = False
                     album_tracks = DjangoTrack.objects.filter(album=album)
@@ -710,9 +585,6 @@ box.turn_off()
                     else:
                         second_track = album_tracks[1]
                         return second_track
-
-                    # return first_track
-                    # first_track_id = first_track.id
 
                 next_track = DjangoTrack.objects.get(id=previous_track_id + 1)
 
@@ -752,7 +624,6 @@ box.turn_off()
                 return next_track
 
         return None
-        # raise Exception('we should not be here, no next track!!!')
 
     def kill_loading_process(self):
         LOG.info('loading_process: {0}'.format(self.loading_process))
@@ -771,8 +642,6 @@ box.turn_off()
                 # here: just wait for termination before proceeding
                 # self.loading_process.join()
             self.loading_process = None
-            # else:
-            #     self.jukeoroni._need_first_album_track = True
 
             # remove all cached tracks from the filesystem except the one
             # that is currently playing
@@ -784,4 +653,3 @@ box.turn_off()
             self.tracks = []
             self._track_loader_thread = None
     ############################################
-

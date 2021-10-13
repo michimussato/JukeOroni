@@ -1,14 +1,14 @@
 import base64
-import signal
+# import signal
 import time
 import io
 from django.http import HttpResponseRedirect, HttpResponse
 from django.views import View
 from player.jukeoroni.jukeoroni import JukeOroni
-from player.jukeoroni.juke_box import JukeboxTrack
+# from player.jukeoroni.juke_box import JukeboxTrack
 from player.models import Album, Channel, Station
 from player.jukeoroni.settings import (
-    _JUKEBOX_LOADING_IMAGE,
+    # _JUKEBOX_LOADING_IMAGE,
     MODES
 )
 
