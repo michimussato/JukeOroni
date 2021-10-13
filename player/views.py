@@ -144,9 +144,9 @@ class JukeOroniView(View):
         ret += f'<hr>'
 
         if jukeoroni.inserted_media is not None:
-            ret += f'<div>Artist: {str(jukeoroni.inserted_media.artist)}</div>'
-            ret += f'<div>Album: {str(jukeoroni.inserted_media.album)}</div>'
-            ret += f'<div>Track: {str(jukeoroni.inserted_media.track_title)}</div>'
+            ret += f'<div style="text-align: center;">{str(jukeoroni.inserted_media.artist)}</div>'
+            ret += f'<div style="text-align: center;">{str(jukeoroni.inserted_media.album)}</div>'
+            ret += f'<div style="text-align: center;">{str(jukeoroni.inserted_media.track_title)}</div>'
 
         ret += f'<hr>'
         ret += '<div>Currently loading: {0}</div>'.format(False if jukeoroni.jukebox.loading_track is None else jukeoroni.jukebox.loading_track)

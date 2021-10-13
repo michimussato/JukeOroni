@@ -35,11 +35,11 @@ class Album(models.Model):
 
     def __str__(self):
         # return '{0} ({1})'.format(self.album_title, self.artist_id.name)
-        return f'{self.album_title} ({self.artist.name})'
+        return f'{self.album_title}'
 
     def __repr__(self):
         # return '{0} ({1})'.format(self.album_title, self.artist_id.name)
-        return f'{self.album_title} ({self.artist.name})'
+        return f'{self.album_title}'
 
 
 class Track(models.Model):
