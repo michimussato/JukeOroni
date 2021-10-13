@@ -777,9 +777,6 @@ j.turn_off()
                    self.mode['buttons']['0X00'],
                    self.mode['buttons']['00X0'],
                    self.mode['buttons']['000X'],
-                   # self.button_0X00_value,
-                   # self.button_00X0_value,
-                   # self.button_000X_value,
                ][::-1]  # reversed for readabilty (from left to right)
 
     ############################################
