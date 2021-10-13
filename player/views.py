@@ -117,7 +117,7 @@ class JukeOroniView(View):
         ret += '    <meta http-equiv="refresh" content="10" >\n'
         ret += '  </head>\n'
         ret += '  <body style="background-color:#{0};">\n'.format(bg_color)
-        ret += f'<button style=\"width:100%; \" onclick=\"window.location.href = \'/jukeoroni/set_standby\';\">Back</button>\n'
+        ret += f'<button style=\"width:100%; \" onclick=\"window.location.href = \'/jukeoroni/set_standby\';\">Quit Jukebox</button>\n'
         ret += '<hr>\n'
 
         _success = False
@@ -155,7 +155,7 @@ class JukeOroniView(View):
         ret += '<center><div>Queue</div></center>'
 
         ret += f'<ol>'
-        ret += f'<center><table border="0">'
+        ret += f'<center><table border="0" cellspacing="0">'
         for track in jukeoroni.jukebox.tracks:
             ret += f'<tr>'
             ret += f'<td>'
@@ -298,7 +298,7 @@ class JukeOroniView(View):
         ret += '<meta http-equiv="refresh" content="10" >\n'
         ret += '</head>\n'
         ret += '<body style="background-color:#{0};">\n'.format(bg_color)
-        ret += f'<button style=\"width:100%; \" onclick=\"window.location.href = \'/jukeoroni/set_standby\';\">Back to Standby</button>\n'
+        ret += f'<button style=\"width:100%; \" onclick=\"window.location.href = \'/jukeoroni/set_standby\';\">Quit Radio</button>\n'
         ret += '<hr>\n'
 
         data = io.BytesIO()
