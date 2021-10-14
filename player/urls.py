@@ -16,6 +16,7 @@ urlpatterns = [
 
     path('jukebox/albums/<int:album_id>', JukeOroniView.play_album, name='player_play_album'),
     path('jukebox/albums/', JukeOroniView.albums, name='player_albums'),
+    path('jukebox/tracks/', JukeOroniView.tracks, name='player_tracks'),
     # Radio
     path('radio/', JukeOroniView.radio_index, name='radio'),
     path('radio/<str:display_name_short>/play/', JukeOroniView.radio_play, name='radio_play'),

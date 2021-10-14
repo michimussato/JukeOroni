@@ -4,7 +4,7 @@ import io
 from django.http import HttpResponseRedirect, HttpResponse
 from django.views import View
 from player.jukeoroni.jukeoroni import JukeOroni
-from player.models import Album, Channel, Station, Artist
+from player.models import Album, Channel, Station, Artist, Track
 from player.jukeoroni.settings import (
     MODES
 )
@@ -143,10 +143,13 @@ class JukeOroniView(View):
 
         ret += f'<hr>'
 
+        ret += '<center><div>Inserted/Playing</div></center>'
         if jukeoroni.inserted_media is not None:
             ret += f'<div style="text-align: center;">{str(jukeoroni.inserted_media.artist)}</div>'
             ret += f'<div style="text-align: center;">{str(jukeoroni.inserted_media.album)}</div>'
             ret += f'<div style="text-align: center;">{str(jukeoroni.inserted_media.track_title)}</div>'
+        else:
+            ret += '<div style="text-align: center;">None</div>'
 
         ret += f'<hr>'
         ret += '<center><div>Loading</div></center>'
@@ -178,6 +181,7 @@ class JukeOroniView(View):
         else:
             ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/jukebox/stop\';\" disabled>Stop</button>\n'
         ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/jukebox/albums\';\">Albums</button>\n'
+        ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/jukebox/tracks\';\">Tracks</button>\n'
         ret += '  </body>\n'
         ret += '</html>\n'
         return HttpResponse(ret)
@@ -226,6 +230,60 @@ class JukeOroniView(View):
 
         jukeoroni.mode = MODES['jukebox']['standby'][jukeoroni.jukebox.loader_mode]
         return HttpResponseRedirect('/jukeoroni')
+
+    def tracks(self):
+        global jukeoroni
+
+        if not jukeoroni.mode == MODES['jukebox']['standby']['random'] \
+                and not jukeoroni.mode == MODES['jukebox']['standby']['album'] \
+                and not jukeoroni.mode == MODES['jukebox']['on_air']['random'] \
+                and not jukeoroni.mode == MODES['jukebox']['on_air']['album']:
+
+            return HttpResponseRedirect('/jukeoroni')
+
+        tracks = Track.objects.all().order_by('album')
+
+        bg_color = jukeoroni.jukebox.layout.bg_color
+
+        if len(bg_color) == 3:
+            bg_color = '%02x%02x%02x' % bg_color
+        elif len(bg_color) == 4:
+            bg_color = '%02x%02x%02x%02x' % bg_color
+
+        ret = '<html>\n'
+        ret += '  <body style="background-color:#{0};">\n'.format(bg_color)
+        ret += '        <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni\';\">Back</button>\n'
+        ret += f'<hr>'
+        # ret += f'<table>'
+        ret += f'<div>{len(tracks)} tracks</div>'
+        ret += f'<hr>'
+
+        ret += f'<table border="0" cellspacing="0">'
+        ret += f'<tr>'
+        ret += f'<td>ID</td>'
+        # ret += f'<td>Album</td>'
+        # ret += f'<td>Artist</td>'
+        # ret += f'<td>Year</td>'
+        ret += f'<td>Path</td>'
+        ret += f'<td>Times played</td>'
+        # ret += f'<td></td>'
+        ret += f'</tr>'
+        for track in tracks:
+            ret += f'<tr>'
+            ret += f'<td>{track.id}</td>'
+            # ret += f'<td>{track.album_title()}</td>'
+            # ret += f'<td>{track.album.artist}</td>'
+            # ret += f'<td>{track.album.year}</td>'
+            ret += f'<td>{track}</td>'
+            ret += f'<td>{track.played}</td>'
+            ret += f'</tr>'
+
+            # ret += f'<div>{track} ({track.played})</div>'
+
+        ret += f'</table>'
+        ret += '  </body>\n'
+        ret += '</html>\n'
+        return HttpResponse(ret)
 
     def albums(self):
         global jukeoroni

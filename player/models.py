@@ -41,6 +41,9 @@ class Track(models.Model):
     def __repr__(self):
         return self.audio_source
 
+    def album_title(self):
+        return self.album.album_title
+
 
 class Station(models.Model):
     display_name = models.CharField(max_length=200, unique=True, null=False, blank=False)
