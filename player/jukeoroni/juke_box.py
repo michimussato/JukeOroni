@@ -445,6 +445,7 @@ box.turn_off()
         for django_track in django_tracks:
             if django_track.audio_source not in _files:
                 django_track.delete()
+                LOG.info(f'Track removed from DB: {django_track}')
 
         LOG.info(f'track list generated successfully: {len(_files)} tracks found')
     ############################################
