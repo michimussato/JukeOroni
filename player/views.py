@@ -32,6 +32,16 @@ def get_bg_color(rgb):
     return _hex
 
 
+def encoded_screen(img):
+    data = io.BytesIO()
+    # img = jukeoroni.layout_radio.get_layout(labels=jukeoroni.LABELS, cover=jukeoroni.radio.cover,
+    #                                         title=jukeoroni.radio.stream_title)
+    img = img.rotate(270, expand=True)
+    img.save(data, "PNG")
+    encoded_img_data = base64.b64encode(data.getvalue())
+    return encoded_img_data
+
+
 # Create your views here.
 # TODO: rmove player for unittesting new juke
 class JukeOroniView(View):
@@ -65,11 +75,8 @@ class JukeOroniView(View):
             ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/set_jukebox\';\">Activate Jukebox</button>\n'
             ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/set_radio\';\">Activate Radio</button>\n'
 
-            data = io.BytesIO()
             img = jukeoroni.layout_standby.get_layout(labels=jukeoroni.LABELS)
-            img = img.rotate(270, expand=True)
-            img.save(data, "PNG")
-            encoded_img_data = base64.b64encode(data.getvalue())
+            encoded_img_data = encoded_screen(img)
 
             ret += '<img id="picture" style="display:block;margin-left:auto;margin-right:auto;" src="data:image/jpeg;base64,{0}">\n'.format(str(encoded_img_data).lstrip('b\'').rstrip('\''))
             ret += '</body>\n'
@@ -121,7 +128,8 @@ class JukeOroniView(View):
 
         _success = False
 
-        data = io.BytesIO()
+        img = None
+        # data = io.BytesIO()
         if jukeoroni.mode == MODES['jukebox']['standby']['album'] \
                 or jukeoroni.mode == MODES['jukebox']['standby']['random']:
             img = jukeoroni.jukebox.layout.get_layout(labels=jukeoroni.LABELS)
@@ -133,12 +141,13 @@ class JukeOroniView(View):
             except AttributeError:
                 img = jukeoroni.jukebox.layout.get_layout(labels=jukeoroni.LABELS, loading=True)
                 # LOG.exception('inserted_media problem: ')
-        img = img.rotate(270, expand=True)
-        img.save(data, "PNG")
-        encoded_img_data = base64.b64encode(data.getvalue())
+        # img = img.rotate(270, expand=True)
+        # img.save(data, "PNG")
+        if img is not None:
+            encoded_img_data = encoded_screen(img)
 
-        ret += '<img id="picture" style="display:block;margin-left:auto;margin-right:auto;" src="data:image/jpeg;base64,{0}">\n'.format(
-            str(encoded_img_data).lstrip('b\'').rstrip('\''))
+            ret += '<img id="picture" style="display:block;margin-left:auto;margin-right:auto;" src="data:image/jpeg;base64,{0}">\n'.format(
+                str(encoded_img_data).lstrip('b\'').rstrip('\''))
 
         ret += f'<hr>'
 
@@ -276,10 +285,6 @@ class JukeOroniView(View):
             ret += f'<td>{track.played}</td>'
             ret += f'<td>{track}</td>'
             ret += f'</tr>'
-            # i += 1
-
-
-            # ret += f'<div>{track} ({track.played})</div>'
 
         ret += f'</table>'
         ret += '  </body>\n'
@@ -356,20 +361,35 @@ class JukeOroniView(View):
         ret += '<body style="background-color:#{0};">\n'.format(bg_color)
         ret += f'<button style=\"width:100%; \" onclick=\"window.location.href = \'/jukeoroni/set_standby\';\">Quit Radio</button>\n'
         ret += '<hr>\n'
+        last_played = jukeoroni.radio.last_played
+        # ret += f'{last_played}'
+        # ret += f'{str(type(last_played))}'
+        # ret += f'{last_played}'
+        if last_played is None or jukeoroni.radio.is_on_air:
+            ret += f'<button style=\"width:100%\" disabled>Last played</button>\n'
+        else:
+            ret += f'<button style=\"width:100%\" onclick=\"window.location.href = \'{last_played.display_name_short}/play\';\">Last played ({last_played.display_name})</button>\n'
+        ret += f'<button style=\"width:100%\" onclick=\"window.location.href = \'random/play\';\">Random</button>\n'
+        ret += '<hr>\n'
 
-        data = io.BytesIO()
+        # data = io.BytesIO()
+        # try:
         img = jukeoroni.layout_radio.get_layout(labels=jukeoroni.LABELS, cover=jukeoroni.radio.cover, title=jukeoroni.radio.stream_title)
-        img = img.rotate(270, expand=True)
-        img.save(data, "PNG")
-        encoded_img_data = base64.b64encode(data.getvalue())
+        encoded_img_data = encoded_screen(img)
+        # except:
+        #     img = None
+        # img = img.rotate(270, expand=True)
+        # img.save(data, "PNG")
 
+        # if img is not None:
         ret += '<img id="picture" style="display:block;margin-left:auto;margin-right:auto;" src="data:image/jpeg;base64,{0}">\n'.format(
             str(encoded_img_data).lstrip('b\'').rstrip('\''))
         ret += '<hr>\n'
+        ret += '<center><h1>Channels</h1></center>\n'
         for station in stations:
             channels = Channel.objects.filter(station=station).order_by('display_name')
             if channels:
-                ret += f'<center><h1>{station.display_name}</h1></center>\n'
+                ret += f'<center><h2>{station.display_name}</h2></center>\n'
             for channel in channels:
                 if channel.is_enabled:
                     if channel == jukeoroni.radio.is_on_air:
@@ -388,7 +408,10 @@ class JukeOroniView(View):
 
             return HttpResponseRedirect('/jukeoroni')
 
-        channel = Channel.objects.get(display_name_short=display_name_short)
+        if display_name_short == 'random':
+            channel = jukeoroni.radio.random_channel
+        else:
+            channel = Channel.objects.get(display_name_short=display_name_short)
 
         if jukeoroni.inserted_media is not None:
             jukeoroni._next = channel
