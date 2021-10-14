@@ -413,13 +413,29 @@ box.turn_off()
                 if os.path.splitext(_file)[1] in AUDIO_FILES:
                     file_path = os.path.join(path, _file)
                     query_track = DjangoTrack.objects.filter(audio_source__exact=file_path)
-                    if bool(query_track):
-                        model_track = query_track[0]
+                    if len(query_track) > 1:
+                        LOG.warning('Track in DB multiple times: {0}'.format(file_path))
+                        for track in query_track:
+                            track.delete()
+                            LOG.warning('Track deleted: {0}'.format(track))
+                        query_track = []
+                    if len(query_track) == 1:
+                        # model_track = query_track
+                        LOG.info('Track found in DB: {0}'.format(query_track))
+                        _edit = False
+                        if not query_track[0].album == model_album:
+                            query_track.update(album=model_album)
+                            LOG.info('Track album updated in DB: {0}'.format(query_track[0]))
+                        if not query_track[0].track_title == _file:
+                            query_track.update(track_title=_file)
+                            LOG.info('Track track_title updated in DB: {0}'.format(query_track[0]))
+                        # model_track.save()
 
                         # print('        track found in db')
                     else:
-                        model_track = DjangoTrack(album=model_album, audio_source=file_path)
-                        model_track.save()
+                        model_track = DjangoTrack.objects.create(album=model_album, audio_source=file_path, track_title=_file)
+                        LOG.info('Track created in DB: {0}'.format(model_track))
+                        # model_track.save()
                         # print('        track created in db')
 
                     _files.append(file_path)

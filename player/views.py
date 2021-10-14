@@ -23,6 +23,15 @@ jukeoroni.turn_on()
 jukeoroni.jukebox.set_auto_update_tracklist_on()
 
 
+def get_bg_color(rgb):
+    _hex = None
+    if len(rgb) == 3:
+        _hex = '%02x%02x%02x' % rgb
+    elif len(rgb) == 4:
+        _hex = '%02x%02x%02x%02x' % rgb
+    return _hex
+
+
 # Create your views here.
 # TODO: rmove player for unittesting new juke
 class JukeOroniView(View):
@@ -45,12 +54,7 @@ class JukeOroniView(View):
         elif jukeoroni.mode == MODES['jukeoroni']['standby'] \
                 or jukeoroni.mode == MODES['jukeoroni']['off']:
 
-            bg_color = jukeoroni.layout_standby.bg_color
-
-            if len(bg_color) == 3:
-                bg_color = '%02x%02x%02x' % bg_color
-            elif len(bg_color) == 4:
-                bg_color = '%02x%02x%02x%02x' % bg_color
+            bg_color = get_bg_color(jukeoroni.layout_standby.bg_color)
 
             ret = '<html>\n'
             ret += '  <head>\n'
@@ -105,12 +109,7 @@ class JukeOroniView(View):
 
             return HttpResponseRedirect('/jukeoroni')
 
-        bg_color = jukeoroni.jukebox.layout.bg_color
-
-        if len(bg_color) == 3:
-            bg_color = '%02x%02x%02x' % bg_color
-        elif len(bg_color) == 4:
-            bg_color = '%02x%02x%02x%02x' % bg_color
+        bg_color = get_bg_color(jukeoroni.jukebox.layout.bg_color)
 
         ret = '<html>\n'
         ret += '  <head>\n'
@@ -218,7 +217,7 @@ class JukeOroniView(View):
     def play_next(self):
         global jukeoroni
 
-        if jukeoroni.mode != MODES['jukebox']['on_air'][jukeoroni.jukebox.loader_mode]:
+        if not jukeoroni.mode == MODES['jukebox']['on_air'][jukeoroni.jukebox.loader_mode]:
             jukeoroni.mode = MODES['jukebox']['on_air'][jukeoroni.jukebox.loader_mode]
         else:
             jukeoroni._flag_next = True
@@ -243,12 +242,7 @@ class JukeOroniView(View):
 
         tracks = Track.objects.all().order_by('album')
 
-        bg_color = jukeoroni.jukebox.layout.bg_color
-
-        if len(bg_color) == 3:
-            bg_color = '%02x%02x%02x' % bg_color
-        elif len(bg_color) == 4:
-            bg_color = '%02x%02x%02x%02x' % bg_color
+        bg_color = get_bg_color(jukeoroni.jukebox.layout.bg_color)
 
         ret = '<html>\n'
         ret += '  <body style="background-color:#{0};">\n'.format(bg_color)
@@ -261,22 +255,29 @@ class JukeOroniView(View):
         ret += f'<table border="0" cellspacing="0">'
         ret += f'<tr>'
         ret += f'<td>ID</td>'
-        # ret += f'<td>Album</td>'
-        # ret += f'<td>Artist</td>'
-        # ret += f'<td>Year</td>'
-        ret += f'<td>Path</td>'
+        ret += f'<td>Track</td>'
+        ret += f'<td>Album</td>'
+        ret += f'<td>Artist</td>'
+        ret += f'<td>Year</td>'
         ret += f'<td>Times played</td>'
-        # ret += f'<td></td>'
+        ret += f'<td>Path</td>'
+        ret += f'<td></td>'
         ret += f'</tr>'
+        # i = 0
         for track in tracks:
+            # if i >= 20:
+            #     break
             ret += f'<tr>'
             ret += f'<td>{track.id}</td>'
-            # ret += f'<td>{track.album_title()}</td>'
-            # ret += f'<td>{track.album.artist}</td>'
-            # ret += f'<td>{track.album.year}</td>'
-            ret += f'<td>{track}</td>'
+            ret += f'<td>{track.track_title}</td>'
+            ret += f'<td>{track.album}</td>'
+            ret += f'<td>{track.album.artist}</td>'
+            ret += f'<td>{track.album.year}</td>'
             ret += f'<td>{track.played}</td>'
+            ret += f'<td>{track}</td>'
             ret += f'</tr>'
+            # i += 1
+
 
             # ret += f'<div>{track} ({track.played})</div>'
 
@@ -297,12 +298,7 @@ class JukeOroniView(View):
 
         artists = Artist.objects.all().order_by('name')
 
-        bg_color = jukeoroni.jukebox.layout.bg_color
-
-        if len(bg_color) == 3:
-            bg_color = '%02x%02x%02x' % bg_color
-        elif len(bg_color) == 4:
-            bg_color = '%02x%02x%02x%02x' % bg_color
+        bg_color = get_bg_color(jukeoroni.jukebox.layout.bg_color)
 
         ret = '<html>\n'
         ret += '  <body style="background-color:#{0};">\n'.format(bg_color)
@@ -327,6 +323,13 @@ class JukeOroniView(View):
     def play_album(self, album_id):
         global jukeoroni
 
+        if not jukeoroni.mode == MODES['jukebox']['standby']['random'] \
+                and not jukeoroni.mode == MODES['jukebox']['standby']['album'] \
+                and not jukeoroni.mode == MODES['jukebox']['on_air']['random'] \
+                and not jukeoroni.mode == MODES['jukebox']['on_air']['album']:
+
+            return HttpResponseRedirect('/jukeoroni')
+
         jukeoroni.mode = MODES['jukebox']['on_air']['album']
         if jukeoroni.jukebox.loader_mode != 'album':
             jukeoroni.jukebox.set_loader_mode_album()
@@ -337,19 +340,14 @@ class JukeOroniView(View):
     def radio_index(self):
         global jukeoroni
 
-        if jukeoroni.mode != MODES['radio']['standby'] \
-                and jukeoroni.mode != MODES['radio']['on_air']:
+        if not jukeoroni.mode == MODES['radio']['standby'] \
+                and not jukeoroni.mode == MODES['radio']['on_air']:
 
             return HttpResponseRedirect('/jukeoroni')
 
         stations = Station.objects.all().order_by('display_name')
 
-        bg_color = jukeoroni.layout_radio.bg_color
-
-        if len(bg_color) == 3:
-            bg_color = '%02x%02x%02x' % bg_color
-        elif len(bg_color) == 4:
-            bg_color = '%02x%02x%02x%02x' % bg_color
+        bg_color = get_bg_color(jukeoroni.layout_radio.bg_color)
 
         ret = '<html>\n'
         ret += '<head>\n'
@@ -385,6 +383,11 @@ class JukeOroniView(View):
     def radio_play(self, display_name_short):
         global jukeoroni
 
+        if not jukeoroni.mode == MODES['radio']['standby'] \
+                and not jukeoroni.mode == MODES['radio']['on_air']:
+
+            return HttpResponseRedirect('/jukeoroni')
+
         channel = Channel.objects.get(display_name_short=display_name_short)
 
         if jukeoroni.inserted_media is not None:
@@ -404,6 +407,11 @@ class JukeOroniView(View):
 
     def radio_stop(self):
         global jukeoroni
+
+        if not jukeoroni.mode == MODES['radio']['standby'] \
+                and not jukeoroni.mode == MODES['radio']['on_air']:
+
+            return HttpResponseRedirect('/jukeoroni')
 
         jukeoroni.mode = MODES['radio']['standby']
 

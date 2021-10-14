@@ -31,6 +31,7 @@ class Album(models.Model):
 
 
 class Track(models.Model):
+    track_title = models.CharField(max_length=200, unique=False, blank=True, null=True)
     album = models.ForeignKey(Album, on_delete=models.PROTECT, null=True)
     audio_source = models.CharField(max_length=200, unique=True, blank=False, null=False)
     played = models.IntegerField(default=0, unique=False)
@@ -41,8 +42,8 @@ class Track(models.Model):
     def __repr__(self):
         return self.audio_source
 
-    def album_title(self):
-        return self.album.album_title
+    # def album_title(self):
+    #     return self.album.album_title
 
 
 class Station(models.Model):
