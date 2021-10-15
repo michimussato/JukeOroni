@@ -11,12 +11,12 @@ Group=pi
 # another option for an even more restricted service is
 # DynamicUser=yes
 # see http://0pointer.net/blog/dynamic-users-with-systemd.html
-RuntimeDirectory=gunicorn
+# RuntimeDirectory=gunicorn
 WorkingDirectory=/data/django/jukeoroni
-ExecStart=/data/venv/bin/gunicorn jukeoroni.wsgi:application
+ExecStart=/data/venv/bin/gunicorn --timeout 60 --bind unix:/run/gunicorn.sock jukeoroni.wsgi:application
 ExecReload=/bin/kill -s HUP $MAINPID
 KillMode=mixed
-TimeoutStopSec=15
+TimeoutStopSec=5
 PrivateTmp=true
 
 [Install]
