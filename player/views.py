@@ -72,8 +72,8 @@ class JukeOroniView(View):
             ret += '  </head>\n'
             ret += '  <body style="background-color:#{0};">\n'.format(bg_color)
             ret += '<center><h1>Hello JukeOroni</h1></center>\n'
-            ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/set_jukebox\';\">Activate Jukebox</button>\n'
-            ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/set_radio\';\">Activate Radio</button>\n'
+            ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/set_jukebox\';\">Jukebox</button>\n'
+            ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/set_radio\';\">Radio</button>\n'
 
             img = jukeoroni.layout_standby.get_layout(labels=jukeoroni.LABELS)
             encoded_img_data = encoded_screen(img)
@@ -194,6 +194,26 @@ class JukeOroniView(View):
         ret += '</html>\n'
         return HttpResponse(ret)
 
+    # def play_track(self, track_id):
+    #     global jukeoroni
+    #
+    #     if not jukeoroni.mode == MODES['jukebox']['standby']['random'] \
+    #             and not jukeoroni.mode == MODES['jukebox']['standby']['album'] \
+    #             and not jukeoroni.mode == MODES['jukebox']['on_air']['random'] \
+    #             and not jukeoroni.mode == MODES['jukebox']['on_air']['album']:
+    #
+    #         return HttpResponseRedirect('/jukeoroni')
+    #
+    #     # jukeoroni.mode = MODES['jukebox']['on_air'][jukeoroni.jukebox.loader_mode]
+    #
+    #     # if jukeoroni.jukebox.loader_mode != 'album':
+    #     #     jukeoroni.jukebox.set_loader_mode_album()
+    #     jukeoroni.jukebox.play_track_by_id = track_id
+    #
+    #     # jukeoroni._flag_next = True
+    #
+    #     return HttpResponseRedirect('/jukeoroni')
+
     def pop_track_from_queue(self, queue_index):
         global jukeoroni
 
@@ -264,6 +284,7 @@ class JukeOroniView(View):
         ret += f'<table border="0" cellspacing="0">'
         ret += f'<tr>'
         ret += f'<td>ID</td>'
+        ret += f'<td><button>Play</button></td>'
         ret += f'<td>Track</td>'
         ret += f'<td>Album</td>'
         ret += f'<td>Artist</td>'
@@ -278,6 +299,8 @@ class JukeOroniView(View):
             #     break
             ret += f'<tr>'
             ret += f'<td>{track.id}</td>'
+            # ret += f'<td>{track.id}</td>'
+            ret += f'<td><button onclick=\"window.location.href = \'play_track/{track.id}\';\" disabled>Play</button></td>'
             ret += f'<td>{track.track_title}</td>'
             ret += f'<td>{track.album}</td>'
             ret += f'<td>{track.album.artist}</td>'

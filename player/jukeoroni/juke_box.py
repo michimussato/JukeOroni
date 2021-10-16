@@ -215,6 +215,7 @@ box.turn_off()
     """
     def __init__(self, jukeoroni):
 
+        # self.play_track_by_id = None
         self.on = False
         self.loader_mode = 'random'
 
@@ -280,6 +281,17 @@ box.turn_off()
         self.requested_album_id = album_id
         self.loader_mode = 'album'
         self.kill_loading_process()
+
+    def play_track(self, track_id):
+        self.kill_loading_process(force=True)
+        return DjangoTrack.objects.get(id=track_id)
+        # # first_track_id = first_track.id
+        # if first_track_id != previous_track_id:
+        #     return first_track
+        # else:
+        #     # first_track = album_tracks[0]
+        #     second_track = album_tracks[1]
+        #     return second_track
 
     def set_loader_mode_album(self):
         self.kill_loading_process()
@@ -540,6 +552,22 @@ box.turn_off()
         #  because of this, we always have
         #  to start clean, even if the track
         #  is almost fully loaded
+
+        # if self.play_track_by_id is not None:
+        #     _id = self.play_track_by_id
+        #     self.play_track_by_id = None
+        #     # def play_track(self, track_id):
+        #     self.kill_loading_process()
+        #     LOG.info(_id)
+        #     LOG.info(_id)
+        #     LOG.info(_id)
+        #     LOG.info(_id)
+        #     LOG.info(_id)
+        #     LOG.info(_id)
+        #     LOG.info(_id)
+        #     LOG.info(_id)
+        #     LOG.info(_id)
+        #     return DjangoTrack.objects.get(id=_id)
 
         # Random mode
         if self.loader_mode == 'random':

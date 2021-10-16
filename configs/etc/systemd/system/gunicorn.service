@@ -13,7 +13,7 @@ Group=pi
 # see http://0pointer.net/blog/dynamic-users-with-systemd.html
 # RuntimeDirectory=gunicorn
 WorkingDirectory=/data/django/jukeoroni
-ExecStart=/data/venv/bin/gunicorn --timeout 60 --bind unix:/run/gunicorn.sock jukeoroni.wsgi:application
+ExecStart=/data/venv/bin/gunicorn --timeout 180 --bind unix:/run/gunicorn.sock jukeoroni.wsgi:application
 ExecReload=/bin/kill -s HUP $MAINPID
 KillMode=mixed
 TimeoutStopSec=5

@@ -99,6 +99,16 @@ MODES = {
                     '000X': 'Album -> Random',
                 },
             },
+            # 'track': {
+            #     'numeric': 2.5,
+            #     'name': 'jukebox standby track',
+            #     'buttons': {
+            #         'X000': 'Stop',
+            #         '0X00': 'Next',
+            #         '00X0': 'N//A',
+            #         '000X': 'Album -> Random',
+            #     },
+            # },
         },
         'on_air': {
             'random': {
@@ -121,6 +131,16 @@ MODES = {
                     '000X': 'Album -> Random',
                 },
             },
+            # 'track': {
+            #     'numeric': 2.4,
+            #     'name': 'jukebox on_air album track',
+            #     'buttons': {
+            #         'X000': 'Stop',
+            #         '0X00': 'Next',
+            #         '00X0': 'N//A',
+            #         '000X': 'Album -> Random',
+            #     },
+            # },
         },
     },
 }
