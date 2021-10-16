@@ -20,7 +20,7 @@ PIMORONI_FONT = '/data/django/jukeoroni/player/static/gotham-black.ttf'
 
 jukeoroni = JukeOroni(test=False)
 jukeoroni.turn_on()
-jukeoroni.jukebox.set_auto_update_tracklist_on()
+# jukeoroni.jukebox.set_auto_update_tracklist_on()
 
 
 def get_bg_color(rgb):
@@ -159,9 +159,10 @@ class JukeOroniView(View):
         else:
             ret += '<div style="text-align: center;">None</div>'
 
-        ret += f'<hr>'
-        ret += '<center><div>Loading</div></center>'
-        ret += '<center><div>{0}</div></center>'.format('None' if jukeoroni.jukebox.loading_track is None else f'{jukeoroni.jukebox.loading_track.artist} - {jukeoroni.jukebox.loading_track.album} ({jukeoroni.jukebox.loading_track.year}) - {jukeoroni.jukebox.loading_track.track_title} - ({str(round(jukeoroni.jukebox.loading_track.size_cached / (1024.0 * 1024.0), 1))} of {str(round(jukeoroni.jukebox.loading_track.size / (1024.0 * 1024.0), 1))} MB)')
+        if jukeoroni.jukebox.loading_track is not None:
+            ret += f'<hr>'
+            ret += '<center><div>Loading</div></center>'
+            ret += '<center><div>{0}</div></center>'.format(f'{jukeoroni.jukebox.loading_track.artist} - {jukeoroni.jukebox.loading_track.album} ({jukeoroni.jukebox.loading_track.year}) - {jukeoroni.jukebox.loading_track.track_title} ({str(round(jukeoroni.jukebox.loading_track.size_cached / (1024.0 * 1024.0), 1))} of {str(round(jukeoroni.jukebox.loading_track.size / (1024.0 * 1024.0), 1))} MB)')
         ret += f'<hr>'
         ret += '<center><div>Queue</div></center>'
 

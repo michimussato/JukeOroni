@@ -4,6 +4,7 @@ import os
 import logging
 import random
 import shutil
+import signal
 import subprocess
 import tempfile
 import threading
@@ -39,8 +40,10 @@ class JukeboxTrack(object):
         self.cached = cached
         self.cache_tmp = None
         self.playing_proc = None
+        self.killed = False
 
         self._size = None
+        self.cache_tmp = None
         self._cache_task_thread = None
 
     def __str__(self):
@@ -134,15 +137,31 @@ class JukeboxTrack(object):
     def media_info(self):
         return mediainfo(self.path)
 
+    # def cache_tmp(self):
+    #     if self._cache_tmp is None:
+    #         self._cache_tmp = tempfile.mkstemp()[1]
+    #     return self._cache_tmp
+
     def _cache(self):
-        self.cache_tmp = tempfile.mkstemp()[1]
+        # self.cache_tmp = tempfile.mkstemp()[1]
         LOG.info(f'copying to local filesystem: \"{self.path}\" as \"{self.cache_tmp}\"')
         shutil.copy(self.path, self.cache_tmp)
 
+    # def kill_thread(self):
+    #     signal.SIGKILL(self._cache_task_thread.p)
+
+    def kill_caching_process(self):
+        if self._cache_task_thread is not None:
+
+            self._cache_task_thread.kill()
+            self._cache_task_thread.join()
+            self.killed = True
+
     def cache(self):
-        self._cache_task_thread = threading.Thread(target=self._cache)
+        self._cache_task_thread = multiprocessing.Process(target=self._cache)
         self._cache_task_thread.name = 'Track Cacher Progress Thread'
         self._cache_task_thread.daemon = False
+        self.cache_tmp = tempfile.mkstemp()[1]
         self._cache_task_thread.start()
 
         _interval = float(5)
@@ -211,6 +230,7 @@ class JukeboxTrack(object):
             LOG.exception('playback failed: \"{0}\"'.format(self.path))
         finally:
             if self.cached:
+                # TODO add to self.__delete__()
                 os.remove(self.cache_tmp)
                 LOG.info(f'removed from local filesystem: \"{self.cache_tmp}\"')
             jukeoroni.playback_proc = None
@@ -245,9 +265,8 @@ box.turn_off()
         self._need_first_album_track = False
         self._auto_update_tracklist = False
 
-        self.loading_queue = multiprocessing.Queue()
         self.tracks = []
-        self.loading_process = None
+        # self.loading_process = None
         self.loading_track = None
 
         self._track_list_generator_thread = None
@@ -488,9 +507,9 @@ box.turn_off()
     def _track_loader_task(self):
         while self.on:
             LOG.debug(f'{len(self.tracks)} of {MAX_CACHED_FILES} tracks cached. Queue: {self.tracks}')
-            LOG.debug(f'Loading process active: {bool(self.loading_process)}')
+            # LOG.debug(f'Loading process active: {bool(self.loading_process)}')
 
-            if len(self.tracks) + int(bool(self.loading_process)) < MAX_CACHED_FILES and not bool(self.loading_process):
+            if len(self.tracks) < MAX_CACHED_FILES:
                 loading_track = self.get_next_track()
                 if loading_track is None:
                     # print(str(next_track))
@@ -500,10 +519,12 @@ box.turn_off()
                 self.loading_track = JukeboxTrack(loading_track, cached=True)
                 self.loading_track.cache()
 
-                self.loading_process = None
-                loading_track_copy = self.loading_track
-                self.loading_track = None
-                self.tracks.append(loading_track_copy)
+                # self.loading_process = None
+                if self.loading_track is not None:
+                    if not self.loading_track.killed:
+                        loading_track_copy = self.loading_track
+                        self.tracks.append(loading_track_copy)
+                    self.loading_track = None
 
             time.sleep(1.0)
 
@@ -654,24 +675,26 @@ box.turn_off()
         return None
 
     def kill_loading_process(self):
-        LOG.info('loading_process: {0}'.format(self.loading_process))
+        # if self.loading_track is not None:
+            # LOG.info('loading_process: {0}'.format(self.loading_track._))
         # LOG.info('killing self.loading_process and resetting it to None')
         if bool(self.tracks) or \
                 not bool(self.tracks) and self.playing_track is not None \
                 or self.requested_album_id is not None:
-            if self.loading_process is not None:
+            if self.loading_track is not None:
                 LOG.info('loading_process is active, trying to terminate and join...')
                 # os.kill(self.process_pid, signal.SIGKILL)
                 # TODO try kill()
-                self.loading_process.kill()  # SIGKILL
-                # self.loading_process.terminate()  # SIGTERM Does not join
-                LOG.info('loading_process terminated.')
-                self.loading_process.join()
-                LOG.info('loading_process terminated and joined')
+                self.loading_track.kill_caching_process()
+                # self.loading_track.kill()  # SIGKILL
+                # # self.loading_process.terminate()  # SIGTERM Does not join
+                # LOG.info('loading_process terminated.')
+                # self.loading_process.join()
+                # LOG.info('loading_process terminated and joined')
                 # a process can be joined multiple times:
                 # here: just wait for termination before proceeding
                 # self.loading_process.join()
-            self.loading_process = None
+            self.loading_track = None
 
             # remove all cached tracks from the filesystem except the one
             # that is currently playing
@@ -680,7 +703,10 @@ box.turn_off()
             for track in self.tracks:
                 if track.cached and not track.is_playing:
                     if os.path.exists(track.cache_tmp):
-                        os.remove(track.cache_tmp)
+                        try:
+                            os.remove(track.cache_tmp)
+                        except FileNotFoundError:
+                            LOG.exception('Tempfile not found:')
             self.tracks = []
             self._track_loader_thread = None
     ############################################
