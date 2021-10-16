@@ -161,7 +161,7 @@ class JukeOroniView(View):
 
         ret += f'<hr>'
         ret += '<center><div>Loading</div></center>'
-        ret += '<center><div>{0}</div></center>'.format('None' if jukeoroni.jukebox.loading_track is None else f'{jukeoroni.jukebox.loading_track.album.artist} - {jukeoroni.jukebox.loading_track.album} ({jukeoroni.jukebox.loading_track.album.year}) - {jukeoroni.jukebox.loading_track.track_title}')
+        ret += '<center><div>{0}</div></center>'.format('None' if jukeoroni.jukebox.loading_track is None else f'{jukeoroni.jukebox.loading_track.artist} - {jukeoroni.jukebox.loading_track.album} ({jukeoroni.jukebox.loading_track.year}) - {jukeoroni.jukebox.loading_track.track_title} - ({str(round(jukeoroni.jukebox.loading_track.size_cached / (1024.0 * 1024.0), 1))} of {str(round(jukeoroni.jukebox.loading_track.size / (1024.0 * 1024.0), 1))} MB)')
         ret += f'<hr>'
         ret += '<center><div>Queue</div></center>'
 

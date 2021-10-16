@@ -41,9 +41,7 @@ class JukeboxTrack(object):
         self.playing_proc = None
 
         self._size = None
-
-        if self.cached:
-            self.cache()
+        self._cache_task_thread = None
 
     def __str__(self):
         return f'{self.artist} - {self.album} - {self.track_title}'
@@ -53,7 +51,8 @@ class JukeboxTrack(object):
 
     @property
     def track_title(self):
-        return self.path.split(os.sep)[-1]
+        return self.django_track.track_title
+        # return self.path.split(os.sep)[-1]
 
     @property
     def album(self):
@@ -92,6 +91,10 @@ class JukeboxTrack(object):
 
         """
         return self.django_track.album
+
+    @property
+    def year(self):
+        return self.album.year
 
     @property
     def artist(self):
@@ -137,15 +140,15 @@ class JukeboxTrack(object):
         shutil.copy(self.path, self.cache_tmp)
 
     def cache(self):
-        _cache_task_thread = threading.Thread(target=self._cache)
-        _cache_task_thread.name = 'Track Cacher Progress Thread'
-        _cache_task_thread.daemon = False
-        _cache_task_thread.start()
+        self._cache_task_thread = threading.Thread(target=self._cache)
+        self._cache_task_thread.name = 'Track Cacher Progress Thread'
+        self._cache_task_thread.daemon = False
+        self._cache_task_thread.start()
 
         _interval = float(5)
         _waited = None
         _size_cached = 0
-        while _cache_task_thread.is_alive():
+        while self.is_caching:
             if _waited is None or _waited % _interval == 0:
                 _waited = 0
 
@@ -153,12 +156,23 @@ class JukeboxTrack(object):
 
                 _size_cached = self.size_cached
 
+                # self.progress =
+
                 LOG.info(f'{str(round(self.size_cached / (1024.0 * 1024.0), 3))} MB of {str(round(self.size / (1024.0 * 1024.0), 3))} MB loaded'
                          f' ~({str(round(_gain / (1024.0 * 1024.0 * _interval), 3))} MB/s)'
                          f' ({self})')
 
             time.sleep(1.0)
             _waited += 1
+
+        # self._cache_task_thread = None
+
+    @property
+    def is_caching(self):
+        if self._cache_task_thread is None:
+            return False
+        else:
+            return self._cache_task_thread.is_alive()
 
     @property
     def size(self):
@@ -477,70 +491,39 @@ box.turn_off()
             LOG.debug(f'Loading process active: {bool(self.loading_process)}')
 
             if len(self.tracks) + int(bool(self.loading_process)) < MAX_CACHED_FILES and not bool(self.loading_process):
-                self.loading_track = self.get_next_track()
-                if self.loading_track is None:
+                loading_track = self.get_next_track()
+                if loading_track is None:
                     # print(str(next_track))
                     time.sleep(1.0)
                     continue
 
-                # threading approach seems causing problems if we actually need to empty
-                # self.tracks. the thread will finish and add the cached track to self.tracks
-                # afterwards because we cannot kill the running thread
-
-                # multiprocessing approach
-                # this approach apparently destroys the Track object that it uses to cache
-                # data. when the Queue handles over that cached object, it seems like
-                # it re-creates the Track object (pickle, probably) but the cached data is
-                # gone of course because __del__ was called before that already.
-                self.loading_process = multiprocessing.Process(target=self._load_track_task, kwargs={'track': self.loading_track})
-                self.loading_process.name = 'Track Loader Task Process'
-                self.loading_process.start()
-
-                while self.loading_process is not None and self.loading_queue.empty():
-                    LOG.debug(f'waiting for queue ({len(self.tracks)} of {MAX_CACHED_FILES})...')
-                    time.sleep(1.0)
-
-                if self.loading_process is not None:
-                    LOG.debug('Queue ready.')
-                    # self.loading_process waits for a result
-                    # which it won't receive in case we killed
-                    # the loading process (mode switch), so
-                    # we would get stuck here if self.loading_process
-                    # was None
-                    ret = self.loading_queue.get()
-
-                    if self.loading_process.exitcode:
-                        raise Exception('Exit code not 0')
-
-                    if ret is not None:
-                        LOG.debug(f'Track appended: {ret}')
-                        self.tracks.append(ret)
-
-                else:
-                    LOG.debug(f'loading process terminated: {self.loading_process is None}')
+                self.loading_track = JukeboxTrack(loading_track, cached=True)
+                self.loading_track.cache()
 
                 self.loading_process = None
+                loading_track_copy = self.loading_track
                 self.loading_track = None
+                self.tracks.append(loading_track_copy)
 
             time.sleep(1.0)
 
-    def _load_track_task(self, **kwargs):
-        track = kwargs['track']
-        LOG.info(f'starting thread: \"{track.audio_source}\"')
-
-        try:
-            size = os.path.getsize(track.audio_source)
-            LOG.info(f'loading track ({str(round(size / (1024*1024), 3))} MB): \"{track.audio_source}\"')
-            processing_track = JukeboxTrack(track)
-            LOG.info(f'loading successful: \"{track.audio_source}\"')
-            ret = processing_track
-            self.loading_queue.put(ret)
-        except (MemoryError, OSError) as err:
-            LOG.exception(f'loading failed: \"{track.audio_source}\": {err}')
-
-        # here, or after that, probably processing_track.__del__() is called but pickled/recreated
-        # in the main process
-        # self.loading_queue.put(ret)
+    # def _load_track_task(self, **kwargs):
+    #     track = kwargs['track']
+    #     LOG.info(f'starting thread: \"{track.audio_source}\"')
+    #
+    #     try:
+    #         size = os.path.getsize(track.audio_source)
+    #         LOG.info(f'loading track ({str(round(size / (1024*1024), 3))} MB): \"{track.audio_source}\"')
+    #         processing_track = JukeboxTrack(track)
+    #         LOG.info(f'loading successful: \"{track.audio_source}\"')
+    #         ret = processing_track
+    #         self.loading_queue.put(ret)
+    #     except (MemoryError, OSError) as err:
+    #         LOG.exception(f'loading failed: \"{track.audio_source}\": {err}')
+    #
+    #     # here, or after that, probably processing_track.__del__() is called but pickled/recreated
+    #     # in the main process
+    #     # self.loading_queue.put(ret)
 
     @property
     def track_list(self):
