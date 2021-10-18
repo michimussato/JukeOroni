@@ -99,6 +99,8 @@ j.turn_off()
         # TODO rename to headless
         self.test = test
 
+        self.paused = False
+
         self.on = False
         self.mode = None
         self.set_mode_off()
@@ -358,7 +360,7 @@ j.turn_off()
             return
         elif not bool(self.jukebox.tracks):  # and self.playback_proc is None:
             LOG.info('No tracks ready')
-            if self.jukebox.loading_process is not None:
+            if self.jukebox.loading_track is not None:
                 LOG.info('Loading 1st track...')
                 if not self._loading_display_activated:
                     self.set_display_jukebox()
@@ -472,19 +474,21 @@ j.turn_off()
                 LOG.error(f'Channel stream return code is not 200: {str(response.status)}')
                 raise Exception(f'Channel stream return code is not 200: {str(response.status)}')
 
-    # def pause(self):
-    #     assert self.inserted_media is not None, 'no media inserted. insert media first.'
-    #     assert self.playback_proc is not None, 'no playback is active. play() media first'
-    #     assert self.playback_proc.poll() is None, 'playback_proc was terminated. start playback first'
-    #     self.playback_proc.send_signal(signal.SIGSTOP)
-    #
-    #     # TODO: pause icon overlay
-    #
-    # def resume(self):
-    #     assert self.inserted_media is not None, 'no media inserted. insert media first.'
-    #     assert self.playback_proc is not None, 'no playback is active. play() media first'
-    #     assert self.playback_proc.poll() is None, 'playback_proc was terminated. start playback first'
-    #     self.playback_proc.send_signal(signal.SIGCONT)
+    def pause(self):
+        assert self.inserted_media is not None, 'no media inserted. insert media first.'
+        assert self.playback_proc is not None, 'no playback is active. play() media first'
+        assert self.playback_proc.poll() is None, 'playback_proc was terminated. start playback first'
+        self.playback_proc.send_signal(signal.SIGSTOP)
+        self.paused = True
+
+        # TODO: pause icon overlay
+
+    def resume(self):
+        assert self.inserted_media is not None, 'no media inserted. insert media first.'
+        assert self.playback_proc is not None, 'no playback is active. play() media first'
+        assert self.playback_proc.poll() is None, 'playback_proc was terminated. start playback first'
+        self.playback_proc.send_signal(signal.SIGCONT)
+        self.paused = False
 
     def stop(self):
         if isinstance(self.playback_proc, subprocess.Popen):

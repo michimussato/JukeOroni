@@ -225,7 +225,6 @@ class JukeboxTrack(object):
                 LOG.exception('track playback was stopped.')
             LOG.info(f'playback finished: \"{self.path}\"')
             # self.django_track.played += 1
-            # self.django_track.save()
         except Exception:
             LOG.exception('playback failed: \"{0}\"'.format(self.path))
         finally:

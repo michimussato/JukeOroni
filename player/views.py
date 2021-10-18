@@ -74,6 +74,7 @@ class JukeOroniView(View):
             ret += '<center><h1>Hello JukeOroni</h1></center>\n'
             ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/set_jukebox\';\">Jukebox</button>\n'
             ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/set_radio\';\">Radio</button>\n'
+            ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/transmission\';\">Transmission</button>\n'
 
             img = jukeoroni.layout_standby.get_layout(labels=jukeoroni.LABELS)
             encoded_img_data = encoded_screen(img)
@@ -185,15 +186,41 @@ class JukeOroniView(View):
         ret += f'<hr>'
         ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/jukebox/switch_mode\';\">Mode: {0}</button>\n'.format(str(jukeoroni.jukebox.loader_mode))
         ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/jukebox/play_next\';\">{0}</button>\n'.format(jukeoroni.mode['buttons']['0X00'])
+
+        if jukeoroni.paused:
+           ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/resume\';\">Resume</button>\n'
+        else:
+            if jukeoroni.mode == MODES['jukebox']['on_air'][jukeoroni.jukebox.loader_mode]:
+                ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/pause\';\">Pause</button>\n'
+            else:
+                ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/pause\';\" disabled>Pause</button>\n'
         if jukeoroni.mode == MODES['jukebox']['on_air'][jukeoroni.jukebox.loader_mode]:
             ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/jukebox/stop\';\">Stop</button>\n'
         else:
             ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/jukebox/stop\';\" disabled>Stop</button>\n'
+
+
+        # ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/jukebox/albums\';\">Albums</button>\n'
+
         ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/jukebox/albums\';\">Albums</button>\n'
         ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/jukebox/tracks\';\">Tracks</button>\n'
         ret += '  </body>\n'
         ret += '</html>\n'
         return HttpResponse(ret)
+
+    def pause(self):
+        global jukeoroni
+
+        jukeoroni.pause()
+
+        return HttpResponseRedirect('/jukeoroni')
+
+    def resume(self):
+        global jukeoroni
+
+        jukeoroni.resume()
+
+        return HttpResponseRedirect('/jukeoroni')
 
     # def play_track(self, track_id):
     #     global jukeoroni
@@ -394,6 +421,13 @@ class JukeOroniView(View):
         else:
             ret += f'<button style=\"width:100%\" onclick=\"window.location.href = \'{last_played.display_name_short}/play\';\">Last played ({last_played.display_name})</button>\n'
         ret += f'<button style=\"width:100%\" onclick=\"window.location.href = \'random/play\';\">Random</button>\n'
+        if jukeoroni.paused:
+           ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/resume\';\">Resume</button>\n'
+        else:
+            if jukeoroni.mode == MODES['radio']['on_air']:
+                ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/pause\';\">Pause</button>\n'
+            else:
+                ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/pause\';\" disabled>Pause</button>\n'
         ret += '<hr>\n'
 
         # data = io.BytesIO()

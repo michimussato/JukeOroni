@@ -34,7 +34,7 @@ class Clock:
 
         bg = Image.new(mode='RGBA', size=(_size, _size), color=(0, 0, 0, 0))
         draw_bg = ImageDraw.Draw(bg)
-        draw_bg_border = [0, round(_size * 0.050)][0]
+        draw_bg_border = [1, round(_size * 0.050)][0]
         if square:
             draw_bg.rectangle((0+draw_bg_border, 0+draw_bg_border, _size-draw_bg_border, _size-draw_bg_border), fill=(0, 0, 0, 255))
         else:
@@ -150,10 +150,17 @@ class Clock:
         comp = Image.alpha_composite(comp, bg)
         comp = Image.alpha_composite(comp, _clock)
 
+        # _comp = Image.new(mode='RGBA', size=(_size, _size), color=white)
+        # comp = ImageDraw.Draw(_comp)
+        # comp.ellipse((0+draw_bg_border, 0+draw_bg_border, _size-2, _size-2), fill=(0, 0, 0, 255))
+        # # comp = Image.alpha_composite(comp, bg)
+        # # comp = Image.alpha_composite(comp, _clock)
+
         if draw_moon:
             _draw_moon_image = Image.new(mode='RGBA', size=(_size, _size), color=(0, 0, 0, 0))
             _draw_moon = ImageDraw.Draw(_draw_moon_image)
-            _draw_moon.ellipse((0, 0, _size, _size), fill=white)
+            edge_compensation = 1
+            _draw_moon.ellipse((edge_compensation, edge_compensation, _size-edge_compensation, _size-edge_compensation), fill=white)
             phase = round(float(astral.moon.phase()) / 28.0 * 2, 4)
 
             spherical = math.cos(phase * math.pi)
@@ -163,22 +170,22 @@ class Clock:
             if 0.0 <= phase <= 0.5:  # new to half moon
                 _draw_moon.rectangle((0, 0, _size / 2, _size), fill=(0, 0, 0, 0))
 
-                _draw_moon.ellipse((center - (spherical * center), 0, center + (spherical * center), _size),
+                _draw_moon.ellipse((center - (spherical * center) + edge_compensation, 0 + edge_compensation, center + (spherical * center) - edge_compensation, _size - edge_compensation),
                                    fill=(0, 0, 0, 0))
 
             elif 0.5 <= phase <= 1.0:  # half to full moon
                 _draw_moon.rectangle((0, 0, _size / 2, _size), fill=(0, 0, 0, 0))
-                _draw_moon.ellipse((center + (spherical * center), 0, center - (spherical * center), _size),
+                _draw_moon.ellipse((center + (spherical * center) + edge_compensation, 0 + edge_compensation, center - (spherical * center) - edge_compensation, _size - edge_compensation),
                                    fill=white)
 
             elif 1.0 < phase <= 1.5:  # full to half moon
                 _draw_moon.rectangle((_size / 2, 0, _size, _size), fill=(0, 0, 0, 0))
-                _draw_moon.ellipse((center + (spherical * center), 0, center - (spherical * center), _size),
+                _draw_moon.ellipse((center + (spherical * center) + edge_compensation, 0 + edge_compensation, center - (spherical * center) - edge_compensation, _size - edge_compensation),
                                    fill=white)
 
             elif 1.5 < phase <= 2.0:  # half to new moon
                 _draw_moon.rectangle((_size / 2, 0, _size, _size), fill=(0, 0, 0, 0))
-                _draw_moon.ellipse((center - (spherical * center), 0, center + (spherical * center), _size),
+                _draw_moon.ellipse((center - (spherical * center) + edge_compensation, 0 + edge_compensation, center + (spherical * center) - edge_compensation, _size - edge_compensation),
                                    fill=(0, 0, 0, 0))
 
             _comp_inv = ImageOps.invert(comp.convert('RGB'))

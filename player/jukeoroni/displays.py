@@ -212,6 +212,7 @@ class Jukebox(Layout):
 
         cover_size = self.main_size
 
+        cover.putalpha(255)
         cover = cover.resize((cover_size, cover_size), Image.ANTIALIAS)
         # TODO: corrupts PIL.Image
         """
@@ -342,6 +343,7 @@ class Radio(Layout):
 
         cover_size = self.main_size
 
+        cover.putalpha(255)
         cover = cover.resize((cover_size, cover_size), Image.ANTIALIAS)
 
         if title is not None:

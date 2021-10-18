@@ -22,4 +22,5 @@ urlpatterns = [
     path('jukeoroni/', include('player.urls')),
     path('transmission/', include('transmission.urls')),
     path('admin/', admin.site.urls),
+    # path('/', include('player.urls')),
 ]
