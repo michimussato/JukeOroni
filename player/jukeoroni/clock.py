@@ -1,6 +1,7 @@
 import datetime
 import logging
 import math
+import numpy as np
 
 import astral.moon
 
@@ -10,7 +11,7 @@ try:
     print('using djangos timezone')
 except ImportError as err:
     tz = "Europe/Zurich"
-from PIL import Image, ImageDraw, ImageFont, ImageOps
+from PIL import Image, ImageDraw, ImageFont, ImageOps, ImageFilter
 from astral import LocationInfo
 from astral.sun import sun
 from player.jukeoroni.settings import GLOBAL_LOGGING_LEVEL
@@ -20,7 +21,7 @@ LOG = logging.getLogger(__name__)
 LOG.setLevel(GLOBAL_LOGGING_LEVEL)
 
 
-ANTIALIAS = 2  # Warning: can slow down calculation drastically
+ANTIALIAS = 4  # Warning: can slow down calculation drastically
 
 
 class Clock:
@@ -34,11 +35,12 @@ class Clock:
 
         bg = Image.new(mode='RGBA', size=(_size, _size), color=(0, 0, 0, 0))
         draw_bg = ImageDraw.Draw(bg)
-        draw_bg_border = [1, round(_size * 0.050)][0]
+        edge_compensation = 1  # top and left edge to make sure, AA takes place in pixels adjacent to edges
+        _edge_comp_2 = 1  # bottom and right edge in addition to edge_compensation
         if square:
-            draw_bg.rectangle((0+draw_bg_border, 0+draw_bg_border, _size-draw_bg_border, _size-draw_bg_border), fill=(0, 0, 0, 255))
+            draw_bg.rectangle((0+edge_compensation, 0+edge_compensation, _size-edge_compensation-_edge_comp_2, _size-edge_compensation-_edge_comp_2), fill=(0, 0, 0, 255))
         else:
-            draw_bg.ellipse((0+draw_bg_border, 0+draw_bg_border, _size-draw_bg_border, _size-draw_bg_border), fill=(0, 0, 0, 255))
+            draw_bg.ellipse((0+edge_compensation, 0+edge_compensation, _size-edge_compensation-_edge_comp_2, _size-edge_compensation-_edge_comp_2), fill=(0, 0, 0, 255))
 
         _clock = Image.new(mode='RGBA', size=(_size, _size), color=(0, 0, 0, 0))
 
@@ -150,17 +152,10 @@ class Clock:
         comp = Image.alpha_composite(comp, bg)
         comp = Image.alpha_composite(comp, _clock)
 
-        # _comp = Image.new(mode='RGBA', size=(_size, _size), color=white)
-        # comp = ImageDraw.Draw(_comp)
-        # comp.ellipse((0+draw_bg_border, 0+draw_bg_border, _size-2, _size-2), fill=(0, 0, 0, 255))
-        # # comp = Image.alpha_composite(comp, bg)
-        # # comp = Image.alpha_composite(comp, _clock)
-
         if draw_moon:
             _draw_moon_image = Image.new(mode='RGBA', size=(_size, _size), color=(0, 0, 0, 0))
             _draw_moon = ImageDraw.Draw(_draw_moon_image)
-            edge_compensation = 1
-            _draw_moon.ellipse((edge_compensation, edge_compensation, _size-edge_compensation, _size-edge_compensation), fill=white)
+            _draw_moon.ellipse(((edge_compensation, edge_compensation), (_size-edge_compensation-_edge_comp_2, _size-edge_compensation-_edge_comp_2)), fill=white)
             phase = round(float(astral.moon.phase()) / 28.0 * 2, 4)
 
             spherical = math.cos(phase * math.pi)
@@ -169,18 +164,32 @@ class Clock:
 
             if 0.0 <= phase <= 0.5:  # new to half moon
                 _draw_moon.rectangle((0, 0, _size / 2, _size), fill=(0, 0, 0, 0))
-
                 _draw_moon.ellipse((center - (spherical * center) + edge_compensation, 0 + edge_compensation, center + (spherical * center) - edge_compensation, _size - edge_compensation),
                                    fill=(0, 0, 0, 0))
 
             elif 0.5 <= phase <= 1.0:  # half to full moon
                 _draw_moon.rectangle((0, 0, _size / 2, _size), fill=(0, 0, 0, 0))
-                _draw_moon.ellipse((center + (spherical * center) + edge_compensation, 0 + edge_compensation, center - (spherical * center) - edge_compensation, _size - edge_compensation),
+                _draw_moon.ellipse((center + (spherical * center) + edge_compensation, 0 + edge_compensation, center - (spherical * center) - edge_compensation -_edge_comp_2, _size - edge_compensation - _edge_comp_2),
                                    fill=white)
+
+                # # _temp = Image.new(mode='RGBA', size=(_size*2, _size), color=(0, 0, 0, 0))
+                # blur_weight = 5
+                # for i in range(75):
+                #     kernel = np.array([[0, 0, 0, 0, 0],
+                #                        [0, 0, 0, 0, 0],
+                #                        [blur_weight, blur_weight, blur_weight, blur_weight, blur_weight],
+                #                        [0, 0, 0, 0, 0],
+                #                        [0, 0, 0, 0, 0]])
+                #     _draw_moon_image = _draw_moon_image.filter(ImageFilter.Kernel(size=(5, 5), kernel=kernel.flatten()))
+                #     # _temp = _temp.crop((_size/4, 0, _size/4*3, _size))
+                #     # _temp = _temp.resize((_size, _size))
+                #     # _draw_moon_image = _draw_mo.paste(_temp)
+                #     # _draw_moon.rectangle((0, 0, _size / 2, _size), fill=(0, 0, 0, 0))
+                #     # _draw_moon.rectangle((_size / 2, 0, _size, _size), fill=(0, 0, 0, 0))
 
             elif 1.0 < phase <= 1.5:  # full to half moon
                 _draw_moon.rectangle((_size / 2, 0, _size, _size), fill=(0, 0, 0, 0))
-                _draw_moon.ellipse((center + (spherical * center) + edge_compensation, 0 + edge_compensation, center - (spherical * center) - edge_compensation, _size - edge_compensation),
+                _draw_moon.ellipse((center + (spherical * center) + edge_compensation, 0 + edge_compensation, center - (spherical * center) - edge_compensation-_edge_comp_2, _size - edge_compensation-_edge_comp_2),
                                    fill=white)
 
             elif 1.5 < phase <= 2.0:  # half to new moon

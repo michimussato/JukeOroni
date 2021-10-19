@@ -163,9 +163,14 @@ Oct 13 00:23:23 jukeoroni gunicorn[20629]: OSError: unrecognized data stream con
 
         bg = Image.new('RGBA', image.size, color=(0, 0, 0, 0))
 
-        mask = Image.new('RGBA', image.size, color=(0, 0, 0, 0))
+        aa = 8
+
+        mask = Image.new('RGBA', (image.size[0]*aa, image.size[1]*aa), color=(0, 0, 0, 0))
+
         mask_draw = ImageDraw.Draw(mask)
-        mask_draw.rounded_rectangle([(0, 0), image.size], corner, fill=(0, 0, 0, 255))
+        mask_draw.rounded_rectangle([(0, 0), mask.size], corner*aa, fill=(0, 0, 0, 255))
+
+        mask = mask.resize(image.size, Image.ANTIALIAS)
 
         comp = Image.composite(image, bg, mask)
 
@@ -174,7 +179,6 @@ Oct 13 00:23:23 jukeoroni gunicorn[20629]: OSError: unrecognized data stream con
     def from_url(self, url):
         if not is_string_url(url):
             return None
-        # assert is_string_url(url), f'given string is not a URL: \"{url}\"'
 
         try:
             hdr = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64)'}
