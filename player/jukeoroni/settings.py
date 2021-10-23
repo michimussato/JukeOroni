@@ -163,9 +163,8 @@ _RADIO_ON_AIR_DEFAULT_IMAGE = '/data/django/jukeoroni/player/static/radio_on_air
 
 
 # clock
-# CITY = LocationInfo("Bern", "Switzerland", "Europe/Zurich", 46.94809, 7.44744)
 CITY = LocationInfo("Saland", "Switzerland", "Europe/Zurich", 47.39134, 8.85971)
-ANTIALIAS = 16
+ANTIALIAS = 4  # Warning: can slow down calculation drastically
 ARIAL = r'/data/django/jukeoroni/player/static/arial_narrow.ttf'
 CALLIGRAPHIC = r'/data/django/jukeoroni/player/static/calligraphia-one.ttf'
 CLOCK_UPDATE_INTERVAL = 10  # in minutes

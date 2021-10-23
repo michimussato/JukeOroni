@@ -1,7 +1,7 @@
 import datetime
 import logging
 import math
-import numpy as np
+# import numpy as np
 
 import astral.moon
 
@@ -11,20 +11,22 @@ try:
     print('using djangos timezone')
 except ImportError as err:
     tz = "Europe/Zurich"
-from PIL import Image, ImageDraw, ImageFont, ImageOps, ImageFilter
-from astral import LocationInfo
+from PIL import Image, ImageDraw, ImageFont, ImageOps  # , ImageFilter
 from astral.sun import sun
-from player.jukeoroni.settings import GLOBAL_LOGGING_LEVEL
+from player.jukeoroni.settings import (
+    GLOBAL_LOGGING_LEVEL,
+    CITY,
+    ANTIALIAS,
+    ARIAL,
+    CALLIGRAPHIC
+)
 
 
 LOG = logging.getLogger(__name__)
 LOG.setLevel(GLOBAL_LOGGING_LEVEL)
 
 
-ANTIALIAS = 4  # Warning: can slow down calculation drastically
-
-
-class Clock:
+class Clock(object):
 
     @staticmethod
     def get_clock(draw_logo, draw_date, size=448, hours=12, draw_astral=False, draw_moon=False, square=False):
@@ -56,7 +58,7 @@ class Clock:
         LOG.info(f'Moon phase: {round(float(astral.moon.phase()))} / 28')
 
         if draw_astral:
-            city = LocationInfo('Bern', 'Switzerland', tz, 46.94809, 7.44744)
+            city = CITY
             _sun = sun(city.observer, date=datetime.date.today(), tzinfo=city.timezone)
 
             decimal_sunrise = float(_sun['sunrise'].strftime('%H')) + float(_sun['sunrise'].strftime('%M')) / 60
@@ -137,13 +139,13 @@ class Clock:
                  width=width)
 
         if draw_logo:
-            font = ImageFont.truetype(r'/data/django/jukeoroni/player/static/calligraphia-one.ttf', round(_size * 0.150))
+            font = ImageFont.truetype(CALLIGRAPHIC, round(_size * 0.150))
             text = 'JukeOroni'
             length = font.getlength(text)
             draw.text((round(_size / 2) - length / 2, round(_size * 0.536)), text, fill=white, font=font)
 
         if draw_date:
-            font = ImageFont.truetype(r'/data/django/jukeoroni/player/static/arial_narrow.ttf', round(_size * 0.035))
+            font = ImageFont.truetype(ARIAL, round(_size * 0.035))
             text = datetime.datetime.now().strftime('%A, %B %d %Y')
             length = font.getlength(text)
             draw.text((round(_size / 2) - length / 2, round(_size * 0.690)), text, fill=white, font=font)
