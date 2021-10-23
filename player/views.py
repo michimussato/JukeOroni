@@ -367,7 +367,7 @@ class JukeOroniView(View):
             year = None
             for album in albums:
                 if year != album.year:
-                    ret += f'<h4><center>{album.year}</center></h4>'
+                    ret += f'<div><center>{album.year}</center></div>'
                     year = album.year
                 ret += '  <div>\n'
                 ret += f'        <button style=\"width:100%\" onclick=\"window.location.href = \'{album.id}\';\">{album.album_title}</button>\n'

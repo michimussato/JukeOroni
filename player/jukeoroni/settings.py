@@ -11,7 +11,8 @@ LOG.setLevel(GLOBAL_LOGGING_LEVEL)
 
 
 # media_crawler
-DEFAULT_TRACKLIST_REGEN_INTERVAL = 3600 * 12  # in hours
+_ONE_HOUR = 3600
+DEFAULT_TRACKLIST_REGEN_INTERVAL = _ONE_HOUR * 6  # in hours
 MEDIA_ROOT = r'/data/googledrive/media/audio/'
 MUSIC_DIR = os.path.join(MEDIA_ROOT, 'music')
 FAULTY_ALBUMS = os.path.join(MEDIA_ROOT, 'faulty_albums_test.txt')

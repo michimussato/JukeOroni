@@ -4,7 +4,7 @@ import os
 import logging
 import random
 import shutil
-import signal
+# import signal
 import subprocess
 import tempfile
 import threading
@@ -55,44 +55,9 @@ class JukeboxTrack(object):
     @property
     def track_title(self):
         return self.django_track.track_title
-        # return self.path.split(os.sep)[-1]
 
     @property
     def album(self):
-        """
-        [Wed Sep 08 12:59:38.147428 2021] [wsgi:error] [pid 2262:tid 2842686496] Traceback (most recent call last):
-        [Wed Sep 08 12:59:38.147560 2021] [wsgi:error] [pid 2262:tid 2842686496]   File "/data/django/jukeoroni/player/jukeoroni/jukeoroni.py", line 812, in _handle_button
-        [Wed Sep 08 12:59:38.148864 2021] [wsgi:error] [pid 2262:tid 2842686496]     self.set_mode_jukebox()
-        [Wed Sep 08 12:59:38.148928 2021] [wsgi:error] [pid 2262:tid 2842686496]   File "/data/django/jukeoroni/player/jukeoroni/jukeoroni.py", line 177, in set_mode_jukebox
-        [Wed Sep 08 12:59:38.149346 2021] [wsgi:error] [pid 2262:tid 2842686496]     self.set_display_jukebox()
-        [Wed Sep 08 12:59:38.149395 2021] [wsgi:error] [pid 2262:tid 2842686496]   File "/data/django/jukeoroni/player/jukeoroni/jukeoroni.py", line 263, in set_display_jukebox
-        [Wed Sep 08 12:59:38.149859 2021] [wsgi:error] [pid 2262:tid 2842686496]     bg = self.jukebox.layout.get_layout(labels=self.LABELS, cover=self.inserted_media.cover_album, artist=self.inserted_media.cover_artist)
-        [Wed Sep 08 12:59:38.149909 2021] [wsgi:error] [pid 2262:tid 2842686496]   File "/data/django/jukeoroni/player/jukeoroni/juke_box.py", line 74, in cover_album
-        [Wed Sep 08 12:59:38.150240 2021] [wsgi:error] [pid 2262:tid 2842686496]     if self.album.cover_online is not None:
-        [Wed Sep 08 12:59:38.150286 2021] [wsgi:error] [pid 2262:tid 2842686496]   File "/data/django/jukeoroni/player/jukeoroni/juke_box.py", line 63, in album
-        [Wed Sep 08 12:59:38.150577 2021] [wsgi:error] [pid 2262:tid 2842686496]     return Album.objects.get(track=self.django_track)
-        [Wed Sep 08 12:59:38.150620 2021] [wsgi:error] [pid 2262:tid 2842686496]   File "/data/venv/lib/python3.7/site-packages/django/db/models/manager.py", line 85, in manager_method
-        [Wed Sep 08 12:59:38.150964 2021] [wsgi:error] [pid 2262:tid 2842686496]     return getattr(self.get_queryset(), name)(*args, **kwargs)
-        [Wed Sep 08 12:59:38.151012 2021] [wsgi:error] [pid 2262:tid 2842686496]   File "/data/venv/lib/python3.7/site-packages/django/db/models/query.py", line 424, in get
-        [Wed Sep 08 12:59:38.151664 2021] [wsgi:error] [pid 2262:tid 2842686496]     clone = self._chain() if self.query.combinator else self.filter(*args, **kwargs)
-        [Wed Sep 08 12:59:38.151714 2021] [wsgi:error] [pid 2262:tid 2842686496]   File "/data/venv/lib/python3.7/site-packages/django/db/models/query.py", line 941, in filter
-        [Wed Sep 08 12:59:38.152911 2021] [wsgi:error] [pid 2262:tid 2842686496]     return self._filter_or_exclude(False, args, kwargs)
-        [Wed Sep 08 12:59:38.152961 2021] [wsgi:error] [pid 2262:tid 2842686496]   File "/data/venv/lib/python3.7/site-packages/django/db/models/query.py", line 961, in _filter_or_exclude
-        [Wed Sep 08 12:59:38.154215 2021] [wsgi:error] [pid 2262:tid 2842686496]     clone._filter_or_exclude_inplace(negate, args, kwargs)
-        [Wed Sep 08 12:59:38.154293 2021] [wsgi:error] [pid 2262:tid 2842686496]   File "/data/venv/lib/python3.7/site-packages/django/db/models/query.py", line 968, in _filter_or_exclude_inplace
-        [Wed Sep 08 12:59:38.155521 2021] [wsgi:error] [pid 2262:tid 2842686496]     self._query.add_q(Q(*args, **kwargs))
-        [Wed Sep 08 12:59:38.155693 2021] [wsgi:error] [pid 2262:tid 2842686496]   File "/data/venv/lib/python3.7/site-packages/django/db/models/sql/query.py", line 1393, in add_q
-        [Wed Sep 08 12:59:38.157535 2021] [wsgi:error] [pid 2262:tid 2842686496]     clause, _ = self._add_q(q_object, self.used_aliases)
-        [Wed Sep 08 12:59:38.157599 2021] [wsgi:error] [pid 2262:tid 2842686496]   File "/data/venv/lib/python3.7/site-packages/django/db/models/sql/query.py", line 1415, in _add_q
-        [Wed Sep 08 12:59:38.159554 2021] [wsgi:error] [pid 2262:tid 2842686496]     split_subq=split_subq, check_filterable=check_filterable,
-        [Wed Sep 08 12:59:38.159612 2021] [wsgi:error] [pid 2262:tid 2842686496]   File "/data/venv/lib/python3.7/site-packages/django/db/models/sql/query.py", line 1347, in build_filter
-        [Wed Sep 08 12:59:38.161268 2021] [wsgi:error] [pid 2262:tid 2842686496]     condition = self.build_lookup(lookups, col, value)
-        [Wed Sep 08 12:59:38.161316 2021] [wsgi:error] [pid 2262:tid 2842686496]   File "/data/venv/lib/python3.7/site-packages/django/db/models/sql/query.py", line 1184, in build_lookup
-        [Wed Sep 08 12:59:38.162807 2021] [wsgi:error] [pid 2262:tid 2842686496]     raise FieldError('Related Field got invalid lookup: {}'.format(lookup_name))
-        [Wed Sep 08 12:59:38.162878 2021] [wsgi:error] [pid 2262:tid 2842686496] django.core.exceptions.FieldError: Related Field got invalid lookup: exact
-        [Wed Sep 08 12:59:39.797482 2021] [wsgi:error] [pid 2572:tid 2792354848] [09-08-2021 12:59:39] [INFO] [Track Loader Thread|2792354848] [player.jukeoroni.juke_box]: loading track (126.852 MB): "/data/googledrive/media/audio/music/new/Bob Marley - 2004 - Young Mystic [DSD]/01 - Soul Shakedown Party.dsf"
-
-        """
         return self.django_track.album
 
     @property
@@ -137,18 +102,9 @@ class JukeboxTrack(object):
     def media_info(self):
         return mediainfo(self.path)
 
-    # def cache_tmp(self):
-    #     if self._cache_tmp is None:
-    #         self._cache_tmp = tempfile.mkstemp()[1]
-    #     return self._cache_tmp
-
     def _cache(self):
-        # self.cache_tmp = tempfile.mkstemp()[1]
         LOG.info(f'copying to local filesystem: \"{self.path}\" as \"{self.cache_tmp}\"')
         shutil.copy(self.path, self.cache_tmp)
-
-    # def kill_thread(self):
-    #     signal.SIGKILL(self._cache_task_thread.p)
 
     def kill_caching_process(self):
         if self._cache_task_thread is not None:
@@ -175,16 +131,12 @@ class JukeboxTrack(object):
 
                 _size_cached = self.size_cached
 
-                # self.progress =
-
                 LOG.info(f'{str(round(self.size_cached / (1024.0 * 1024.0), 3))} MB of {str(round(self.size / (1024.0 * 1024.0), 3))} MB loaded'
                          f' ~({str(round(_gain / (1024.0 * 1024.0 * _interval), 3))} MB/s)'
                          f' ({self})')
 
             time.sleep(1.0)
             _waited += 1
-
-        # self._cache_task_thread = None
 
     @property
     def is_caching(self):
@@ -264,7 +216,6 @@ box.turn_off()
     """
     def __init__(self, jukeoroni):
 
-        # self.play_track_by_id = None
         self.on = False
         self.loader_mode = 'random'
 
@@ -332,15 +283,8 @@ box.turn_off()
         self.kill_loading_process()
 
     def play_track(self, track_id):
-        self.kill_loading_process(force=True)
+        self.kill_loading_process()
         return DjangoTrack.objects.get(id=track_id)
-        # # first_track_id = first_track.id
-        # if first_track_id != previous_track_id:
-        #     return first_track
-        # else:
-        #     # first_track = album_tracks[0]
-        #     second_track = album_tracks[1]
-        #     return second_track
 
     def set_loader_mode_album(self):
         self.kill_loading_process()
@@ -566,24 +510,6 @@ box.turn_off()
 
             time.sleep(1.0)
 
-    # def _load_track_task(self, **kwargs):
-    #     track = kwargs['track']
-    #     LOG.info(f'starting thread: \"{track.audio_source}\"')
-    #
-    #     try:
-    #         size = os.path.getsize(track.audio_source)
-    #         LOG.info(f'loading track ({str(round(size / (1024*1024), 3))} MB): \"{track.audio_source}\"')
-    #         processing_track = JukeboxTrack(track)
-    #         LOG.info(f'loading successful: \"{track.audio_source}\"')
-    #         ret = processing_track
-    #         self.loading_queue.put(ret)
-    #     except (MemoryError, OSError) as err:
-    #         LOG.exception(f'loading failed: \"{track.audio_source}\": {err}')
-    #
-    #     # here, or after that, probably processing_track.__del__() is called but pickled/recreated
-    #     # in the main process
-    #     # self.loading_queue.put(ret)
-
     @property
     def track_list(self):
         return DjangoTrack.objects.all()
@@ -594,22 +520,6 @@ box.turn_off()
         #  because of this, we always have
         #  to start clean, even if the track
         #  is almost fully loaded
-
-        # if self.play_track_by_id is not None:
-        #     _id = self.play_track_by_id
-        #     self.play_track_by_id = None
-        #     # def play_track(self, track_id):
-        #     self.kill_loading_process()
-        #     LOG.info(_id)
-        #     LOG.info(_id)
-        #     LOG.info(_id)
-        #     LOG.info(_id)
-        #     LOG.info(_id)
-        #     LOG.info(_id)
-        #     LOG.info(_id)
-        #     LOG.info(_id)
-        #     LOG.info(_id)
-        #     return DjangoTrack.objects.get(id=_id)
 
         # Random mode
         if self.loader_mode == 'random':

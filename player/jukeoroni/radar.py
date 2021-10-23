@@ -60,7 +60,6 @@ class Radar(object):
     def start(self, test=False):
         self.on = True
         LOG.info(f'Test mode Radar: {str("ON" if test else "OFF")}.')
-        # self.radar_thread = _RadarThread(target=self._radar_task, kwargs={'test': test})
         self.radar_thread = threading.Thread(target=self._radar_task, kwargs={'test': test})
         self.radar_thread.name = 'Radar Thread'
         self.radar_thread.daemon = False
@@ -103,6 +102,7 @@ class Radar(object):
                 root = driver.find_element(By.XPATH, "//*[@id=\"mapcontainer\"]")
                 png = root.screenshot_as_png
             im = Image.open(BytesIO(png))
+            LOG.debug(f'Radar Screenshot has size {im.size}.')
             im = Resource().squareify(image=im)
             # width, height = im.size
             # left = 140
