@@ -197,6 +197,22 @@ class JukeboxTrack(object):
     def size(self):
         if self._size is None:
             self._size = os.path.getsize(self.path)
+            """
+Traceback (most recent call last):
+  File "/data/venv/lib/python3.7/site-packages/django/core/handlers/exception.py", line 47, in inner
+    response = get_response(request)
+  File "/data/venv/lib/python3.7/site-packages/django/core/handlers/base.py", line 181, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/data/django/jukeoroni/player/views.py", line 166, in jukebox_index
+    ret += '<center><div>{0}</div></center>'.format(f'{jukeoroni.jukebox.loading_track.artist} - {jukeoroni.jukebox.loading_track.album} ({jukeoroni.jukebox.loading_track.year}) - {jukeoroni.jukebox.loading_track.track_title} ({str(round(jukeoroni.jukebox.loading_track.size_cached / (1024.0 * 1024.0), 1))} of {str(round(jukeoroni.jukebox.loading_track.size / (1024.0 * 1024.0), 1))} MB)')
+  File "/data/django/jukeoroni/player/jukeoroni/juke_box.py", line 199, in size
+    self._size = os.path.getsize(self.path)
+  File "/usr/lib/python3.7/genericpath.py", line 50, in getsize
+    return os.stat(filename).st_size
+
+Exception Type: FileNotFoundError at /jukeoroni/jukebox/
+Exception Value: [Errno 2] No such file or directory: '/data/googledrive/media/audio/music/on_device/The Hu - 2019 - The Gereg [FLAC-16:44.1]/01 The Gereg.flac'
+            """
         return self._size
 
     @property
@@ -269,6 +285,7 @@ box.turn_off()
         self.loading_track = None
 
         self._track_list_generator_thread = None
+        self._track_loader_watcher_thread = None
         self._track_loader_thread = None
 
     def temp_cleanup(self):
@@ -292,7 +309,7 @@ box.turn_off()
         self.on = True
 
         self.track_list_generator_thread()
-        self.track_loader_thread()
+        self.track_loader_watcher_thread()
 
     def turn_off(self):
         assert self.on, 'Jukebox is already off.'
@@ -496,6 +513,28 @@ box.turn_off()
 
     ############################################
     # track loader
+    def track_loader_watcher_thread(self):
+        # this thread makes sure to keep the track loader thread alive
+        self._track_loader_watcher_thread = threading.Thread(target=self._track_loader_watcher_task)
+        self._track_loader_watcher_thread.name = 'Track Loader Watcher Thread'
+        self._track_loader_watcher_thread.daemon = False
+        self._track_loader_watcher_thread.start()
+
+    def _track_loader_watcher_task(self):
+        while self.on:
+            if self._track_loader_thread is None:
+                LOG.info('Starting Track Loader Thread...')
+                self.track_loader_thread()
+                LOG.info('Track Loader Thread started.')
+            try:
+                if self._track_loader_thread.is_alive():
+                    LOG.debug('Track Loader Thread is up and running.')
+                    time.sleep(1.0)
+                    continue
+            except Exception:
+                LOG.info('Seems like Track Loader Thread crashed...')
+                self._track_loader_thread = None
+
     def track_loader_thread(self):
         assert self.on, 'jukebox must be on'
         self._track_loader_thread = threading.Thread(target=self._track_loader_task)
