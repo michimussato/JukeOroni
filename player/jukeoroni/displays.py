@@ -132,7 +132,7 @@ class Standby(Layout):
         comp_clock = Image.new(mode='RGBA', size=widget_clock.size)
 
         clock_size = self.main_size
-        _clock = self._clock.get_clock(size=clock_size, draw_logo=True, draw_moon=True, draw_date=True, hours=24, draw_astral=True)
+        _clock = self._clock.get_clock(size=clock_size, draw_logo=True, draw_moon=True, draw_moon_phase=True, draw_date=True, hours=24, draw_sun=True)
 
         comp_clock = Image.alpha_composite(comp_clock, widget_clock)
         comp_clock = Image.alpha_composite(comp_clock, _clock)
@@ -307,7 +307,7 @@ Exception Value: broken PNG file (chunk b"Em\xd5'")
         bg.paste(cover, box=(buttons_overlay.size[0] + self.border, _cover_center), mask=cover)
 
         # SMALL_WIDGET_SIZE = 151
-        _clock = self._clock.get_clock(size=SMALL_WIDGET_SIZE, draw_logo=False, draw_moon=True, draw_date=False, hours=24, draw_astral=True, square=True)
+        _clock = self._clock.get_clock(size=SMALL_WIDGET_SIZE, draw_logo=False, draw_moon_phase=True, draw_moon=True, draw_date=False, hours=24, draw_sun=True, square=True)
         _clock = Resource().round_resize(image=_clock, corner=40, fixed=SMALL_WIDGET_SIZE)
         _clock_bottom_left_centered = (int(600 - SMALL_WIDGET_SIZE - self.border),
                                        int(224 + 224/2 + round(self.border/2) - round(SMALL_WIDGET_SIZE/2)))
@@ -371,7 +371,7 @@ class Radio(Layout):
         bg.paste(cover, box=(buttons_overlay.size[0] + self.border, _cover_center), mask=cover)
 
         # SMALL_WIDGET_SIZE = 151
-        _clock = self._clock.get_clock(size=SMALL_WIDGET_SIZE, draw_logo=False, draw_moon=True, draw_date=False, hours=24, draw_astral=True, square=True)
+        _clock = self._clock.get_clock(size=SMALL_WIDGET_SIZE, draw_logo=False, draw_moon=True, draw_moon_phase=True, draw_date=False, hours=24, draw_sun=True, square=True)
         _clock = Resource().round_resize(image=_clock, corner=40, fixed=SMALL_WIDGET_SIZE)
         _clock_bottom_left_centered = (int(600 - SMALL_WIDGET_SIZE - self.border),
                                        int(224 + 224/2 + round(self.border/2) - round(SMALL_WIDGET_SIZE/2)))

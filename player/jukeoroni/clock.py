@@ -4,6 +4,7 @@ import math
 # import numpy as np
 
 import astral.moon
+import player.jukeoroni.suncalc as suncalc
 
 try:
     from jukeoroni.settings import TIME_ZONE
@@ -12,10 +13,10 @@ try:
 except ImportError as err:
     tz = "Europe/Zurich"
 from PIL import Image, ImageDraw, ImageFont, ImageOps  # , ImageFilter
-from astral.sun import sun
+# from astral.sun import sun
 from player.jukeoroni.settings import (
     GLOBAL_LOGGING_LEVEL,
-    CITY,
+    # CITY,
     ANTIALIAS,
     ARIAL,
     CALLIGRAPHIC
@@ -29,7 +30,7 @@ LOG.setLevel(GLOBAL_LOGGING_LEVEL)
 class Clock(object):
 
     @staticmethod
-    def get_clock(draw_logo, draw_date, size=448, hours=12, draw_astral=False, draw_moon=False, square=False):
+    def get_clock(draw_logo, draw_date, size=448, hours=12, draw_sun=False, draw_moon=False, draw_moon_phase=False, square=False):
 
         _size = size * ANTIALIAS
 
@@ -55,27 +56,9 @@ class Clock(object):
 
         white = (255, 255, 255, 255)
 
-        LOG.info(f'Moon phase: {round(float(astral.moon.phase()))} / 28')
+        # LOG.info(f'Moon phase: {round(float(astral.moon.phase()))} / 28')
 
-        if draw_astral:
-            city = CITY
-            _sun = sun(city.observer, date=datetime.date.today(), tzinfo=city.timezone)
 
-            decimal_sunrise = float(_sun['sunrise'].strftime('%H')) + float(_sun['sunrise'].strftime('%M')) / 60
-            arc_length_sunrise = decimal_sunrise / hours * 360.0
-            LOG.info(f'Sunrise: {str(_sun["sunrise"].strftime("%H:%M"))}')
-
-            decimal_sunset = float(_sun['sunset'].strftime('%H')) + float(_sun['sunset'].strftime('%M')) / 60
-            arc_length_sunset = decimal_sunset / hours * 360.0
-            LOG.info(f'Sunset: {str(_sun["sunset"].strftime("%H:%M"))}')
-
-            color = (255, 128, 0, 255)
-            _size_astral = 0.17  # TODO: bigger means smaller circle
-            _width = 0.012
-            size_astral = [(round(_size * _size_astral), round(_size * _size_astral)), (round(_size - _size * _size_astral), round(_size - _size * _size_astral))]
-            width_astral = round(_size * _width)
-            draw.arc(size_astral, start=arc_length_sunrise+arc_twelve, end=arc_length_sunset+arc_twelve, fill=color,
-                     width=width_astral)
 
         # center dot
         draw.ellipse([(round(_size * 0.482), round(_size * 0.482)), (round(_size - _size * 0.482), round(_size - _size * 0.482))], fill=white, outline=None, width=round(_size * 0.312))
@@ -139,26 +122,33 @@ class Clock(object):
                  width=width)
 
         if draw_logo:
-            font = ImageFont.truetype(CALLIGRAPHIC, round(_size * 0.150))
-            text = 'JukeOroni'
-            length = font.getlength(text)
-            draw.text((round(_size / 2) - length / 2, round(_size * 0.536)), text, fill=white, font=font)
+            font_logo= ImageFont.truetype(CALLIGRAPHIC, round(_size * 0.150))
+            text_logo = 'JukeOroni'
+            length_logo = font_logo.getlength(text_logo)
+            draw.text((round(_size / 2) - length_logo / 2, round(_size * 0.536)), text_logo, fill=white, font=font_logo)
 
         if draw_date:
-            font = ImageFont.truetype(ARIAL, round(_size * 0.035))
-            text = datetime.datetime.now().strftime('%A, %B %d %Y')
-            length = font.getlength(text)
-            draw.text((round(_size / 2) - length / 2, round(_size * 0.690)), text, fill=white, font=font)
+            font_date = ImageFont.truetype(ARIAL, round(_size * 0.035))
+            text_date = datetime.datetime.now().strftime('%A, %B %d %Y')
+            length_date = font_date.getlength(text_date)
+            draw.text((round(_size / 2) - length_date / 2, round(_size * 0.690)), text_date, fill=white, font=font_date)
 
         comp = Image.new(mode='RGBA', size=(_size, _size))
         comp = Image.alpha_composite(comp, bg)
         comp = Image.alpha_composite(comp, _clock)
 
-        if draw_moon:
+        if draw_moon_phase:
             _draw_moon_image = Image.new(mode='RGBA', size=(_size, _size), color=(0, 0, 0, 0))
             _draw_moon = ImageDraw.Draw(_draw_moon_image)
             _draw_moon.ellipse(((edge_compensation, edge_compensation), (_size-edge_compensation-_edge_comp_2, _size-edge_compensation-_edge_comp_2)), fill=white)
-            phase = round(float(astral.moon.phase()) / 28.0 * 2, 4)
+            # phase = round(float(astral.moon.phase()) / 28.0 * 2, 4)
+            phase = round(float(suncalc.getMoonIllumination(datetime.datetime.now())['phase']) * 2, 4)
+            LOG.info(f'Moon phase: {phase} / 4')
+            # phase = round(float(suncalc.getMoonIllumination(datetime.datetime.now())['phase']) * 2, 4)
+            # LOG.info(suncalc.getMoonIllumination(datetime.datetime.now())['angle'])
+            # LOG.info(suncalc.getMoonIllumination(datetime.datetime.now())['angle'])
+            # LOG.info(suncalc.getMoonIllumination(datetime.datetime.now())['angle'])
+            # LOG.info(suncalc.getMoonIllumination(datetime.datetime.now())['angle'])
 
             spherical = math.cos(phase * math.pi)
 
@@ -202,6 +192,73 @@ class Clock(object):
             _comp_inv = ImageOps.invert(comp.convert('RGB'))
 
             comp.paste(_comp_inv, mask=_draw_moon_image)
+
+        if draw_sun:
+            _draw_sun = ImageDraw.Draw(comp)
+            # city = CITY
+            _sun = suncalc.getTimes(datetime.datetime.now(), 47.39134, 8.85971)
+            # _sun = sun(city.observer, date=datetime.date.today(), tzinfo=city.timezone)
+
+            decimal_sunrise = float(_sun['sunrise'].strftime('%H')) + float(_sun['sunrise'].strftime('%M')) / 60
+            arc_length_sunrise = decimal_sunrise / hours * 360.0
+            LOG.info(f'Sunrise: {str(_sun["sunrise"].strftime("%H:%M"))}')
+
+            decimal_sunset = float(_sun['sunset'].strftime('%H')) + float(_sun['sunset'].strftime('%M')) / 60
+            arc_length_sunset = decimal_sunset / hours * 360.0
+            LOG.info(f'Sunset: {str(_sun["sunset"].strftime("%H:%M"))}')
+
+            color = (255, 128, 0, 255)
+            _size_astral = 0.17  # TODO: bigger means smaller circle
+            _width = 0.012
+            size_astral = [(round(_size * _size_astral), round(_size * _size_astral)), (round(_size - _size * _size_astral), round(_size - _size * _size_astral))]
+            width_astral = round(_size * _width)
+            _draw_sun.arc(size_astral, start=arc_length_sunrise+arc_twelve, end=arc_length_sunset+arc_twelve, fill=color,
+                     width=width_astral)
+
+        # moon
+        if draw_moon:
+            _draw_moon = ImageDraw.Draw(comp)
+            # city = CITY
+            now = datetime.datetime.now()
+            _moon = suncalc.getMoonTimes(now, 47.39134, 8.85971)
+
+            if _moon["set"] < datetime.datetime.now():
+                now = now + datetime.timedelta(days=1)
+                _moon = suncalc.getMoonTimes(now, 47.39134, 8.85971)
+
+            # LOG.info(_moon["rise"] > _moon["set"])
+            # LOG.info(_moon["rise"] > _moon["set"])
+
+            # # _sun = sun(city.observer, date=datetime.date.today(), tzinfo=city.timezone)
+            if _moon["rise"] > _moon["set"]:
+                _moon_yesterday = suncalc.getMoonTimes(now-datetime.timedelta(days=1), 47.39134, 8.85971)
+                _moon['rise'] = _moon_yesterday["rise"]
+
+            # LOG.info(_moon["rise"] > _moon["set"])
+            # LOG.info(_moon["rise"] > _moon["set"])
+            # LOG.info(_moon["rise"] > _moon["set"])
+
+            decimal_moonrise = float(_moon['rise'].strftime('%H')) + float(_moon['rise'].strftime('%M')) / 60
+            arc_length_moonrise = decimal_moonrise / hours * 360.0
+            LOG.info(f'Moonrise: {str(_moon["rise"].strftime("%H:%M"))}')
+
+
+            decimal_moonset = float(_moon['set'].strftime('%H')) + float(_moon['set'].strftime('%M')) / 60
+            arc_length_moonset = decimal_moonset / hours * 360.0
+            LOG.info(f'Moonset: {str(_moon["set"].strftime("%H:%M"))}')
+
+
+            color = (0, 128, 255, 255)
+            _size_astral = 0.20  # TODO: bigger means smaller circle
+            _width = 0.012
+            size_astral = [(round(_size * _size_astral), round(_size * _size_astral)), (round(_size - _size * _size_astral), round(_size - _size * _size_astral))]
+            width_astral = round(_size * _width)
+            _draw_moon.arc(size_astral, start=arc_length_moonrise+arc_twelve, end=arc_length_moonset+arc_twelve, fill=color,
+                     width=width_astral)
+
+            # if draw_logo:
+            #     _draw_moon.text((round(_size / 2) - length_logo / 2, round(_size * 0.536)), text_logo, fill=(0,0,0,0),
+            #               font=font_logo)
 
         comp = comp.rotate(90, expand=False)
 
