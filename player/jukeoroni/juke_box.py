@@ -171,7 +171,11 @@ Exception Value: [Errno 2] No such file or directory: '/data/googledrive/media/a
     def size_cached(self):
         if self.cache_tmp is None:
             return 0
-        return os.path.getsize(self.cache_tmp)
+        try:
+            return os.path.getsize(self.cache_tmp)
+        except FileNotFoundError:
+            LOG.exception(f'Could not get size of cache ({self}): ')
+            return 0
 
     @property
     def playing_from(self):
@@ -260,7 +264,8 @@ box.turn_off()
         self.on = True
 
         self.track_list_generator_thread()
-        self.track_loader_watcher_thread()
+        self.track_loader_thread()
+        # self.track_loader_watcher_thread()
 
     def turn_off(self):
         assert self.on, 'Jukebox is already off.'
@@ -452,32 +457,34 @@ box.turn_off()
                 django_track.delete()
                 LOG.info(f'Track removed from DB: {django_track}')
 
-        LOG.info(f'track list generated successfully: {len(_files)} tracks found')
+        LOG.info(f'Fished: track list generated successfully: {len(_files)} tracks found')
     ############################################
 
     ############################################
     # track loader
-    def track_loader_watcher_thread(self):
-        # this thread makes sure to keep the track loader thread alive
-        self._track_loader_watcher_thread = threading.Thread(target=self._track_loader_watcher_task)
-        self._track_loader_watcher_thread.name = 'Track Loader Watcher Thread'
-        self._track_loader_watcher_thread.daemon = False
-        self._track_loader_watcher_thread.start()
-
-    def _track_loader_watcher_task(self):
-        while self.on:
-            if self._track_loader_thread is None:
-                LOG.info('Starting Track Loader Thread...')
-                self.track_loader_thread()
-                LOG.info('Track Loader Thread started.')
-            try:
-                if self._track_loader_thread.is_alive():
-                    LOG.debug('Track Loader Thread is up and running.')
-                    time.sleep(1.0)
-                    continue
-            except Exception:
-                LOG.info('Seems like Track Loader Thread crashed...')
-                self._track_loader_thread = None
+    # def track_loader_watcher_thread(self):
+    #     # this thread makes sure to keep the track loader thread alive
+    #     self._track_loader_watcher_thread = threading.Thread(target=self._track_loader_watcher_task)
+    #     self._track_loader_watcher_thread.name = 'Track Loader Watcher Thread'
+    #     self._track_loader_watcher_thread.daemon = False
+    #     self._track_loader_watcher_thread.start()
+    #
+    # def _track_loader_watcher_task(self):
+    #     while self.on:
+    #         if self._track_loader_thread is None:
+    #             LOG.info('Starting Track Loader Thread...')
+    #             self.track_loader_thread()
+    #             LOG.info('Track Loader Thread started.')
+    #             time.sleep(5.0)
+    #         else:
+    #             try:
+    #                 if self._track_loader_thread.is_alive():
+    #                     LOG.debug('Track Loader Thread is up and running.')
+    #                     time.sleep(1.0)
+    #                     continue
+    #             except Exception:
+    #                 LOG.info('Seems like Track Loader Thread crashed...')
+    #                 self._track_loader_thread = None
 
     def track_loader_thread(self):
         assert self.on, 'jukebox must be on'
