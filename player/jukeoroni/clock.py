@@ -221,8 +221,8 @@ class Clock(object):
             # city = CITY
             # now = datetime.datetime.now() + datetime.timedelta(hours=24)
             # for some reason, now() does not return a 'set' value sometimes
-            # now = datetime.datetime.now()  # + datetime.timedelta(hours=24)
-            now = datetime.datetime.today()  # + datetime.timedelta(hours=24)
+            now = datetime.datetime.now()  # + datetime.timedelta(hours=24)
+            # now = datetime.datetime.today()  # + datetime.timedelta(hours=24)
             _moon = suncalc.getMoonTimes(now, 47.39134, 8.85971)
 
             # needs to be caluclated because sunrise and sunset might not be on the same day!!

@@ -82,7 +82,8 @@ BUTTONS_ICONS = {
 
 
 def buttons_img_overlay(labels):
-    widget_buttons = Image.new(mode='RGBA', size=(448, 448), color=(0, 0, 0, 180))
+    # widget_buttons = Image.new(mode='RGBA', size=(448, 448), color=(0, 0, 0, 180))
+    widget_buttons = Image.new(mode='RGBA', size=(448, 448), color=(0, 0, 0, 0))
 
     invert = True
     n = 0
@@ -106,6 +107,28 @@ def buttons_img_overlay(labels):
         widget_buttons = Image.alpha_composite(widget_buttons, label_bg)
 
     comp_buttons = Image.new(mode='RGBA', size=widget_buttons.size)
+
+    # create gradient
+    # https://stackoverflow.com/questions/39976028/python-pillow-make-gradient-for-transparency
+    bg_color = (0, 0, 0)
+    initial_opacity = 0.8
+
+    height = comp_buttons.size[1]
+    # gradient = 12.0
+    gradient = height / (BUTTONS_HEIGHT + BORDER*2)
+    alpha_gradient = Image.new('L', (1, height), color=255)
+    for x in range(height):
+        a = int((initial_opacity * 255.0) * (1.0 - gradient * float(x) / height))
+        if a > 0:
+            alpha_gradient.putpixel((0, x), a)
+        else:
+            alpha_gradient.putpixel((0, x), 0)
+    alpha = alpha_gradient.resize(comp_buttons.size)
+    black_im = Image.new('RGBA', comp_buttons.size, color=bg_color)
+    black_im.putalpha(alpha)
+
+    comp_buttons.paste(black_im)
+
     comp_buttons = Image.alpha_composite(comp_buttons, widget_buttons)
     comp_buttons = comp_buttons.rotate(90, expand=False)
     comp_buttons = comp_buttons.crop((0, 0, BUTTONS_HEIGHT + BORDER*2, widget_buttons.size[0]))

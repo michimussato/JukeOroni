@@ -20,7 +20,7 @@ PIMORONI_FONT = '/data/django/jukeoroni/player/static/gotham-black.ttf'
 
 jukeoroni = JukeOroni(test=False)
 jukeoroni.turn_on()
-# jukeoroni.jukebox.set_auto_update_tracklist_on()
+jukeoroni.jukebox.set_auto_update_tracklist_on()
 
 
 def get_bg_color(rgb):
