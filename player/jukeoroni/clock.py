@@ -219,12 +219,35 @@ class Clock(object):
         if draw_moon:
             _draw_moon = ImageDraw.Draw(comp)
             # city = CITY
-            now = datetime.datetime.now()
+            # now = datetime.datetime.now() + datetime.timedelta(hours=24)
+            # for some reason, now() does not return a 'set' value sometimes
+            # now = datetime.datetime.now()  # + datetime.timedelta(hours=24)
+            now = datetime.datetime.today()  # + datetime.timedelta(hours=24)
             _moon = suncalc.getMoonTimes(now, 47.39134, 8.85971)
 
-            if _moon["set"] < datetime.datetime.now():
-                now = now + datetime.timedelta(days=1)
-                _moon = suncalc.getMoonTimes(now, 47.39134, 8.85971)
+            # needs to be caluclated because sunrise and sunset might not be on the same day!!
+            # also, suncalc seems buggy
+            _moon_yesterday = suncalc.getMoonTimes(now - datetime.timedelta(hours=24), 47.39134, 8.85971)
+            _moon_today = suncalc.getMoonTimes(now, 47.39134, 8.85971)
+            _moon_tomorrow = suncalc.getMoonTimes(now + datetime.timedelta(hours=24), 47.39134, 8.85971)
+
+            LOG.info(f'Yesterday: {_moon_yesterday}')
+            LOG.info(f'Today: {_moon_today}')
+            LOG.info(f'Tomorrow: {_moon_tomorrow}')
+
+            LOG.debug(_moon)
+            # LOG.debug(_moon)
+            # LOG.debug(_moon)
+            # LOG.debug(_moon)
+            # LOG.debug(_moon)
+            if 'set' in _moon:
+                if _moon["set"] < datetime.datetime.now():
+                    now = now + datetime.timedelta(days=1)
+                    _moon = suncalc.getMoonTimes(now, 47.39134, 8.85971)
+            else:
+                now = now - datetime.timedelta(days=1)
+                __moon = suncalc.getMoonTimes(now, 47.39134, 8.85971)
+                _moon["set"] = __moon["set"]
 
             # LOG.info(_moon["rise"] > _moon["set"])
             # LOG.info(_moon["rise"] > _moon["set"])

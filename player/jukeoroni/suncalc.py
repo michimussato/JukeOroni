@@ -1,96 +1,112 @@
 import math
 from datetime import datetime, timedelta
 import time
-# import calendar
 import logging
 from player.jukeoroni.settings import GLOBAL_LOGGING_LEVEL
+
 
 LOG = logging.getLogger(__name__)
 LOG.setLevel(GLOBAL_LOGGING_LEVEL)
 
 
-PI   = 3.141592653589793  # math.pi
-sin  = math.sin
-cos  = math.cos
-tan  = math.tan
+PI = 3.141592653589793  # math.pi
+sin = math.sin
+cos = math.cos
+tan = math.tan
 asin = math.asin
 atan = math.atan2
 acos = math.acos
-rad  = PI / 180.0
+rad = PI / 180.0
 dayMs = 1000 * 60 * 60 * 24
 J1970 = 2440588
 J2000 = 2451545
 J0 = 0.0009
 
 times = [
-    [-0.833, 'sunrise',       'sunset'      ],
-    [  -0.3, 'sunriseEnd',    'sunsetStart' ],
-    [    -6, 'dawn',          'dusk'        ],
-    [   -12, 'nauticalDawn',  'nauticalDusk'],
-    [   -18, 'nightEnd',      'night'       ],
-    [     6, 'goldenHourEnd', 'goldenHour'  ]
+    [-0.833, 'sunrise', 'sunset'],
+    [-0.3, 'sunriseEnd', 'sunsetStart'],
+    [-6, 'dawn', 'dusk'],
+    [-12, 'nauticalDawn', 'nauticalDusk'],
+    [-18, 'nightEnd', 'night'],
+    [6, 'goldenHourEnd', 'goldenHour']
 ]
 
-e = rad * 23.4397 # obliquity of the Earth
+e = rad * 23.4397  # obliquity of the Earth
+
 
 def rightAscension(l, b):
     return atan(sin(l) * cos(e) - tan(b) * sin(e), cos(l))
 
+
 def declination(l, b):
     return asin(sin(b) * cos(e) + cos(b) * sin(e) * sin(l))
+
 
 def azimuth(H, phi, dec):
     return atan(sin(H), cos(H) * sin(phi) - tan(dec) * cos(phi))
 
+
 def altitude(H, phi, dec):
     return asin(sin(phi) * sin(dec) + cos(phi) * cos(dec) * cos(H))
 
+
 def siderealTime(d, lw):
-     return rad * (280.16 + 360.9856235 * d) - lw
+    return rad * (280.16 + 360.9856235 * d) - lw
+
 
 def toJulian(date):
     return (time.mktime(date.timetuple()) * 1000) / dayMs - 0.5 + J1970
 
+
 def fromJulian(j):
     return datetime.fromtimestamp(((j + 0.5 - J1970) * dayMs)/1000.0)
 
+
 def toDays(date):
-     return toJulian(date) - J2000
+    return toJulian(date) - J2000
+
 
 def julianCycle(d, lw):
     return round(d - J0 - lw / (2 * PI))
 
+
 def approxTransit(Ht, lw, n):
     return J0 + (Ht + lw) / (2 * PI) + n
 
+
 def solarTransitJ(ds, M, L):
     return J2000 + ds + 0.0053 * sin(M) - 0.0069 * sin(2 * L)
+
 
 def hourAngle(h, phi, d):
     try:
         ret = acos((sin(h) - sin(phi) * sin(d)) / (cos(phi) * cos(d)))
         return ret
-    except ValueError as e:
-        print(h, phi, d)
-        print(e)
+    except ValueError:
+        LOG.exception(h, phi, d)
+
 
 def solarMeanAnomaly(d):
     return rad * (357.5291 + 0.98560028 * d)
 
+
 def eclipticLongitude(M):
-    C = rad * (1.9148 * sin(M) + 0.02 * sin(2 * M) + 0.0003 * sin(3 * M)) # equation of center
-    P = rad * 102.9372 # perihelion of the Earth
+    C = rad * (1.9148 * sin(M) + 0.02 * sin(2 * M) + 0.0003 * sin(3 * M))  # equation of center
+    P = rad * 102.9372  # perihelion of the Earth
     return M + C + P + PI
+
 
 def sunCoords(d):
     M = solarMeanAnomaly(d)
     L = eclipticLongitude(M)
-    return dict(dec= declination(L, 0),ra= rightAscension(L, 0))
+    return dict(dec=declination(L, 0), ra=rightAscension(L, 0))
+
 
 def getSetJ(h, lw, phi, dec, n, M, L):
     w = hourAngle(h, phi, dec)
     a = approxTransit(w, lw, n)
     return solarTransitJ(a, M, L)
+
 
 # geocentric ecliptic coordinates of the moon
 def moonCoords(d):
@@ -98,11 +114,12 @@ def moonCoords(d):
     M = rad * (134.963 + 13.064993 * d)
     F = rad * (93.272 + 13.229350 * d)
 
-    l  = L + rad * 6.289 * sin(M)
-    b  = rad * 5.128 * sin(F)
+    l = L + rad * 6.289 * sin(M)
+    b = rad * 5.128 * sin(F)
     dt = 385001 - 20905 * cos(M)
 
-    return dict(ra=rightAscension(l, b), dec=declination(l, b), dist= dt)
+    return dict(ra=rightAscension(l, b), dec=declination(l, b), dist=dt)
+
 
 def getMoonIllumination(date):
     d = toDays(date)
@@ -113,13 +130,15 @@ def getMoonIllumination(date):
     sdist = 149598000
     phi = acos(sin(s["dec"]) * sin(m["dec"]) + cos(s["dec"]) * cos(m["dec"]) * cos(s["ra"] - m["ra"]))
     inc = atan(sdist * sin(phi), m["dist"] - sdist * cos(phi))
-    angle = atan(cos(s["dec"]) * sin(s["ra"] - m["ra"]), sin(s["dec"]) * cos(m["dec"]) - cos(s["dec"]) * sin(m["dec"]) * cos(s["ra"] - m["ra"]));
+    angle = atan(cos(s["dec"]) * sin(s["ra"] - m["ra"]), sin(s["dec"]) * cos(m["dec"]) - cos(s["dec"]) * sin(m["dec"]) * cos(s["ra"] - m["ra"]))
 
-    return dict(fraction=(1 + cos(inc)) / 2, phase= 0.5 + 0.5 * inc * (-1 if angle < 0 else 1) / PI, angle= angle)
+    return dict(fraction=(1 + cos(inc)) / 2, phase=0.5 + 0.5 * inc * (-1 if angle < 0 else 1) / PI, angle=angle)
+
 
 def getSunrise(date, lat, lng):
     ret = getTimes(date, lat, lng)
     return ret["sunrise"]
+
 
 def getTimes(date, lat, lng):
     lw = rad * -lng
@@ -146,8 +165,10 @@ def getTimes(date, lat, lng):
 
     return result
 
+
 def hoursLater(date, h):
     return date + timedelta(hours=h)
+
 
 def getMoonTimes(date, lat, lng):
 
@@ -205,28 +226,29 @@ def getMoonTimes(date, lat, lng):
             rise = i + (x2 if ye < 0 else x1)
             sett = i + (x1 if ye < 0 else x2)
 
-        if (rise and sett):
+        if bool(rise) and bool(sett):
             break
 
         h0 = h2
 
     result = dict()
 
-    if (rise):
+    if bool(rise):
         result["rise"] = hoursLater(date, rise)
-    if (sett):
+    if bool(sett):
         result["set"] = hoursLater(date, sett)
 
-    if (not rise and not sett):
+    if not bool(rise) and not bool(sett):
         value = 'alwaysUp' if ye > 0 else 'alwaysDown'
         result[value] = True
 
     return result
 
+
 def getMoonPosition(date, lat, lng):
-    lw  = rad * -lng
+    lw = rad * -lng
     phi = rad * lat
-    d   = toDays(date)
+    d = toDays(date)
 
     c = moonCoords(d)
     H = siderealTime(d, lw) - c["ra"]
@@ -239,14 +261,15 @@ def getMoonPosition(date, lat, lng):
 
 
 def getPosition(date, lat, lng):
-    lw  = rad * -lng
+    lw = rad * -lng
     phi = rad * lat
-    d   = toDays(date)
+    d = toDays(date)
 
-    c  = sunCoords(d)
-    H  = siderealTime(d, lw) - c["ra"]
+    c = sunCoords(d)
+    H = siderealTime(d, lw) - c["ra"]
     # print("d", d, "c",c,"H",H,"phi", phi)
     return dict(azimuth=azimuth(H, phi, c["dec"]), altitude=altitude(H, phi, c["dec"]))
+
 
 # def getMoonAndSunrise(date, lat, lng):
 #     # print(date,lat,lng)
