@@ -324,7 +324,10 @@ Exception Value: broken PNG file (chunk b"Em\xd5'")
             cover_artist = cover_artist.resize((round(cover_size/scale_cover_artist), round(cover_size/scale_cover_artist)), Image.ANTIALIAS)
             cover_artist = Resource().round_resize(image=cover_artist, corner=20, factor=1.0)
 
+            cover_copy = cover.copy()
+
             cover.paste(cover_artist, box=(round(cover_size - cover_size/scale_cover_artist)-20, 20), mask=cover_artist)
+            cover = Image.alpha_composite(cover_copy, cover)  # this is necessary to prevent alpha AA artifacts (background shining through)
 
         _cover_center = round(bg.size[1] / 2 - cover_size / 2)
         bg.paste(cover, box=(buttons_overlay.size[0] + self.border, _cover_center), mask=cover)

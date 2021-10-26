@@ -161,7 +161,8 @@ Oct 13 00:23:23 jukeoroni gunicorn[20629]: OSError: unrecognized data stream con
             elif isinstance(fixed, tuple):
                 image = image.resize((round(fixed[0]), round(fixed[1])))
 
-        bg = Image.new('RGBA', image.size, color=(0, 0, 0, 0))
+        bg = image.copy()  # use copy of image as background to prevent AA artifacts
+        bg.putalpha(0)
 
         aa = 8
 

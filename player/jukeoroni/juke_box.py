@@ -84,9 +84,9 @@ class JukeboxTrack(object):
             cover = Resource().JUKEBOX_ON_AIR_DEFAULT_IMAGE
 
         if COVER_ONLINE_PREFERENCE:
-            return album_online or cover
+            return Resource().squareify(album_online) or Resource().squareify(cover)
         else:
-            return cover or album_online
+            return Resource().squareify(cover) or Resource().squareify(album_online)
 
     @property
     def cover_artist(self):
@@ -96,7 +96,7 @@ class JukeboxTrack(object):
         if self.artist.cover_online is None:
             return None
         else:
-            return Resource().from_url(url=self.artist.cover_online)
+            return Resource().squareify(Resource().from_url(url=self.artist.cover_online))
 
     @property
     def media_info(self):
