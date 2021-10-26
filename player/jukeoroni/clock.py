@@ -16,6 +16,8 @@ from PIL import Image, ImageDraw, ImageFont, ImageOps  # , ImageFilter
 # from astral.sun import sun
 from player.jukeoroni.settings import (
     GLOBAL_LOGGING_LEVEL,
+    LAT,
+    LONG,
     # CITY,
     ANTIALIAS,
     ARIAL,
@@ -55,10 +57,6 @@ class Clock(object):
             arc_twelve = 270.0
 
         white = (255, 255, 255, 255)
-
-        # LOG.info(f'Moon phase: {round(float(astral.moon.phase()))} / 28')
-
-
 
         # center dot
         draw.ellipse([(round(_size * 0.482), round(_size * 0.482)), (round(_size - _size * 0.482), round(_size - _size * 0.482))], fill=white, outline=None, width=round(_size * 0.312))
@@ -195,9 +193,7 @@ class Clock(object):
 
         if draw_sun:
             _draw_sun = ImageDraw.Draw(comp)
-            # city = CITY
-            _sun = suncalc.getTimes(datetime.datetime.now(), 47.39134, 8.85971)
-            # _sun = sun(city.observer, date=datetime.date.today(), tzinfo=city.timezone)
+            _sun = suncalc.getTimes(datetime.datetime.now(), LAT, LONG)
 
             decimal_sunrise = float(_sun['sunrise'].strftime('%H')) + float(_sun['sunrise'].strftime('%M')) / 60
             arc_length_sunrise = decimal_sunrise / hours * 360.0
@@ -213,104 +209,66 @@ class Clock(object):
             size_astral = [(round(_size * _size_astral), round(_size * _size_astral)), (round(_size - _size * _size_astral), round(_size - _size * _size_astral))]
             width_astral = round(_size * _width)
             _draw_sun.arc(size_astral, start=arc_length_sunrise+arc_twelve, end=arc_length_sunset+arc_twelve, fill=color,
-                     width=width_astral)
+                          width=width_astral)
 
         # moon
         if draw_moon:
-            lat, long = 47.39134, 8.85971
             _draw_moon = ImageDraw.Draw(comp)
-            # city = CITY
-            # now = datetime.datetime.now() + datetime.timedelta(hours=24)
-            # for some reason, now() does not return a 'set' value sometimes
-            # now = datetime.datetime.now()  # + datetime.timedelta(hours=24)
-            now = datetime.datetime.today()  # + datetime.timedelta(hours=24)
+            now = datetime.datetime.today()
 
-            _moon = suncalc.getMoonTimes(now, lat, long)
+            _moon_yesterday = suncalc.getMoonTimes(now - datetime.timedelta(hours=24), LAT, LONG)
+            _moon_today = suncalc.getMoonTimes(now, LAT, LONG)
+            _moon_tomorrow = suncalc.getMoonTimes(now + datetime.timedelta(hours=24), LAT, LONG)
 
-            # needs to be caluclated because sunrise and sunset might not be on the same day!!
-            # also, suncalc seems buggy
-            # _moon_byesterday = suncalc.getMoonTimes(now - datetime.timedelta(hours=48), 47.39134, 8.85971)
-            _moon_yesterday = suncalc.getMoonTimes(now - datetime.timedelta(hours=24), lat, long)
-            _moon_today = _moon
-            _moon_tomorrow = suncalc.getMoonTimes(now + datetime.timedelta(hours=24), lat, long)
-            # _moon_atomorrow = suncalc.getMoonTimes(now + datetime.timedelta(hours=24), 47.39134, 8.85971)
-
-            # LOG.info(f'Before Yesterday: {_moon_byesterday}')
             LOG.info(f'Yesterday: {_moon_yesterday}')
             LOG.info(f'Today: {_moon_today}')
             LOG.info(f'Tomorrow: {_moon_tomorrow}')
 
-            # sometimes this works, and sometimes, it does not, it seems. utc problem? works after 2pm?
-            # or maybe it works, if the entire cycle is already in the past...
+            # based on the next moonset we can find its corresponding moonrise
+            # moon set plus some extra needs to be in the future
+            moon_sets = []
+            if 'set' in _moon_yesterday:
+                moon_sets.append(_moon_yesterday['set'])
+            if 'set' in _moon_today:
+                moon_sets.append(_moon_today['set'])
+            if 'set' in _moon_tomorrow:
+                moon_sets.append(_moon_tomorrow['set'])
 
-            """
-            Oct 26 14:07:09 jukeoroni gunicorn[3655]: [10-26-2021 14:07:09] [INFO] [MainThread|3069381328] [player.jukeoroni.clock]: Yesterday: {'rise': datetime.datetime(2021, 10, 25, 21, 0, 13, 227563), 'set': datetime.datetime(2021, 10, 26, 13, 53, 24, 319242)}
-            Oct 26 14:07:09 jukeoroni gunicorn[3655]: [10-26-2021 14:07:09] [INFO] [MainThread|3069381328] [player.jukeoroni.clock]: Today: {'rise': datetime.datetime(2021, 10, 26, 21, 47, 29, 739844)}
-            Oct 26 14:07:09 jukeoroni gunicorn[3655]: [10-26-2021 14:07:09] [INFO] [MainThread|3069381328] [player.jukeoroni.clock]: Tomorrow: {'rise': datetime.datetime(2021, 10, 27, 22, 45, 7, 51245), 'set': datetime.datetime(2021, 10, 27, 14, 38, 20, 895167)}
-            """
+            moon_sets.sort(reverse=False)
+            LOG.info(f'Moon sets: {moon_sets}')
+            for _set in moon_sets:
+                if _set + datetime.timedelta(hours=2) > datetime.datetime.now():
+                    moon_set = _set
+                    LOG.info(f'Moon Set for relevant cycle is: {moon_set}')
+                    break
 
-            _moon = _moon_yesterday
+            moon_rises = []
+            if 'rise' in _moon_yesterday:
+                moon_rises.append(_moon_yesterday['rise'])
+            if 'rise' in _moon_today:
+                moon_rises.append(_moon_today['rise'])
+            if 'rise' in _moon_tomorrow:
+                moon_rises.append(_moon_tomorrow['rise'])
 
-            # if 'rise' not in _moon:
-            #     # only moon set happens today
-            #     # => rise must be yesterday
-            #     _moon['rise'] = _moon_yesterday['rise']
-            #
-            # if 'set' not in _moon:
-            #     # only moon rise happens today
-            #     # => set must be tomorrow
-            #     _moon['set'] = _moon_tomorrow['set']
-            #
-            # if _moon['rise'] < _moon['set']:
-            #     # moon rise before moon set: correct
-            #     pass
-            # # moon set before moon rise: incorrect
-            # elif _moon['rise'] > _moon['set']:
-            #     LOG.warning('Moon set happens after moon rise for today. Adjusting...')
-            #     _moon['rise'] = _moon_yesterday['rise']
-            #
-            # LOG.info(f'MOON: {_moon}')
-            #
-            # if _moon['set'] < datetime.datetime.now() + datetime.timedelta(hours=2):
-            #     # we should calculate the next moon cycle as the one
-            #     # calculated and shown is already in the past.
-            #     raise 'The moon cycle shown is already in the past. Add some logic here please!!!'
-            #
-            # # # LOG.debug(_moon)
-            # # # LOG.debug(_moon)
-            # # # LOG.debug(_moon)
-            # # # LOG.debug(_moon)
-            # # # LOG.debug(_moon)
-            # # if 'set' in _moon:
-            # #     if _moon["set"] < datetime.datetime.now():
-            # #         now = now + datetime.timedelta(days=1)
-            # #         _moon = suncalc.getMoonTimes(now, 47.39134, 8.85971)
-            # # else:
-            # #     now = now - datetime.timedelta(days=1)
-            # #     __moon = suncalc.getMoonTimes(now, 47.39134, 8.85971)
-            # #     _moon["set"] = __moon["set"]
-            # #
-            # # # LOG.info(_moon["rise"] > _moon["set"])
-            # # # LOG.info(_moon["rise"] > _moon["set"])
-            # #
-            # # # # _sun = sun(city.observer, date=datetime.date.today(), tzinfo=city.timezone)
-            # # if _moon["rise"] > _moon["set"]:
-            # #     _moon_yesterday = suncalc.getMoonTimes(now-datetime.timedelta(days=1), 47.39134, 8.85971)
-            # #     _moon['rise'] = _moon_yesterday["rise"]
-            # #
-            # # # LOG.info(_moon["rise"] > _moon["set"])
-            # # # LOG.info(_moon["rise"] > _moon["set"])
-            # # # LOG.info(_moon["rise"] > _moon["set"])
+            moon_rises.sort(reverse=True)
+            LOG.info(f'Moon rises: {moon_rises}')
+            for _rise in moon_rises:
+                if _rise < moon_set:
+                    moon_rise = _rise
+                    LOG.info(f'Moon Rise for relevant cycle is: {moon_rise}')
+                    break
+
+            _moon = dict()
+            _moon['rise'] = moon_rise
+            _moon['set'] = moon_set
 
             decimal_moonrise = float(_moon['rise'].strftime('%H')) + float(_moon['rise'].strftime('%M')) / 60
             arc_length_moonrise = decimal_moonrise / hours * 360.0
             LOG.info(f'Moonrise: {str(_moon["rise"].strftime("%H:%M"))}')
 
-
             decimal_moonset = float(_moon['set'].strftime('%H')) + float(_moon['set'].strftime('%M')) / 60
             arc_length_moonset = decimal_moonset / hours * 360.0
             LOG.info(f'Moonset: {str(_moon["set"].strftime("%H:%M"))}')
-
 
             color = (0, 128, 255, 255)
             _size_astral = 0.20  # TODO: bigger means smaller circle
@@ -318,11 +276,7 @@ class Clock(object):
             size_astral = [(round(_size * _size_astral), round(_size * _size_astral)), (round(_size - _size * _size_astral), round(_size - _size * _size_astral))]
             width_astral = round(_size * _width)
             _draw_moon.arc(size_astral, start=arc_length_moonrise+arc_twelve, end=arc_length_moonset+arc_twelve, fill=color,
-                     width=width_astral)
-
-            # if draw_logo:
-            #     _draw_moon.text((round(_size / 2) - length_logo / 2, round(_size * 0.536)), text_logo, fill=(0,0,0,0),
-            #               font=font_logo)
+                           width=width_astral)
 
         comp = comp.rotate(90, expand=False)
 
