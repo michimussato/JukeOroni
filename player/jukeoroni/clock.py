@@ -142,11 +142,6 @@ class Clock(object):
             # phase = round(float(astral.moon.phase()) / 28.0 * 2, 4)
             phase = round(float(suncalc.getMoonIllumination(datetime.datetime.now())['phase']) * 2, 4)
             LOG.info(f'Moon phase: {phase} / 4')
-            # phase = round(float(suncalc.getMoonIllumination(datetime.datetime.now())['phase']) * 2, 4)
-            # LOG.info(suncalc.getMoonIllumination(datetime.datetime.now())['angle'])
-            # LOG.info(suncalc.getMoonIllumination(datetime.datetime.now())['angle'])
-            # LOG.info(suncalc.getMoonIllumination(datetime.datetime.now())['angle'])
-            # LOG.info(suncalc.getMoonIllumination(datetime.datetime.now())['angle'])
 
             spherical = math.cos(phase * math.pi)
 
@@ -220,9 +215,9 @@ class Clock(object):
             _moon_today = suncalc.getMoonTimes(now, LAT, LONG)
             _moon_tomorrow = suncalc.getMoonTimes(now + datetime.timedelta(hours=24), LAT, LONG)
 
-            LOG.info(f'Yesterday: {_moon_yesterday}')
-            LOG.info(f'Today: {_moon_today}')
-            LOG.info(f'Tomorrow: {_moon_tomorrow}')
+            LOG.debug(f'Moon Yesterday: {_moon_yesterday}')
+            LOG.debug(f'Moon Today: {_moon_today}')
+            LOG.debug(f'Moon Tomorrow: {_moon_tomorrow}')
 
             # based on the next moonset we can find its corresponding moonrise
             # moon set plus some extra needs to be in the future
@@ -235,11 +230,11 @@ class Clock(object):
                 moon_sets.append(_moon_tomorrow['set'])
 
             moon_sets.sort(reverse=False)
-            LOG.info(f'Moon sets: {moon_sets}')
+            LOG.debug(f'Moon sets: {moon_sets}')
             for _set in moon_sets:
                 if _set + datetime.timedelta(hours=2) > datetime.datetime.now():
                     moon_set = _set
-                    LOG.info(f'Moon Set for relevant cycle is: {moon_set}')
+                    LOG.debug(f'Moon Set for relevant cycle is: {moon_set}')
                     break
 
             moon_rises = []
@@ -251,11 +246,11 @@ class Clock(object):
                 moon_rises.append(_moon_tomorrow['rise'])
 
             moon_rises.sort(reverse=True)
-            LOG.info(f'Moon rises: {moon_rises}')
+            LOG.debug(f'Moon rises: {moon_rises}')
             for _rise in moon_rises:
                 if _rise < moon_set:
                     moon_rise = _rise
-                    LOG.info(f'Moon Rise for relevant cycle is: {moon_rise}')
+                    LOG.debug(f'Moon Rise for relevant cycle is: {moon_rise}')
                     break
 
             _moon = dict()
