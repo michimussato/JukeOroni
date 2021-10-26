@@ -63,6 +63,8 @@ def fromJulian(j):
 
 
 def toDays(date):
+    # time.mktime(date.timetuple())
+    # return time.time()/60/60/24
     return toJulian(date) - J2000
 
 
@@ -248,7 +250,15 @@ def getMoonTimes(date, lat, lng):
 def getMoonPosition(date, lat, lng):
     lw = rad * -lng
     phi = rad * lat
+    LOG.info(date)
+    LOG.info(date)
+    LOG.info(date)
+    # d = time.mktime(date.timetuple())
     d = toDays(date)
+    LOG.info(d)
+    LOG.info(d)
+    LOG.info(d)
+    LOG.info(d)
 
     c = moonCoords(d)
     H = siderealTime(d, lw) - c["ra"]

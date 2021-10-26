@@ -217,49 +217,90 @@ class Clock(object):
 
         # moon
         if draw_moon:
+            lat, long = 47.39134, 8.85971
             _draw_moon = ImageDraw.Draw(comp)
             # city = CITY
             # now = datetime.datetime.now() + datetime.timedelta(hours=24)
             # for some reason, now() does not return a 'set' value sometimes
-            now = datetime.datetime.now()  # + datetime.timedelta(hours=24)
-            # now = datetime.datetime.today()  # + datetime.timedelta(hours=24)
-            _moon = suncalc.getMoonTimes(now, 47.39134, 8.85971)
+            # now = datetime.datetime.now()  # + datetime.timedelta(hours=24)
+            now = datetime.datetime.today()  # + datetime.timedelta(hours=24)
+
+            _moon = suncalc.getMoonTimes(now, lat, long)
 
             # needs to be caluclated because sunrise and sunset might not be on the same day!!
             # also, suncalc seems buggy
-            _moon_yesterday = suncalc.getMoonTimes(now - datetime.timedelta(hours=24), 47.39134, 8.85971)
-            _moon_today = suncalc.getMoonTimes(now, 47.39134, 8.85971)
-            _moon_tomorrow = suncalc.getMoonTimes(now + datetime.timedelta(hours=24), 47.39134, 8.85971)
+            # _moon_byesterday = suncalc.getMoonTimes(now - datetime.timedelta(hours=48), 47.39134, 8.85971)
+            _moon_yesterday = suncalc.getMoonTimes(now - datetime.timedelta(hours=24), lat, long)
+            _moon_today = _moon
+            _moon_tomorrow = suncalc.getMoonTimes(now + datetime.timedelta(hours=24), lat, long)
+            # _moon_atomorrow = suncalc.getMoonTimes(now + datetime.timedelta(hours=24), 47.39134, 8.85971)
 
+            # LOG.info(f'Before Yesterday: {_moon_byesterday}')
             LOG.info(f'Yesterday: {_moon_yesterday}')
             LOG.info(f'Today: {_moon_today}')
             LOG.info(f'Tomorrow: {_moon_tomorrow}')
 
-            LOG.debug(_moon)
-            # LOG.debug(_moon)
-            # LOG.debug(_moon)
-            # LOG.debug(_moon)
-            # LOG.debug(_moon)
-            if 'set' in _moon:
-                if _moon["set"] < datetime.datetime.now():
-                    now = now + datetime.timedelta(days=1)
-                    _moon = suncalc.getMoonTimes(now, 47.39134, 8.85971)
-            else:
-                now = now - datetime.timedelta(days=1)
-                __moon = suncalc.getMoonTimes(now, 47.39134, 8.85971)
-                _moon["set"] = __moon["set"]
+            # sometimes this works, and sometimes, it does not, it seems. utc problem? works after 2pm?
+            # or maybe it works, if the entire cycle is already in the past...
 
-            # LOG.info(_moon["rise"] > _moon["set"])
-            # LOG.info(_moon["rise"] > _moon["set"])
+            """
+            Oct 26 14:07:09 jukeoroni gunicorn[3655]: [10-26-2021 14:07:09] [INFO] [MainThread|3069381328] [player.jukeoroni.clock]: Yesterday: {'rise': datetime.datetime(2021, 10, 25, 21, 0, 13, 227563), 'set': datetime.datetime(2021, 10, 26, 13, 53, 24, 319242)}
+            Oct 26 14:07:09 jukeoroni gunicorn[3655]: [10-26-2021 14:07:09] [INFO] [MainThread|3069381328] [player.jukeoroni.clock]: Today: {'rise': datetime.datetime(2021, 10, 26, 21, 47, 29, 739844)}
+            Oct 26 14:07:09 jukeoroni gunicorn[3655]: [10-26-2021 14:07:09] [INFO] [MainThread|3069381328] [player.jukeoroni.clock]: Tomorrow: {'rise': datetime.datetime(2021, 10, 27, 22, 45, 7, 51245), 'set': datetime.datetime(2021, 10, 27, 14, 38, 20, 895167)}
+            """
 
-            # # _sun = sun(city.observer, date=datetime.date.today(), tzinfo=city.timezone)
-            if _moon["rise"] > _moon["set"]:
-                _moon_yesterday = suncalc.getMoonTimes(now-datetime.timedelta(days=1), 47.39134, 8.85971)
-                _moon['rise'] = _moon_yesterday["rise"]
+            _moon = _moon_yesterday
 
-            # LOG.info(_moon["rise"] > _moon["set"])
-            # LOG.info(_moon["rise"] > _moon["set"])
-            # LOG.info(_moon["rise"] > _moon["set"])
+            # if 'rise' not in _moon:
+            #     # only moon set happens today
+            #     # => rise must be yesterday
+            #     _moon['rise'] = _moon_yesterday['rise']
+            #
+            # if 'set' not in _moon:
+            #     # only moon rise happens today
+            #     # => set must be tomorrow
+            #     _moon['set'] = _moon_tomorrow['set']
+            #
+            # if _moon['rise'] < _moon['set']:
+            #     # moon rise before moon set: correct
+            #     pass
+            # # moon set before moon rise: incorrect
+            # elif _moon['rise'] > _moon['set']:
+            #     LOG.warning('Moon set happens after moon rise for today. Adjusting...')
+            #     _moon['rise'] = _moon_yesterday['rise']
+            #
+            # LOG.info(f'MOON: {_moon}')
+            #
+            # if _moon['set'] < datetime.datetime.now() + datetime.timedelta(hours=2):
+            #     # we should calculate the next moon cycle as the one
+            #     # calculated and shown is already in the past.
+            #     raise 'The moon cycle shown is already in the past. Add some logic here please!!!'
+            #
+            # # # LOG.debug(_moon)
+            # # # LOG.debug(_moon)
+            # # # LOG.debug(_moon)
+            # # # LOG.debug(_moon)
+            # # # LOG.debug(_moon)
+            # # if 'set' in _moon:
+            # #     if _moon["set"] < datetime.datetime.now():
+            # #         now = now + datetime.timedelta(days=1)
+            # #         _moon = suncalc.getMoonTimes(now, 47.39134, 8.85971)
+            # # else:
+            # #     now = now - datetime.timedelta(days=1)
+            # #     __moon = suncalc.getMoonTimes(now, 47.39134, 8.85971)
+            # #     _moon["set"] = __moon["set"]
+            # #
+            # # # LOG.info(_moon["rise"] > _moon["set"])
+            # # # LOG.info(_moon["rise"] > _moon["set"])
+            # #
+            # # # # _sun = sun(city.observer, date=datetime.date.today(), tzinfo=city.timezone)
+            # # if _moon["rise"] > _moon["set"]:
+            # #     _moon_yesterday = suncalc.getMoonTimes(now-datetime.timedelta(days=1), 47.39134, 8.85971)
+            # #     _moon['rise'] = _moon_yesterday["rise"]
+            # #
+            # # # LOG.info(_moon["rise"] > _moon["set"])
+            # # # LOG.info(_moon["rise"] > _moon["set"])
+            # # # LOG.info(_moon["rise"] > _moon["set"])
 
             decimal_moonrise = float(_moon['rise'].strftime('%H')) + float(_moon['rise'].strftime('%M')) / 60
             arc_length_moonrise = decimal_moonrise / hours * 360.0
