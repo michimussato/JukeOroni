@@ -347,6 +347,8 @@ box.turn_off()
         LOG.info('generating updated track list...')
         discogs_client = get_client()
         _files = []
+        _albums = []
+        _artists = []
         for path, dirs, files in os.walk(MUSIC_DIR):
             if not self.on:
                 return
@@ -379,6 +381,8 @@ box.turn_off()
                 model_artist = Artist(name=artist, cover_online=cover_online)
                 model_artist.save()
                 # print('    artist created in db')
+
+            _artists.append(artist)
 
             cover_root = path
             jpg_path = os.path.join(cover_root, 'cover.jpg')
@@ -413,6 +417,7 @@ box.turn_off()
 
             try:
                 model_album.save()
+                albums.append(album)
             except Exception as err:
                 LOG.exception(f'cannot save album model {title} by {artist}: {err}')
 
@@ -457,7 +462,19 @@ box.turn_off()
                 django_track.delete()
                 LOG.info(f'Track removed from DB: {django_track}')
 
-        LOG.info(f'Fished: track list generated successfully: {len(_files)} tracks found')
+        django_albums = Album.objects.all()
+        for django_album in django_albums:
+            if django_album.album_title not in _albums:
+                django_album.delete()
+                LOG.info(f'Album removed from DB: {django_album}')
+
+        django_artists = Artist.objects.all()
+        for django_artist in django_artists:
+            if django_artist.name not in _artists:
+                django_artist.delete()
+                LOG.info(f'Artist removed from DB: {django_artist}')
+
+        LOG.info(f'Finished: track list generated successfully: {len(_files)} tracks, {len(_albums)} albums and {len(_artists)} artists found')
     ############################################
 
     ############################################
