@@ -34,7 +34,7 @@ class Resource(object):
         """
         Resource().PLACEHOLDER_SQUARE
         """
-        return Image.new(mode='RGB', size=(448, 448), color=(128, 128, 128))
+        return Image.new(mode='RGB', size=(448, 448), color=(0, 0, 0))
 
     @property
     def OFF_IMAGE_SQUARE(self):

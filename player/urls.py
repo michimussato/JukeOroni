@@ -2,15 +2,9 @@ from django.urls import path
 from player.views import JukeOroniView
 
 
-
-
-
-
-
 urlpatterns = [
-    path('', JukeOroniView.as_view(), name='jukeoroni_index'),
     # Jukebox
-    # path('/', JukeOroniView.jukebox_index, name='jukebox'),
+    path('', JukeOroniView.as_view(), name='jukeoroni_index'),
     path('jukebox/', JukeOroniView.jukebox_index, name='jukebox'),
     path('jukebox/<int:queue_index>/pop/', JukeOroniView.pop_track_from_queue, name='jukebox pop track'),
     path('jukebox/<int:queue_index>/as_first/', JukeOroniView.set_first_in_queue, name='jukebox pop track'),
@@ -33,4 +27,7 @@ urlpatterns = [
     path('radio/', JukeOroniView.radio_index, name='radio'),
     path('radio/<str:display_name_short>/play/', JukeOroniView.radio_play, name='radio_play'),
     path('radio/stop/', JukeOroniView.radio_stop, name='radio_stop'),
+
+    # path('', index_redirect, name='index_redirect'),
 ]
+

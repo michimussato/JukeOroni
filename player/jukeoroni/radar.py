@@ -4,7 +4,7 @@ import threading
 import tempfile
 import logging
 from io import BytesIO
-from PIL import Image
+from PIL import Image, ImageOps, ImageEnhance
 import selenium.common
 import selenium.webdriver
 from selenium.webdriver.common.by import By
@@ -16,6 +16,10 @@ from player.jukeoroni.images import Resource
 
 LOG = logging.getLogger(__name__)
 LOG.setLevel(GLOBAL_LOGGING_LEVEL)
+
+
+INVERT_RADAR = True
+ENHANCE_IMAGE = True
 
 
 # class _RadarThread(threading.Thread):
@@ -104,6 +108,7 @@ class Radar(object):
             im = Image.open(BytesIO(png))
             LOG.debug(f'Radar Screenshot has size {im.size}.')
             im = Resource().squareify(image=im)
+            # resolution as is: 536x536
             # width, height = im.size
             # left = 140
             # top = 100
@@ -111,6 +116,29 @@ class Radar(object):
             # bottom = height - top
             # im = im.crop((left, top, right, bottom))
             # will result in size (456, 336) for now
+            w, h = im.size
+            cut = 58  # center and remove border
+            im = im.crop((cut, cut, w-cut, h-cut))
+            # im.save('/home/pi/radar.png')
+
+            if INVERT_RADAR:
+                r, g, b, a = im.split()
+                rgb_image = Image.merge('RGB', (r, g, b))
+                inverted_image = ImageOps.invert(rgb_image)
+                r2, g2, b2 = inverted_image.split()
+                im = Image.merge('RGBA', (r2, g2, b2, a))
+
+            if ENHANCE_IMAGE:
+                # https://pythonexamples.org/python-pillow-adjust-image-sharpness/
+                filter_bright = ImageEnhance.Brightness(im)
+                im = filter_bright.enhance(1.5)
+
+                filter_contrast = ImageEnhance.Contrast(im)
+                im = filter_contrast.enhance(1.5)
+
+                filter_sharp = ImageEnhance.Sharpness(im)
+                im = filter_sharp.enhance(1.5)
+
             return im.rotate(90, expand=True)
 
         except Exception:

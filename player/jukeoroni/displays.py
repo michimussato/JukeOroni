@@ -81,18 +81,21 @@ BUTTONS_ICONS = {
 }
 
 
-def buttons_img_overlay(labels):
+INVERT_BUTTONS = True
+
+
+def buttons_img_overlay(labels, graident_color=(255, 255, 255)):
     # widget_buttons = Image.new(mode='RGBA', size=(448, 448), color=(0, 0, 0, 180))
     widget_buttons = Image.new(mode='RGBA', size=(448, 448), color=(0, 0, 0, 0))
 
-    invert = True
+    # invert = True
     n = 0
     for _label in labels[::-1]:
         n += 1
         if not bool(BUTTONS_ICONS[_label]):
             continue
         label = Image.open(BUTTONS_ICONS[_label])
-        if invert:
+        if INVERT_BUTTONS:
             r, g, b, a = label.split()
             rgb_image = Image.merge('RGB', (r, g, b))
             inverted_image = ImageOps.invert(rgb_image)
@@ -110,7 +113,8 @@ def buttons_img_overlay(labels):
 
     # create gradient
     # https://stackoverflow.com/questions/39976028/python-pillow-make-gradient-for-transparency
-    bg_color = (0, 0, 0)
+    # Change the bg color of the gradient background here
+    bg_color = graident_color
     initial_opacity = 0.8
 
     height = comp_buttons.size[1]
@@ -145,7 +149,7 @@ class Layout:
 
 
 class Standby(Layout):
-    bg_color = (255, 0, 0, 255)
+    # bg_color = (255, 0, 0, 255)
 
     def get_layout(self, labels):
 
@@ -212,11 +216,13 @@ class Standby(Layout):
 
 
 class Jukebox(Layout):
-    bg_color = (0, 255, 0, 255)
+    # bg_color = (0, 255, 0, 255)
 
     def get_layout(self, labels, loading=False, cover=None, artist=None):
 
         if loading:
+            # TODO:
+            #  cover = Resource().squareify(Resource().JUKEBOX_LOADING_IMAGE)
             cover = Resource().JUKEBOX_LOADING_IMAGE
 
         else:
@@ -230,7 +236,7 @@ class Jukebox(Layout):
             else:
                 assert isinstance(artist, Image.Image), 'artist cover type must be PIL.Image.Image() (not rotated)'
 
-        buttons_overlay = buttons_img_overlay(labels)
+        buttons_overlay = buttons_img_overlay(labels, graident_color=(255, 128, 0))
         bg = Image.new(mode='RGBA', size=(600, 448), color=self.bg_color)
 
         cover_size = self.main_size
@@ -358,13 +364,13 @@ Exception Value: broken PNG file (chunk b"Em\xd5'")
 
 
 class Radio(Layout):
-    bg_color = (0, 0, 255, 255)
+    # bg_color = (0, 0, 255, 255)
 
     def get_layout(self, labels, cover, title):
 
         assert isinstance(cover, Image.Image), f'Radio Channel cover type must be PIL.Image.Image() (not rotated). Got: {cover}'
 
-        buttons_overlay = buttons_img_overlay(labels)
+        buttons_overlay = buttons_img_overlay(labels, graident_color=(0, 255, 128))
         bg = Image.new(mode='RGBA', size=(600, 448), color=self.bg_color)
 
         cover_size = self.main_size
@@ -424,7 +430,7 @@ class Radio(Layout):
 
 
 class Off(Layout):
-    bg_color = (0, 0, 0, 255)
+    # bg_color = (0, 0, 0, 255)
 
     # _clock = None
     # radar = None

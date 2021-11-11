@@ -1,24 +1,15 @@
 import datetime
 import logging
 import math
-# import numpy as np
 
-import astral.moon
 import player.jukeoroni.suncalc as suncalc
 
-try:
-    from jukeoroni.settings import TIME_ZONE
-    tz = TIME_ZONE
-    print('using djangos timezone')
-except ImportError as err:
-    tz = "Europe/Zurich"
-from PIL import Image, ImageDraw, ImageFont, ImageOps  # , ImageFilter
-# from astral.sun import sun
+from PIL import Image, ImageDraw, ImageFont, ImageOps
 from player.jukeoroni.settings import (
     GLOBAL_LOGGING_LEVEL,
     LAT,
     LONG,
-    # CITY,
+    TZ,
     ANTIALIAS,
     ARIAL,
     CALLIGRAPHIC
@@ -27,6 +18,15 @@ from player.jukeoroni.settings import (
 
 LOG = logging.getLogger(__name__)
 LOG.setLevel(GLOBAL_LOGGING_LEVEL)
+
+
+try:
+    from jukeoroni.settings import TIME_ZONE
+    tz = TIME_ZONE
+    LOG.info('Using Djangos timezone')
+except ImportError:
+    LOG.exception('Setting timezone manually')
+    tz = TZ
 
 
 class Clock(object):
@@ -64,32 +64,49 @@ class Clock(object):
         color = white
         # TODO: we could do the intervals smarter now
         if hours == 24:
-            intervals = [(0.0, 3.0),
-                         (14.0, 16.0),
-                         (29.0, 31.0),
-                         (42.0, 48.0),
-                         (59.0, 61.0),
-                         (74.0, 76.0),
-                         (87.0, 93.0),
-                         (104.0, 106.0),
-                         (119.0, 121.0),
-                         (132.0, 138.0),
-                         (149.0, 151.0),
-                         (164.0, 166.0),
-                         (177.0, 183.0),
-                         (194.0, 196.0),
-                         (209.0, 211.0),
-                         (222.0, 228.0),
-                         (239.0, 241.0),
-                         (254.0, 256.0),
-                         (267.0, 273.0),
-                         (284.0, 286.0),
-                         (299.0, 301.0),
-                         (312.0, 318.0),
-                         (329.0, 331.0),
-                         (344.0, 346.0),
-                         (357.0, 359.99),
-                         ]
+            intervals = [
+                (0.5, 3.0),
+                # (0.0, 3.0),
+                (14.0, 16.0),
+                (29.0, 31.0),
+                # (42.0, 48.0),
+                (42.0, 44.5),
+                (45.5, 48.0),
+                (59.0, 61.0),
+                (74.0, 76.0),
+                # (87.0, 93.0),
+                (87.0, 89.5),
+                (90.5, 93.0),
+                (104.0, 106.0),
+                (119.0, 121.0),
+                # (132.0, 138.0),
+                (132.0, 134.5),
+                (135.5, 138.0),
+                (149.0, 151.0),
+                (164.0, 166.0),
+                # (177.0, 183.0),
+                (177.0, 179.5),
+                (180.5, 183.0),
+                (194.0, 196.0),
+                (209.0, 211.0),
+                # (222.0, 228.0),
+                (222.0, 224.5),
+                (225.5, 228.0),
+                (239.0, 241.0),
+                (254.0, 256.0),
+                # (267.0, 273.0),
+                (267.0, 269.5),
+                (270.5, 273.0),
+                (284.0, 286.0),
+                (299.0, 301.0),
+                # (312.0, 318.0),
+                (312.0, 314.5),
+                (315.5, 318.0),
+                (329.0, 331.0),
+                (344.0, 346.0),
+                # (357.0, 359.99),
+                (357.0, 359.5),
+            ]
         else:
             intervals = [(0.0, 3.0),
                          (29.0, 31.0),
@@ -120,16 +137,26 @@ class Clock(object):
                  width=width)
 
         if draw_logo:
-            font_logo= ImageFont.truetype(CALLIGRAPHIC, round(_size * 0.150))
+            logo_img = Image.new(mode='RGBA', size=(_size, _size), color=(0, 0, 0, 0))
+            logo_draw = ImageDraw.Draw(logo_img)
+            font_logo = ImageFont.truetype(CALLIGRAPHIC, round(_size * 0.150))
             text_logo = 'JukeOroni'
             length_logo = font_logo.getlength(text_logo)
-            draw.text((round(_size / 2) - length_logo / 2, round(_size * 0.536)), text_logo, fill=white, font=font_logo)
+            logo_draw.text((round(_size / 2) - length_logo / 2, round(_size * 0.536)), text_logo, fill=white, font=font_logo)
+
+            _logo_inv = ImageOps.invert(_clock.convert('RGB'))
+            _clock.paste(_logo_inv, mask=logo_img)
 
         if draw_date:
+            date_img = Image.new(mode='RGBA', size=(_size, _size), color=(0, 0, 0, 0))
+            date_draw = ImageDraw.Draw(date_img)
             font_date = ImageFont.truetype(ARIAL, round(_size * 0.035))
             text_date = datetime.datetime.now().strftime('%A, %B %d %Y')
             length_date = font_date.getlength(text_date)
-            draw.text((round(_size / 2) - length_date / 2, round(_size * 0.690)), text_date, fill=white, font=font_date)
+            date_draw.text((round(_size / 2) - length_date / 2, round(_size * 0.690)), text_date, fill=white, font=font_date)
+
+            _date_inv = ImageOps.invert(_clock.convert('RGB'))
+            _clock.paste(_date_inv, mask=date_img)
 
         comp = Image.new(mode='RGBA', size=(_size, _size))
         comp = Image.alpha_composite(comp, bg)
@@ -139,7 +166,6 @@ class Clock(object):
             _draw_moon_image = Image.new(mode='RGBA', size=(_size, _size), color=(0, 0, 0, 0))
             _draw_moon = ImageDraw.Draw(_draw_moon_image)
             _draw_moon.ellipse(((edge_compensation, edge_compensation), (_size-edge_compensation-_edge_comp_2, _size-edge_compensation-_edge_comp_2)), fill=white)
-            # phase = round(float(astral.moon.phase()) / 28.0 * 2, 4)
             phase = round(float(suncalc.getMoonIllumination(datetime.datetime.now())['phase']) * 2, 4)
             LOG.info(f'Moon phase: {phase} / 4')
 

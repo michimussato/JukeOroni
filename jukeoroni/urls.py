@@ -15,12 +15,14 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
+from django.shortcuts import redirect
+# from django.views.generic.base import RedirectView
 
 
 urlpatterns = [
-    # path('radio/', include('radio.urls')),
     path('jukeoroni/', include('player.urls')),
     path('transmission/', include('transmission.urls')),
     path('admin/', admin.site.urls),
-    # path('/', include('player.urls')),
+    # path('', include('player.urls')),  # custom
+    path('', lambda req: redirect('jukeoroni/')),  # custom
 ]

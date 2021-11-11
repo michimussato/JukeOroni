@@ -316,6 +316,95 @@ box.turn_off()
     # so hopefully ideal for multiprocessing
     # can't use multiprocessing because the main thread is
     # altering self.on
+    """
+Nov  1 19:11:03 jukeoroni gunicorn[611]: Exception in thread Track List Generator Process:
+Nov  1 19:11:03 jukeoroni gunicorn[611]: Traceback (most recent call last):
+Nov  1 19:11:03 jukeoroni gunicorn[611]:   File "/data/venv/lib/python3.7/site-packages/urllib3/connectionpool.py", line 706, in urlopen
+Nov  1 19:11:03 jukeoroni gunicorn[611]:     chunked=chunked,
+Nov  1 19:11:03 jukeoroni gunicorn[611]:   File "/data/venv/lib/python3.7/site-packages/urllib3/connectionpool.py", line 382, in _make_request
+Nov  1 19:11:03 jukeoroni gunicorn[611]:     self._validate_conn(conn)
+Nov  1 19:11:03 jukeoroni gunicorn[611]:   File "/data/venv/lib/python3.7/site-packages/urllib3/connectionpool.py", line 1010, in _validate_conn
+Nov  1 19:11:03 jukeoroni gunicorn[611]:     conn.connect()
+Nov  1 19:11:03 jukeoroni gunicorn[611]:   File "/data/venv/lib/python3.7/site-packages/urllib3/connection.py", line 421, in connect
+Nov  1 19:11:03 jukeoroni gunicorn[611]:     tls_in_tls=tls_in_tls,
+Nov  1 19:11:03 jukeoroni gunicorn[611]:   File "/data/venv/lib/python3.7/site-packages/urllib3/util/ssl_.py", line 450, in ssl_wrap_socket
+Nov  1 19:11:03 jukeoroni gunicorn[611]:     sock, context, tls_in_tls, server_hostname=server_hostname
+Nov  1 19:11:03 jukeoroni gunicorn[611]:   File "/data/venv/lib/python3.7/site-packages/urllib3/util/ssl_.py", line 493, in _ssl_wrap_socket_impl
+Nov  1 19:11:03 jukeoroni gunicorn[611]:     return ssl_context.wrap_socket(sock, server_hostname=server_hostname)
+Nov  1 19:11:03 jukeoroni gunicorn[611]:   File "/usr/lib/python3.7/ssl.py", line 412, in wrap_socket
+Nov  1 19:11:03 jukeoroni gunicorn[611]:     session=session
+Nov  1 19:11:03 jukeoroni gunicorn[611]:   File "/usr/lib/python3.7/ssl.py", line 853, in _create
+Nov  1 19:11:03 jukeoroni gunicorn[611]:     self.do_handshake()
+Nov  1 19:11:03 jukeoroni gunicorn[611]:   File "/usr/lib/python3.7/ssl.py", line 1117, in do_handshake
+Nov  1 19:11:03 jukeoroni gunicorn[611]:     self._sslobj.do_handshake()
+Nov  1 19:11:03 jukeoroni gunicorn[611]: ConnectionResetError: [Errno 104] Connection reset by peer
+Nov  1 19:11:03 jukeoroni gunicorn[611]: During handling of the above exception, another exception occurred:
+Nov  1 19:11:03 jukeoroni gunicorn[611]: Traceback (most recent call last):
+Nov  1 19:11:03 jukeoroni gunicorn[611]:   File "/data/venv/lib/python3.7/site-packages/requests/adapters.py", line 449, in send
+Nov  1 19:11:03 jukeoroni gunicorn[611]:     timeout=timeout
+Nov  1 19:11:03 jukeoroni gunicorn[611]:   File "/data/venv/lib/python3.7/site-packages/urllib3/connectionpool.py", line 756, in urlopen
+Nov  1 19:11:03 jukeoroni gunicorn[611]:     method, url, error=e, _pool=self, _stacktrace=sys.exc_info()[2]
+Nov  1 19:11:03 jukeoroni gunicorn[611]:   File "/data/venv/lib/python3.7/site-packages/urllib3/util/retry.py", line 532, in increment
+Nov  1 19:11:03 jukeoroni gunicorn[611]:     raise six.reraise(type(error), error, _stacktrace)
+Nov  1 19:11:03 jukeoroni gunicorn[611]:   File "/data/venv/lib/python3.7/site-packages/urllib3/packages/six.py", line 769, in reraise
+Nov  1 19:11:03 jukeoroni gunicorn[611]:     raise value.with_traceback(tb)
+Nov  1 19:11:03 jukeoroni gunicorn[611]:   File "/data/venv/lib/python3.7/site-packages/urllib3/connectionpool.py", line 706, in urlopen
+Nov  1 19:11:03 jukeoroni gunicorn[611]:     chunked=chunked,
+Nov  1 19:11:03 jukeoroni gunicorn[611]:   File "/data/venv/lib/python3.7/site-packages/urllib3/connectionpool.py", line 382, in _make_request
+Nov  1 19:11:03 jukeoroni gunicorn[611]:     self._validate_conn(conn)
+Nov  1 19:11:03 jukeoroni gunicorn[611]:   File "/data/venv/lib/python3.7/site-packages/urllib3/connectionpool.py", line 1010, in _validate_conn
+Nov  1 19:11:03 jukeoroni gunicorn[611]:     conn.connect()
+Nov  1 19:11:03 jukeoroni gunicorn[611]:   File "/data/venv/lib/python3.7/site-packages/urllib3/connection.py", line 421, in connect
+Nov  1 19:11:03 jukeoroni gunicorn[611]:     tls_in_tls=tls_in_tls,
+Nov  1 19:11:03 jukeoroni gunicorn[611]:   File "/data/venv/lib/python3.7/site-packages/urllib3/util/ssl_.py", line 450, in ssl_wrap_socket
+Nov  1 19:11:03 jukeoroni gunicorn[611]:     sock, context, tls_in_tls, server_hostname=server_hostname
+Nov  1 19:11:03 jukeoroni gunicorn[611]:   File "/data/venv/lib/python3.7/site-packages/urllib3/util/ssl_.py", line 493, in _ssl_wrap_socket_impl
+Nov  1 19:11:03 jukeoroni gunicorn[611]:     return ssl_context.wrap_socket(sock, server_hostname=server_hostname)
+Nov  1 19:11:03 jukeoroni gunicorn[611]:   File "/usr/lib/python3.7/ssl.py", line 412, in wrap_socket
+Nov  1 19:11:03 jukeoroni gunicorn[611]:     session=session
+Nov  1 19:11:03 jukeoroni gunicorn[611]:   File "/usr/lib/python3.7/ssl.py", line 853, in _create
+Nov  1 19:11:03 jukeoroni gunicorn[611]:     self.do_handshake()
+Nov  1 19:11:03 jukeoroni gunicorn[611]:   File "/usr/lib/python3.7/ssl.py", line 1117, in do_handshake
+Nov  1 19:11:03 jukeoroni gunicorn[611]:     self._sslobj.do_handshake()
+Nov  1 19:11:03 jukeoroni gunicorn[611]: urllib3.exceptions.ProtocolError: ('Connection aborted.', ConnectionResetError(104, 'Connection reset by peer'))
+Nov  1 19:11:03 jukeoroni gunicorn[611]: During handling of the above exception, another exception occurred:
+Nov  1 19:11:03 jukeoroni gunicorn[611]: Traceback (most recent call last):
+Nov  1 19:11:03 jukeoroni gunicorn[611]:   File "/usr/lib/python3.7/threading.py", line 917, in _bootstrap_inner
+Nov  1 19:11:03 jukeoroni gunicorn[611]:     self.run()
+Nov  1 19:11:03 jukeoroni gunicorn[611]:   File "/usr/lib/python3.7/threading.py", line 865, in run
+Nov  1 19:11:03 jukeoroni gunicorn[611]:     self._target(*self._args, **self._kwargs)
+Nov  1 19:11:03 jukeoroni gunicorn[611]:   File "/data/django/jukeoroni/player/jukeoroni/juke_box.py", line 336, in track_list_generator_task
+Nov  1 19:11:03 jukeoroni gunicorn[611]:     self.create_update_track_list()
+Nov  1 19:11:03 jukeoroni gunicorn[611]:   File "/data/django/jukeoroni/player/jukeoroni/juke_box.py", line 409, in create_update_track_list
+Nov  1 19:11:03 jukeoroni gunicorn[611]:     cover_online = get_album(discogs_client, artist, title_stripped)
+Nov  1 19:11:03 jukeoroni gunicorn[611]:   File "/data/django/jukeoroni/player/jukeoroni/discogs.py", line 34, in get_album
+Nov  1 19:11:03 jukeoroni gunicorn[611]:     if not results:
+Nov  1 19:11:03 jukeoroni gunicorn[611]:   File "/data/venv/lib/python3.7/site-packages/discogs_client/models.py", line 363, in __len__
+Nov  1 19:11:03 jukeoroni gunicorn[611]:     return self.count
+Nov  1 19:11:03 jukeoroni gunicorn[611]:   File "/data/venv/lib/python3.7/site-packages/discogs_client/models.py", line 334, in count
+Nov  1 19:11:03 jukeoroni gunicorn[611]:     self._load_pagination_info()
+Nov  1 19:11:03 jukeoroni gunicorn[611]:   File "/data/venv/lib/python3.7/site-packages/discogs_client/models.py", line 289, in _load_pagination_info
+Nov  1 19:11:03 jukeoroni gunicorn[611]:     data = self.client._get(self._url_for_page(1))
+Nov  1 19:11:03 jukeoroni gunicorn[611]:   File "/data/venv/lib/python3.7/site-packages/discogs_client/client.py", line 113, in _get
+Nov  1 19:11:03 jukeoroni gunicorn[611]:     return self._request('GET', url)
+Nov  1 19:11:03 jukeoroni gunicorn[611]:   File "/data/venv/lib/python3.7/site-packages/discogs_client/client.py", line 100, in _request
+Nov  1 19:11:03 jukeoroni gunicorn[611]:     content, status_code = self._fetcher.fetch(self, method, url, data=data, headers=headers)
+Nov  1 19:11:03 jukeoroni gunicorn[611]:   File "/data/venv/lib/python3.7/site-packages/discogs_client/fetchers.py", line 145, in fetch
+Nov  1 19:11:03 jukeoroni gunicorn[611]:     method, url, data=data, headers=headers, params={'token':self.user_token}
+Nov  1 19:11:03 jukeoroni gunicorn[611]:   File "/data/venv/lib/python3.7/site-packages/discogs_client/utils.py", line 58, in wrapper
+Nov  1 19:11:03 jukeoroni gunicorn[611]:     result = f(self, *args, **kwargs)
+Nov  1 19:11:03 jukeoroni gunicorn[611]:   File "/data/venv/lib/python3.7/site-packages/discogs_client/fetchers.py", line 55, in request
+Nov  1 19:11:03 jukeoroni gunicorn[611]:     response = request(method=method, url=url, data=data, headers=headers, params=params)
+Nov  1 19:11:03 jukeoroni gunicorn[611]:   File "/data/venv/lib/python3.7/site-packages/requests/api.py", line 61, in request
+Nov  1 19:11:03 jukeoroni gunicorn[611]:     return session.request(method=method, url=url, **kwargs)
+Nov  1 19:11:03 jukeoroni gunicorn[611]:   File "/data/venv/lib/python3.7/site-packages/requests/sessions.py", line 542, in request
+Nov  1 19:11:03 jukeoroni gunicorn[611]:     resp = self.send(prep, **send_kwargs)
+Nov  1 19:11:03 jukeoroni gunicorn[611]:   File "/data/venv/lib/python3.7/site-packages/requests/sessions.py", line 655, in send
+Nov  1 19:11:03 jukeoroni gunicorn[611]:     r = adapter.send(request, **kwargs)
+Nov  1 19:11:03 jukeoroni gunicorn[611]:   File "/data/venv/lib/python3.7/site-packages/requests/adapters.py", line 498, in send
+Nov  1 19:11:03 jukeoroni gunicorn[611]:     raise ConnectionError(err, request=request)
+Nov  1 19:11:03 jukeoroni gunicorn[611]: requests.exceptions.ConnectionError: ('Connection aborted.', ConnectionResetError(104, 'Connection reset by peer'))
+    """
     def track_list_generator_thread(self):
         assert self.on, 'turn jukebox on first'
         assert self._track_list_generator_thread is None, '_track_list_generator_thread already running.'

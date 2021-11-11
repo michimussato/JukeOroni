@@ -2,6 +2,7 @@ import base64
 import time
 import io
 from django.http import HttpResponseRedirect, HttpResponse
+# from django.shortcuts import redirect
 from django.views import View
 from player.jukeoroni.jukeoroni import JukeOroni
 from player.models import Album, Channel, Station, Artist, Track
@@ -20,16 +21,21 @@ PIMORONI_FONT = '/data/django/jukeoroni/player/static/gotham-black.ttf'
 
 jukeoroni = JukeOroni(test=False)
 jukeoroni.turn_on()
-jukeoroni.jukebox.set_auto_update_tracklist_on()
+# jukeoroni.jukebox.set_auto_update_tracklist_on()
+
+
+# def index_redirect(request):
+#     return redirect('/jukeoroni')
 
 
 def get_bg_color(rgb):
-    _hex = None
-    if len(rgb) == 3:
-        _hex = '%02x%02x%02x' % rgb
-    elif len(rgb) == 4:
-        _hex = '%02x%02x%02x%02x' % rgb
-    return _hex
+    # _hex = None
+    # if len(rgb) == 3:
+    #     _hex = '%02x%02x%02x' % rgb
+    # elif len(rgb) == 4:
+    #     _hex = '%02x%02x%02x%02x' % rgb
+    # # return _hex
+    return '606060'  # TODO: constant until solution for black text on black bg
 
 
 def encoded_screen(img):

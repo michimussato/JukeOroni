@@ -1,4 +1,6 @@
 import platform
+import socket
+
 from django.http import HttpResponseRedirect
 # from django.shortcuts import render
 
@@ -6,4 +8,14 @@ from django.http import HttpResponseRedirect
 
 
 def index(request):
-    return HttpResponseRedirect('http://{hostname}:9091/transmission/web/'.format(hostname=platform.node()))
+    # host info
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        # android uses ipv6; pure hostname redirection fails, hence ipv4
+        s.connect(("8.8.8.8", 80))
+        ip = s.getsockname()[0]
+    except OSError:
+        ip = platform.node()
+    finally:
+        s.close()
+    return HttpResponseRedirect('http://{hostname}:9091/transmission/web/'.format(hostname=ip))

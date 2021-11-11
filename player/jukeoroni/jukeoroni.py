@@ -185,7 +185,8 @@ j.turn_off()
 
             bg = self.layout_off.get_layout(labels=self.LABELS, cover=Resource().OFF_IMAGE_SQUARE)
 
-            self.pimoroni.set_image(bg, saturation=PIMORONI_SATURATION)
+            # self.pimoroni.set_image(bg, saturation=PIMORONI_SATURATION)
+            self.pimoroni.set_image(bg)
             self.pimoroni.show(busy_wait=True)
             LOG.info(f'Setting OFF Layout: Done.')
         else:
@@ -223,6 +224,52 @@ j.turn_off()
             self.set_image(image=bg)
     ############################################
 
+    """
+Nov  1 19:46:25 jukeoroni gunicorn[1374]: Exception in thread State Watcher Thread:
+Nov  1 19:46:25 jukeoroni gunicorn[1374]: Traceback (most recent call last):
+Nov  1 19:46:25 jukeoroni gunicorn[1374]:   File "/usr/lib/python3.7/urllib/request.py", line 1324, in do_open
+Nov  1 19:46:25 jukeoroni gunicorn[1374]:     encode_chunked=req.has_header('Transfer-encoding'))
+Nov  1 19:46:25 jukeoroni gunicorn[1374]:   File "/usr/lib/python3.7/http/client.py", line 1260, in request
+Nov  1 19:46:25 jukeoroni gunicorn[1374]:     self._send_request(method, url, body, headers, encode_chunked)
+Nov  1 19:46:25 jukeoroni gunicorn[1374]:   File "/usr/lib/python3.7/http/client.py", line 1306, in _send_request
+Nov  1 19:46:25 jukeoroni gunicorn[1374]:     self.endheaders(body, encode_chunked=encode_chunked)
+Nov  1 19:46:25 jukeoroni gunicorn[1374]:   File "/usr/lib/python3.7/http/client.py", line 1255, in endheaders
+Nov  1 19:46:25 jukeoroni gunicorn[1374]:     self._send_output(message_body, encode_chunked=encode_chunked)
+Nov  1 19:46:25 jukeoroni gunicorn[1374]:   File "/usr/lib/python3.7/http/client.py", line 1030, in _send_output
+Nov  1 19:46:25 jukeoroni gunicorn[1374]:     self.send(msg)
+Nov  1 19:46:25 jukeoroni gunicorn[1374]:   File "/usr/lib/python3.7/http/client.py", line 970, in send
+Nov  1 19:46:25 jukeoroni gunicorn[1374]:     self.connect()
+Nov  1 19:46:25 jukeoroni gunicorn[1374]:   File "/usr/lib/python3.7/http/client.py", line 942, in connect
+Nov  1 19:46:25 jukeoroni gunicorn[1374]:     (self.host,self.port), self.timeout, self.source_address)
+Nov  1 19:46:25 jukeoroni gunicorn[1374]:   File "/usr/lib/python3.7/socket.py", line 707, in create_connection
+Nov  1 19:46:25 jukeoroni gunicorn[1374]:     for res in getaddrinfo(host, port, 0, SOCK_STREAM):
+Nov  1 19:46:25 jukeoroni gunicorn[1374]:   File "/usr/lib/python3.7/socket.py", line 748, in getaddrinfo
+Nov  1 19:46:25 jukeoroni gunicorn[1374]:     for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+Nov  1 19:46:25 jukeoroni gunicorn[1374]: socket.gaierror: [Errno -3] Temporary failure in name resolution
+Nov  1 19:46:25 jukeoroni gunicorn[1374]: During handling of the above exception, another exception occurred:
+Nov  1 19:46:25 jukeoroni gunicorn[1374]: Traceback (most recent call last):
+Nov  1 19:46:25 jukeoroni gunicorn[1374]:   File "/usr/lib/python3.7/threading.py", line 917, in _bootstrap_inner
+Nov  1 19:46:25 jukeoroni gunicorn[1374]:     self.run()
+Nov  1 19:46:25 jukeoroni gunicorn[1374]:   File "/usr/lib/python3.7/threading.py", line 865, in run
+Nov  1 19:46:25 jukeoroni gunicorn[1374]:     self._target(*self._args, **self._kwargs)
+Nov  1 19:46:25 jukeoroni gunicorn[1374]:   File "/data/django/jukeoroni/player/jukeoroni/jukeoroni.py", line 292, in state_watcher_task
+Nov  1 19:46:25 jukeoroni gunicorn[1374]:     self.play()
+Nov  1 19:46:25 jukeoroni gunicorn[1374]:   File "/data/django/jukeoroni/player/jukeoroni/jukeoroni.py", line 435, in play
+Nov  1 19:46:25 jukeoroni gunicorn[1374]:     response = urllib.request.urlopen(req)
+Nov  1 19:46:25 jukeoroni gunicorn[1374]:   File "/usr/lib/python3.7/urllib/request.py", line 222, in urlopen
+Nov  1 19:46:25 jukeoroni gunicorn[1374]:     return opener.open(url, data, timeout)
+Nov  1 19:46:25 jukeoroni gunicorn[1374]:   File "/usr/lib/python3.7/urllib/request.py", line 525, in open
+Nov  1 19:46:25 jukeoroni gunicorn[1374]:     response = self._open(req, data)
+Nov  1 19:46:25 jukeoroni gunicorn[1374]:   File "/usr/lib/python3.7/urllib/request.py", line 543, in _open
+Nov  1 19:46:25 jukeoroni gunicorn[1374]:     '_open', req)
+Nov  1 19:46:25 jukeoroni gunicorn[1374]:   File "/usr/lib/python3.7/urllib/request.py", line 503, in _call_chain
+Nov  1 19:46:25 jukeoroni gunicorn[1374]:     result = func(*args)
+Nov  1 19:46:25 jukeoroni gunicorn[1374]:   File "/usr/lib/python3.7/urllib/request.py", line 1352, in http_open
+Nov  1 19:46:25 jukeoroni gunicorn[1374]:     return self.do_open(http.client.HTTPConnection, req)
+Nov  1 19:46:25 jukeoroni gunicorn[1374]:   File "/usr/lib/python3.7/urllib/request.py", line 1326, in do_open
+Nov  1 19:46:25 jukeoroni gunicorn[1374]:     raise URLError(err)
+Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error [Errno -3] Temporary failure in name resolution>
+    """
     def state_watcher_thread(self):
         self._state_watcher_thread = threading.Thread(target=self.state_watcher_task)
         self._state_watcher_thread.name = 'State Watcher Thread'
@@ -720,7 +767,8 @@ j.turn_off()
                 bg = kwargs['image']
             else:
                 bg = self.layout_standby.get_layout(labels=self.LABELS)
-            self.pimoroni.set_image(image=bg, saturation=PIMORONI_SATURATION)
+            # self.pimoroni.set_image(image=bg, saturation=PIMORONI_SATURATION)
+            self.pimoroni.set_image(image=bg)
             try:
                 self.pimoroni.show(busy_wait=True)
             except RuntimeError:  # AttributeError?
