@@ -4,6 +4,7 @@ from player.jukeoroni.settings import (_RADIO_ICON_IMAGE,
                                        _OFF_IMAGE,
                                        _JUKEBOX_ICON_IMAGE,
                                        _JUKEBOX_LOADING_IMAGE,
+                                       _MOON_TEXUTRE,
                                        GLOBAL_LOGGING_LEVEL,
                                        )
 from player.jukeoroni.is_string_url import is_string_url
@@ -29,6 +30,8 @@ class Resource(object):
     JUKEBOX_LOADING_IMAGE = Image.open(_JUKEBOX_LOADING_IMAGE)
     JUKEBOX_ON_AIR_DEFAULT_IMAGE = Image.open(_JUKEBOX_ON_AIR_DEFAULT_IMAGE)
 
+    MOON_TEXUTRE = Image.open(_MOON_TEXUTRE)
+
     @property
     def PLACEHOLDER_SQUARE(self):
         """
@@ -39,6 +42,10 @@ class Resource(object):
     @property
     def OFF_IMAGE_SQUARE(self):
         return self.squareify(self.OFF_IMAGE).resize((448, 448))
+
+    @property
+    def MOON_TEXTURE_SQUARE(self):
+        return self.squareify(self.MOON_TEXUTRE).resize((448, 448))
 
     @property
     def RADIO_ICON_IMAGE_SQUARE(self):

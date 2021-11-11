@@ -3,8 +3,9 @@ import logging
 import math
 
 import player.jukeoroni.suncalc as suncalc
+from player.jukeoroni.images import Resource
 
-from PIL import Image, ImageDraw, ImageFont, ImageOps
+from PIL import Image, ImageDraw, ImageFont, ImageOps, ImageChops, ImageEnhance
 from player.jukeoroni.settings import (
     GLOBAL_LOGGING_LEVEL,
     LAT,
@@ -32,7 +33,7 @@ except ImportError:
 class Clock(object):
 
     @staticmethod
-    def get_clock(draw_logo, draw_date, size=448, hours=12, draw_sun=False, draw_moon=False, draw_moon_phase=False, square=False):
+    def get_clock(draw_logo, draw_date, size=448, hours=12, draw_sun=False, draw_moon=False, draw_moon_tex=True, draw_moon_phase=False, square=False):
 
         _size = size * ANTIALIAS
 
@@ -210,7 +211,22 @@ class Clock(object):
 
             _comp_inv = ImageOps.invert(comp.convert('RGB'))
 
-            comp.paste(_comp_inv, mask=_draw_moon_image)
+            if draw_moon_tex:
+                moon_tex = Resource().MOON_TEXTURE_SQUARE.resize((_size, _size))
+
+                # filter_contrast = ImageEnhance.Contrast(moon_tex)
+                # moon_tex = filter_contrast.enhance(1.2)
+
+                filter_bright = ImageEnhance.Brightness(moon_tex)
+                moon_tex = filter_bright.enhance(1.5)
+
+                moon_tex.paste(moon_tex, mask=_draw_moon_image)
+                moon_tex = ImageChops.multiply(moon_tex, _comp_inv.convert('RGBA'))
+
+                comp.paste(moon_tex, mask=_draw_moon_image)
+
+            else:
+                comp.paste(_comp_inv, mask=_draw_moon_image)
 
         if draw_sun:
             _draw_sun = ImageDraw.Draw(comp)

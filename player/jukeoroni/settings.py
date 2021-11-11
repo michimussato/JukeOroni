@@ -168,6 +168,7 @@ ANTIALIAS = 4  # Warning: can slow down calculation drastically
 ARIAL = r'/data/django/jukeoroni/player/static/arial_narrow.ttf'
 CALLIGRAPHIC = r'/data/django/jukeoroni/player/static/calligraphia-one.ttf'
 CLOCK_UPDATE_INTERVAL = 10  # in minutes
+_MOON_TEXUTRE = '/data/django/jukeoroni/player/static/moon_texture_small.png'
 
 
 # radar
