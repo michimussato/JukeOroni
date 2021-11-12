@@ -218,7 +218,7 @@ class Clock(object):
                 # moon_tex = filter_contrast.enhance(1.2)
 
                 filter_bright = ImageEnhance.Brightness(moon_tex)
-                moon_tex = filter_bright.enhance(1.5)
+                moon_tex = filter_bright.enhance(1.3)
 
                 moon_tex.paste(moon_tex, mask=_draw_moon_image)
                 moon_tex = ImageChops.multiply(moon_tex, _comp_inv.convert('RGBA'))
@@ -297,6 +297,30 @@ class Clock(object):
 
             _moon = dict()
             _moon['rise'] = moon_rise
+
+            """
+Nov 12 00:23:06 jukeoroni gunicorn[24292]: [11-12-2021 00:23:06] [INFO] [MainThread|3069790928] [player.jukeoroni.clock]: Sunrise: 07:24
+Nov 12 00:23:06 jukeoroni gunicorn[24292]: [11-12-2021 00:23:06] [INFO] [MainThread|3069790928] [player.jukeoroni.clock]: Sunset: 16:55
+Nov 12 00:23:06 jukeoroni gunicorn[24292]: [11-12-2021 00:23:06] [DEBUG] [MainThread|3069790928] [player.jukeoroni.clock]: Moon Yesterday: {'rise': datetime.datetime(2021, 11, 11, 23, 22, 2, 101589), 'set': datetime.datetime(2021, 11, 11, 22, 48, 46, 40598)}
+Nov 12 00:23:06 jukeoroni gunicorn[24292]: [11-12-2021 00:23:06] [DEBUG] [MainThread|3069790928] [player.jukeoroni.clock]: Moon Today: {'rise': datetime.datetime(2021, 11, 12, 14, 33, 25, 261010), 'set': datetime.datetime(2021, 11, 12, 0, 55, 5, 881777)}
+Nov 12 00:23:06 jukeoroni gunicorn[24292]: [11-12-2021 00:23:06] [DEBUG] [MainThread|3069790928] [player.jukeoroni.clock]: Moon Tomorrow: {'rise': datetime.datetime(2021, 11, 13, 14, 56, 17, 298467), 'set': datetime.datetime(2021, 11, 13, 0, 40, 50, 623905)}
+Nov 12 00:23:06 jukeoroni gunicorn[24292]: [11-12-2021 00:23:06] [DEBUG] [MainThread|3069790928] [player.jukeoroni.clock]: Moon sets: [datetime.datetime(2021, 11, 11, 22, 48, 46, 40598), datetime.datetime(2021, 11, 12, 0, 55, 5, 881777), datetime.datetime(2021, 11, 13, 0, 40, 50, 623905)]
+Nov 12 00:23:06 jukeoroni gunicorn[24292]: [11-12-2021 00:23:06] [DEBUG] [MainThread|3069790928] [player.jukeoroni.clock]: Moon Set for relevant cycle is: 2021-11-11 22:48:46.040598
+Nov 12 00:23:06 jukeoroni gunicorn[24292]: [11-12-2021 00:23:06] [DEBUG] [MainThread|3069790928] [player.jukeoroni.clock]: Moon rises: [datetime.datetime(2021, 11, 13, 14, 56, 17, 298467), datetime.datetime(2021, 11, 12, 14, 33, 25, 261010), datetime.datetime(2021, 11, 11, 23, 22, 2, 101589)]
+Nov 12 00:23:06 jukeoroni gunicorn[24292]: [11-12-2021 00:23:06] [ERROR] [MainThread|3069790928] [django.request]: Internal Server Error: /jukeoroni/jukebox/
+Nov 12 00:23:06 jukeoroni gunicorn[24292]: Traceback (most recent call last):
+Nov 12 00:23:06 jukeoroni gunicorn[24292]:   File "/data/venv/lib/python3.7/site-packages/django/core/handlers/exception.py", line 47, in inner
+Nov 12 00:23:06 jukeoroni gunicorn[24292]:     response = get_response(request)
+Nov 12 00:23:06 jukeoroni gunicorn[24292]:   File "/data/venv/lib/python3.7/site-packages/django/core/handlers/base.py", line 181, in _get_response
+Nov 12 00:23:06 jukeoroni gunicorn[24292]:     response = wrapped_callback(request, *callback_args, **callback_kwargs)
+Nov 12 00:23:06 jukeoroni gunicorn[24292]:   File "/data/django/jukeoroni/player/views.py", line 142, in jukebox_index
+Nov 12 00:23:06 jukeoroni gunicorn[24292]:     img = jukeoroni.jukebox.layout.get_layout(labels=jukeoroni.LABELS)
+Nov 12 00:23:06 jukeoroni gunicorn[24292]:   File "/data/django/jukeoroni/player/jukeoroni/displays.py", line 342, in get_layout
+Nov 12 00:23:06 jukeoroni gunicorn[24292]:     _clock = self._clock.get_clock(size=SMALL_WIDGET_SIZE, draw_logo=False, draw_moon_phase=True, draw_moon=True, draw_date=False, hours=24, draw_sun=True, square=True)
+Nov 12 00:23:06 jukeoroni gunicorn[24292]:   File "/data/django/jukeoroni/player/jukeoroni/clock.py", line 301, in get_clock
+Nov 12 00:23:06 jukeoroni gunicorn[24292]: UnboundLocalError: local variable 'moon_rise' referenced before assignment
+            """
+
             _moon['set'] = moon_set
 
             decimal_moonrise = float(_moon['rise'].strftime('%H')) + float(_moon['rise'].strftime('%M')) / 60

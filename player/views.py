@@ -2,7 +2,6 @@ import base64
 import time
 import io
 from django.http import HttpResponseRedirect, HttpResponse
-# from django.shortcuts import redirect
 from django.views import View
 from player.jukeoroni.jukeoroni import JukeOroni
 from player.models import Album, Channel, Station, Artist, Track
@@ -21,7 +20,7 @@ PIMORONI_FONT = '/data/django/jukeoroni/player/static/gotham-black.ttf'
 
 jukeoroni = JukeOroni(test=False)
 jukeoroni.turn_on()
-# jukeoroni.jukebox.set_auto_update_tracklist_on()
+jukeoroni.jukebox.set_auto_update_tracklist_on()
 
 
 # def index_redirect(request):
@@ -130,7 +129,7 @@ class JukeOroniView(View):
         ret += '    <meta http-equiv="refresh" content="10" >\n'
         ret += '  </head>\n'
         ret += '  <body style="background-color:#{0};">\n'.format(bg_color)
-        ret += f'<button style=\"width:100%; \" onclick=\"window.location.href = \'/jukeoroni/set_standby\';\">Quit Jukebox</button>\n'
+        ret += f'<button style=\"width:100%; \" onclick=\"window.location.href = \'/jukeoroni/set_standby\';\">Back to Menu</button>\n'
         ret += '<hr>\n'
 
         _success = False
@@ -416,7 +415,7 @@ class JukeOroniView(View):
         ret += '<meta http-equiv="refresh" content="10" >\n'
         ret += '</head>\n'
         ret += '<body style="background-color:#{0};">\n'.format(bg_color)
-        ret += f'<button style=\"width:100%; \" onclick=\"window.location.href = \'/jukeoroni/set_standby\';\">Quit Radio</button>\n'
+        ret += f'<button style=\"width:100%; \" onclick=\"window.location.href = \'/jukeoroni/set_standby\';\">Back to Menu</button>\n'
         ret += '<hr>\n'
         last_played = jukeoroni.radio.last_played
         # ret += f'{last_played}'

@@ -16,6 +16,7 @@ from player.models import Channel
 from player.jukeoroni.juke_box import JukeboxTrack
 from player.jukeoroni.settings import (
     PIMORONI_SATURATION,
+    STATE_WATCHER_CADENCE,
     CLOCK_UPDATE_INTERVAL,
     PIMORONI_WATCHER_UPDATE_INTERVAL,
     GLOBAL_LOGGING_LEVEL,
@@ -185,8 +186,8 @@ j.turn_off()
 
             bg = self.layout_off.get_layout(labels=self.LABELS, cover=Resource().OFF_IMAGE_SQUARE)
 
-            # self.pimoroni.set_image(bg, saturation=PIMORONI_SATURATION)
-            self.pimoroni.set_image(bg)
+            self.pimoroni.set_image(bg, saturation=PIMORONI_SATURATION)
+            # self.pimoroni.set_image(bg)
             self.pimoroni.show(busy_wait=True)
             LOG.info(f'Setting OFF Layout: Done.')
         else:
@@ -400,7 +401,7 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
                     self.play_jukebox()
                     # LOG.info(f'Playing: {self.jukebox.playing_track}')
 
-            time.sleep(1.0)
+            time.sleep(STATE_WATCHER_CADENCE)
 
     def play_jukebox(self):
         if self.jukebox.playing_track is not None:

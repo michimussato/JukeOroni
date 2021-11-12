@@ -1,6 +1,10 @@
+import binascii
 import logging
 import socket
 
+import numpy as np
+import scipy
+import scipy.cluster
 from PIL import Image, ImageDraw, ImageFont, ImageOps
 from player.jukeoroni.clock import Clock
 from player.jukeoroni.radar import Radar
@@ -84,7 +88,32 @@ BUTTONS_ICONS = {
 INVERT_BUTTONS = True
 
 
-def buttons_img_overlay(labels, graident_color=(255, 255, 255)):
+def mean_color(img):
+    NUM_CLUSTERS = 5  # the higher the name the more accurate is the dominant color
+
+    im = img
+    im = im.resize((50, 50))  # optional, to reduce time
+    ar = np.asarray(im)
+    shape = ar.shape
+    ar = ar.reshape(np.product(shape[:2]), shape[2]).astype(float)
+
+    codes, dist = scipy.cluster.vq.kmeans(ar, NUM_CLUSTERS)
+
+    vecs, dist = scipy.cluster.vq.vq(ar, codes)  # assign codes
+    counts, bins = np.histogram(vecs, len(codes))  # count occurrences
+
+    index_max = np.argmax(counts)  # find most frequent
+    peak = codes[index_max]
+    colour = binascii.hexlify(bytearray(int(c) for c in peak)).decode('ascii')  # actual colour, (in HEX)
+    rgb = tuple(int(colour[i:i+2], 16) for i in (0, 2, 4))
+    LOG.info(f'Dominant color out of {NUM_CLUSTERS} is {rgb} ({colour})')
+    return rgb
+
+
+def buttons_img_overlay(labels, gradient_color=None):
+
+    gradient_color = gradient_color or (255, 255, 255)
+
     # widget_buttons = Image.new(mode='RGBA', size=(448, 448), color=(0, 0, 0, 180))
     widget_buttons = Image.new(mode='RGBA', size=(448, 448), color=(0, 0, 0, 0))
 
@@ -114,7 +143,7 @@ def buttons_img_overlay(labels, graident_color=(255, 255, 255)):
     # create gradient
     # https://stackoverflow.com/questions/39976028/python-pillow-make-gradient-for-transparency
     # Change the bg color of the gradient background here
-    bg_color = graident_color
+    bg_color = gradient_color
     initial_opacity = 0.8
 
     height = comp_buttons.size[1]
@@ -236,7 +265,9 @@ class Jukebox(Layout):
             else:
                 assert isinstance(artist, Image.Image), 'artist cover type must be PIL.Image.Image() (not rotated)'
 
-        buttons_overlay = buttons_img_overlay(labels, graident_color=(255, 128, 0))
+        # mean_color = mean_color(cover)
+
+        buttons_overlay = buttons_img_overlay(labels, gradient_color=mean_color(cover))
         bg = Image.new(mode='RGBA', size=(600, 448), color=self.bg_color)
 
         cover_size = self.main_size
@@ -370,7 +401,7 @@ class Radio(Layout):
 
         assert isinstance(cover, Image.Image), f'Radio Channel cover type must be PIL.Image.Image() (not rotated). Got: {cover}'
 
-        buttons_overlay = buttons_img_overlay(labels, graident_color=(0, 255, 128))
+        buttons_overlay = buttons_img_overlay(labels, gradient_color=mean_color(cover))
         bg = Image.new(mode='RGBA', size=(600, 448), color=self.bg_color)
 
         cover_size = self.main_size

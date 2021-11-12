@@ -4,7 +4,6 @@ import os
 import logging
 import random
 import shutil
-# import signal
 import subprocess
 import tempfile
 import threading
@@ -185,6 +184,14 @@ Exception Value: [Errno 2] No such file or directory: '/data/googledrive/media/a
     def is_playing(self):
         return bool(self.playing_proc)
 
+    def __del__(self):
+        if self.cached:
+            try:
+                os.remove(self.cache_tmp)
+                LOG.info(f'removed from local filesystem: \"{self.cache_tmp}\"')
+            except OSError:
+                LOG.exception('Cached track could not be deleted:')
+
     def play(self, jukeoroni):
         try:
             LOG.info(f'starting playback: \"{self.path}\" from: \"{self.playing_from}\"')
@@ -200,10 +207,10 @@ Exception Value: [Errno 2] No such file or directory: '/data/googledrive/media/a
         except Exception:
             LOG.exception('playback failed: \"{0}\"'.format(self.path))
         finally:
-            if self.cached:
-                # TODO add to self.__delete__()
-                os.remove(self.cache_tmp)
-                LOG.info(f'removed from local filesystem: \"{self.cache_tmp}\"')
+            # if self.cached:
+            #     # TODO add to self.__delete__()
+            #     os.remove(self.cache_tmp)
+            #     LOG.info(f'removed from local filesystem: \"{self.cache_tmp}\"')
             jukeoroni.playback_proc = None
 
 
@@ -454,22 +461,24 @@ Nov  1 19:11:03 jukeoroni gunicorn[611]: requests.exceptions.ConnectionError: ('
 
             cover_online = None
             # print(artist)
-            query_artist = Artist.objects.filter(name__exact=artist)
-            if bool(query_artist):
-                model_artist = query_artist[0]
-                if model_artist.cover_online is None:
+            if str(artist).lower() != 'soundtrack':  # Soundtracks have different artists, so no need to add artist cover
+                query_artist = Artist.objects.filter(name__exact=artist)
+                if bool(query_artist):
+                    model_artist = query_artist[0]
+                    # if str(model_artist.name).lower() != 'soundtrack':
+                    if model_artist.cover_online is None:
+                        cover_online = get_artist(discogs_client, artist)
+                        # print(cover_online)
+                        if cover_online:
+                            model_artist.cover_online = cover_online
+                            model_artist.save()
+                        # print('    artist found in db')
+                else:
                     cover_online = get_artist(discogs_client, artist)
                     # print(cover_online)
-                    if cover_online:
-                        model_artist.cover_online = cover_online
-                        model_artist.save()
-                # print('    artist found in db')
-            else:
-                cover_online = get_artist(discogs_client, artist)
-                # print(cover_online)
-                model_artist = Artist(name=artist, cover_online=cover_online)
-                model_artist.save()
-                # print('    artist created in db')
+                    model_artist = Artist(name=artist, cover_online=cover_online)
+                    model_artist.save()
+                    # print('    artist created in db')
 
             _artists.append(artist)
 

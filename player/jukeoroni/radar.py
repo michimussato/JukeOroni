@@ -143,4 +143,4 @@ class Radar(object):
 
         except Exception:
             LOG.exception(f'Could not update Radar screenshot:')
-            return Resource().PLACEHOLDER_SQUARE
+            return self.radar_image

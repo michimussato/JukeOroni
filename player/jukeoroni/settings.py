@@ -11,7 +11,7 @@ LOG.setLevel(GLOBAL_LOGGING_LEVEL)
 
 # media_crawler
 _ONE_HOUR = 3600
-DEFAULT_TRACKLIST_REGEN_INTERVAL = _ONE_HOUR * 6  # in hours
+DEFAULT_TRACKLIST_REGEN_INTERVAL = _ONE_HOUR * 24  # in hours
 MEDIA_ROOT = r'/data/googledrive/media/audio/'
 MUSIC_DIR = os.path.join(MEDIA_ROOT, 'music')
 FAULTY_ALBUMS = os.path.join(MEDIA_ROOT, 'faulty_albums_test.txt')
@@ -20,7 +20,7 @@ AUDIO_FILES = ['.dsf', '.flac', '.wav', '.dff']
 
 
 # inky
-PIMORONI_SATURATION = 1.0
+PIMORONI_SATURATION = 0.5  # Default: 0.5
 BUTTONS = [5, 6, 16, 24]
 
 # jukeoroni
@@ -28,6 +28,8 @@ _OFF_IMAGE = '/data/django/jukeoroni/player/static/zzz.jpg'
 PIMORONI_WATCHER_UPDATE_INTERVAL = 1
 SMALL_WIDGET_SIZE = 160
 FFPLAY_CMD = 'ffplay -hide_banner -autoexit -vn -nodisp -loglevel error'.split(' ')
+
+STATE_WATCHER_CADENCE = 0.5
 
 _BUTTON_MAPPINGS = ['000X', '00X0', '0X00', 'X000']
 
