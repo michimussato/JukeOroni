@@ -134,7 +134,8 @@ class Clock(object):
         color = white
         size_h = [(round(_size * 0.112), round(_size * 0.112)), (round(_size - _size * 0.112), round(_size - _size * 0.112))]
         width = round(_size * 0.134)
-        draw.arc(size_h, start=(arc_twelve + arc_length_h - round(_size / ANTIALIAS * 0.007)) % 360, end=(arc_twelve + arc_length_h + round(_size / ANTIALIAS * 0.007)) % 360, fill=color,
+        indicator_thickness = 6
+        draw.arc(size_h, start=(arc_twelve + arc_length_h - indicator_thickness/2), end=(arc_twelve + arc_length_h + indicator_thickness/2), fill=color,
                  width=width)
 
         if draw_logo:
