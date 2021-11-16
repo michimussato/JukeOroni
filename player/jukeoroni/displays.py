@@ -102,7 +102,11 @@ def mean_color(img):
     vecs, dist = scipy.cluster.vq.vq(ar, codes)  # assign codes
     counts, bins = np.histogram(vecs, len(codes))  # count occurrences
 
+    LOG.debug(f'Color counts: {counts}')
+
+    # TODO: pick most dominant color but make sure it is not close to black
     index_max = np.argmax(counts)  # find most frequent
+    LOG.debug(f'Color max count: {index_max} ({counts[index_max]})')
     peak = codes[index_max]
     colour = binascii.hexlify(bytearray(int(c) for c in peak)).decode('ascii')  # actual colour, (in HEX)
     rgb = tuple(int(colour[i:i+2], 16) for i in (0, 2, 4))

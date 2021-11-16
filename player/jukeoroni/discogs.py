@@ -30,9 +30,32 @@ def get_artist(client, artist):
 
 
 def get_album(client, artist, album):
+    # print(f'{client}, {artist}, {album}')
+    # print(f'{client}, {artist}, {album}')
+    # print(f'{client}, {artist}, {album}')
+    # print(f'{client}, {artist}, {album}')
+    # print(f'{client}, {artist}, {album}')
+    # print(f'{client}, {artist}, {album}')
+    # print(f'{client}, {artist}, {album}')
     results = client.search(album, type='release', artist=artist)
+    # print(f'{results}')
+    # print(f'{results}')
+    # print(f'{results}')
+    # print(f'{results}')
+    # print(f'{results}')
+    # print(f'{results}')
+    # print(f'{results}')
+    # print(f'{results}')
     if not results:
         results = client.search(album, type='release', artist=unidecode(artist))
+        # print(f'{results}')
+        # print(f'{results}')
+        # print(f'{results}')
+        # print(f'{results}')
+        # print(f'{results}')
+        # print(f'{results}')
+        # print(f'{results}')
+
     try:
         cover_square = results[0].images[0]['uri150']
         return cover_square

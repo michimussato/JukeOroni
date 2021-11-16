@@ -63,7 +63,6 @@ class Clock(object):
         draw.ellipse([(round(_size * 0.482), round(_size * 0.482)), (round(_size - _size * 0.482), round(_size - _size * 0.482))], fill=white, outline=None, width=round(_size * 0.312))
 
         color = white
-        # TODO: we could do the intervals smarter now
         if hours == 24:
             intervals = [
                 (0.5, 3.0),

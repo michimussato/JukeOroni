@@ -263,7 +263,7 @@ box.turn_off()
             return None
         return self.tracks.pop(0)
 
-    def turn_on(self):
+    def turn_on(self, disable_track_loader=False):
         assert not self.on, 'Jukebox is already on.'
 
         self.temp_cleanup()
@@ -271,7 +271,8 @@ box.turn_off()
         self.on = True
 
         self.track_list_generator_thread()
-        self.track_loader_thread()
+        if not disable_track_loader:
+            self.track_loader_thread()
         # self.track_loader_watcher_thread()
 
     def turn_off(self):
@@ -421,6 +422,101 @@ Nov  1 19:11:03 jukeoroni gunicorn[611]: requests.exceptions.ConnectionError: ('
         self._track_list_generator_thread.start()
 
     def track_list_generator_task(self):
+
+        """
+Exception in thread Track List Generator Process:
+Traceback (most recent call last):
+  File "/data/venv/lib/python3.7/site-packages/urllib3/connectionpool.py", line 706, in urlopen
+    chunked=chunked,
+  File "/data/venv/lib/python3.7/site-packages/urllib3/connectionpool.py", line 382, in _make_request
+    self._validate_conn(conn)
+  File "/data/venv/lib/python3.7/site-packages/urllib3/connectionpool.py", line 1010, in _validate_conn
+    conn.connect()
+  File "/data/venv/lib/python3.7/site-packages/urllib3/connection.py", line 421, in connect
+    tls_in_tls=tls_in_tls,
+  File "/data/venv/lib/python3.7/site-packages/urllib3/util/ssl_.py", line 450, in ssl_wrap_socket
+    sock, context, tls_in_tls, server_hostname=server_hostname
+  File "/data/venv/lib/python3.7/site-packages/urllib3/util/ssl_.py", line 493, in _ssl_wrap_socket_impl
+    return ssl_context.wrap_socket(sock, server_hostname=server_hostname)
+  File "/usr/lib/python3.7/ssl.py", line 412, in wrap_socket
+    session=session
+  File "/usr/lib/python3.7/ssl.py", line 853, in _create
+    self.do_handshake()
+  File "/usr/lib/python3.7/ssl.py", line 1117, in do_handshake
+    self._sslobj.do_handshake()
+ConnectionResetError: [Errno 104] Connection reset by peer
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/data/venv/lib/python3.7/site-packages/requests/adapters.py", line 449, in send
+    timeout=timeout
+  File "/data/venv/lib/python3.7/site-packages/urllib3/connectionpool.py", line 756, in urlopen
+    method, url, error=e, _pool=self, _stacktrace=sys.exc_info()[2]
+  File "/data/venv/lib/python3.7/site-packages/urllib3/util/retry.py", line 532, in increment
+    raise six.reraise(type(error), error, _stacktrace)
+  File "/data/venv/lib/python3.7/site-packages/urllib3/packages/six.py", line 769, in reraise
+    raise value.with_traceback(tb)
+  File "/data/venv/lib/python3.7/site-packages/urllib3/connectionpool.py", line 706, in urlopen
+    chunked=chunked,
+  File "/data/venv/lib/python3.7/site-packages/urllib3/connectionpool.py", line 382, in _make_request
+    self._validate_conn(conn)
+  File "/data/venv/lib/python3.7/site-packages/urllib3/connectionpool.py", line 1010, in _validate_conn
+    conn.connect()
+  File "/data/venv/lib/python3.7/site-packages/urllib3/connection.py", line 421, in connect
+    tls_in_tls=tls_in_tls,
+  File "/data/venv/lib/python3.7/site-packages/urllib3/util/ssl_.py", line 450, in ssl_wrap_socket
+    sock, context, tls_in_tls, server_hostname=server_hostname
+  File "/data/venv/lib/python3.7/site-packages/urllib3/util/ssl_.py", line 493, in _ssl_wrap_socket_impl
+    return ssl_context.wrap_socket(sock, server_hostname=server_hostname)
+  File "/usr/lib/python3.7/ssl.py", line 412, in wrap_socket
+    session=session
+  File "/usr/lib/python3.7/ssl.py", line 853, in _create
+    self.do_handshake()
+  File "/usr/lib/python3.7/ssl.py", line 1117, in do_handshake
+    self._sslobj.do_handshake()
+urllib3.exceptions.ProtocolError: ('Connection aborted.', ConnectionResetError(104, 'Connection reset by peer'))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/lib/python3.7/threading.py", line 917, in _bootstrap_inner
+    self.run()
+  File "/usr/lib/python3.7/threading.py", line 865, in run
+    self._target(*self._args, **self._kwargs)
+  File "/data/django/jukeoroni/player/jukeoroni/juke_box.py", line 432, in track_list_generator_task
+    self.create_update_track_list()
+  File "/data/django/jukeoroni/player/jukeoroni/juke_box.py", line 514, in create_update_track_list
+    else:
+  File "/data/django/jukeoroni/player/jukeoroni/discogs.py", line 34, in get_album
+    if not results:
+  File "/data/venv/lib/python3.7/site-packages/discogs_client/models.py", line 363, in __len__
+    return self.count
+  File "/data/venv/lib/python3.7/site-packages/discogs_client/models.py", line 334, in count
+    self._load_pagination_info()
+  File "/data/venv/lib/python3.7/site-packages/discogs_client/models.py", line 289, in _load_pagination_info
+    data = self.client._get(self._url_for_page(1))
+  File "/data/venv/lib/python3.7/site-packages/discogs_client/client.py", line 113, in _get
+    return self._request('GET', url)
+  File "/data/venv/lib/python3.7/site-packages/discogs_client/client.py", line 100, in _request
+    content, status_code = self._fetcher.fetch(self, method, url, data=data, headers=headers)
+  File "/data/venv/lib/python3.7/site-packages/discogs_client/fetchers.py", line 145, in fetch
+    method, url, data=data, headers=headers, params={'token':self.user_token}
+  File "/data/venv/lib/python3.7/site-packages/discogs_client/utils.py", line 58, in wrapper
+    result = f(self, *args, **kwargs)
+  File "/data/venv/lib/python3.7/site-packages/discogs_client/fetchers.py", line 55, in request
+    response = request(method=method, url=url, data=data, headers=headers, params=params)
+  File "/data/venv/lib/python3.7/site-packages/requests/api.py", line 61, in request
+    return session.request(method=method, url=url, **kwargs)
+  File "/data/venv/lib/python3.7/site-packages/requests/sessions.py", line 542, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/data/venv/lib/python3.7/site-packages/requests/sessions.py", line 655, in send
+    r = adapter.send(request, **kwargs)
+  File "/data/venv/lib/python3.7/site-packages/requests/adapters.py", line 498, in send
+    raise ConnectionError(err, request=request)
+requests.exceptions.ConnectionError: ('Connection aborted.', ConnectionResetError(104, 'Connection reset by peer'))
+        """
+
         _waited = None
         while self.on:
             if not self._auto_update_tracklist:
@@ -440,7 +536,7 @@ Nov  1 19:11:03 jukeoroni gunicorn[611]: requests.exceptions.ConnectionError: ('
 
     def create_update_track_list(self):
         # TODO: filter image files, m3u etc.
-        LOG.info('generating updated track list...')
+        LOG.info('Generating updated track list...')
         discogs_client = get_client()
         _files = []
         _albums = []
@@ -452,35 +548,39 @@ Nov  1 19:11:03 jukeoroni gunicorn[611]: requests.exceptions.ConnectionError: ('
             try:
                 # TODO: maybe use a better character
                 artist, year, title = album.split(' - ')
-            except ValueError as err:
+            except ValueError:
                 # with open(FAULTY_ALBUMS, 'a+') as f:
                 #     f.write(album + '\n')
                 # TODO: store this somewhere to fix it
-                LOG.exception(f'not a valid album path: {album}: {err}')
+                LOG.exception(f'Not a valid album path: {album}:')
                 continue
 
             cover_online = None
             # print(artist)
-            if str(artist).lower() != 'soundtrack':  # Soundtracks have different artists, so no need to add artist cover
-                query_artist = Artist.objects.filter(name__exact=artist)
-                if bool(query_artist):
-                    model_artist = query_artist[0]
-                    # if str(model_artist.name).lower() != 'soundtrack':
-                    if model_artist.cover_online is None:
-                        cover_online = get_artist(discogs_client, artist)
-                        # print(cover_online)
-                        if cover_online:
-                            model_artist.cover_online = cover_online
-                            model_artist.save()
-                        # print('    artist found in db')
-                else:
+            # TODO: if str(artist).lower() != 'soundtrack':  # Soundtracks have different artists, so no need to add artist cover
+            query_artist = Artist.objects.filter(name__exact=artist)
+            # TODO: maybe objects.get() is better because artist name is unique
+            if bool(query_artist):
+                LOG.info(f'Artist {query_artist} found in db...')
+                model_artist = query_artist[0]  # name is unique, so index 0 is the correct model
+                # if str(model_artist.name).lower() != 'soundtrack':
+                if model_artist.cover_online is None:
                     cover_online = get_artist(discogs_client, artist)
                     # print(cover_online)
-                    model_artist = Artist(name=artist, cover_online=cover_online)
-                    model_artist.save()
-                    # print('    artist created in db')
+                    if cover_online:
+                        model_artist.cover_online = cover_online
+                        model_artist.save()
+                    # print('    artist found in db')
+            else:
+                LOG.info(f'Artist {artist} not found in db; creating new entry...')
+                cover_online = get_artist(discogs_client, artist)
+                # print(cover_online)
+                model_artist = Artist(name=artist, cover_online=cover_online)
+                model_artist.save()
+                # print('    artist created in db')
 
-            _artists.append(artist)
+            if artist not in _artists:
+                _artists.append(artist)
 
             cover_root = path
             jpg_path = os.path.join(cover_root, 'cover.jpg')
@@ -515,9 +615,9 @@ Nov  1 19:11:03 jukeoroni gunicorn[611]: requests.exceptions.ConnectionError: ('
 
             try:
                 model_album.save()
-                albums.append(album)
-            except Exception as err:
-                LOG.exception(f'cannot save album model {title} by {artist}: {err}')
+                _albums.append(album)
+            except Exception:
+                LOG.exception(f'Cannot save album model {title} by {artist}:')
 
             for _file in files:
                 if not self.on:
@@ -527,14 +627,14 @@ Nov  1 19:11:03 jukeoroni gunicorn[611]: requests.exceptions.ConnectionError: ('
                     file_path = os.path.join(path, _file)
                     query_track = DjangoTrack.objects.filter(audio_source__exact=file_path)
                     if len(query_track) > 1:
-                        LOG.warning('Track in DB multiple times: {0}'.format(file_path))
+                        LOG.warning(f'Track in DB multiple times: {file_path}')
                         for track in query_track:
                             track.delete()
-                            LOG.warning('Track deleted: {0}'.format(track))
+                            LOG.warning(f'Track deleted: {track}')
                         query_track = []
                     if len(query_track) == 1:
                         # model_track = query_track
-                        LOG.info('Track found in DB: {0}'.format(query_track))
+                        LOG.info(f'Track found in DB: {query_track}')
                         _edit = False
                         if not query_track[0].album == model_album:
                             query_track.update(album=model_album)
@@ -557,18 +657,27 @@ Nov  1 19:11:03 jukeoroni gunicorn[611]: requests.exceptions.ConnectionError: ('
         django_tracks = DjangoTrack.objects.all()
         for django_track in django_tracks:
             if django_track.audio_source not in _files:
+                LOG.info(f'Removing track from DB: {django_track}')
                 django_track.delete()
                 LOG.info(f'Track removed from DB: {django_track}')
 
         django_albums = Album.objects.all()
         for django_album in django_albums:
-            if django_album.album_title not in _albums:
+            occurrences = [i for i in _albums if str(django_album.album_title).lower() in i.lower()]
+            # if len(occurrences) > 1:
+                # LOG.warning('Multiple albums with same nam')
+            if len(occurrences) == 0:
+            # if django_album.album_title not in _albums:
+                LOG.info(django_album.album_title)
+                LOG.info(_albums)
+                LOG.info(f'Removing album from DB: {django_album}')
                 django_album.delete()
                 LOG.info(f'Album removed from DB: {django_album}')
 
         django_artists = Artist.objects.all()
         for django_artist in django_artists:
             if django_artist.name not in _artists:
+                LOG.info(f'Removing artist from DB: {django_artist}')
                 django_artist.delete()
                 LOG.info(f'Artist removed from DB: {django_artist}')
 

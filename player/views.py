@@ -19,8 +19,9 @@ PIMORONI_FONT = '/data/django/jukeoroni/player/static/gotham-black.ttf'
 
 
 jukeoroni = JukeOroni(test=False)
-jukeoroni.turn_on()
+jukeoroni.turn_on(disable_track_loader=False)
 jukeoroni.jukebox.set_auto_update_tracklist_on()
+# jukeoroni.jukebox.track_list_generator_thread()
 
 
 # def index_redirect(request):
