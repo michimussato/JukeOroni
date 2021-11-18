@@ -653,10 +653,10 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
 
     ############################################
     # startup procedure
-    def turn_on(self):
+    def turn_on(self, disable_track_loader=False):
         assert not self.on, 'JukeOroni is ON already'
         self._start_jukeoroni()
-        self._start_modules()
+        self._start_modules(disable_track_loader)
 
     def _start_jukeoroni(self):
         self.on = True
@@ -670,12 +670,12 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
 
         self.set_display_turn_on()
 
-    def _start_modules(self):
+    def _start_modules(self, disable_track_loader):
         # Radar
         self.layout_standby.radar.start(test=self.test)
 
         # Jukebox
-        self.jukebox.turn_on()
+        self.jukebox.turn_on(disable_track_loader)
     ############################################
 
     ############################################

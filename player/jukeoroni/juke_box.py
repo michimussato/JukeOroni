@@ -668,8 +668,8 @@ requests.exceptions.ConnectionError: ('Connection aborted.', ConnectionResetErro
                 # LOG.warning('Multiple albums with same nam')
             if len(occurrences) == 0:
             # if django_album.album_title not in _albums:
-                LOG.info(django_album.album_title)
-                LOG.info(_albums)
+            #     LOG.info(django_album.album_title)
+            #     LOG.info(_albums)
                 LOG.info(f'Removing album from DB: {django_album}')
                 django_album.delete()
                 LOG.info(f'Album removed from DB: {django_album}')
