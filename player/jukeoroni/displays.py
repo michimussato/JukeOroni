@@ -251,6 +251,9 @@ class Standby(Layout):
 class Jukebox(Layout):
     # bg_color = (0, 255, 0, 255)
 
+    # TODO!!!
+    #  If the default image gets currupted, playback won't work anymore!!
+
     def get_layout(self, labels, loading=False, cover=None, artist=None):
 
         if loading:

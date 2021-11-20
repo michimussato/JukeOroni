@@ -150,7 +150,7 @@ MODES = {
 
 # box
 MAX_CACHED_FILES = 3
-COVER_ONLINE_PREFERENCE = False
+COVER_ONLINE_PREFERENCE = True
 _JUKEBOX_ICON_IMAGE = '/data/django/jukeoroni/player/static/jukebox.png'
 _JUKEBOX_LOADING_IMAGE = '/data/django/jukeoroni/player/static/loading.jpg'
 _JUKEBOX_ON_AIR_DEFAULT_IMAGE = '/data/django/jukeoroni/player/static/jukebox_on_air_default.jpg'

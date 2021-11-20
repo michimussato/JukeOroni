@@ -22,15 +22,34 @@ class Resource(object):
     """
     from player.jukeoroni.images import Resource
     """
-    OFF_IMAGE = Image.open(_OFF_IMAGE)
-    RADIO_ICON_IMAGE = Image.open(_RADIO_ICON_IMAGE)
-    RADIO_ON_AIR_DEFAULT_IMAGE = Image.open(_RADIO_ON_AIR_DEFAULT_IMAGE)
 
-    JUKEBOX_ICON_IMAGE = Image.open(_JUKEBOX_ICON_IMAGE)
-    JUKEBOX_LOADING_IMAGE = Image.open(_JUKEBOX_LOADING_IMAGE)
-    JUKEBOX_ON_AIR_DEFAULT_IMAGE = Image.open(_JUKEBOX_ON_AIR_DEFAULT_IMAGE)
+    @property
+    def OFF_IMAGE(self):
+        return Image.open(_OFF_IMAGE)
 
-    MOON_TEXUTRE = Image.open(_MOON_TEXUTRE)
+    @property
+    def RADIO_ICON_IMAGE(self):
+        return Image.open(_RADIO_ICON_IMAGE)
+
+    @property
+    def RADIO_ON_AIR_DEFAULT_IMAGE(self):
+        return Image.open(_RADIO_ON_AIR_DEFAULT_IMAGE)
+
+    @property
+    def JUKEBOX_ICON_IMAGE(self):
+        return Image.open(_JUKEBOX_ICON_IMAGE)
+
+    @property
+    def JUKEBOX_LOADING_IMAGE(self):
+        return Image.open(_JUKEBOX_LOADING_IMAGE)
+
+    @property
+    def JUKEBOX_ON_AIR_DEFAULT_IMAGE(self):
+        return Image.open(_JUKEBOX_ON_AIR_DEFAULT_IMAGE)
+
+    @property
+    def MOON_TEXUTRE(self):
+        return Image.open(_MOON_TEXUTRE)
 
     @property
     def PLACEHOLDER_SQUARE(self):
@@ -197,8 +216,9 @@ Oct 13 00:23:23 jukeoroni gunicorn[20629]: OSError: unrecognized data stream con
 
             image = io.BytesIO(response.read())
             image = Image.open(image)
-        except Exception as err:
+        except Exception:
             LOG.exception(f'Could not get online cover:')
-            image = self.RADIO_ON_AIR_DEFAULT_IMAGE
+            return None
+            # image = self.RADIO_ON_AIR_DEFAULT_IMAGE
 
         return image

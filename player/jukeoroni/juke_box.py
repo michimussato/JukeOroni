@@ -41,6 +41,9 @@ class JukeboxTrack(object):
         self.playing_proc = None
         self.killed = False
 
+        self._cover_album = Resource().JUKEBOX_ON_AIR_DEFAULT_IMAGE
+        self._cover_artist = None
+
         self._size = None
         self.cache_tmp = None
         self._cache_task_thread = None
@@ -67,35 +70,65 @@ class JukeboxTrack(object):
     def artist(self):
         return self.album.artist
 
+    def cache_online_covers(self):
+        self._cache_online_covers_task_thread = threading.Thread(target=self._cache_covers)
+        self._cache_online_covers_task_thread.name = 'Track Cover Loader Thread'
+        self._cache_online_covers_task_thread.daemon = False
+        # self.cache_tmp = tempfile.mkstemp()[1]
+        self._cache_online_covers_task_thread.start()
+
+    def _cache_covers(self):
+        self._cache_cover_album()
+        self._cache_cover_artist()
+
+    def _cache_cover_album(self):
+        if self.album.cover is not None:
+            LOG.info(f'Loading offline album cover for Track "{self}"...')
+            self._cover_album = Image.open(self.album.cover)
+        else:
+            LOG.info(f'Offline album cover for Track "{self}" is None...')
+
+        if COVER_ONLINE_PREFERENCE and self.album.cover_online is not None or self.album.cover is None:
+            LOG.info(f'Loading online album cover for Track "{self}"...')
+            _cover_album_online = Resource().from_url(url=self.album.cover_online)
+            if _cover_album_online is not None:
+                self._cover_album = _cover_album_online
+
+        # if COVER_ONLINE_PREFERENCE:
+        #     if self.album.cover_online is not None:
+        #         LOG.info('Loading online album cover...')
+        #         self._cover_album = Resource().from_url(url=self.album.cover_online)
+        # else:
+        #     if self.album.cover is not None:
+        #         LOG.info('Loading offline album cover...')
+        #         self._cover_album = Image.open(self.album.cover)
+        LOG.info(f'Loading album cover for Track "{self}" done: {self._cover_album}')
+
+    def _cache_cover_artist(self):
+        self._cover_artist = None
+
+        if self.artist.cover_online is not None:
+            LOG.info(f'Loading online artist cover for artist "{self.artist}"...')
+            self._cover_artist = Resource().from_url(url=self.artist.cover_online)
+
+        LOG.info(f'Loading artist cover for artist "{self.artist}" done: {self._cover_artist}')
+
     @property
     def cover_album(self):
         # TODO: query Discogs image here on the fly?
         #  downside: we cannot specify the actual image
         #  on the database if path is not stored beforehand
-        if self.album.cover_online is not None:
-            album_online = Resource().from_url(url=self.album.cover_online)
-        else:
-            album_online = None
-
-        if self.album.cover is not None:
-            cover = Image.open(self.album.cover)
-        else:
-            cover = Resource().JUKEBOX_ON_AIR_DEFAULT_IMAGE
-
-        if COVER_ONLINE_PREFERENCE:
-            return Resource().squareify(album_online) or Resource().squareify(cover)
-        else:
-            return Resource().squareify(cover) or Resource().squareify(album_online)
+        return Resource().squareify(self._cover_album)
 
     @property
     def cover_artist(self):
         # TODO: query Discogs image here on the fly?
         #  downside: we cannot specify the actual image
         #  on the database if path is not stored beforehand
-        if self.artist.cover_online is None:
-            return None
+        if self._cover_artist is not None:
+            return Resource().squareify(self._cover_artist)
         else:
-            return Resource().squareify(Resource().from_url(url=self.artist.cover_online))
+            return None
 
     @property
     def media_info(self):
@@ -110,6 +143,9 @@ class JukeboxTrack(object):
 
             self._cache_task_thread.kill()
             self._cache_task_thread.join()
+
+            # self._cache_onli§_covers_task_thread.join()
+
             self.killed = True
 
     def cache(self):
@@ -118,6 +154,8 @@ class JukeboxTrack(object):
         self._cache_task_thread.daemon = False
         self.cache_tmp = tempfile.mkstemp()[1]
         self._cache_task_thread.start()
+
+        self.cache_online_covers()
 
         _interval = float(5)
         _waited = None
@@ -556,7 +594,6 @@ requests.exceptions.ConnectionError: ('Connection aborted.', ConnectionResetErro
                 continue
 
             cover_online = None
-            # print(artist)
             # TODO: if str(artist).lower() != 'soundtrack':  # Soundtracks have different artists, so no need to add artist cover
             query_artist = Artist.objects.filter(name__exact=artist)
             # TODO: maybe objects.get() is better because artist name is unique
@@ -566,18 +603,14 @@ requests.exceptions.ConnectionError: ('Connection aborted.', ConnectionResetErro
                 # if str(model_artist.name).lower() != 'soundtrack':
                 if model_artist.cover_online is None:
                     cover_online = get_artist(discogs_client, artist)
-                    # print(cover_online)
                     if cover_online:
                         model_artist.cover_online = cover_online
                         model_artist.save()
-                    # print('    artist found in db')
             else:
                 LOG.info(f'Artist {artist} not found in db; creating new entry...')
                 cover_online = get_artist(discogs_client, artist)
-                # print(cover_online)
                 model_artist = Artist(name=artist, cover_online=cover_online)
                 model_artist.save()
-                # print('    artist created in db')
 
             if artist not in _artists:
                 _artists.append(artist)
@@ -607,11 +640,9 @@ requests.exceptions.ConnectionError: ('Connection aborted.', ConnectionResetErro
                     cover_online = get_album(discogs_client, artist, title_stripped)
                     if cover_online:
                         model_album.cover_online = cover_online
-                # print('    album found in db')
             else:
                 cover_online = get_album(discogs_client, artist, title_stripped)
                 model_album = Album(artist=model_artist, album_title=title, year=year, cover=img_path, cover_online=cover_online)
-                # print('    album created in db')
 
             try:
                 model_album.save()
@@ -622,7 +653,6 @@ requests.exceptions.ConnectionError: ('Connection aborted.', ConnectionResetErro
             for _file in files:
                 if not self.on:
                     return
-                # print('      track: ' + _file)
                 if os.path.splitext(_file)[1] in AUDIO_FILES:
                     file_path = os.path.join(path, _file)
                     query_track = DjangoTrack.objects.filter(audio_source__exact=file_path)
@@ -633,7 +663,6 @@ requests.exceptions.ConnectionError: ('Connection aborted.', ConnectionResetErro
                             LOG.warning(f'Track deleted: {track}')
                         query_track = []
                     if len(query_track) == 1:
-                        # model_track = query_track
                         LOG.info(f'Track found in DB: {query_track}')
                         _edit = False
                         if not query_track[0].album == model_album:
@@ -642,14 +671,9 @@ requests.exceptions.ConnectionError: ('Connection aborted.', ConnectionResetErro
                         if not query_track[0].track_title == _file:
                             query_track.update(track_title=_file)
                             LOG.info('Track track_title updated in DB: {0}'.format(query_track[0]))
-                        # model_track.save()
-
-                        # print('        track found in db')
                     else:
                         model_track = DjangoTrack.objects.create(album=model_album, audio_source=file_path, track_title=_file)
                         LOG.info('Track created in DB: {0}'.format(model_track))
-                        # model_track.save()
-                        # print('        track created in db')
 
                     _files.append(file_path)
 
