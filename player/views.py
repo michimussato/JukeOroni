@@ -75,6 +75,7 @@ class JukeOroniView(View):
             ret = '<html>\n'
             ret += '  <head>\n'
             ret += '    <meta http-equiv="refresh" content="10" >\n'
+            ret += '    <link rel="icon" type="image/x-icon" href="/jukeoroni/favicon.ico">\n'
             ret += '  </head>\n'
             ret += '  <body style="background-color:#{0};">\n'.format(bg_color)
             ret += '<center><h1>Hello JukeOroni</h1></center>\n'
@@ -128,6 +129,7 @@ class JukeOroniView(View):
         ret = '<html>\n'
         ret += '  <head>\n'
         ret += '    <meta http-equiv="refresh" content="10" >\n'
+        ret += '    <link rel="icon" type="image/x-icon" href="/jukeoroni/favicon.ico">\n'
         ret += '  </head>\n'
         ret += '  <body style="background-color:#{0};">\n'.format(bg_color)
         ret += f'<button style=\"width:100%; \" onclick=\"window.location.href = \'/jukeoroni/set_standby\';\">Back to Menu</button>\n'
@@ -163,6 +165,7 @@ class JukeOroniView(View):
             ret += f'<div style="text-align: center;">{str(jukeoroni.inserted_media.artist)}</div>'
             ret += f'<div style="text-align: center;">{str(jukeoroni.inserted_media.album)}</div>'
             ret += f'<div style="text-align: center;">{str(jukeoroni.inserted_media.track_title)}</div>'
+            ret += f'<div style="text-align: center;">(ID: {str(jukeoroni.inserted_media.django_track.id)})</div>'
         else:
             ret += '<div style="text-align: center;">None</div>'
 
@@ -180,7 +183,7 @@ class JukeOroniView(View):
             ret += f'<td>'
             ret += '<li>&nbsp;</li>'
             ret += f'</td>'
-            ret += '<td>{0}</td>'.format(track)
+            ret += '<td>{0} (ID: {1})</td>'.format(track, track.django_track.id)
             if jukeoroni.jukebox.tracks.index(track) == 0:
                 ret += '<td><button onclick=\"window.location.href = \'/jukeoroni/jukebox/{0}/as_first\';\" disabled>Set 1st</button></td>'.format(str(jukeoroni.jukebox.tracks.index(track)))
             else:
@@ -308,6 +311,12 @@ class JukeOroniView(View):
         bg_color = get_bg_color(jukeoroni.jukebox.layout.bg_color)
 
         ret = '<html>\n'
+
+        ret += '  <head>\n'
+        # ret += '    <meta http-equiv="refresh" content="10" >\n'
+        ret += '    <link rel="icon" type="image/x-icon" href="/jukeoroni/favicon.ico">\n'
+        ret += '  </head>\n'
+
         ret += '  <body style="background-color:#{0};">\n'.format(bg_color)
         ret += '        <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni\';\">Back</button>\n'
         ret += f'<hr>'
@@ -318,7 +327,7 @@ class JukeOroniView(View):
         ret += f'<table border="0" cellspacing="0">'
         ret += f'<tr>'
         ret += f'<td>ID</td>'
-        ret += f'<td><button>Play</button></td>'
+        ret += f'<td>Play</td>'
         ret += f'<td>Track</td>'
         ret += f'<td>Album</td>'
         ret += f'<td>Artist</td>'
@@ -363,6 +372,10 @@ class JukeOroniView(View):
         bg_color = get_bg_color(jukeoroni.jukebox.layout.bg_color)
 
         ret = '<html>\n'
+        ret += '  <head>\n'
+        # ret += '    <meta http-equiv="refresh" content="10" >\n'
+        ret += '    <link rel="icon" type="image/x-icon" href="/jukeoroni/favicon.ico">\n'
+        ret += '  </head>\n'
         ret += '  <body style="background-color:#{0};">\n'.format(bg_color)
         ret += '        <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni\';\">Back</button>\n'
 
@@ -414,6 +427,7 @@ class JukeOroniView(View):
         ret = '<html>\n'
         ret += '<head>\n'
         ret += '<meta http-equiv="refresh" content="10" >\n'
+        ret += '    <link rel="icon" type="image/x-icon" href="/jukeoroni/favicon.ico">\n'
         ret += '</head>\n'
         ret += '<body style="background-color:#{0};">\n'.format(bg_color)
         ret += f'<button style=\"width:100%; \" onclick=\"window.location.href = \'/jukeoroni/set_standby\';\">Back to Menu</button>\n'

@@ -12,7 +12,8 @@ LOG.setLevel(GLOBAL_LOGGING_LEVEL)
 # media_crawler
 _ONE_HOUR = 3600
 DEFAULT_TRACKLIST_REGEN_INTERVAL = _ONE_HOUR * 24  # in hours
-MEDIA_ROOT = r'/data/googledrive/media/audio/'
+DATA_SOURCE = ['googledrive', 'usb_hdd'][1]  # https://raspberrytips.com/mount-usb-drive-raspberry-pi/
+MEDIA_ROOT = f'/data/{DATA_SOURCE}/media/audio/'
 MUSIC_DIR = os.path.join(MEDIA_ROOT, 'music')
 FAULTY_ALBUMS = os.path.join(MEDIA_ROOT, 'faulty_albums_test.txt')
 MISSING_COVERS_FILE = os.path.join(MEDIA_ROOT, 'missing_covers_test.txt')
@@ -149,6 +150,8 @@ MODES = {
 
 
 # box
+CACHE_TRACKS = False
+CACHE_COVERS = True
 MAX_CACHED_FILES = 3
 COVER_ONLINE_PREFERENCE = True
 _JUKEBOX_ICON_IMAGE = '/data/django/jukeoroni/player/static/jukebox.png'

@@ -140,7 +140,7 @@ class Clock(object):
         if draw_logo:
             logo_img = Image.new(mode='RGBA', size=(_size, _size), color=(0, 0, 0, 0))
             logo_draw = ImageDraw.Draw(logo_img)
-            font_logo = ImageFont.truetype(CALLIGRAPHIC, round(_size * 0.150))
+            font_logo = ImageFont.truetype(CALLIGRAPHIC, round(_size * 0.120))
             text_logo = 'JukeOroni'
             length_logo = font_logo.getlength(text_logo)
             logo_draw.text((round(_size / 2) - length_logo / 2, round(_size * 0.536)), text_logo, fill=white, font=font_logo)
@@ -151,10 +151,13 @@ class Clock(object):
         if draw_date:
             date_img = Image.new(mode='RGBA', size=(_size, _size), color=(0, 0, 0, 0))
             date_draw = ImageDraw.Draw(date_img)
-            font_date = ImageFont.truetype(ARIAL, round(_size * 0.035))
-            text_date = datetime.datetime.now().strftime('%A, %B %d %Y')
+            font_date = ImageFont.truetype(CALLIGRAPHIC, round(_size * 0.175))
+            # font_date = ImageFont.truetype(ARIAL, round(_size * 0.035))
+            # text_date = datetime.datetime.now().strftime('%A, %B %d %Y')
+            # text_date = datetime.datetime.now().strftime('%x')
+            text_date = datetime.datetime.now().strftime('%-d.%-m.%Y')
             length_date = font_date.getlength(text_date)
-            date_draw.text((round(_size / 2) - length_date / 2, round(_size * 0.690)), text_date, fill=white, font=font_date)
+            date_draw.text((round(_size / 2) - length_date / 2, round(_size * 0.28)), text_date, fill=white, font=font_date)
 
             _date_inv = ImageOps.invert(_clock.convert('RGB'))
             _clock.paste(_date_inv, mask=date_img)
@@ -166,7 +169,7 @@ class Clock(object):
         if draw_moon_phase:
             _draw_moon_image = Image.new(mode='RGBA', size=(_size, _size), color=(0, 0, 0, 0))
             _draw_moon = ImageDraw.Draw(_draw_moon_image)
-            _draw_moon.ellipse(((edge_compensation, edge_compensation), (_size-edge_compensation-_edge_comp_2, _size-edge_compensation-_edge_comp_2)), fill=white)
+            _draw_moon.ellipse(((edge_compensation-1, edge_compensation), (_size-edge_compensation-_edge_comp_2, _size-edge_compensation-_edge_comp_2+1)), fill=white)
             phase = round(float(suncalc.getMoonIllumination(datetime.datetime.now())['phase']) * 2, 4)
             LOG.info(f'Moon phase: {phase} / 4')
 

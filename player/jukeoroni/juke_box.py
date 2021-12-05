@@ -19,6 +19,8 @@ from player.jukeoroni.displays import Jukebox as JukeboxLayout
 from player.jukeoroni.images import Resource
 from player.jukeoroni.settings import (
     GLOBAL_LOGGING_LEVEL,
+    CACHE_TRACKS,
+    CACHE_COVERS,
     MAX_CACHED_FILES,
     AUDIO_FILES,
     MUSIC_DIR,
@@ -59,6 +61,33 @@ class JukeboxTrack(object):
         return self.django_track.track_title
 
     @property
+    def album_tracks(self):
+        # list of tracks within an album, sorted by the file name
+        # (indexes might not be incremental)
+        return sorted(list(DjangoTrack.objects.filter(album=self.album.id)), key=lambda x: x.audio_source.lower())
+
+    @property
+    def first_album_track(self):
+        return self.album_tracks[0]
+
+    @property
+    def is_first_album_track(self):
+        if self.django_track == self.first_album_track:
+            return True
+        else:
+            return False
+
+    @property
+    def next_album_track(self):
+        this_index = self.album_tracks.index(self.django_track)
+        next_index = this_index + 1
+
+        try:
+            return self.album_tracks[next_index]
+        except IndexError:
+            return None
+
+    @property
     def album(self):
         return self.django_track.album
 
@@ -71,11 +100,11 @@ class JukeboxTrack(object):
         return self.album.artist
 
     def cache_online_covers(self):
-        self._cache_online_covers_task_thread = threading.Thread(target=self._cache_covers)
-        self._cache_online_covers_task_thread.name = 'Track Cover Loader Thread'
-        self._cache_online_covers_task_thread.daemon = False
-        # self.cache_tmp = tempfile.mkstemp()[1]
-        self._cache_online_covers_task_thread.start()
+        if CACHE_COVERS:
+            self._cache_online_covers_task_thread = threading.Thread(target=self._cache_covers)
+            self._cache_online_covers_task_thread.name = 'Track Cover Loader Thread'
+            self._cache_online_covers_task_thread.daemon = False
+            self._cache_online_covers_task_thread.start()
 
     def _cache_covers(self):
         self._cache_cover_album()
@@ -144,36 +173,33 @@ class JukeboxTrack(object):
             self._cache_task_thread.kill()
             self._cache_task_thread.join()
 
-            # self._cache_onli§_covers_task_thread.join()
-
             self.killed = True
 
     def cache(self):
-        self._cache_task_thread = multiprocessing.Process(target=self._cache)
-        self._cache_task_thread.name = 'Track Cacher Progress Thread'
-        self._cache_task_thread.daemon = False
-        self.cache_tmp = tempfile.mkstemp()[1]
-        self._cache_task_thread.start()
+        if CACHE_TRACKS:
+            self._cache_task_thread = multiprocessing.Process(target=self._cache)
+            self._cache_task_thread.name = 'Track Cacher Progress Thread'
+            self._cache_task_thread.daemon = False
+            self.cache_tmp = tempfile.mkstemp()[1]
+            self._cache_task_thread.start()
 
-        self.cache_online_covers()
+            _interval = float(5)
+            _waited = None
+            _size_cached = 0
+            while self.is_caching:
+                if _waited is None or _waited % _interval == 0:
+                    _waited = 0
 
-        _interval = float(5)
-        _waited = None
-        _size_cached = 0
-        while self.is_caching:
-            if _waited is None or _waited % _interval == 0:
-                _waited = 0
+                    _gain = self.size_cached - _size_cached
 
-                _gain = self.size_cached - _size_cached
+                    _size_cached = self.size_cached
 
-                _size_cached = self.size_cached
+                    LOG.info(f'{str(round(self.size_cached / (1024.0 * 1024.0), 3))} MB of {str(round(self.size / (1024.0 * 1024.0), 3))} MB loaded'
+                             f' ~({str(round(_gain / (1024.0 * 1024.0 * _interval), 3))} MB/s)'
+                             f' ({self})')
 
-                LOG.info(f'{str(round(self.size_cached / (1024.0 * 1024.0), 3))} MB of {str(round(self.size / (1024.0 * 1024.0), 3))} MB loaded'
-                         f' ~({str(round(_gain / (1024.0 * 1024.0 * _interval), 3))} MB/s)'
-                         f' ({self})')
-
-            time.sleep(1.0)
-            _waited += 1
+                time.sleep(1.0)
+                _waited += 1
 
     @property
     def is_caching(self):
@@ -186,22 +212,6 @@ class JukeboxTrack(object):
     def size(self):
         if self._size is None:
             self._size = os.path.getsize(self.path)
-            """
-Traceback (most recent call last):
-  File "/data/venv/lib/python3.7/site-packages/django/core/handlers/exception.py", line 47, in inner
-    response = get_response(request)
-  File "/data/venv/lib/python3.7/site-packages/django/core/handlers/base.py", line 181, in _get_response
-    response = wrapped_callback(request, *callback_args, **callback_kwargs)
-  File "/data/django/jukeoroni/player/views.py", line 166, in jukebox_index
-    ret += '<center><div>{0}</div></center>'.format(f'{jukeoroni.jukebox.loading_track.artist} - {jukeoroni.jukebox.loading_track.album} ({jukeoroni.jukebox.loading_track.year}) - {jukeoroni.jukebox.loading_track.track_title} ({str(round(jukeoroni.jukebox.loading_track.size_cached / (1024.0 * 1024.0), 1))} of {str(round(jukeoroni.jukebox.loading_track.size / (1024.0 * 1024.0), 1))} MB)')
-  File "/data/django/jukeoroni/player/jukeoroni/juke_box.py", line 199, in size
-    self._size = os.path.getsize(self.path)
-  File "/usr/lib/python3.7/genericpath.py", line 50, in getsize
-    return os.stat(filename).st_size
-
-Exception Type: FileNotFoundError at /jukeoroni/jukebox/
-Exception Value: [Errno 2] No such file or directory: '/data/googledrive/media/audio/music/on_device/The Hu - 2019 - The Gereg [FLAC-16:44.1]/01 The Gereg.flac'
-            """
         return self._size
 
     @property
@@ -362,95 +372,7 @@ box.turn_off()
     # so hopefully ideal for multiprocessing
     # can't use multiprocessing because the main thread is
     # altering self.on
-    """
-Nov  1 19:11:03 jukeoroni gunicorn[611]: Exception in thread Track List Generator Process:
-Nov  1 19:11:03 jukeoroni gunicorn[611]: Traceback (most recent call last):
-Nov  1 19:11:03 jukeoroni gunicorn[611]:   File "/data/venv/lib/python3.7/site-packages/urllib3/connectionpool.py", line 706, in urlopen
-Nov  1 19:11:03 jukeoroni gunicorn[611]:     chunked=chunked,
-Nov  1 19:11:03 jukeoroni gunicorn[611]:   File "/data/venv/lib/python3.7/site-packages/urllib3/connectionpool.py", line 382, in _make_request
-Nov  1 19:11:03 jukeoroni gunicorn[611]:     self._validate_conn(conn)
-Nov  1 19:11:03 jukeoroni gunicorn[611]:   File "/data/venv/lib/python3.7/site-packages/urllib3/connectionpool.py", line 1010, in _validate_conn
-Nov  1 19:11:03 jukeoroni gunicorn[611]:     conn.connect()
-Nov  1 19:11:03 jukeoroni gunicorn[611]:   File "/data/venv/lib/python3.7/site-packages/urllib3/connection.py", line 421, in connect
-Nov  1 19:11:03 jukeoroni gunicorn[611]:     tls_in_tls=tls_in_tls,
-Nov  1 19:11:03 jukeoroni gunicorn[611]:   File "/data/venv/lib/python3.7/site-packages/urllib3/util/ssl_.py", line 450, in ssl_wrap_socket
-Nov  1 19:11:03 jukeoroni gunicorn[611]:     sock, context, tls_in_tls, server_hostname=server_hostname
-Nov  1 19:11:03 jukeoroni gunicorn[611]:   File "/data/venv/lib/python3.7/site-packages/urllib3/util/ssl_.py", line 493, in _ssl_wrap_socket_impl
-Nov  1 19:11:03 jukeoroni gunicorn[611]:     return ssl_context.wrap_socket(sock, server_hostname=server_hostname)
-Nov  1 19:11:03 jukeoroni gunicorn[611]:   File "/usr/lib/python3.7/ssl.py", line 412, in wrap_socket
-Nov  1 19:11:03 jukeoroni gunicorn[611]:     session=session
-Nov  1 19:11:03 jukeoroni gunicorn[611]:   File "/usr/lib/python3.7/ssl.py", line 853, in _create
-Nov  1 19:11:03 jukeoroni gunicorn[611]:     self.do_handshake()
-Nov  1 19:11:03 jukeoroni gunicorn[611]:   File "/usr/lib/python3.7/ssl.py", line 1117, in do_handshake
-Nov  1 19:11:03 jukeoroni gunicorn[611]:     self._sslobj.do_handshake()
-Nov  1 19:11:03 jukeoroni gunicorn[611]: ConnectionResetError: [Errno 104] Connection reset by peer
-Nov  1 19:11:03 jukeoroni gunicorn[611]: During handling of the above exception, another exception occurred:
-Nov  1 19:11:03 jukeoroni gunicorn[611]: Traceback (most recent call last):
-Nov  1 19:11:03 jukeoroni gunicorn[611]:   File "/data/venv/lib/python3.7/site-packages/requests/adapters.py", line 449, in send
-Nov  1 19:11:03 jukeoroni gunicorn[611]:     timeout=timeout
-Nov  1 19:11:03 jukeoroni gunicorn[611]:   File "/data/venv/lib/python3.7/site-packages/urllib3/connectionpool.py", line 756, in urlopen
-Nov  1 19:11:03 jukeoroni gunicorn[611]:     method, url, error=e, _pool=self, _stacktrace=sys.exc_info()[2]
-Nov  1 19:11:03 jukeoroni gunicorn[611]:   File "/data/venv/lib/python3.7/site-packages/urllib3/util/retry.py", line 532, in increment
-Nov  1 19:11:03 jukeoroni gunicorn[611]:     raise six.reraise(type(error), error, _stacktrace)
-Nov  1 19:11:03 jukeoroni gunicorn[611]:   File "/data/venv/lib/python3.7/site-packages/urllib3/packages/six.py", line 769, in reraise
-Nov  1 19:11:03 jukeoroni gunicorn[611]:     raise value.with_traceback(tb)
-Nov  1 19:11:03 jukeoroni gunicorn[611]:   File "/data/venv/lib/python3.7/site-packages/urllib3/connectionpool.py", line 706, in urlopen
-Nov  1 19:11:03 jukeoroni gunicorn[611]:     chunked=chunked,
-Nov  1 19:11:03 jukeoroni gunicorn[611]:   File "/data/venv/lib/python3.7/site-packages/urllib3/connectionpool.py", line 382, in _make_request
-Nov  1 19:11:03 jukeoroni gunicorn[611]:     self._validate_conn(conn)
-Nov  1 19:11:03 jukeoroni gunicorn[611]:   File "/data/venv/lib/python3.7/site-packages/urllib3/connectionpool.py", line 1010, in _validate_conn
-Nov  1 19:11:03 jukeoroni gunicorn[611]:     conn.connect()
-Nov  1 19:11:03 jukeoroni gunicorn[611]:   File "/data/venv/lib/python3.7/site-packages/urllib3/connection.py", line 421, in connect
-Nov  1 19:11:03 jukeoroni gunicorn[611]:     tls_in_tls=tls_in_tls,
-Nov  1 19:11:03 jukeoroni gunicorn[611]:   File "/data/venv/lib/python3.7/site-packages/urllib3/util/ssl_.py", line 450, in ssl_wrap_socket
-Nov  1 19:11:03 jukeoroni gunicorn[611]:     sock, context, tls_in_tls, server_hostname=server_hostname
-Nov  1 19:11:03 jukeoroni gunicorn[611]:   File "/data/venv/lib/python3.7/site-packages/urllib3/util/ssl_.py", line 493, in _ssl_wrap_socket_impl
-Nov  1 19:11:03 jukeoroni gunicorn[611]:     return ssl_context.wrap_socket(sock, server_hostname=server_hostname)
-Nov  1 19:11:03 jukeoroni gunicorn[611]:   File "/usr/lib/python3.7/ssl.py", line 412, in wrap_socket
-Nov  1 19:11:03 jukeoroni gunicorn[611]:     session=session
-Nov  1 19:11:03 jukeoroni gunicorn[611]:   File "/usr/lib/python3.7/ssl.py", line 853, in _create
-Nov  1 19:11:03 jukeoroni gunicorn[611]:     self.do_handshake()
-Nov  1 19:11:03 jukeoroni gunicorn[611]:   File "/usr/lib/python3.7/ssl.py", line 1117, in do_handshake
-Nov  1 19:11:03 jukeoroni gunicorn[611]:     self._sslobj.do_handshake()
-Nov  1 19:11:03 jukeoroni gunicorn[611]: urllib3.exceptions.ProtocolError: ('Connection aborted.', ConnectionResetError(104, 'Connection reset by peer'))
-Nov  1 19:11:03 jukeoroni gunicorn[611]: During handling of the above exception, another exception occurred:
-Nov  1 19:11:03 jukeoroni gunicorn[611]: Traceback (most recent call last):
-Nov  1 19:11:03 jukeoroni gunicorn[611]:   File "/usr/lib/python3.7/threading.py", line 917, in _bootstrap_inner
-Nov  1 19:11:03 jukeoroni gunicorn[611]:     self.run()
-Nov  1 19:11:03 jukeoroni gunicorn[611]:   File "/usr/lib/python3.7/threading.py", line 865, in run
-Nov  1 19:11:03 jukeoroni gunicorn[611]:     self._target(*self._args, **self._kwargs)
-Nov  1 19:11:03 jukeoroni gunicorn[611]:   File "/data/django/jukeoroni/player/jukeoroni/juke_box.py", line 336, in track_list_generator_task
-Nov  1 19:11:03 jukeoroni gunicorn[611]:     self.create_update_track_list()
-Nov  1 19:11:03 jukeoroni gunicorn[611]:   File "/data/django/jukeoroni/player/jukeoroni/juke_box.py", line 409, in create_update_track_list
-Nov  1 19:11:03 jukeoroni gunicorn[611]:     cover_online = get_album(discogs_client, artist, title_stripped)
-Nov  1 19:11:03 jukeoroni gunicorn[611]:   File "/data/django/jukeoroni/player/jukeoroni/discogs.py", line 34, in get_album
-Nov  1 19:11:03 jukeoroni gunicorn[611]:     if not results:
-Nov  1 19:11:03 jukeoroni gunicorn[611]:   File "/data/venv/lib/python3.7/site-packages/discogs_client/models.py", line 363, in __len__
-Nov  1 19:11:03 jukeoroni gunicorn[611]:     return self.count
-Nov  1 19:11:03 jukeoroni gunicorn[611]:   File "/data/venv/lib/python3.7/site-packages/discogs_client/models.py", line 334, in count
-Nov  1 19:11:03 jukeoroni gunicorn[611]:     self._load_pagination_info()
-Nov  1 19:11:03 jukeoroni gunicorn[611]:   File "/data/venv/lib/python3.7/site-packages/discogs_client/models.py", line 289, in _load_pagination_info
-Nov  1 19:11:03 jukeoroni gunicorn[611]:     data = self.client._get(self._url_for_page(1))
-Nov  1 19:11:03 jukeoroni gunicorn[611]:   File "/data/venv/lib/python3.7/site-packages/discogs_client/client.py", line 113, in _get
-Nov  1 19:11:03 jukeoroni gunicorn[611]:     return self._request('GET', url)
-Nov  1 19:11:03 jukeoroni gunicorn[611]:   File "/data/venv/lib/python3.7/site-packages/discogs_client/client.py", line 100, in _request
-Nov  1 19:11:03 jukeoroni gunicorn[611]:     content, status_code = self._fetcher.fetch(self, method, url, data=data, headers=headers)
-Nov  1 19:11:03 jukeoroni gunicorn[611]:   File "/data/venv/lib/python3.7/site-packages/discogs_client/fetchers.py", line 145, in fetch
-Nov  1 19:11:03 jukeoroni gunicorn[611]:     method, url, data=data, headers=headers, params={'token':self.user_token}
-Nov  1 19:11:03 jukeoroni gunicorn[611]:   File "/data/venv/lib/python3.7/site-packages/discogs_client/utils.py", line 58, in wrapper
-Nov  1 19:11:03 jukeoroni gunicorn[611]:     result = f(self, *args, **kwargs)
-Nov  1 19:11:03 jukeoroni gunicorn[611]:   File "/data/venv/lib/python3.7/site-packages/discogs_client/fetchers.py", line 55, in request
-Nov  1 19:11:03 jukeoroni gunicorn[611]:     response = request(method=method, url=url, data=data, headers=headers, params=params)
-Nov  1 19:11:03 jukeoroni gunicorn[611]:   File "/data/venv/lib/python3.7/site-packages/requests/api.py", line 61, in request
-Nov  1 19:11:03 jukeoroni gunicorn[611]:     return session.request(method=method, url=url, **kwargs)
-Nov  1 19:11:03 jukeoroni gunicorn[611]:   File "/data/venv/lib/python3.7/site-packages/requests/sessions.py", line 542, in request
-Nov  1 19:11:03 jukeoroni gunicorn[611]:     resp = self.send(prep, **send_kwargs)
-Nov  1 19:11:03 jukeoroni gunicorn[611]:   File "/data/venv/lib/python3.7/site-packages/requests/sessions.py", line 655, in send
-Nov  1 19:11:03 jukeoroni gunicorn[611]:     r = adapter.send(request, **kwargs)
-Nov  1 19:11:03 jukeoroni gunicorn[611]:   File "/data/venv/lib/python3.7/site-packages/requests/adapters.py", line 498, in send
-Nov  1 19:11:03 jukeoroni gunicorn[611]:     raise ConnectionError(err, request=request)
-Nov  1 19:11:03 jukeoroni gunicorn[611]: requests.exceptions.ConnectionError: ('Connection aborted.', ConnectionResetError(104, 'Connection reset by peer'))
-    """
+
     def track_list_generator_thread(self):
         assert self.on, 'turn jukebox on first'
         assert self._track_list_generator_thread is None, '_track_list_generator_thread already running.'
@@ -460,100 +382,6 @@ Nov  1 19:11:03 jukeoroni gunicorn[611]: requests.exceptions.ConnectionError: ('
         self._track_list_generator_thread.start()
 
     def track_list_generator_task(self):
-
-        """
-Exception in thread Track List Generator Process:
-Traceback (most recent call last):
-  File "/data/venv/lib/python3.7/site-packages/urllib3/connectionpool.py", line 706, in urlopen
-    chunked=chunked,
-  File "/data/venv/lib/python3.7/site-packages/urllib3/connectionpool.py", line 382, in _make_request
-    self._validate_conn(conn)
-  File "/data/venv/lib/python3.7/site-packages/urllib3/connectionpool.py", line 1010, in _validate_conn
-    conn.connect()
-  File "/data/venv/lib/python3.7/site-packages/urllib3/connection.py", line 421, in connect
-    tls_in_tls=tls_in_tls,
-  File "/data/venv/lib/python3.7/site-packages/urllib3/util/ssl_.py", line 450, in ssl_wrap_socket
-    sock, context, tls_in_tls, server_hostname=server_hostname
-  File "/data/venv/lib/python3.7/site-packages/urllib3/util/ssl_.py", line 493, in _ssl_wrap_socket_impl
-    return ssl_context.wrap_socket(sock, server_hostname=server_hostname)
-  File "/usr/lib/python3.7/ssl.py", line 412, in wrap_socket
-    session=session
-  File "/usr/lib/python3.7/ssl.py", line 853, in _create
-    self.do_handshake()
-  File "/usr/lib/python3.7/ssl.py", line 1117, in do_handshake
-    self._sslobj.do_handshake()
-ConnectionResetError: [Errno 104] Connection reset by peer
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "/data/venv/lib/python3.7/site-packages/requests/adapters.py", line 449, in send
-    timeout=timeout
-  File "/data/venv/lib/python3.7/site-packages/urllib3/connectionpool.py", line 756, in urlopen
-    method, url, error=e, _pool=self, _stacktrace=sys.exc_info()[2]
-  File "/data/venv/lib/python3.7/site-packages/urllib3/util/retry.py", line 532, in increment
-    raise six.reraise(type(error), error, _stacktrace)
-  File "/data/venv/lib/python3.7/site-packages/urllib3/packages/six.py", line 769, in reraise
-    raise value.with_traceback(tb)
-  File "/data/venv/lib/python3.7/site-packages/urllib3/connectionpool.py", line 706, in urlopen
-    chunked=chunked,
-  File "/data/venv/lib/python3.7/site-packages/urllib3/connectionpool.py", line 382, in _make_request
-    self._validate_conn(conn)
-  File "/data/venv/lib/python3.7/site-packages/urllib3/connectionpool.py", line 1010, in _validate_conn
-    conn.connect()
-  File "/data/venv/lib/python3.7/site-packages/urllib3/connection.py", line 421, in connect
-    tls_in_tls=tls_in_tls,
-  File "/data/venv/lib/python3.7/site-packages/urllib3/util/ssl_.py", line 450, in ssl_wrap_socket
-    sock, context, tls_in_tls, server_hostname=server_hostname
-  File "/data/venv/lib/python3.7/site-packages/urllib3/util/ssl_.py", line 493, in _ssl_wrap_socket_impl
-    return ssl_context.wrap_socket(sock, server_hostname=server_hostname)
-  File "/usr/lib/python3.7/ssl.py", line 412, in wrap_socket
-    session=session
-  File "/usr/lib/python3.7/ssl.py", line 853, in _create
-    self.do_handshake()
-  File "/usr/lib/python3.7/ssl.py", line 1117, in do_handshake
-    self._sslobj.do_handshake()
-urllib3.exceptions.ProtocolError: ('Connection aborted.', ConnectionResetError(104, 'Connection reset by peer'))
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "/usr/lib/python3.7/threading.py", line 917, in _bootstrap_inner
-    self.run()
-  File "/usr/lib/python3.7/threading.py", line 865, in run
-    self._target(*self._args, **self._kwargs)
-  File "/data/django/jukeoroni/player/jukeoroni/juke_box.py", line 432, in track_list_generator_task
-    self.create_update_track_list()
-  File "/data/django/jukeoroni/player/jukeoroni/juke_box.py", line 514, in create_update_track_list
-    else:
-  File "/data/django/jukeoroni/player/jukeoroni/discogs.py", line 34, in get_album
-    if not results:
-  File "/data/venv/lib/python3.7/site-packages/discogs_client/models.py", line 363, in __len__
-    return self.count
-  File "/data/venv/lib/python3.7/site-packages/discogs_client/models.py", line 334, in count
-    self._load_pagination_info()
-  File "/data/venv/lib/python3.7/site-packages/discogs_client/models.py", line 289, in _load_pagination_info
-    data = self.client._get(self._url_for_page(1))
-  File "/data/venv/lib/python3.7/site-packages/discogs_client/client.py", line 113, in _get
-    return self._request('GET', url)
-  File "/data/venv/lib/python3.7/site-packages/discogs_client/client.py", line 100, in _request
-    content, status_code = self._fetcher.fetch(self, method, url, data=data, headers=headers)
-  File "/data/venv/lib/python3.7/site-packages/discogs_client/fetchers.py", line 145, in fetch
-    method, url, data=data, headers=headers, params={'token':self.user_token}
-  File "/data/venv/lib/python3.7/site-packages/discogs_client/utils.py", line 58, in wrapper
-    result = f(self, *args, **kwargs)
-  File "/data/venv/lib/python3.7/site-packages/discogs_client/fetchers.py", line 55, in request
-    response = request(method=method, url=url, data=data, headers=headers, params=params)
-  File "/data/venv/lib/python3.7/site-packages/requests/api.py", line 61, in request
-    return session.request(method=method, url=url, **kwargs)
-  File "/data/venv/lib/python3.7/site-packages/requests/sessions.py", line 542, in request
-    resp = self.send(prep, **send_kwargs)
-  File "/data/venv/lib/python3.7/site-packages/requests/sessions.py", line 655, in send
-    r = adapter.send(request, **kwargs)
-  File "/data/venv/lib/python3.7/site-packages/requests/adapters.py", line 498, in send
-    raise ConnectionError(err, request=request)
-requests.exceptions.ConnectionError: ('Connection aborted.', ConnectionResetError(104, 'Connection reset by peer'))
-        """
 
         _waited = None
         while self.on:
@@ -710,30 +538,6 @@ requests.exceptions.ConnectionError: ('Connection aborted.', ConnectionResetErro
 
     ############################################
     # track loader
-    # def track_loader_watcher_thread(self):
-    #     # this thread makes sure to keep the track loader thread alive
-    #     self._track_loader_watcher_thread = threading.Thread(target=self._track_loader_watcher_task)
-    #     self._track_loader_watcher_thread.name = 'Track Loader Watcher Thread'
-    #     self._track_loader_watcher_thread.daemon = False
-    #     self._track_loader_watcher_thread.start()
-    #
-    # def _track_loader_watcher_task(self):
-    #     while self.on:
-    #         if self._track_loader_thread is None:
-    #             LOG.info('Starting Track Loader Thread...')
-    #             self.track_loader_thread()
-    #             LOG.info('Track Loader Thread started.')
-    #             time.sleep(5.0)
-    #         else:
-    #             try:
-    #                 if self._track_loader_thread.is_alive():
-    #                     LOG.debug('Track Loader Thread is up and running.')
-    #                     time.sleep(1.0)
-    #                     continue
-    #             except Exception:
-    #                 LOG.info('Seems like Track Loader Thread crashed...')
-    #                 self._track_loader_thread = None
-
     def track_loader_thread(self):
         assert self.on, 'jukebox must be on'
         self._track_loader_thread = threading.Thread(target=self._track_loader_task)
@@ -753,8 +557,9 @@ requests.exceptions.ConnectionError: ('Connection aborted.', ConnectionResetErro
                     time.sleep(1.0)
                     continue
 
-                self.loading_track = JukeboxTrack(loading_track, cached=True)
+                self.loading_track = JukeboxTrack(loading_track, cached=CACHE_TRACKS)
                 self.loading_track.cache()
+                self.loading_track.cache_online_covers()
 
                 # self.loading_process = None
                 if self.loading_track is not None:
@@ -787,95 +592,206 @@ requests.exceptions.ConnectionError: ('Connection aborted.', ConnectionResetErro
         # Album mode
         elif self.loader_mode == 'album':
 
-            if self._need_first_album_track and self.playing_track is not None:
-                
-                # if we switch mode from Rand to Albm,
-                # we always want the first track of
-                # the album, no matter what
-                track_id = self.playing_track.django_track.id
-                album_id = self.playing_track.django_track.album
-                album_tracks = DjangoTrack.objects.filter(album=album_id)
-                first_track = album_tracks[0]
-                first_track_id = first_track.id
-                self._need_first_album_track = False
-                if track_id != first_track_id:
-                    return first_track
-                else:
-                    # return 2nd track if playing_track is first track of album
-                    second_track = album_tracks[1]
-                    return second_track
+            # if self.playing_track is None and not bool(self.tracks) or self.requested_album_id is not None:
+            if self.requested_album_id is not None:
 
-            if self.playing_track is None and not bool(self.tracks) or self.requested_album_id is not None:
-
-                random_album = self.requested_album_id or random.choice(Album.objects.all())
-                album_tracks = DjangoTrack.objects.filter(album=random_album)
-                next_track = album_tracks[0]
+                # random_album = self.requested_album_id or random.choice(Album.objects.all())
+                album_tracks = DjangoTrack.objects.filter(album=self.requested_album_id)
+                next_track = JukeboxTrack(album_tracks[0])
                 self.requested_album_id = None
-                return next_track
+                self._need_first_album_track = False
+                return next_track.first_album_track
 
-            if bool(self.tracks):
-                # TODO: if we pressed the Next button too fast,
-                #  self.tracks will be still empty, hence,
-                #  we end up here again unintentionally
-                # we use this case to append the next track
-                # based on the last one in the self.tracks queue
-                # i.e: if playing_track has id 1 and self.tracks
-                # contains id's [2, 3, 4], we want to append
-                # id 5 once a free spot is available
-                # in album mode:
-                # get next track of album of current track
-                previous_track_id = self.tracks[-1].django_track.id
-                album = DjangoTrack.objects.get(id=previous_track_id).album
+            if self._need_first_album_track:
+                LOG.info("First album track requested...")
+                self._need_first_album_track = False
+                # if self.playing_track is not None:
+                if self.playing_track.is_first_album_track:
+                    LOG.warning("Playing track is first. Returning second...")
+                    ret = self.playing_track.next_album_track
+                    # return self.playing_track.next_album_track
+                else:
+                    LOG.warning("Returning first...")
+                    ret = self.playing_track.first_album_track
+                LOG.warning(ret)
+                return ret
 
-                if self._need_first_album_track:
-                    self._need_first_album_track = False
-                    album_tracks = DjangoTrack.objects.filter(album=album)
-                    first_track = album_tracks[0]
-                    first_track_id = first_track.id
-                    if first_track_id != previous_track_id:
-                        return first_track
+            else:
+                if bool(self.tracks):
+                    next_album_track = self.tracks[-1].next_album_track
+                    if next_album_track is None:
+                        tracks = self.track_list
+                        # if not bool(tracks):
+                        #     return None
+                        next_track = JukeboxTrack(random.choice(tracks))
+                        return next_track.first_album_track
+                        # add first track of random album because we
+                        # have reached the last track of the current album
+                        # random_album = self.requested_album_id or random.choice(Album.objects.all())
+                        # album_tracks = DjangoTrack.objects.filter(album=random_album)
+                        # return album_tracks[0]
                     else:
-                        second_track = album_tracks[1]
-                        return second_track
+                        return next_album_track
 
-                next_track = DjangoTrack.objects.get(id=previous_track_id + 1)
+                else:
+                    # if self._need_first_album_track:
+                    # if self.playing_track is not None:
 
-                if next_track.album != album:
-                    # choose a new random album if next_track is not part
-                    # of current album anymore
-                    random_album = random.choice(Album.objects.all())
-                    album_tracks = DjangoTrack.objects.filter(album=random_album)
-                    next_track = album_tracks[0]
+                    # if we switch mode from Rand to Albm,
+                    # we always want the first track of
+                    # the album, no matter what
+                    # if self.requested_album_id is not None:
+                    #     self.requested_album_id = None
 
-                return next_track
+                    first_album_track = self.playing_track.first_album_track
 
-            elif self.playing_track is not None and not bool(self.tracks):
-                LOG.info('playing_track {0}'.format(self.playing_track))
-                # in case self.tracks is empty, we want the next
-                # track id based on the one that is currently
-                # playing
-                # in album mode:
-                # get first track of album of current track
-                # if self.tracks is empty, we assume
-                # that the first track added to self.tracks must
-                # be the first track of the album
-                # but we leave the current track playing until
-                # it has finished (per default; if we want to skip
-                # the currently playing track: "Next" button)
-                playing_track_id = self.playing_track.django_track.id
-                next_track_id = playing_track_id+1
-                next_track = DjangoTrack.objects.get(id=next_track_id)
+                    # track_id = self.playing_track.django_track.id
+                    # album_id = self.playing_track.django_track.album
+                    # album_tracks = DjangoTrack.objects.filter(album=album_id)
+                    #
+                    # first_track = album_tracks[0]
+                    # first_track_id = first_track.id
+                    self._need_first_album_track = False
 
-                album = DjangoTrack.objects.get(id=playing_track_id).album
+                    if self.playing_track.django_track == first_album_track:
+                        return self.playing_track.next_album_track
+                    else:
+                        return first_album_track
 
-                if next_track.album != album:
-                    random_album = random.choice(Album.objects.all())
-                    album_tracks = DjangoTrack.objects.filter(album=random_album)
-                    next_track = album_tracks[0]
+            # # elif not bool(self.tracks):
+            # #     if self.playing_track is not None:
+            #
+            #
+            #     # # last_track_in_queue = self.tracks[-1].django_track
+            #     # # album_id = last_track_in_queue.album
+            #     # # album_tracks = DjangoTrack.objects.filter(album=album_id)
+            #     # if last_track_in_queue == list(album_tracks)[-1]:
+            #     #     self._need_first_album_track = True
+            #
+            # # if self.playing_track is not None:
+            # #     track_id = self.playing_track.django_track.id
+            # #     album_id = self.playing_track.django_track.album
+            # #     album_tracks = DjangoTrack.objects.filter(album=album_id)
+            # #     if self.playing_track == album_tracks[-1]:
+            # #         self._need_first_album_track = True
+            #
+            # # if self._need_first_album_track and self.playing_track is not None:
+            # #
+            # #     # if we switch mode from Rand to Albm,
+            # #     # we always want the first track of
+            # #     # the album, no matter what
+            # #
+            # #     first_album_track = self.playing_track.first_album_track
+            # #
+            # #     # track_id = self.playing_track.django_track.id
+            # #     # album_id = self.playing_track.django_track.album
+            # #     # album_tracks = DjangoTrack.objects.filter(album=album_id)
+            # #     #
+            # #     # first_track = album_tracks[0]
+            # #     # first_track_id = first_track.id
+            # #     self._need_first_album_track = False
+            # #
+            # #     if self.playing_track.django_track == first_album_track:
+            # #         return self.playing_track.next_album_track
+            # #     else:
+            # #         return first_album_track
+            #     # if track_id != first_track_id:
+            #     #     return first_track
+            #     # else:
+            #     #     # return 2nd track if playing_track is first track of album
+            #     #     second_track = album_tracks[1]
+            #     #     return second_track
+            #
+            # if self.playing_track is None and not bool(self.tracks) or self.requested_album_id is not None:
+            #
+            #     random_album = self.requested_album_id or random.choice(Album.objects.all())
+            #     album_tracks = DjangoTrack.objects.filter(album=random_album)
+            #     next_track = album_tracks[0]
+            #     self.requested_album_id = None
+            #     return next_track
+            #
+            # # if bool(self.tracks):
+            # #     # TODO: if we pressed the Next button too fast,
+            # #     #  self.tracks will be still empty, hence,
+            # #     #  we end up here again unintentionally
+            # #     # we use this case to append the next track
+            # #     # based on the last one in the self.tracks queue
+            # #     # i.e: if playing_track has id 1 and self.tracks
+            # #     # contains id's [2, 3, 4], we want to append
+            # #     # id 5 once a free spot is available
+            # #     # in album mode:
+            # #     # get next track of album of current track
+            # #     previous_track_id = self.tracks[-1].django_track.id
+            # #     album = DjangoTrack.objects.get(id=previous_track_id).album
+            # #
+            # #     if self._need_first_album_track:
+            # #         self._need_first_album_track = False
+            # #         random_album = random.choice(Album.objects.all())
+            # #         album_tracks = DjangoTrack.objects.filter(album=random_album)
+            # #         first_track = album_tracks[0]
+            # #         first_track_id = first_track.id
+            # #         if first_track_id != previous_track_id:
+            # #             return first_track
+            # #         else:
+            # #             second_track = album_tracks[1]
+            # #             return second_track
+            # #
+            # #     next_track = DjangoTrack.objects.get(id=previous_track_id + 1)
+            # #
+            # #     if next_track.album != album:
+            # #         # choose a new random album if next_track is not part
+            # #         # of current album anymore
+            # #         random_album = random.choice(Album.objects.all())
+            # #         album_tracks = DjangoTrack.objects.filter(album=random_album)
+            # #         next_track = album_tracks[0]
+            # #
+            # #     return next_track
+            #
+            # if self.playing_track is not None and not bool(self.tracks):
+            #     LOG.info('playing_track {0}'.format(self.playing_track))
+            #     # in case self.tracks is empty, we want the next
+            #     # track id based on the one that is currently
+            #     # playing
+            #     # in album mode:
+            #     # get first track of album of current track
+            #     # if self.tracks is empty, we assume
+            #     # that the first track added to self.tracks must
+            #     # be the first track of the album
+            #     # but we leave the current track playing until
+            #     # it has finished (per default; if we want to skip
+            #     # the currently playing track: "Next" button)
+            #
+            #     # next_album_track = self.tracks[-1].next_album_track
+            #     # if next_album_track is None:
+            #     #     # add first track of random album because we
+            #     #     # have reached the last track of the current album
+            #     #     random_album = self.requested_album_id or random.choice(Album.objects.all())
+            #     #     album_tracks = DjangoTrack.objects.filter(album=random_album)
+            #     #     return album_tracks[0]
+            #     # else:
+            #     #     return next_album_track
+            #
+            #     # playing_track = self.playing_track.django_track
+            #     next_track = self.playing_track.next_album_track
+            #     # next_track = DjangoTrack.objects.get(id=next_track_id)
+            #     if next_track is not None:
+            #         return next_track
+            #     else:
+            #         random_album = random.choice(Album.objects.all())
+            #         album_tracks = DjangoTrack.objects.filter(album=random_album)
+            #         next_track = album_tracks[0]
+            #         return next_track
+            #
+            #     # album = DjangoTrack.objects.get(id=playing_track_id).album
+            #     #
+            #     # if next_track.album != album:
+            #     #     random_album = random.choice(Album.objects.all())
+            #     #     album_tracks = DjangoTrack.objects.filter(album=random_album)
+            #     #     next_track = album_tracks[0]
+            #
+            #     # return next_track
 
-                return next_track
-
-        return None
+        raise "no next track"
 
     def kill_loading_process(self):
         # if self.loading_track is not None:
