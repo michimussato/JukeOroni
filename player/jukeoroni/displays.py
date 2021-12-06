@@ -12,6 +12,7 @@ from player.jukeoroni.settings import (
     GLOBAL_LOGGING_LEVEL,
     # RADIO_ICON_IMAGE,
     SMALL_WIDGET_SIZE,
+    DRAW_HOST_INFO,
 )
 from player.jukeoroni.images import Resource
 
@@ -173,6 +174,24 @@ def buttons_img_overlay(labels, gradient_color=None):
     return comp_buttons
 
 
+def host_info():
+    # host info
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        s.connect(("8.8.8.8", 80))
+        ip = s.getsockname()[0]
+    except OSError:
+        ip = 'N/A'
+    finally:
+        s.close()
+
+    hostname = socket.gethostname()
+
+    host_info = f'{str(hostname)} ({str(ip)})'
+
+    return host_info
+
+
 class Layout:
     _clock = Clock()
     radar = Radar()
@@ -220,30 +239,20 @@ class Standby(Layout):
 
         bg.paste(buttons_overlay, box=(0, 0), mask=buttons_overlay)
 
-        # host info
-        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        try:
-            s.connect(("8.8.8.8", 80))
-            ip = s.getsockname()[0]
-        except OSError:
-            ip = 'N/A'
-        finally:
-            s.close()
+        if DRAW_HOST_INFO:
+            _host_info = host_info()
 
-        hostname = socket.gethostname()
+            font_size = 16
+            font = ImageFont.truetype(r'/data/django/jukeoroni/player/static/arial_narrow.ttf', size=font_size)
+            length = font.getlength(_host_info)
 
-        host_info = f'{str(hostname)} ({str(ip)})'
+            widget_ip_overlay = Image.new(mode='RGBA', size=bg.size, color=(0, 0, 0, 0))
+            draw_ip = ImageDraw.Draw(widget_ip_overlay, mode='RGBA')
 
-        font_size = 16
-        font = ImageFont.truetype(r'/data/django/jukeoroni/player/static/arial_narrow.ttf', size=font_size)
-        length = font.getlength(host_info)
+            draw_ip.text((round(widget_ip_overlay.size[0] - length - BORDER), 0), _host_info, fill=(255, 255, 255, 255),
+                         font=font)
 
-        widget_ip_overlay = Image.new(mode='RGBA', size=bg.size, color=(0, 0, 0, 0))
-        draw_ip = ImageDraw.Draw(widget_ip_overlay, mode='RGBA')
-
-        draw_ip.text((round(widget_ip_overlay.size[0] - length), 0), host_info, fill=(255, 255, 255, 255), font=font)
-
-        bg = Image.alpha_composite(bg, widget_ip_overlay)
+            bg = Image.alpha_composite(bg, widget_ip_overlay)
 
         return bg
 
@@ -398,6 +407,21 @@ Exception Value: broken PNG file (chunk b"Em\xd5'")
 
         bg.paste(buttons_overlay, box=(0, 0), mask=buttons_overlay)
 
+        if DRAW_HOST_INFO:
+
+            _host_info = host_info()
+
+            font_size = 16
+            font = ImageFont.truetype(r'/data/django/jukeoroni/player/static/arial_narrow.ttf', size=font_size)
+            length = font.getlength(_host_info)
+
+            widget_ip_overlay = Image.new(mode='RGBA', size=bg.size, color=(0, 0, 0, 0))
+            draw_ip = ImageDraw.Draw(widget_ip_overlay, mode='RGBA')
+
+            draw_ip.text((round(widget_ip_overlay.size[0] - length - BORDER), 0), _host_info, fill=(255, 255, 255, 255), font=font)
+
+            bg = Image.alpha_composite(bg, widget_ip_overlay)
+
         return bg
 
 
@@ -463,6 +487,21 @@ class Radio(Layout):
             bg.paste(_radar_image, box=_radar_bottom_right_centered, mask=_radar_image)
 
         bg.paste(buttons_overlay, box=(0, 0), mask=buttons_overlay)
+
+        if DRAW_HOST_INFO:
+            _host_info = host_info()
+
+            font_size = 16
+            font = ImageFont.truetype(r'/data/django/jukeoroni/player/static/arial_narrow.ttf', size=font_size)
+            length = font.getlength(_host_info)
+
+            widget_ip_overlay = Image.new(mode='RGBA', size=bg.size, color=(0, 0, 0, 0))
+            draw_ip = ImageDraw.Draw(widget_ip_overlay, mode='RGBA')
+
+            draw_ip.text((round(widget_ip_overlay.size[0] - length - BORDER), 0), _host_info, fill=(255, 255, 255, 255),
+                         font=font)
+
+            bg = Image.alpha_composite(bg, widget_ip_overlay)
 
         return bg
 

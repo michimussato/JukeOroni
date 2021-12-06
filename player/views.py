@@ -1,4 +1,5 @@
 import base64
+import random
 import time
 import io
 from django.http import HttpResponseRedirect, HttpResponse
@@ -6,7 +7,8 @@ from django.views import View
 from player.jukeoroni.jukeoroni import JukeOroni
 from player.models import Album, Channel, Station, Artist, Track
 from player.jukeoroni.settings import (
-    MODES
+    MODES,
+    RANDOM_ALBUMS,
 )
 
 
@@ -78,10 +80,11 @@ class JukeOroniView(View):
             ret += '    <link rel="icon" type="image/x-icon" href="/jukeoroni/favicon.ico">\n'
             ret += '  </head>\n'
             ret += '  <body style="background-color:#{0};">\n'.format(bg_color)
-            ret += '<center><h1>Hello JukeOroni</h1></center>\n'
+            # ret += '<center><h1>Hello JukeOroni</h1></center>\n'
             ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/set_jukebox\';\">Jukebox</button>\n'
             ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/set_radio\';\">Radio</button>\n'
             ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/transmission\';\">Transmission</button>\n'
+            ret += '<hr>\n'
 
             img = jukeoroni.layout_standby.get_layout(labels=jukeoroni.LABELS)
             encoded_img_data = encoded_screen(img)
@@ -378,6 +381,15 @@ class JukeOroniView(View):
         ret += '  </head>\n'
         ret += '  <body style="background-color:#{0};">\n'.format(bg_color)
         ret += '        <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni\';\">Back</button>\n'
+        random_albums = random.sample(list(Album.objects.all()), RANDOM_ALBUMS)
+        if bool(random_albums):
+            ret += f'<hr>'
+            ret += f'<center><h4>Suggestions :)</h4></center>'
+            for random_album in random_albums:
+                ret += '  <div>\n'
+                ret += f'        <button style=\"width:100%\" onclick=\"window.location.href = \'{random_album.id}\';\">{random_album.artist} - {random_album.year} - {random_album.album_title}</button>\n'
+                ret += '  </div>\n'
+            # ret += f'<hr>'
 
         for artist in artists:
             albums = Album.objects.filter(artist=artist).order_by('year', 'album_title')

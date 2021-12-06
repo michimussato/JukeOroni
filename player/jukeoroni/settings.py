@@ -26,6 +26,7 @@ BUTTONS = [5, 6, 16, 24]
 
 # jukeoroni
 _OFF_IMAGE = '/data/django/jukeoroni/player/static/zzz.jpg'
+DRAW_HOST_INFO = True
 PIMORONI_WATCHER_UPDATE_INTERVAL = 1
 SMALL_WIDGET_SIZE = 160
 FFPLAY_CMD = 'ffplay -hide_banner -autoexit -vn -nodisp -loglevel error'.split(' ')
@@ -178,3 +179,7 @@ _MOON_TEXUTRE = '/data/django/jukeoroni/player/static/moon_texture_small.png'
 
 # radar
 RADAR_UPDATE_INTERVAL = 5  # in minutes
+
+
+# web
+RANDOM_ALBUMS = 3
