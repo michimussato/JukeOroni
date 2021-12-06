@@ -581,219 +581,108 @@ box.turn_off()
         #  to start clean, even if the track
         #  is almost fully loaded
 
+        next_track = None
+
         # Random mode
         if self.loader_mode == 'random':
+            LOG.info('Getting next track in random mode...')
             tracks = self.track_list
             if not bool(tracks):
+                LOG.debug(f'JukeBox tracklist is empty! Returning None.')
                 return None
             next_track = random.choice(tracks)
+            LOG.info(f'Next track is: {next_track}.')
             return next_track
 
         # Album mode
         elif self.loader_mode == 'album':
+            LOG.info('Getting next track in album mode...')
 
-            # if self.playing_track is None and not bool(self.tracks) or self.requested_album_id is not None:
             if self.requested_album_id is not None:
+                LOG.info(f'Next track with specified album id: {self.requested_album_id} ({Album.objects.get(id=self.requested_album_id)})')
 
-                # random_album = self.requested_album_id or random.choice(Album.objects.all())
                 album_tracks = DjangoTrack.objects.filter(album=self.requested_album_id)
-                next_track = JukeboxTrack(album_tracks[0])
+                _next_track = JukeboxTrack(album_tracks[0])
+                next_track = _next_track.first_album_track
+                LOG.info(f'Returning next track: {_next_track}')
                 self.requested_album_id = None
                 self._need_first_album_track = False
-                return next_track.first_album_track
+
+                return next_track
 
             if self._need_first_album_track:
                 LOG.info("First album track requested...")
                 self._need_first_album_track = False
-                # if self.playing_track is not None:
-                if self.playing_track.is_first_album_track:
-                    LOG.warning("Playing track is first. Returning second...")
-                    ret = self.playing_track.next_album_track
-                    # return self.playing_track.next_album_track
+                if self.playing_track is not None:
+                    LOG.info("Track is playing...")
+                    if self.playing_track.is_first_album_track:
+                        LOG.info("Currently playing track is first of album. Returning second...")
+                        next_track = self.playing_track.next_album_track
+                    else:
+                        LOG.info("Returning first...")
+                        next_track = self.playing_track.first_album_track
+                    LOG.info(next_track)
+                    return next_track
                 else:
-                    LOG.warning("Returning first...")
-                    ret = self.playing_track.first_album_track
-                LOG.warning(ret)
-                return ret
+                    LOG.info(f'No track is playing.')
+                    if bool(self.tracks):
+                        # This should never happen as long as the queue gets emptied
+                        # by kill_loading_process() FIRST
+                        raise NotImplementedError('This case is not implemented.')
+                        """
+                        LOG.info(f'Queue is not empty. Getting album of first track in queue...')
+                        first_in_queue = self.tracks[0]
+                        """
+                    else:
+                        LOG.info(f'Queue is empty. Getting first track of random album...')
+                        tracks = self.track_list
+                        _next_track = JukeboxTrack(random.choice(tracks))
+                        next_track = _next_track.first_album_track
+                        LOG.info(f'Next track: {next_track}')
+                        return next_track
 
             else:
                 if bool(self.tracks):
+                    # This can happen after a mode change if the queue gets filled with
+                    # content very quickly after it was emptied
+
+                    LOG.info(f'Getting next track based on queue list...')
                     next_album_track = self.tracks[-1].next_album_track
                     if next_album_track is None:
+                        LOG.info(f'Last track in queue is last track of album. Getting first track of random album...')
                         tracks = self.track_list
-                        # if not bool(tracks):
-                        #     return None
-                        next_track = JukeboxTrack(random.choice(tracks))
-                        return next_track.first_album_track
-                        # add first track of random album because we
-                        # have reached the last track of the current album
-                        # random_album = self.requested_album_id or random.choice(Album.objects.all())
-                        # album_tracks = DjangoTrack.objects.filter(album=random_album)
-                        # return album_tracks[0]
+                        _next_track = JukeboxTrack(random.choice(tracks))
+                        next_track = _next_track.first_album_track
+                        LOG.info(f'Next track: {next_track}')
+                        return next_track
                     else:
-                        return next_album_track
+                        next_track = next_album_track
+                        LOG.info(f'Next track: {next_track}')
+                        return next_track
 
                 else:
-                    # if self._need_first_album_track:
-                    # if self.playing_track is not None:
-
-                    # if we switch mode from Rand to Albm,
-                    # we always want the first track of
-                    # the album, no matter what
-                    # if self.requested_album_id is not None:
-                    #     self.requested_album_id = None
+                    LOG.info(f'Queue list is empty. Getting track based on currently playing...')
 
                     first_album_track = self.playing_track.first_album_track
-
-                    # track_id = self.playing_track.django_track.id
-                    # album_id = self.playing_track.django_track.album
-                    # album_tracks = DjangoTrack.objects.filter(album=album_id)
-                    #
-                    # first_track = album_tracks[0]
-                    # first_track_id = first_track.id
-                    self._need_first_album_track = False
+                    LOG.info(f'First album track of playing album track is: {first_album_track}')
 
                     if self.playing_track.django_track == first_album_track:
-                        return self.playing_track.next_album_track
+                        second_album_track = self.playing_track.next_album_track
+                        LOG.info(f'Playing track and first track are the same. Returning next: {second_album_track}')
+                        return second_album_track
                     else:
+                        LOG.info(f'Returing first album track: {first_album_track}')
                         return first_album_track
 
-            # # elif not bool(self.tracks):
-            # #     if self.playing_track is not None:
-            #
-            #
-            #     # # last_track_in_queue = self.tracks[-1].django_track
-            #     # # album_id = last_track_in_queue.album
-            #     # # album_tracks = DjangoTrack.objects.filter(album=album_id)
-            #     # if last_track_in_queue == list(album_tracks)[-1]:
-            #     #     self._need_first_album_track = True
-            #
-            # # if self.playing_track is not None:
-            # #     track_id = self.playing_track.django_track.id
-            # #     album_id = self.playing_track.django_track.album
-            # #     album_tracks = DjangoTrack.objects.filter(album=album_id)
-            # #     if self.playing_track == album_tracks[-1]:
-            # #         self._need_first_album_track = True
-            #
-            # # if self._need_first_album_track and self.playing_track is not None:
-            # #
-            # #     # if we switch mode from Rand to Albm,
-            # #     # we always want the first track of
-            # #     # the album, no matter what
-            # #
-            # #     first_album_track = self.playing_track.first_album_track
-            # #
-            # #     # track_id = self.playing_track.django_track.id
-            # #     # album_id = self.playing_track.django_track.album
-            # #     # album_tracks = DjangoTrack.objects.filter(album=album_id)
-            # #     #
-            # #     # first_track = album_tracks[0]
-            # #     # first_track_id = first_track.id
-            # #     self._need_first_album_track = False
-            # #
-            # #     if self.playing_track.django_track == first_album_track:
-            # #         return self.playing_track.next_album_track
-            # #     else:
-            # #         return first_album_track
-            #     # if track_id != first_track_id:
-            #     #     return first_track
-            #     # else:
-            #     #     # return 2nd track if playing_track is first track of album
-            #     #     second_track = album_tracks[1]
-            #     #     return second_track
-            #
-            # if self.playing_track is None and not bool(self.tracks) or self.requested_album_id is not None:
-            #
-            #     random_album = self.requested_album_id or random.choice(Album.objects.all())
-            #     album_tracks = DjangoTrack.objects.filter(album=random_album)
-            #     next_track = album_tracks[0]
-            #     self.requested_album_id = None
-            #     return next_track
-            #
-            # # if bool(self.tracks):
-            # #     # TODO: if we pressed the Next button too fast,
-            # #     #  self.tracks will be still empty, hence,
-            # #     #  we end up here again unintentionally
-            # #     # we use this case to append the next track
-            # #     # based on the last one in the self.tracks queue
-            # #     # i.e: if playing_track has id 1 and self.tracks
-            # #     # contains id's [2, 3, 4], we want to append
-            # #     # id 5 once a free spot is available
-            # #     # in album mode:
-            # #     # get next track of album of current track
-            # #     previous_track_id = self.tracks[-1].django_track.id
-            # #     album = DjangoTrack.objects.get(id=previous_track_id).album
-            # #
-            # #     if self._need_first_album_track:
-            # #         self._need_first_album_track = False
-            # #         random_album = random.choice(Album.objects.all())
-            # #         album_tracks = DjangoTrack.objects.filter(album=random_album)
-            # #         first_track = album_tracks[0]
-            # #         first_track_id = first_track.id
-            # #         if first_track_id != previous_track_id:
-            # #             return first_track
-            # #         else:
-            # #             second_track = album_tracks[1]
-            # #             return second_track
-            # #
-            # #     next_track = DjangoTrack.objects.get(id=previous_track_id + 1)
-            # #
-            # #     if next_track.album != album:
-            # #         # choose a new random album if next_track is not part
-            # #         # of current album anymore
-            # #         random_album = random.choice(Album.objects.all())
-            # #         album_tracks = DjangoTrack.objects.filter(album=random_album)
-            # #         next_track = album_tracks[0]
-            # #
-            # #     return next_track
-            #
-            # if self.playing_track is not None and not bool(self.tracks):
-            #     LOG.info('playing_track {0}'.format(self.playing_track))
-            #     # in case self.tracks is empty, we want the next
-            #     # track id based on the one that is currently
-            #     # playing
-            #     # in album mode:
-            #     # get first track of album of current track
-            #     # if self.tracks is empty, we assume
-            #     # that the first track added to self.tracks must
-            #     # be the first track of the album
-            #     # but we leave the current track playing until
-            #     # it has finished (per default; if we want to skip
-            #     # the currently playing track: "Next" button)
-            #
-            #     # next_album_track = self.tracks[-1].next_album_track
-            #     # if next_album_track is None:
-            #     #     # add first track of random album because we
-            #     #     # have reached the last track of the current album
-            #     #     random_album = self.requested_album_id or random.choice(Album.objects.all())
-            #     #     album_tracks = DjangoTrack.objects.filter(album=random_album)
-            #     #     return album_tracks[0]
-            #     # else:
-            #     #     return next_album_track
-            #
-            #     # playing_track = self.playing_track.django_track
-            #     next_track = self.playing_track.next_album_track
-            #     # next_track = DjangoTrack.objects.get(id=next_track_id)
-            #     if next_track is not None:
-            #         return next_track
-            #     else:
-            #         random_album = random.choice(Album.objects.all())
-            #         album_tracks = DjangoTrack.objects.filter(album=random_album)
-            #         next_track = album_tracks[0]
-            #         return next_track
-            #
-            #     # album = DjangoTrack.objects.get(id=playing_track_id).album
-            #     #
-            #     # if next_track.album != album:
-            #     #     random_album = random.choice(Album.objects.all())
-            #     #     album_tracks = DjangoTrack.objects.filter(album=random_album)
-            #     #     next_track = album_tracks[0]
-            #
-            #     # return next_track
-
-        raise "no next track"
+        LOG.warning('We have an unexpected condition! No next track!')
+        assert next_track is not None, 'We have an unexpected condition! No next track!'
 
     def kill_loading_process(self):
+        # TODO: we could implement storing the first track in the queue
+        #  that gets emptied here to get stored somewhere so that
+        #  we can switch from random to album mode based on the
+        #  the first track in the queue if nothing is playing
+        #  (track index should suffice)
         # if self.loading_track is not None:
             # LOG.info('loading_process: {0}'.format(self.loading_track._))
         # LOG.info('killing self.loading_process and resetting it to None')

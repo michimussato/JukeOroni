@@ -365,14 +365,15 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
                         self.eject()
                         if self.jukebox.loader_mode != 'random':
                             self.jukebox.set_loader_mode_random()
-                        self.set_display_jukebox()
+                        # self.set_display_jukebox()
 
                     elif self.mode == MODES['jukebox']['standby']['album']:
                         self.stop()
                         self.eject()
                         if self.jukebox.loader_mode != 'album':
                             self.jukebox.set_loader_mode_album()
-                        self.set_display_jukebox()
+
+                    self.set_display_jukebox()
 
                 else:
                     if self._current_time != new_time.strftime('%H:%M'):
@@ -387,19 +388,30 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
 
                 # Make sure, jukebox keeps playing if in mode without
                 # considering the update_mode flag
-                if update_mode:
-                    update_mode = False
+
                 if self.mode == MODES['jukebox']['on_air']['random']:
                     if self.jukebox.loader_mode != 'random':
                         self.jukebox.set_loader_mode_random()
-                    self.play_jukebox()
+                    # self.play_jukebox()
                     # LOG.info(f'Playing: {self.jukebox.playing_track}')
 
                 elif self.mode == MODES['jukebox']['on_air']['album']:
                     if self.jukebox.loader_mode != 'album':
                         self.jukebox.set_loader_mode_album()
-                    self.play_jukebox()
-                    # LOG.info(f'Playing: {self.jukebox.playing_track}')
+
+                self.play_jukebox()
+                # LOG.info(f'Playing: {self.jukebox.playing_track}')
+
+                if update_mode:
+                    update_mode = False
+                    self.set_display_jukebox()
+
+                else:
+                    if self._current_time != new_time.strftime('%H:%M'):
+                        if self._current_time is None or (int(new_time.strftime('%H:%M')[-2:])) % CLOCK_UPDATE_INTERVAL == 0:
+                            LOG.info('Display/Clock update.')
+                            self.set_display_jukebox()
+                            self._current_time = new_time.strftime('%H:%M')
 
             time.sleep(STATE_WATCHER_CADENCE)
 
