@@ -273,7 +273,9 @@ box.set_auto_update_tracklist_on()
 
 box.turn_off()
     """
-    def __init__(self, jukeoroni):
+    def __init__(self, jukeoroni=None):
+
+        LOG.warning('No jukeoroni specified. Functionality is limited.')
 
         self.on = False
         self.loader_mode = 'random'
@@ -408,8 +410,9 @@ box.turn_off()
         _albums = []
         _artists = []
         for path, dirs, files in os.walk(MUSIC_DIR):
-            if not self.on:
-                return
+            # if not self.on:
+            #     LOG.warning('JukeBox is turned off.')
+            #     return
             album = os.path.basename(path)
             try:
                 # TODO: maybe use a better character
@@ -430,6 +433,7 @@ box.turn_off()
                 model_artist = query_artist[0]  # name is unique, so index 0 is the correct model
                 # if str(model_artist.name).lower() != 'soundtrack':
                 if model_artist.cover_online is None:
+                    LOG.info(f'No online cover for artist {model_artist} defined. Trying to get one...')
                     cover_online = get_artist(discogs_client, artist)
                     if cover_online:
                         model_artist.cover_online = cover_online
@@ -463,24 +467,28 @@ box.turn_off()
 
             if bool(query_album):
                 model_album = query_album[0]
+                LOG.info(f'Album {model_album} found in DB.')
                 model_album.cover = img_path
                 if model_album.cover_online is None:
+                    LOG.info(f'No online cover for album {model_album} defined. Trying to get one...')
                     cover_online = get_album(discogs_client, artist, title_stripped)
                     if cover_online:
                         model_album.cover_online = cover_online
+                    else:
+                        LOG.info('Could not find an online cover.')
             else:
                 cover_online = get_album(discogs_client, artist, title_stripped)
                 model_album = Album(artist=model_artist, album_title=title, year=year, cover=img_path, cover_online=cover_online)
+                LOG.info(f'Album {model_album} not found in DB.')
 
             try:
                 model_album.save()
                 _albums.append(album)
+                LOG.info(f'Album {model_album} correctly saved in DB.')
             except Exception:
                 LOG.exception(f'Cannot save album model {title} by {artist}:')
 
             for _file in files:
-                if not self.on:
-                    return
                 if os.path.splitext(_file)[1] in AUDIO_FILES:
                     file_path = os.path.join(path, _file)
                     query_track = DjangoTrack.objects.filter(audio_source__exact=file_path)
@@ -516,12 +524,7 @@ box.turn_off()
         django_albums = Album.objects.all()
         for django_album in django_albums:
             occurrences = [i for i in _albums if str(django_album.album_title).lower() in i.lower()]
-            # if len(occurrences) > 1:
-                # LOG.warning('Multiple albums with same nam')
             if len(occurrences) == 0:
-            # if django_album.album_title not in _albums:
-            #     LOG.info(django_album.album_title)
-            #     LOG.info(_albums)
                 LOG.info(f'Removing album from DB: {django_album}')
                 django_album.delete()
                 LOG.info(f'Album removed from DB: {django_album}')

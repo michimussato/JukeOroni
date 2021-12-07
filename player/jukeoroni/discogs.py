@@ -18,47 +18,32 @@ def get_client():
 
 
 def get_artist(client, artist):
-    results = client.search(artist, type='artist')
-    if not results:
-        results = client.search(unidecode(artist), type='artist')
+    try:
+        results = client.search(artist, type='artist')
+        if not results:
+            results = client.search(unidecode(artist), type='artist')
+    except Exception:
+        LOG.exception(f'discogs could not get results for artist online covers:')
+        return None
     try:
         cover_square = results[0].images[0]['uri150']
         return cover_square
-    except Exception as err:
-        LOG.info(f'discogs could not look up artist: {err}')
+    except Exception:
+        LOG.exception(f'discogs could not look up artist:')
         return None
 
 
 def get_album(client, artist, album):
-    # print(f'{client}, {artist}, {album}')
-    # print(f'{client}, {artist}, {album}')
-    # print(f'{client}, {artist}, {album}')
-    # print(f'{client}, {artist}, {album}')
-    # print(f'{client}, {artist}, {album}')
-    # print(f'{client}, {artist}, {album}')
-    # print(f'{client}, {artist}, {album}')
-    results = client.search(album, type='release', artist=artist)
-    # print(f'{results}')
-    # print(f'{results}')
-    # print(f'{results}')
-    # print(f'{results}')
-    # print(f'{results}')
-    # print(f'{results}')
-    # print(f'{results}')
-    # print(f'{results}')
-    if not results:
-        results = client.search(album, type='release', artist=unidecode(artist))
-        # print(f'{results}')
-        # print(f'{results}')
-        # print(f'{results}')
-        # print(f'{results}')
-        # print(f'{results}')
-        # print(f'{results}')
-        # print(f'{results}')
-
+    try:
+        results = client.search(album, type='release', artist=artist)
+        if not results:
+            results = client.search(album, type='release', artist=unidecode(artist))
+    except Exception:
+        LOG.exception(f'discogs could not get results for album online covers ({album} by {artist}):')
+        return None
     try:
         cover_square = results[0].images[0]['uri150']
         return cover_square
-    except Exception as err:
-        LOG.info(f'discogs could not look up album {album} (by {artist}): {err}')
+    except Exception:
+        LOG.exception(f'discogs could not look up album {album} (by {artist}):')
         return None

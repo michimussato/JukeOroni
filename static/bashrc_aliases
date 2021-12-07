@@ -6,10 +6,17 @@ export PS1="[\u@\h \W]\[\033[00;32m\]\$(git_branch)\[\033[00m\]\$ "
 
 
 alias speedo='speedometer -r wlan0 -t wlan0'
-alias apache_restart_and_log='source /data/venv/bin/activate && cd /data/django/jukeoroni/ && git pull && sudo systemctl restart apache2 && tail -f /var/log/apache2/error.log'
-alias apache_stop='source /data/venv/bin/activate && cd /data/django/jukeoroni/ && git pull && sudo systemctl stop apache2'
-alias apache_error_log='tail -f /var/log/apache2/error.log'
-alias django_shell='source /data/venv/bin/activate && cd /data/django/jukeoroni && git pull && python manage.py shell'
-alias django_test='source /data/venv/bin/activate && cd /data/django/jukeoroni && git pull && python manage.py test'
+#alias nginx_restart_and_log='source /data/venv/bin/activate && cd /data/django/jukeoroni/ && git pull && sudo systemctl restart nginx.service && tail -f /var/log/daemon.log'
+alias nginx_restart_and_log='source /data/venv/bin/activate && cd /data/django/jukeoroni/ && sudo systemctl restart nginx.service && tail -f /var/log/daemon.log'
+#alias nginx_stop='source /data/venv/bin/activate && cd /data/django/jukeoroni/ && git pull && sudo systemctl stop nginx.service'
+alias nginx_stop='source /data/venv/bin/activate && cd /data/django/jukeoroni/ && sudo systemctl stop nginx.service'
+alias nginx_start='source /data/venv/bin/activate && cd /data/django/jukeoroni/ && sudo systemctl restart nginx.service'
+alias nginx_restart=nginx_start
+alias nginx_error_log='tail -f /var/log/daemon.log'
+#alias django_shell='source /data/venv/bin/activate && cd /data/django/jukeoroni && git pull && python manage.py shell'
+alias django_shell='source /data/venv/bin/activate && cd /data/django/jukeoroni && python manage.py shell'
+#alias django_test='source /data/venv/bin/activate && cd /data/django/jukeoroni && git pull && python manage.py test'
+alias django_test='source /data/venv/bin/activate && cd /data/django/jukeoroni  && python manage.py test'
+alias git_pull_jukeoroni='source /data/venv/bin/activate && cd /data/django/jukeoroni && git pull'
 alias checkout_f_develop='cd /data/django/jukeoroni && git checkout -f develop'
 alias checkout_f_develop_old='cd /data/django/jukeoroni && git checkout -f develop_old'
