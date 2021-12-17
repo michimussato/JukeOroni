@@ -22,6 +22,7 @@ from django.shortcuts import redirect
 urlpatterns = [
     path('jukeoroni/', include('player.urls')),
     path('transmission/', include('transmission.urls')),
+    path('webmin/', include('webmin.urls')),
     path('admin/', admin.site.urls),
     # path('', include('player.urls')),  # custom
     path('', lambda req: redirect('jukeoroni/')),  # custom

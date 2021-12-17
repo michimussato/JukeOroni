@@ -84,6 +84,7 @@ class JukeOroniView(View):
             ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/set_jukebox\';\">Jukebox</button>\n'
             ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/set_radio\';\">Radio</button>\n'
             ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/transmission\';\">Transmission</button>\n'
+            ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/webmin\';\">Webmin</button>\n'
             ret += '<hr>\n'
 
             img = jukeoroni.layout_standby.get_layout(labels=jukeoroni.LABELS)
