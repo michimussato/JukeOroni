@@ -534,3 +534,10 @@ class Off(Layout):
         bg.paste(buttons_overlay, box=(0, 0), mask=buttons_overlay)
 
         return bg
+
+
+class Meditationbox(Layout):
+    # bg_color = (0, 0, 255, 255)
+
+    def get_layout(self, labels, cover, title):
+        raise NotImplementedError

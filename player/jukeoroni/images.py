@@ -28,6 +28,11 @@ class Resource(object):
         return Image.open(_OFF_IMAGE)
 
     @property
+    def DEFAULT_ALBUM_COVER(self):
+        # TODO: add default album cover image
+        return Image.open(_OFF_IMAGE)
+
+    @property
     def RADIO_ICON_IMAGE(self):
         return Image.open(_RADIO_ICON_IMAGE)
 

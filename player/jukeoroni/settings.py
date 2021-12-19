@@ -12,8 +12,12 @@ LOG.setLevel(GLOBAL_LOGGING_LEVEL)
 # media_crawler
 _ONE_HOUR = 3600
 DEFAULT_TRACKLIST_REGEN_INTERVAL = _ONE_HOUR * 24  # in hours
-DATA_SOURCE = ['googledrive', 'usb_hdd'][1]  # https://raspberrytips.com/mount-usb-drive-raspberry-pi/
+DATA_SOURCES = ['usb_hdd', 'googledrive']
+DATA_SOURCE = DATA_SOURCES[0]  # https://raspberrytips.com/mount-usb-drive-raspberry-pi/
 MEDIA_ROOT = f'/data/{DATA_SOURCE}/media/audio/'
+# if not os.path.exists(MEDIA_ROOT):
+#     DATA_SOURCE = DATA_SOURCES[1]  # Fallback to google drive if usb drive is not available
+#     MEDIA_ROOT = f'/data/{DATA_SOURCE}/media/audio/'
 MUSIC_DIR = os.path.join(MEDIA_ROOT, 'music')
 FAULTY_ALBUMS = os.path.join(MEDIA_ROOT, 'faulty_albums_test.txt')
 MISSING_COVERS_FILE = os.path.join(MEDIA_ROOT, 'missing_covers_test.txt')
@@ -151,10 +155,10 @@ MODES = {
 
 
 # box
-CACHE_TRACKS = False
-CACHE_COVERS = True
+CACHE_TRACKS = [True, False][1] if DATA_SOURCE == DATA_SOURCES[0] else [True, False][0]
+CACHE_COVERS = [True, False][0]
 MAX_CACHED_FILES = 3
-COVER_ONLINE_PREFERENCE = True
+COVER_ONLINE_PREFERENCE = [True, False][1]
 _JUKEBOX_ICON_IMAGE = '/data/django/jukeoroni/player/static/jukebox.png'
 _JUKEBOX_LOADING_IMAGE = '/data/django/jukeoroni/player/static/loading.jpg'
 _JUKEBOX_ON_AIR_DEFAULT_IMAGE = '/data/django/jukeoroni/player/static/jukebox_on_air_default.jpg'

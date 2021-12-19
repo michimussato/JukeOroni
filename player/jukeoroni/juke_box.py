@@ -38,6 +38,8 @@ class JukeboxTrack(object):
     def __init__(self, django_track, cached=True):
         self.django_track = django_track
         self.path = self.django_track.audio_source
+        self.path = os.path.join(MUSIC_DIR, self.django_track.audio_source)
+        # self.path = u'{0}'.format(str(os.path.join(MUSIC_DIR, self.django_track.audio_source)))
         self.cached = cached
         self.cache_tmp = None
         self.playing_proc = None
@@ -113,15 +115,24 @@ class JukeboxTrack(object):
     def _cache_cover_album(self):
         if self.album.cover is not None:
             LOG.info(f'Loading offline album cover for Track "{self}"...')
-            self._cover_album = Image.open(self.album.cover)
+            self._cover_album = Image.open(os.path.join(MUSIC_DIR, self.album.cover))
         else:
             LOG.info(f'Offline album cover for Track "{self}" is None...')
 
-        if COVER_ONLINE_PREFERENCE and self.album.cover_online is not None or self.album.cover is None:
+        if not COVER_ONLINE_PREFERENCE and self.album.cover is not None:
+            LOG.info('Loading offline album cover...')
+            self._cover_album = Image.open(os.path.join(MUSIC_DIR, self.album.cover))
+
+        elif COVER_ONLINE_PREFERENCE and self.album.cover_online is not None or self.album.cover is None:
             LOG.info(f'Loading online album cover for Track "{self}"...')
             _cover_album_online = Resource().from_url(url=self.album.cover_online)
             if _cover_album_online is not None:
                 self._cover_album = _cover_album_online
+
+        else:
+            self._cover_album = Resource().DEFAULT_ALBUM_COVER
+
+        # else:
 
         # if COVER_ONLINE_PREFERENCE:
         #     if self.album.cover_online is not None:
@@ -211,6 +222,16 @@ class JukeboxTrack(object):
     @property
     def size(self):
         if self._size is None:
+            LOG.error(self.path)
+            LOG.error(self.path)
+            LOG.error(self.path)
+            LOG.error(self.path)
+            LOG.error(self.path)
+            LOG.error(self.path)
+            LOG.error(self.path)
+            LOG.error(self.path)
+            LOG.error(self.path)
+            LOG.error(self.path)
             self._size = os.path.getsize(self.path)
         return self._size
 
@@ -275,12 +296,12 @@ box.turn_off()
     """
     def __init__(self, jukeoroni=None):
 
-        LOG.warning('No jukeoroni specified. Functionality is limited.')
-
         self.on = False
         self.loader_mode = 'random'
 
         self.jukeoroni = jukeoroni
+        if self.jukeoroni is None:
+            LOG.warning('No jukeoroni specified. Functionality is limited.')
 
         self.layout = JukeboxLayout()
         self._loading_display = False
@@ -413,7 +434,13 @@ box.turn_off()
             # if not self.on:
             #     LOG.warning('JukeBox is turned off.')
             #     return
-            album = os.path.basename(path)
+
+            # Remove part of path that can be retrieved from settings (MUSIC_DIR)
+            # MUSIC_DIR:  /data/usb_hdd/media/audio/music
+            # path:       /data/usb_hdd/media/audio/music/on_device/HIM - 2008 - Razorblade Romance [DSD128]/
+            _path = os.path.relpath(path, MUSIC_DIR)
+            # _path =
+            album = os.path.basename(_path)
             try:
                 # TODO: maybe use a better character
                 artist, year, title = album.split(' - ')
@@ -447,12 +474,12 @@ box.turn_off()
             if artist not in _artists:
                 _artists.append(artist)
 
-            cover_root = path
+            cover_root = _path
             jpg_path = os.path.join(cover_root, 'cover.jpg')
             png_path = os.path.join(cover_root, 'cover.png')
-            if os.path.exists(jpg_path):
+            if os.path.exists(os.path.join(MUSIC_DIR, jpg_path)):
                 img_path = jpg_path
-            elif os.path.exists(png_path):
+            elif os.path.exists(os.path.join(MUSIC_DIR, png_path)):
                 img_path = png_path
             else:
                 # with open(MISSING_COVERS_FILE, 'a+') as f:
@@ -490,7 +517,7 @@ box.turn_off()
 
             for _file in files:
                 if os.path.splitext(_file)[1] in AUDIO_FILES:
-                    file_path = os.path.join(path, _file)
+                    file_path = os.path.join(_path, _file)
                     query_track = DjangoTrack.objects.filter(audio_source__exact=file_path)
                     if len(query_track) > 1:
                         LOG.warning(f'Track in DB multiple times: {file_path}')
@@ -534,6 +561,28 @@ box.turn_off()
             if django_artist.name not in _artists:
                 LOG.info(f'Removing artist from DB: {django_artist}')
                 django_artist.delete()
+
+                """
+AC/DC on OSX (HFS)
+ACDC on /data/usb_hdd and AC:DC on /data/googledrive
+
+Dec 19 09:25:01 jukeoroni gunicorn[18042]: Exception in thread Track List Generator Process:
+Dec 19 09:25:01 jukeoroni gunicorn[18042]: Traceback (most recent call last):
+Dec 19 09:25:01 jukeoroni gunicorn[18042]:   File "/usr/lib/python3.7/threading.py", line 917, in _bootstrap_inner
+Dec 19 09:25:01 jukeoroni gunicorn[18042]:     self.run()
+Dec 19 09:25:01 jukeoroni gunicorn[18042]:   File "/usr/lib/python3.7/threading.py", line 865, in run
+Dec 19 09:25:01 jukeoroni gunicorn[18042]:     self._target(*self._args, **self._kwargs)
+Dec 19 09:25:01 jukeoroni gunicorn[18042]:   File "/data/django/jukeoroni/player/jukeoroni/juke_box.py", line 416, in track_list_generator_task
+Dec 19 09:25:01 jukeoroni gunicorn[18042]:     self.create_update_track_list()
+Dec 19 09:25:01 jukeoroni gunicorn[18042]:   File "/data/django/jukeoroni/player/jukeoroni/juke_box.py", line 562, in create_update_track_list
+Dec 19 09:25:01 jukeoroni gunicorn[18042]:     django_artist.delete()
+Dec 19 09:25:01 jukeoroni gunicorn[18042]:   File "/data/venv/lib/python3.7/site-packages/django/db/models/base.py", line 953, in delete
+Dec 19 09:25:01 jukeoroni gunicorn[18042]:     collector.collect([self], keep_parents=keep_parents)
+Dec 19 09:25:01 jukeoroni gunicorn[18042]:   File "/data/venv/lib/python3.7/site-packages/django/db/models/deletion.py", line 308, in collect
+Dec 19 09:25:01 jukeoroni gunicorn[18042]:     set(chain.from_iterable(protected_objects.values())),
+Dec 19 09:25:01 jukeoroni gunicorn[18042]: django.db.models.deletion.ProtectedError: ("Cannot delete some instances of model 'Artist' because they are referenced through protected foreign keys: 'Album.artist'.", {Back In Black (Master Series V) [DSD128]})
+                """
+
                 LOG.info(f'Artist removed from DB: {django_artist}')
 
         LOG.info(f'Finished: track list generated successfully: {len(_files)} tracks, {len(_albums)} albums and {len(_artists)} artists found')
@@ -578,11 +627,8 @@ box.turn_off()
         return DjangoTrack.objects.all()
 
     def get_next_track(self):
-        # TODO: we cannot tell which track it is
-        #  that is currently being loaded.
-        #  because of this, we always have
-        #  to start clean, even if the track
-        #  is almost fully loaded
+        # TODO: it could happen that the file path is not up to date
+        #  so a if file does not exist check must be implemented
 
         next_track = None
 
