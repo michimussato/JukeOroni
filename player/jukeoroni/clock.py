@@ -302,6 +302,23 @@ class Clock(object):
             _moon['rise'] = moon_rise
 
             """
+Traceback (most recent call last):
+  File "/data/venv/lib/python3.7/site-packages/django/core/handlers/exception.py", line 47, in inner
+    response = get_response(request)
+  File "/data/venv/lib/python3.7/site-packages/django/core/handlers/base.py", line 181, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/data/django/jukeoroni/player/views.py", line 468, in radio_index
+    img = jukeoroni.layout_radio.get_layout(labels=jukeoroni.LABELS, cover=jukeoroni.radio.cover, title=jukeoroni.radio.stream_title)
+  File "/data/django/jukeoroni/player/jukeoroni/displays.py", line 468, in get_layout
+    _clock = self._clock.get_clock(size=SMALL_WIDGET_SIZE, draw_logo=False, draw_moon=True, draw_moon_phase=True, draw_date=False, hours=24, draw_sun=True, square=True)
+  File "/data/django/jukeoroni/player/jukeoroni/clock.py", line 302, in get_clock
+    _moon['rise'] = moon_rise
+
+Exception Type: UnboundLocalError at /jukeoroni/radio/
+Exception Value: local variable 'moon_rise' referenced before assignment
+            """
+
+            """
 Nov 12 00:23:06 jukeoroni gunicorn[24292]: [11-12-2021 00:23:06] [INFO] [MainThread|3069790928] [player.jukeoroni.clock]: Sunrise: 07:24
 Nov 12 00:23:06 jukeoroni gunicorn[24292]: [11-12-2021 00:23:06] [INFO] [MainThread|3069790928] [player.jukeoroni.clock]: Sunset: 16:55
 Nov 12 00:23:06 jukeoroni gunicorn[24292]: [11-12-2021 00:23:06] [DEBUG] [MainThread|3069790928] [player.jukeoroni.clock]: Moon Yesterday: {'rise': datetime.datetime(2021, 11, 11, 23, 22, 2, 101589), 'set': datetime.datetime(2021, 11, 11, 22, 48, 46, 40598)}

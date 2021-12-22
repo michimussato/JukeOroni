@@ -11,7 +11,7 @@ LOG.setLevel(GLOBAL_LOGGING_LEVEL)
 
 # media_crawler
 _ONE_HOUR = 3600
-DEFAULT_TRACKLIST_REGEN_INTERVAL = _ONE_HOUR * 24  # in hours
+DEFAULT_TRACKLIST_REGEN_INTERVAL = _ONE_HOUR * 6  # in hours
 DATA_SOURCES = ['usb_hdd', 'googledrive']
 DATA_SOURCE = DATA_SOURCES[0]  # https://raspberrytips.com/mount-usb-drive-raspberry-pi/
 MEDIA_ROOT = f'/data/{DATA_SOURCE}/media/audio/'
