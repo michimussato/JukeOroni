@@ -12,6 +12,7 @@ urlpatterns = [
     path('set_radio/', JukeOroniView.set_radio, name='set mode radio'),
     path('set_standby/', JukeOroniView.set_standby, name='set mode standby'),
     path('jukebox/play_next/', JukeOroniView.play_next, name='player_play_next'),
+    path('jukebox/update_track_list/', JukeOroniView.update_track_list, name='update_track_list'),
 
     path('jukebox/stop/', JukeOroniView.stop, name='player_stop'),
     path('pause/', JukeOroniView.pause, name='pause'),

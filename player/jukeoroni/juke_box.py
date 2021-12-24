@@ -222,16 +222,16 @@ class JukeboxTrack(object):
     @property
     def size(self):
         if self._size is None:
-            LOG.error(self.path)
-            LOG.error(self.path)
-            LOG.error(self.path)
-            LOG.error(self.path)
-            LOG.error(self.path)
-            LOG.error(self.path)
-            LOG.error(self.path)
-            LOG.error(self.path)
-            LOG.error(self.path)
-            LOG.error(self.path)
+            # LOG.error(self.path)
+            # LOG.error(self.path)
+            # LOG.error(self.path)
+            # LOG.error(self.path)
+            # LOG.error(self.path)
+            # LOG.error(self.path)
+            # LOG.error(self.path)
+            # LOG.error(self.path)
+            # LOG.error(self.path)
+            # LOG.error(self.path)
             self._size = os.path.getsize(self.path)
         return self._size
 
@@ -316,6 +316,9 @@ box.turn_off()
         self.tracks = []
         # self.loading_process = None
         self.loading_track = None
+
+        self.run_tracklist_generator_flag = False
+        self.track_list_updater_running = False
 
         self._track_list_generator_thread = None
         self._track_loader_watcher_thread = None
@@ -411,10 +414,15 @@ box.turn_off()
             if not self._auto_update_tracklist:
                 _waited = None
             else:
-                if _waited is None or _waited % DEFAULT_TRACKLIST_REGEN_INTERVAL == 0:
+                if _waited is None \
+                        or _waited % DEFAULT_TRACKLIST_REGEN_INTERVAL == 0\
+                        or self.run_tracklist_generator_flag:
                     _waited = 0
                     if self._auto_update_tracklist:
+                        self.track_list_updater_running = True
                         self.create_update_track_list()
+                    self.run_tracklist_generator_flag = False
+                    self.track_list_updater_running = False
                     # instead of putting it to sleep, we
                     # could schedule it maybe (so that it can finish an
                     # restart at some given time again)
@@ -451,6 +459,8 @@ box.turn_off()
                 LOG.exception(f'Not a valid album path: {album}:')
                 continue
 
+
+            # COVER ARTIST
             cover_online = None
             # TODO: if str(artist).lower() != 'soundtrack':  # Soundtracks have different artists, so no need to add artist cover
             query_artist = Artist.objects.filter(name__exact=artist)
@@ -473,6 +483,7 @@ box.turn_off()
 
             if artist not in _artists:
                 _artists.append(artist)
+            # COVER ARTIST
 
             cover_root = _path
             jpg_path = os.path.join(cover_root, 'cover.jpg')
@@ -492,6 +503,8 @@ box.turn_off()
             title_stripped = title.split(' [')[0]
             query_album = Album.objects.filter(artist=model_artist, album_title__exact=title, year__exact=year)
 
+
+            # COVER ALBUM
             if bool(query_album):
                 model_album = query_album[0]
                 LOG.info(f'Album {model_album} found in DB.')
@@ -514,6 +527,8 @@ box.turn_off()
                 LOG.info(f'Album {model_album} correctly saved in DB.')
             except Exception:
                 LOG.exception(f'Cannot save album model {title} by {artist}:')
+            # COVER ALBUM
+
 
             for _file in files:
                 if os.path.splitext(_file)[1] in AUDIO_FILES:

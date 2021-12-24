@@ -197,6 +197,12 @@ class JukeOroniView(View):
         ret += f'</table></center>'
         ret += f'</ol>'
         ret += f'<hr>'
+
+        if jukeoroni.jukebox.track_list_updater_running:
+            ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/jukebox/update_track_list\';\"  disabled>Update Track List: {0}</button>\n'.format('Launch Track List Updater')
+        else:
+            ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/jukebox/update_track_list\';\">Update Track List: {0}</button>\n'.format('Launch Track List Updater')
+
         ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/jukebox/switch_mode\';\">Mode: {0}</button>\n'.format(str(jukeoroni.jukebox.loader_mode))
         ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/jukebox/play_next\';\">{0}</button>\n'.format(jukeoroni.mode['buttons']['0X00'])
 
@@ -220,6 +226,13 @@ class JukeOroniView(View):
         ret += '  </body>\n'
         ret += '</html>\n'
         return HttpResponse(ret)
+
+    def update_track_list(self):
+        global jukeoroni
+
+        jukeoroni.jukebox.run_tracklist_generator_flag = True
+
+        return HttpResponseRedirect('/jukeoroni')
 
     def pause(self):
         global jukeoroni
