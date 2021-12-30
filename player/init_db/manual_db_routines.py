@@ -12,6 +12,9 @@
 
 # radio srf
 # https://www.broadcast.ch/fileadmin/kundendaten/Dokumente/Internet_Streaming/2021_01_links_for_streaming_internet_radio_de_fr_it_V006.pdf
+
+# swiss streams
+# https://www.linker.ch/eigenlink/radiosender.htm
 channel_list = [
     ("BOBs 100", "100", True, "http://bob.hoerradar.de/radiobob-100-mp3-hq", None, False),
     ("BOBs 101", "101", True, "http://bob.hoerradar.de/radiobob-101-mp3-hq", None, False),

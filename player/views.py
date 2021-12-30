@@ -2,6 +2,8 @@ import base64
 import random
 import time
 import io
+from django.db.models import CharField
+from django.db.models.functions import Lower
 from django.http import HttpResponseRedirect, HttpResponse
 from django.views import View
 from player.jukeoroni.jukeoroni import JukeOroni
@@ -384,7 +386,9 @@ class JukeOroniView(View):
 
             return HttpResponseRedirect('/jukeoroni')
 
-        artists = Artist.objects.all().order_by('name')
+        # artists = Artist.objects.all().order_by('name')
+        # sort artist list by name. if not lowercase: Apples, Cherries, bananas...
+        artists = Artist.objects.all().annotate(lower_name=Lower('name')).order_by('lower_name')
 
         bg_color = get_bg_color(jukeoroni.jukebox.layout.bg_color)
 

@@ -24,6 +24,7 @@ from player.jukeoroni.settings import (
     MAX_CACHED_FILES,
     AUDIO_FILES,
     MUSIC_DIR,
+    ALBUM_TYPE_MUSIC,
     COVER_ONLINE_PREFERENCE,
     DEFAULT_TRACKLIST_REGEN_INTERVAL,
     FFPLAY_CMD,
@@ -37,7 +38,7 @@ LOG.setLevel(GLOBAL_LOGGING_LEVEL)
 class JukeboxTrack(object):
     def __init__(self, django_track, cached=True):
         self.django_track = django_track
-        self.path = self.django_track.audio_source
+        # self.path = self.django_track.audio_source
         self.path = os.path.join(MUSIC_DIR, self.django_track.audio_source)
         # self.path = u'{0}'.format(str(os.path.join(MUSIC_DIR, self.django_track.audio_source)))
         self.cached = cached
@@ -335,6 +336,7 @@ box.turn_off()
     def next_track(self):
         if not bool(self.tracks):
             return None
+        # while
         return self.tracks.pop(0)
 
     def turn_on(self, disable_track_loader=False):
@@ -516,9 +518,13 @@ box.turn_off()
                         model_album.cover_online = cover_online
                     else:
                         LOG.info('Could not find an online cover.')
+
+                if not query_album[0].album_type == ALBUM_TYPE_MUSIC:
+                    query_album.update(album_type=ALBUM_TYPE_MUSIC)
+
             else:
                 cover_online = get_album(discogs_client, artist, title_stripped)
-                model_album = Album(artist=model_artist, album_title=title, year=year, cover=img_path, cover_online=cover_online)
+                model_album = Album(artist=model_artist, album_title=title, year=year, cover=img_path, cover_online=cover_online, album_type=ALBUM_TYPE_MUSIC)
                 LOG.info(f'Album {model_album} not found in DB.')
 
             try:
@@ -615,20 +621,29 @@ Dec 19 09:25:01 jukeoroni gunicorn[18042]: django.db.models.deletion.ProtectedEr
     def _track_loader_task(self):
         while self.on:
             LOG.debug(f'{len(self.tracks)} of {MAX_CACHED_FILES} tracks cached. Queue: {self.tracks}')
-            # LOG.debug(f'Loading process active: {bool(self.loading_process)}')
+
+            # This is to check that the source files did not disappear in the meantime
+            # Remove them if they did
+            self.tracks = [track for track in self.tracks if os.path.isfile(track.path)]
 
             if len(self.tracks) < MAX_CACHED_FILES:
                 loading_track = self.get_next_track()
+
                 if loading_track is None:
-                    # print(str(next_track))
+                    LOG.warning('Got "None" track. Retrying...')
                     time.sleep(1.0)
                     continue
+                if not os.path.isfile(os.path.join(MUSIC_DIR, loading_track.audio_source)):
+                    LOG.warning(f'Track audio_source ({os.path.join(MUSIC_DIR, loading_track.audio_source)}) does not exist on filesystem. Retrying...')
+                    time.sleep(1.0)
+                    continue
+
+                LOG.info(f'Next track OK: {loading_track}')
 
                 self.loading_track = JukeboxTrack(loading_track, cached=CACHE_TRACKS)
                 self.loading_track.cache()
                 self.loading_track.cache_online_covers()
 
-                # self.loading_process = None
                 if self.loading_track is not None:
                     if not self.loading_track.killed:
                         loading_track_copy = self.loading_track

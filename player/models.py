@@ -18,6 +18,7 @@ class Artist(models.Model):
 class Album(models.Model):
     artist = models.ForeignKey(Artist, on_delete=models.PROTECT)
     album_title = models.CharField(max_length=200, unique=False, blank=False)
+    album_type = models.CharField(max_length=200, unique=False, blank=False, null=True, default=None)
     year = models.CharField(max_length=200, unique=False, blank=True, null=False)
     cover = models.CharField(max_length=200, unique=False, blank=True, null=True)
 

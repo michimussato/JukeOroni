@@ -18,7 +18,10 @@ MEDIA_ROOT = f'/data/{DATA_SOURCE}/media/audio/'
 # if not os.path.exists(MEDIA_ROOT):
 #     DATA_SOURCE = DATA_SOURCES[1]  # Fallback to google drive if usb drive is not available
 #     MEDIA_ROOT = f'/data/{DATA_SOURCE}/media/audio/'
-MUSIC_DIR = os.path.join(MEDIA_ROOT, 'music')
+ALBUM_TYPE_MUSIC = 'music'
+ALBUM_TYPE_MEDITATION = 'meditation'
+ALBUM_TYPE_AUDIOBOOKS = 'audiobooks'
+MUSIC_DIR = os.path.join(MEDIA_ROOT, ALBUM_TYPE_MUSIC)
 FAULTY_ALBUMS = os.path.join(MEDIA_ROOT, 'faulty_albums_test.txt')
 MISSING_COVERS_FILE = os.path.join(MEDIA_ROOT, 'missing_covers_test.txt')
 AUDIO_FILES = ['.dsf', '.flac', '.wav', '.dff']
