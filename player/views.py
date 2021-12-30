@@ -2,7 +2,6 @@ import base64
 import random
 import time
 import io
-from django.db.models import CharField
 from django.db.models.functions import Lower
 from django.http import HttpResponseRedirect, HttpResponse
 from django.views import View
