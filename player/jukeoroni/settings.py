@@ -38,6 +38,10 @@ PIMORONI_WATCHER_UPDATE_INTERVAL = 1
 SMALL_WIDGET_SIZE = 160
 FFPLAY_CMD = 'ffplay -hide_banner -autoexit -vn -nodisp -loglevel error'.split(' ')
 
+ENABLE_JUKEBOX = True
+ENABLE_RADIO = True
+ENABLE_MEDITATION = False
+
 STATE_WATCHER_CADENCE = 0.5
 
 _BUTTON_MAPPINGS = ['000X', '00X0', '0X00', 'X000']
@@ -58,10 +62,10 @@ MODES = {
             'numeric': 1.0,
             'name': 'standby',
             'buttons': {
-                'X000': 'Player',
-                # 'X000': 'N//A',
-                '0X00': 'Radio',
-                '00X0': 'N//A',  # TODO Meditation
+                # 'X000': 'N//A',  # means that it will have no icon
+                'X000': ['N//A', 'Player'][int(ENABLE_JUKEBOX)],
+                '0X00': ['N//A', 'Radio'][int(ENABLE_RADIO)],
+                '00X0': ['N//A', 'Meditation'][int(ENABLE_MEDITATION)],
                 '000X': 'N//A',  # TODO cannot switch it back on after OFF
             },
         },
@@ -154,6 +158,72 @@ MODES = {
             # },
         },
     },
+    'meditationbox': {
+            'standby': {
+                'random': {
+                    'numeric': 3.0,
+                    'name': 'meditationbox standby random',
+                    'buttons': {
+                        'X000': 'Menu',
+                        '0X00': 'Play',
+                        '00X0': 'N//A',
+                        '000X': 'Random -> Album',
+                    },
+                },
+                'album': {
+                    'numeric': 3.1,
+                    'name': 'meditationbox standby album',
+                    'buttons': {
+                        'X000': 'Menu',
+                        '0X00': 'Play',
+                        '00X0': 'N//A',
+                        '000X': 'Album -> Random',
+                    },
+                },
+                # 'track': {
+                #     'numeric': 3.5,
+                #     'name': 'meditationbox standby track',
+                #     'buttons': {
+                #         'X000': 'Stop',
+                #         '0X00': 'Next',
+                #         '00X0': 'N//A',
+                #         '000X': 'Album -> Random',
+                #     },
+                # },
+            },
+            'on_air': {
+                'random': {
+                    'numeric': 3.2,
+                    'name': 'meditationbox on_air random',
+                    'buttons': {
+                        'X000': 'Stop',
+                        '0X00': 'Next',
+                        '00X0': 'N//A',
+                        '000X': 'Random -> Album',
+                    },
+                },
+                'album': {
+                    'numeric': 3.3,
+                    'name': 'meditationbox on_air album',
+                    'buttons': {
+                        'X000': 'Stop',
+                        '0X00': 'Next',
+                        '00X0': 'N//A',
+                        '000X': 'Album -> Random',
+                    },
+                },
+                # 'track': {
+                #     'numeric': 3.4,
+                #     'name': 'meditationbox on_air album track',
+                #     'buttons': {
+                #         'X000': 'Stop',
+                #         '0X00': 'Next',
+                #         '00X0': 'N//A',
+                #         '000X': 'Album -> Random',
+                #     },
+                # },
+            },
+        },
 }
 
 
@@ -168,6 +238,9 @@ _JUKEBOX_ON_AIR_DEFAULT_IMAGE = '/data/django/jukeoroni/player/static/jukebox_on
 # AUDIO_FILES = ['.dsf', '.flac', '.wav', '.dff']
 # DEFAULT_TRACKLIST_REGEN_INTERVAL = 12  # in hours
 
+
+# meditation
+_MEDITATION_ICON_IMAGE = '/data/django/jukeoroni/player/static/meditation_box.jpg'
 
 # radio
 _RADIO_ICON_IMAGE = '/data/django/jukeoroni/player/static/radio.png'

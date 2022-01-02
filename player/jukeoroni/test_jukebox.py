@@ -7,7 +7,7 @@ import logging
 import time
 
 from django.test import TestCase
-from player.jukeoroni.juke_box import Jukebox
+from player.jukeoroni.juke_box import JukeBox
 from player.jukeoroni.settings import GLOBAL_LOGGING_LEVEL
 # from player.models import Channel
 
@@ -30,7 +30,7 @@ class TestJukebox(TestCase):
         super(TestJukebox, cls).setUpClass()
 
     def setUp(self):
-        self.box = Jukebox()
+        self.box = JukeBox()
 
     def tearDown(self):
         try:

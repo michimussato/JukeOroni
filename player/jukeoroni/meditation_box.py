@@ -1,6 +1,6 @@
 import logging
 
-from player.jukeoroni.juke_box import JukeboxTrack
+from player.jukeoroni.box_track import JukeboxTrack
 from player.jukeoroni.displays import Meditationbox as MeditationboxLayout
 from player.jukeoroni.settings import (
     GLOBAL_LOGGING_LEVEL,
@@ -15,7 +15,7 @@ class MeditationTrack(JukeboxTrack):
         super(MeditationTrack, self).__init__(django_track, cached)
 
 
-class Meditationbox(object):
+class MeditationBox(object):
 
     def __init__(self, jukeoroni=None):
 

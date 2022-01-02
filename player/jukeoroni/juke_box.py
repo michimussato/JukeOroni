@@ -23,7 +23,7 @@ LOG = logging.getLogger(__name__)
 LOG.setLevel(GLOBAL_LOGGING_LEVEL)
 
 
-class Jukebox(object):
+class JukeBox(object):
     """
 from player.jukeoroni.juke_box import Jukebox
 box = Jukebox()

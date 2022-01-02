@@ -9,7 +9,8 @@ import RPi.GPIO as GPIO
 from django.utils.timezone import localtime, now
 from inky.inky_uc8159 import Inky  # , BLACK
 from player.jukeoroni.juke_radio import Radio
-from player.jukeoroni.juke_box import Jukebox as Box
+from player.jukeoroni.juke_box import JukeBox as Box
+from player.jukeoroni.meditation_box import MeditationBox
 from player.jukeoroni.displays import Off as OffLayout
 from player.jukeoroni.displays import Standby as StandbyLayout
 from player.models import Channel
@@ -108,6 +109,7 @@ j.turn_off()
 
         self.jukebox = Box(jukeoroni=self)
         self.radio = Radio()
+        self.meditation_box = MeditationBox(jukeoroni=self)
 
         self.playback_proc = None
         self.inserted_media = None
@@ -221,6 +223,27 @@ j.turn_off()
                                                         artist=self.inserted_media.cover_artist)
                 except AttributeError:
                     bg = self.jukebox.layout.get_layout(labels=self.LABELS, loading=True)
+                    LOG.exception('inserted_media problem: ')
+            self.set_image(image=bg)
+
+    def set_display_meditation(self):
+        """
+        j.set_display_meditation()
+        """
+        if not self.test:
+
+            # need to add None too, otherwise we might end up with
+            # NoneType Error for self.inserted_media.cover_album
+            if self.mode == MODES['meditationbox']['standby']['album'] \
+                    or self.mode == MODES['meditationbox']['standby']['random']:
+                bg = self.meditation_box.layout.get_layout(labels=self.LABELS)
+            elif self.mode == MODES['meditationbox']['on_air']['album'] \
+                    or self.mode == MODES['meditationbox']['on_air']['random']:
+                try:
+                    bg = self.meditation_box.layout.get_layout(labels=self.LABELS, cover=self.inserted_media.cover_album,
+                                                        artist=self.inserted_media.cover_artist)
+                except AttributeError:
+                    bg = self.meditation_box.layout.get_layout(labels=self.LABELS, loading=True)
                     LOG.exception('inserted_media problem: ')
             self.set_image(image=bg)
     ############################################
@@ -412,6 +435,72 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
                             LOG.info('Display/Clock update.')
                             self.set_display_jukebox()
                             self._current_time = new_time.strftime('%H:%M')
+
+
+
+
+            # MEDITATIONBOX STANDBY
+            elif self.mode == MODES['meditationbox']['standby']['random'] \
+                    or self.mode == MODES['meditationbox']['standby']['album']:
+
+                if update_mode:
+                    update_mode = False
+
+                    if self.mode == MODES['meditationbox']['standby']['random']:
+                        self.stop()
+                        self.eject()
+                        if self.jukebox.loader_mode != 'random':
+                            self.jukebox.set_loader_mode_random()
+                        # self.set_display_jukebox()
+
+                    elif self.mode == MODES['meditationbox']['standby']['album']:
+                        self.stop()
+                        self.eject()
+                        if self.jukebox.loader_mode != 'album':
+                            self.jukebox.set_loader_mode_album()
+
+                    self.set_display_meditation()
+
+                else:
+                    if self._current_time != new_time.strftime('%H:%M'):
+                        if self._current_time is None or (int(new_time.strftime('%H:%M')[-2:])) % CLOCK_UPDATE_INTERVAL == 0:
+                            LOG.info('Display/Clock update.')
+                            self.set_display_meditation()
+                            self._current_time = new_time.strftime('%H:%M')
+
+            # MEDITATION ON_AIR
+            elif self.mode == MODES['meditationbox']['on_air']['random'] \
+                    or self.mode == MODES['meditationbox']['on_air']['album']:
+
+                # Make sure, jukebox keeps playing if in mode without
+                # considering the update_mode flag
+
+                if self.mode == MODES['meditationbox']['on_air']['random']:
+                    if self.jukebox.loader_mode != 'random':
+                        self.jukebox.set_loader_mode_random()
+                    # self.play_jukebox()
+                    # LOG.info(f'Playing: {self.jukebox.playing_track}')
+
+                elif self.mode == MODES['meditationbox']['on_air']['album']:
+                    if self.jukebox.loader_mode != 'album':
+                        self.jukebox.set_loader_mode_album()
+
+                # self.play_jukebox()
+                # # LOG.info(f'Playing: {self.jukebox.playing_track}')
+
+                if update_mode:
+                    update_mode = False
+                    self.set_display_meditation()
+
+                else:
+                    if self._current_time != new_time.strftime('%H:%M'):
+                        if self._current_time is None or (int(new_time.strftime('%H:%M')[-2:])) % CLOCK_UPDATE_INTERVAL == 0:
+                            LOG.info('Display/Clock update.')
+                            self.set_display_meditation()
+                            self._current_time = new_time.strftime('%H:%M')
+
+
+
 
             time.sleep(STATE_WATCHER_CADENCE)
 
@@ -820,6 +909,7 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
                 self.mode = MODES['radio']['standby']
                 return
             elif button_mapped == '00X0':
+                self.mode = MODES['meditationbox']['standby'][self.jukebox.loader_mode]
                 return
             elif button_mapped == '000X':
                 return
@@ -852,7 +942,7 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
                 return
             return
 
-        # Jukebox
+        # JukeBox
         # TODO: pause/resume
         elif self.mode == MODES['jukebox']['standby']['random']:
             if button_mapped == 'X000':
@@ -907,5 +997,62 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
                 self.mode = MODES['jukebox']['on_air']['random']
                 return
             return
+
+        # MeditationBox
+        # TODO: pause/resume
+        elif self.mode == MODES['meditationbox']['standby']['random']:
+            if button_mapped == 'X000':
+                self.mode = MODES['jukeoroni']['standby']
+                return
+            elif button_mapped == '0X00':
+                self.mode = MODES['meditationbox']['on_air']['random']
+                return
+            elif button_mapped == '00X0':
+                return
+            elif button_mapped == '000X':
+                self.mode = MODES['meditationbox']['standby']['album']
+                return
+            return
+        elif self.mode == MODES['meditationbox']['standby']['album']:
+            if button_mapped == 'X000':
+                self.mode = MODES['jukeoroni']['standby']
+                return
+            elif button_mapped == '0X00':
+                self.mode = MODES['meditationbox']['on_air']['album']
+                return
+            elif button_mapped == '00X0':
+                return
+            elif button_mapped == '000X':
+                self.mode = MODES['meditationbox']['standby']['random']
+                return
+            return
+
+        elif self.mode == MODES['meditationbox']['on_air']['random']:
+            if button_mapped == 'X000':
+                self.mode = MODES['meditationbox']['standby']['random']
+                return
+            elif button_mapped == '0X00':
+                self._flag_next = True
+                return
+            elif button_mapped == '00X0':
+                return
+            elif button_mapped == '000X':
+                self.mode = MODES['meditationbox']['on_air']['album']
+                return
+            return
+        elif self.mode == MODES['meditationbox']['on_air']['album']:
+            if button_mapped == 'X000':
+                self.mode = MODES['meditationbox']['standby']['album']
+                return
+            elif button_mapped == '0X00':
+                self._flag_next = True
+                return
+            elif button_mapped == '00X0':
+                return
+            elif button_mapped == '000X':
+                self.mode = MODES['meditationbox']['on_air']['random']
+                return
+            return
+
         return
     ############################################

@@ -1,12 +1,14 @@
-from player.jukeoroni.settings import (_RADIO_ICON_IMAGE,
-                                       _RADIO_ON_AIR_DEFAULT_IMAGE,
-                                       _JUKEBOX_ON_AIR_DEFAULT_IMAGE,
-                                       _OFF_IMAGE,
-                                       _JUKEBOX_ICON_IMAGE,
-                                       _JUKEBOX_LOADING_IMAGE,
-                                       _MOON_TEXUTRE,
-                                       GLOBAL_LOGGING_LEVEL,
-                                       )
+from player.jukeoroni.settings import (
+    _RADIO_ICON_IMAGE,
+    _RADIO_ON_AIR_DEFAULT_IMAGE,
+    _JUKEBOX_ON_AIR_DEFAULT_IMAGE,
+    _OFF_IMAGE,
+    _JUKEBOX_ICON_IMAGE,
+    _JUKEBOX_LOADING_IMAGE,
+    _MEDITATION_ICON_IMAGE,
+    _MOON_TEXUTRE,
+    GLOBAL_LOGGING_LEVEL,
+)
 from player.jukeoroni.is_string_url import is_string_url
 from PIL import Image, ImageDraw
 import urllib.request
@@ -51,6 +53,10 @@ class Resource(object):
     @property
     def JUKEBOX_ON_AIR_DEFAULT_IMAGE(self):
         return Image.open(_JUKEBOX_ON_AIR_DEFAULT_IMAGE)
+
+    @property
+    def MEDITATION_ICON_IMAGE(self):
+        return Image.open(_MEDITATION_ICON_IMAGE)
 
     @property
     def MOON_TEXUTRE(self):
