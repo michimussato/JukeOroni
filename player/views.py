@@ -76,16 +76,16 @@ class JukeOroniView(View):
             bg_color = get_bg_color(jukeoroni.layout_standby.bg_color)
 
             ret = '<html>\n'
-            ret += '  <head>\n'
-            ret += '    <meta http-equiv="refresh" content="10" >\n'
-            ret += '    <link rel="icon" type="image/x-icon" href="/jukeoroni/favicon.ico">\n'
-            ret += '  </head>\n'
-            ret += '  <body style="background-color:#{0};">\n'.format(bg_color)
+            ret += '<head>\n'
+            ret += '<meta http-equiv="refresh" content="10" >\n'
+            ret += '<link rel="icon" type="image/x-icon" href="/jukeoroni/favicon.ico">\n'
+            ret += '</head>\n'
+            ret += '<body style="background-color:#{0};">\n'.format(bg_color)
             # ret += '<center><h1>Hello JukeOroni</h1></center>\n'
-            ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/set_jukebox\';\">Jukebox</button>\n'
-            ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/set_radio\';\">Radio</button>\n'
-            ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/transmission\';\">Transmission</button>\n'
-            ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/webmin\';\">Webmin</button>\n'
+            ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/set_jukebox\';\">Jukebox</button>\n'
+            ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/set_radio\';\">Radio</button>\n'
+            ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/transmission\';\">Transmission</button>\n'
+            ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/webmin\';\">Webmin</button>\n'
             ret += '<hr>\n'
 
             img = jukeoroni.layout_standby.get_layout(labels=jukeoroni.LABELS)
@@ -132,11 +132,11 @@ class JukeOroniView(View):
         bg_color = get_bg_color(jukeoroni.jukebox.layout.bg_color)
 
         ret = '<html>\n'
-        ret += '  <head>\n'
-        ret += '    <meta http-equiv="refresh" content="10" >\n'
-        ret += '    <link rel="icon" type="image/x-icon" href="/jukeoroni/favicon.ico">\n'
-        ret += '  </head>\n'
-        ret += '  <body style="background-color:#{0};">\n'.format(bg_color)
+        ret += '<head>\n'
+        ret += '<meta http-equiv="refresh" content="10" >\n'
+        ret += '<link rel="icon" type="image/x-icon" href="/jukeoroni/favicon.ico">\n'
+        ret += '</head>\n'
+        ret += '<body style="background-color:#{0};">\n'.format(bg_color)
         ret += f'<button style=\"width:100%; \" onclick=\"window.location.href = \'/jukeoroni/set_standby\';\">Back to Menu</button>\n'
         ret += '<hr>\n'
 
@@ -175,19 +175,19 @@ class JukeOroniView(View):
             ret += '<div style="text-align: center;">None</div>'
 
         if jukeoroni.jukebox.loading_track is not None:
-            ret += f'<hr>'
+            ret += '<hr>'
             ret += '<center><div>Loading</div></center>'
             ret += '<center><div>{0}</div></center>'.format(f'{jukeoroni.jukebox.loading_track.artist} - {jukeoroni.jukebox.loading_track.album} ({jukeoroni.jukebox.loading_track.year}) - {jukeoroni.jukebox.loading_track.track_title} ({str(round(jukeoroni.jukebox.loading_track.size_cached / (1024.0 * 1024.0), 1))} of {str(round(jukeoroni.jukebox.loading_track.size / (1024.0 * 1024.0), 1))} MB)')
-        ret += f'<hr>'
+        ret += '<hr>'
         ret += '<center><div>Queue</div></center>'
 
-        ret += f'<ol>'
-        ret += f'<center><table border="0" cellspacing="0">'
+        ret += '<ol>'
+        ret += '<center><table border="0" cellspacing="0">'
         for track in jukeoroni.jukebox.tracks:
-            ret += f'<tr>'
-            ret += f'<td>'
+            ret += '<tr>'
+            ret += '<td>'
             ret += '<li>&nbsp;</li>'
-            ret += f'</td>'
+            ret += '</td>'
             ret += '<td>{0} (ID: {1})</td>'.format(track, track.django_track.id)
             if jukeoroni.jukebox.tracks.index(track) == 0:
                 ret += '<td><button onclick=\"window.location.href = \'/jukeoroni/jukebox/{0}/as_first\';\" disabled>Set 1st</button></td>'.format(str(jukeoroni.jukebox.tracks.index(track)))
@@ -200,31 +200,28 @@ class JukeOroniView(View):
         ret += f'<hr>'
 
         if jukeoroni.jukebox.track_list_updater_running:
-            ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/jukebox/update_track_list\';\"  disabled>Update Track List: {0}</button>\n'.format('Launch Track List Updater')
+            ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/jukebox/update_track_list\';\"  disabled>Update Track List</button>\n'
         else:
-            ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/jukebox/update_track_list\';\">Update Track List: {0}</button>\n'.format('Launch Track List Updater')
+            ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/jukebox/update_track_list\';\">Update Track List</button>\n'
 
-        ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/jukebox/switch_mode\';\">Mode: {0}</button>\n'.format(str(jukeoroni.jukebox.loader_mode))
-        ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/jukebox/play_next\';\">{0}</button>\n'.format(jukeoroni.mode['buttons']['0X00'])
+        ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/jukebox/switch_mode\';\">Mode: {0}</button>\n'.format(str(jukeoroni.jukebox.loader_mode).capitalize())
+        ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/jukebox/play_next\';\">{0}</button>\n'.format(jukeoroni.mode['buttons']['0X00'])
 
         if jukeoroni.paused:
-           ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/resume\';\">Resume</button>\n'
+            ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/resume\';\">Resume</button>\n'
         else:
             if jukeoroni.mode == MODES['jukebox']['on_air'][jukeoroni.jukebox.loader_mode]:
-                ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/pause\';\">Pause</button>\n'
+                ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/pause\';\">Pause</button>\n'
             else:
-                ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/pause\';\" disabled>Pause</button>\n'
+                ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/pause\';\" disabled>Pause</button>\n'
         if jukeoroni.mode == MODES['jukebox']['on_air'][jukeoroni.jukebox.loader_mode]:
-            ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/jukebox/stop\';\">Stop</button>\n'
+            ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/jukebox/stop\';\">Stop</button>\n'
         else:
-            ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/jukebox/stop\';\" disabled>Stop</button>\n'
+            ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/jukebox/stop\';\" disabled>Stop</button>\n'
 
-
-        # ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/jukebox/albums\';\">Albums</button>\n'
-
-        ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/jukebox/albums\';\">Albums</button>\n'
-        ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/jukebox/tracks\';\">Tracks</button>\n'
-        ret += '  </body>\n'
+        ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/jukebox/albums\';\">Albums</button>\n'
+        ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/jukebox/tracks\';\">Tracks</button>\n'
+        ret += '</body>\n'
         ret += '</html>\n'
         return HttpResponse(ret)
 
@@ -330,13 +327,13 @@ class JukeOroniView(View):
 
         ret = '<html>\n'
 
-        ret += '  <head>\n'
+        ret += '<head>\n'
         # ret += '    <meta http-equiv="refresh" content="10" >\n'
-        ret += '    <link rel="icon" type="image/x-icon" href="/jukeoroni/favicon.ico">\n'
-        ret += '  </head>\n'
+        ret += '<link rel="icon" type="image/x-icon" href="/jukeoroni/favicon.ico">\n'
+        ret += '</head>\n'
 
-        ret += '  <body style="background-color:#{0};">\n'.format(bg_color)
-        ret += '        <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni\';\">Back</button>\n'
+        ret += '<body style="background-color:#{0};">\n'.format(bg_color)
+        ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni\';\">Back</button>\n'
         ret += f'<hr>'
         # ret += f'<table>'
         ret += f'<div>{len(tracks)} tracks</div>'
@@ -370,8 +367,8 @@ class JukeOroniView(View):
             ret += f'<td>{track}</td>'
             ret += f'</tr>'
 
-        ret += f'</table>'
-        ret += '  </body>\n'
+        ret += f'</table>\n'
+        ret += '</body>\n'
         ret += '</html>\n'
         return HttpResponse(ret)
 
@@ -392,20 +389,20 @@ class JukeOroniView(View):
         bg_color = get_bg_color(jukeoroni.jukebox.layout.bg_color)
 
         ret = '<html>\n'
-        ret += '  <head>\n'
+        ret += '<head>\n'
         # ret += '    <meta http-equiv="refresh" content="10" >\n'
-        ret += '    <link rel="icon" type="image/x-icon" href="/jukeoroni/favicon.ico">\n'
-        ret += '  </head>\n'
-        ret += '  <body style="background-color:#{0};">\n'.format(bg_color)
-        ret += '        <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni\';\">Back</button>\n'
+        ret += '<link rel="icon" type="image/x-icon" href="/jukeoroni/favicon.ico">\n'
+        ret += '</head>\n'
+        ret += '<body style="background-color:#{0};">\n'.format(bg_color)
+        ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni\';\">Back</button>\n'
         random_albums = random.sample(list(Album.objects.all()), RANDOM_ALBUMS)
         if bool(random_albums):
             ret += f'<hr>'
             ret += f'<center><h4>Suggestions :)</h4></center>'
             for random_album in random_albums:
-                ret += '  <div>\n'
-                ret += f'        <button style=\"width:100%\" onclick=\"window.location.href = \'{random_album.id}\';\">{random_album.artist} - {random_album.year} - {random_album.album_title}</button>\n'
-                ret += '  </div>\n'
+                ret += '<div>\n'
+                ret += f'<button style=\"width:100%\" onclick=\"window.location.href = \'{random_album.id}\';\">{random_album.artist} - {random_album.year} - {random_album.album_title}</button>\n'
+                ret += '</div>\n'
             # ret += f'<hr>'
 
         for artist in artists:
@@ -417,10 +414,10 @@ class JukeOroniView(View):
                 if year != album.year:
                     ret += f'<div><center>{album.year}</center></div>'
                     year = album.year
-                ret += '  <div>\n'
-                ret += f'        <button style=\"width:100%\" onclick=\"window.location.href = \'{album.id}\';\">{album.album_title}</button>\n'
-                ret += '  </div>\n'
-        ret += '  </body>\n'
+                ret += '<div>\n'
+                ret += f'<button style=\"width:100%\" onclick=\"window.location.href = \'{album.id}\';\">{album.album_title}</button>\n'
+                ret += '</div>\n'
+        ret += '</body>\n'
         ret += '</html>\n'
         return HttpResponse(ret)
 
@@ -456,7 +453,7 @@ class JukeOroniView(View):
         ret = '<html>\n'
         ret += '<head>\n'
         ret += '<meta http-equiv="refresh" content="10" >\n'
-        ret += '    <link rel="icon" type="image/x-icon" href="/jukeoroni/favicon.ico">\n'
+        ret += '<link rel="icon" type="image/x-icon" href="/jukeoroni/favicon.ico">\n'
         ret += '</head>\n'
         ret += '<body style="background-color:#{0};">\n'.format(bg_color)
         ret += f'<button style=\"width:100%; \" onclick=\"window.location.href = \'/jukeoroni/set_standby\';\">Back to Menu</button>\n'
@@ -471,12 +468,12 @@ class JukeOroniView(View):
             ret += f'<button style=\"width:100%\" onclick=\"window.location.href = \'{last_played.display_name_short}/play\';\">Last played ({last_played.display_name})</button>\n'
         ret += f'<button style=\"width:100%\" onclick=\"window.location.href = \'random/play\';\">Random</button>\n'
         if jukeoroni.paused:
-           ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/resume\';\">Resume</button>\n'
+           ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/resume\';\">Resume</button>\n'
         else:
             if jukeoroni.mode == MODES['radio']['on_air']:
-                ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/pause\';\">Pause</button>\n'
+                ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/pause\';\">Pause</button>\n'
             else:
-                ret += '    <button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/pause\';\" disabled>Pause</button>\n'
+                ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/pause\';\" disabled>Pause</button>\n'
         ret += '<hr>\n'
 
         # data = io.BytesIO()
