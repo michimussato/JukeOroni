@@ -4,7 +4,7 @@ from player.jukeoroni.discogs import get_client, get_artist, get_album
 from player.models import Artist, Album, Track as DjangoTrack
 from player.jukeoroni.settings import (
     GLOBAL_LOGGING_LEVEL,
-    MUSIC_DIR,
+    # MUSIC_DIR,
     AUDIO_FILES,
     ALBUM_TYPE_MUSIC,
 )
@@ -14,14 +14,14 @@ LOG = logging.getLogger(__name__)
 LOG.setLevel(GLOBAL_LOGGING_LEVEL)
 
 
-def create_update_track_list():
+def create_update_track_list(directory):
     # TODO: filter image files, m3u etc.
     LOG.info('Generating updated track list...')
     discogs_client = get_client()
     _files = []
     _albums = []
     _artists = []
-    for path, dirs, files in os.walk(MUSIC_DIR):
+    for path, dirs, files in os.walk(directory):
         # if not self.on:
         #     LOG.warning('JukeBox is turned off.')
         #     return
@@ -29,7 +29,7 @@ def create_update_track_list():
         # Remove part of path that can be retrieved from settings (MUSIC_DIR)
         # MUSIC_DIR:  /data/usb_hdd/media/audio/music
         # path:       /data/usb_hdd/media/audio/music/on_device/HIM - 2008 - Razorblade Romance [DSD128]/
-        _path = os.path.relpath(path, MUSIC_DIR)
+        _path = os.path.relpath(path, directory)
         # _path =
         album = os.path.basename(_path)
         try:
@@ -71,9 +71,9 @@ def create_update_track_list():
         cover_root = _path
         jpg_path = os.path.join(cover_root, 'cover.jpg')
         png_path = os.path.join(cover_root, 'cover.png')
-        if os.path.exists(os.path.join(MUSIC_DIR, jpg_path)):
+        if os.path.exists(os.path.join(directory, jpg_path)):
             img_path = jpg_path
-        elif os.path.exists(os.path.join(MUSIC_DIR, png_path)):
+        elif os.path.exists(os.path.join(directory, png_path)):
             img_path = png_path
         else:
             # with open(MISSING_COVERS_FILE, 'a+') as f:
