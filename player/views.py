@@ -23,7 +23,8 @@ PIMORONI_FONT = '/data/django/jukeoroni/player/static/gotham-black.ttf'
 
 jukeoroni = JukeOroni(test=False)
 jukeoroni.turn_on(disable_track_loader=False)
-# jukeoroni.jukebox.set_auto_update_tracklist_on()
+jukeoroni.jukebox.set_auto_update_tracklist_on()
+jukeoroni.meditationbox.set_auto_update_tracklist_on()
 # jukeoroni.jukebox.track_list_generator_thread()
 
 
@@ -82,7 +83,8 @@ class JukeOroniView(View):
             ret += '</head>\n'
             ret += '<body style="background-color:#{0};">\n'.format(bg_color)
             # ret += '<center><h1>Hello JukeOroni</h1></center>\n'
-            ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/set_jukebox\';\">Jukebox</button>\n'
+            ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/set_jukebox\';\">JukeBox</button>\n'
+            ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/set_meditationbox\';\">MeditationBox</button>\n'
             ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/set_radio\';\">Radio</button>\n'
             ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/transmission\';\">Transmission</button>\n'
             ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/webmin\';\">Webmin</button>\n'
@@ -103,6 +105,13 @@ class JukeOroniView(View):
         jukeoroni.mode = MODES['jukebox']['standby'][jukeoroni.jukebox.loader_mode]
 
         return HttpResponseRedirect('/jukeoroni/jukebox')
+
+    def set_meditationbox(self):
+        global jukeoroni
+
+        jukeoroni.mode = MODES['meditationbox']['standby'][jukeoroni.meditationbox.loader_mode]
+
+        return HttpResponseRedirect('/jukeoroni/meditationbox')
 
     def set_radio(self):
         global jukeoroni
@@ -225,10 +234,118 @@ class JukeOroniView(View):
         ret += '</html>\n'
         return HttpResponse(ret)
 
+    def meditationbox_index(self):
+
+        global jukeoroni
+
+        if not jukeoroni.mode == MODES['meditationbox']['standby']['random'] \
+                and not jukeoroni.mode == MODES['meditationbox']['standby']['album'] \
+                and not jukeoroni.mode == MODES['meditationbox']['on_air']['random'] \
+                and not jukeoroni.mode == MODES['meditationbox']['on_air']['album']:
+
+            return HttpResponseRedirect('/jukeoroni')
+
+        bg_color = get_bg_color(jukeoroni.meditationbox.layout.bg_color)
+
+        ret = '<html>\n'
+        ret += '<head>\n'
+        ret += '<meta http-equiv="refresh" content="10" >\n'
+        ret += '<link rel="icon" type="image/x-icon" href="/jukeoroni/favicon.ico">\n'
+        ret += '</head>\n'
+        ret += '<body style="background-color:#{0};">\n'.format(bg_color)
+        ret += f'<button style=\"width:100%; \" onclick=\"window.location.href = \'/jukeoroni/set_standby\';\">Back to Menu</button>\n'
+        ret += '<hr>\n'
+
+        _success = False
+
+        img = None
+        # data = io.BytesIO()
+        if jukeoroni.mode == MODES['meditationbox']['standby']['album'] \
+                or jukeoroni.mode == MODES['meditationbox']['standby']['random']:
+            img = jukeoroni.meditationbox.layout.get_layout(labels=jukeoroni.LABELS)
+        elif jukeoroni.mode == MODES['meditationbox']['on_air']['album'] \
+                or jukeoroni.mode == MODES['meditationbox']['on_air']['random']:
+            try:
+                img = jukeoroni.meditationbox.layout.get_layout(labels=jukeoroni.LABELS, cover=jukeoroni.inserted_media.cover_album,
+                                                    artist=jukeoroni.inserted_media.cover_artist)
+            except AttributeError:
+                img = jukeoroni.meditationbox.layout.get_layout(labels=jukeoroni.LABELS, loading=True)
+                # LOG.exception('inserted_media problem: ')
+        # img = img.rotate(270, expand=True)
+        # img.save(data, "PNG")
+        if img is not None:
+            encoded_img_data = encoded_screen(img)
+
+            ret += '<img id="picture" style="display:block;margin-left:auto;margin-right:auto;" src="data:image/jpeg;base64,{0}">\n'.format(
+                str(encoded_img_data).lstrip('b\'').rstrip('\''))
+
+        ret += f'<hr>'
+
+        ret += '<center><div>Inserted/Playing</div></center>'
+        if jukeoroni.inserted_media is not None:
+            ret += f'<div style="text-align: center;">{str(jukeoroni.inserted_media.artist)}</div>'
+            ret += f'<div style="text-align: center;">{str(jukeoroni.inserted_media.album)}</div>'
+            ret += f'<div style="text-align: center;">{str(jukeoroni.inserted_media.track_title)}</div>'
+            ret += f'<div style="text-align: center;">(ID: {str(jukeoroni.inserted_media.django_track.id)})</div>'
+        else:
+            ret += '<div style="text-align: center;">None</div>'
+
+        if jukeoroni.meditationbox.loading_track is not None:
+            ret += '<hr>'
+            ret += '<center><div>Loading</div></center>'
+            ret += '<center><div>{0}</div></center>'.format(f'{jukeoroni.meditationbox.loading_track.artist} - {jukeoroni.meditationbox.loading_track.album} ({jukeoroni.meditationbox.loading_track.year}) - {jukeoroni.meditationbox.loading_track.track_title} ({str(round(jukeoroni.meditationbox.loading_track.size_cached / (1024.0 * 1024.0), 1))} of {str(round(jukeoroni.meditationbox.loading_track.size / (1024.0 * 1024.0), 1))} MB)')
+        ret += '<hr>'
+        ret += '<center><div>Queue</div></center>'
+
+        ret += '<ol>'
+        ret += '<center><table border="0" cellspacing="0">'
+        for track in jukeoroni.meditationbox.tracks:
+            ret += '<tr>'
+            ret += '<td>'
+            ret += '<li>&nbsp;</li>'
+            ret += '</td>'
+            ret += '<td>{0} (ID: {1})</td>'.format(track, track.django_track.id)
+            if jukeoroni.meditationbox.tracks.index(track) == 0:
+                ret += '<td><button onclick=\"window.location.href = \'/jukeoroni/meditationbox/{0}/as_first\';\" disabled>Set 1st</button></td>'.format(str(jukeoroni.meditationbox.tracks.index(track)))
+            else:
+                ret += '<td><button onclick=\"window.location.href = \'/jukeoroni/meditationbox/{0}/as_first\';\">Set 1st</button></td>'.format(str(jukeoroni.meditationbox.tracks.index(track)))
+            ret += '<td><button onclick=\"window.location.href = \'/jukeoroni/meditationbox/{0}/pop\';\">Remove from Queue</button></td>'.format(str(jukeoroni.meditationbox.tracks.index(track)))
+            ret += f'</tr>'
+        ret += f'</table></center>'
+        ret += f'</ol>'
+        ret += f'<hr>'
+
+        if jukeoroni.meditationbox.track_list_updater_running:
+            ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/meditationbox/update_track_list\';\"  disabled>Update Track List</button>\n'
+        else:
+            ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/meditationbox/update_track_list\';\">Update Track List</button>\n'
+
+        ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/meditationbox/switch_mode\';\">Mode: {0}</button>\n'.format(str(jukeoroni.meditationbox.loader_mode).capitalize())
+        ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/meditationbox/play_next\';\">{0}</button>\n'.format(jukeoroni.mode['buttons']['0X00'])
+
+        if jukeoroni.paused:
+            ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/resume\';\">Resume</button>\n'
+        else:
+            if jukeoroni.mode == MODES['meditationbox']['on_air'][jukeoroni.meditationbox.loader_mode]:
+                ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/pause\';\">Pause</button>\n'
+            else:
+                ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/pause\';\" disabled>Pause</button>\n'
+        if jukeoroni.mode == MODES['meditationbox']['on_air'][jukeoroni.meditationbox.loader_mode]:
+            ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/meditationbox/stop\';\">Stop</button>\n'
+        else:
+            ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/meditationbox/stop\';\" disabled>Stop</button>\n'
+
+        ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/meditationbox/albums\';\">Albums</button>\n'
+        ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/meditationbox/tracks\';\">Tracks</button>\n'
+        ret += '</body>\n'
+        ret += '</html>\n'
+        return HttpResponse(ret)
+
     def update_track_list(self):
         global jukeoroni
 
         jukeoroni.jukebox.run_tracklist_generator_flag = True
+        jukeoroni.meditationbox.run_tracklist_generator_flag = True
 
         return HttpResponseRedirect('/jukeoroni')
 

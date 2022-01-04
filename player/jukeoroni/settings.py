@@ -22,6 +22,7 @@ ALBUM_TYPE_MUSIC = 'music'
 ALBUM_TYPE_MEDITATION = 'meditation'
 ALBUM_TYPE_AUDIOBOOKS = 'audiobooks'
 MUSIC_DIR = os.path.join(MEDIA_ROOT, ALBUM_TYPE_MUSIC)
+MEDITATION_DIR = os.path.join(MEDIA_ROOT, ALBUM_TYPE_MEDITATION)
 FAULTY_ALBUMS = os.path.join(MEDIA_ROOT, 'faulty_albums_test.txt')
 MISSING_COVERS_FILE = os.path.join(MEDIA_ROOT, 'missing_covers_test.txt')
 AUDIO_FILES = ['.dsf', '.flac', '.wav', '.dff']
@@ -40,7 +41,7 @@ FFPLAY_CMD = 'ffplay -hide_banner -autoexit -vn -nodisp -loglevel error'.split('
 
 ENABLE_JUKEBOX = True
 ENABLE_RADIO = True
-ENABLE_MEDITATION = False
+ENABLE_MEDITATION = True
 
 STATE_WATCHER_CADENCE = 0.5
 

@@ -6,9 +6,11 @@ urlpatterns = [
     # Jukebox
     path('', JukeOroniView.as_view(), name='jukeoroni_index'),
     path('jukebox/', JukeOroniView.jukebox_index, name='jukebox'),
+    path('meditationbox/', JukeOroniView.meditationbox_index, name='meditationbox'),
     path('jukebox/<int:queue_index>/pop/', JukeOroniView.pop_track_from_queue, name='jukebox pop track'),
     path('jukebox/<int:queue_index>/as_first/', JukeOroniView.set_first_in_queue, name='jukebox pop track'),
     path('set_jukebox/', JukeOroniView.set_jukebox, name='set mode jukebox'),
+    path('set_meditationbox/', JukeOroniView.set_meditationbox, name='set mode meditation'),
     path('set_radio/', JukeOroniView.set_radio, name='set mode radio'),
     path('set_standby/', JukeOroniView.set_standby, name='set mode standby'),
     path('jukebox/play_next/', JukeOroniView.play_next, name='player_play_next'),

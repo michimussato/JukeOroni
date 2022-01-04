@@ -14,7 +14,7 @@ from player.models import Track as DjangoTrack
 
 from player.jukeoroni.settings import (
     GLOBAL_LOGGING_LEVEL,
-    MUSIC_DIR,
+    MEDIA_ROOT,
     CACHE_COVERS,
     COVER_ONLINE_PREFERENCE,
     FFPLAY_CMD,
@@ -30,7 +30,8 @@ class JukeboxTrack(object):
     def __init__(self, django_track, cached=True):
         self.django_track = django_track
         # self.path = self.django_track.audio_source
-        self.path = os.path.join(MUSIC_DIR, self.django_track.audio_source)
+        self.path = os.path.join(MEDIA_ROOT, self.django_track.album.album_type, self.django_track.audio_source)
+        LOG.info(self.path)
         # self.path = u'{0}'.format(str(os.path.join(MUSIC_DIR, self.django_track.audio_source)))
         self.cached = cached
         self.cache_tmp = None
@@ -43,6 +44,11 @@ class JukeboxTrack(object):
         self._size = None
         self.cache_tmp = None
         self._cache_task_thread = None
+
+    def __hash__(self):
+        # we need this to remove duplicate tracks from track list (self.tracks)
+        # https://stackoverflow.com/a/4173307/2207196
+        return hash(('django_track', self.django_track, 'path', self.path))
 
     def __str__(self):
         return f'{self.artist} - {self.album} - {self.track_title}'
@@ -107,13 +113,13 @@ class JukeboxTrack(object):
     def _cache_cover_album(self):
         if self.album.cover is not None:
             LOG.info(f'Loading offline album cover for Track "{self}"...')
-            self._cover_album = Image.open(os.path.join(MUSIC_DIR, self.album.cover))
+            self._cover_album = Image.open(os.path.join(MEDIA_ROOT, self.django_track.album.album_type, self.album.cover))
         else:
             LOG.info(f'Offline album cover for Track "{self}" is None...')
 
         if not COVER_ONLINE_PREFERENCE and self.album.cover is not None:
             LOG.info('Loading offline album cover...')
-            self._cover_album = Image.open(os.path.join(MUSIC_DIR, self.album.cover))
+            self._cover_album = Image.open(os.path.join(MEDIA_ROOT, self.django_track.album.album_type, self.album.cover))
 
         elif COVER_ONLINE_PREFERENCE and self.album.cover_online is not None or self.album.cover is None:
             LOG.info(f'Loading online album cover for Track "{self}"...')

@@ -6,7 +6,7 @@ from player.jukeoroni.settings import (
     GLOBAL_LOGGING_LEVEL,
     # MUSIC_DIR,
     AUDIO_FILES,
-    ALBUM_TYPE_MUSIC,
+    # ALBUM_TYPE_MUSIC,
 )
 
 
@@ -14,9 +14,9 @@ LOG = logging.getLogger(__name__)
 LOG.setLevel(GLOBAL_LOGGING_LEVEL)
 
 
-def create_update_track_list(directory):
+def create_update_track_list(box, directory, album_type):
     # TODO: filter image files, m3u etc.
-    LOG.info('Generating updated track list...')
+    box.LOG.info('Generating updated track list for {0} ({1})...'.format(box.box_type, directory))
     discogs_client = get_client()
     _files = []
     _albums = []
@@ -44,6 +44,7 @@ def create_update_track_list(directory):
 
 
         # COVER ARTIST
+        # Artist can participate in Music and Meditation
         cover_online = None
         # TODO: if str(artist).lower() != 'soundtrack':  # Soundtracks have different artists, so no need to add artist cover
         query_artist = Artist.objects.filter(name__exact=artist)
@@ -100,12 +101,12 @@ def create_update_track_list(directory):
                 else:
                     LOG.info('Could not find an online cover.')
 
-            if not query_album[0].album_type == ALBUM_TYPE_MUSIC:
-                query_album.update(album_type=ALBUM_TYPE_MUSIC)
+            if not query_album[0].album_type == album_type:
+                query_album.update(album_type=album_type)
 
         else:
             cover_online = get_album(discogs_client, artist, title_stripped)
-            model_album = Album(artist=model_artist, album_title=title, year=year, cover=img_path, cover_online=cover_online, album_type=ALBUM_TYPE_MUSIC)
+            model_album = Album(artist=model_artist, album_title=title, year=year, cover=img_path, cover_online=cover_online, album_type=album_type)
             LOG.info(f'Album {model_album} not found in DB.')
 
         try:
@@ -142,15 +143,20 @@ def create_update_track_list(directory):
 
                 _files.append(file_path)
 
+    # TODO:
+    #  Maybe we blow the DB with the box_type check...
+    #  let's see...
+
     # remove obsolete db objects:
-    django_tracks = DjangoTrack.objects.all()
+    django_tracks = DjangoTrack.objects.filter(album__album_title=album_type)
     for django_track in django_tracks:
-        if django_track.audio_source not in _files:
+        if django_track.audio_source not in _files \
+                and django_track.album.album_type == album_type:
             LOG.info(f'Removing track from DB: {django_track}')
             django_track.delete()
             LOG.info(f'Track removed from DB: {django_track}')
 
-    django_albums = Album.objects.all()
+    django_albums = Album.objects.filter(album_type=album_type)
     for django_album in django_albums:
         occurrences = [i for i in _albums if str(django_album.album_title).lower() in i.lower()]
         if len(occurrences) == 0:
@@ -162,30 +168,11 @@ def create_update_track_list(directory):
     for django_artist in django_artists:
         if django_artist.name not in _artists:
             LOG.info(f'Removing artist from DB: {django_artist}')
-            django_artist.delete()
+            try:
+                django_artist.delete()
+                LOG.info(f'Artist removed from DB: {django_artist}')
+            except Exception:
+                LOG.exception('Could not delete Artist from DB:')
 
-            """
-AC/DC on OSX (HFS)
-ACDC on /data/usb_hdd and AC:DC on /data/googledrive
-
-Dec 19 09:25:01 jukeoroni gunicorn[18042]: Exception in thread Track List Generator Process:
-Dec 19 09:25:01 jukeoroni gunicorn[18042]: Traceback (most recent call last):
-Dec 19 09:25:01 jukeoroni gunicorn[18042]:   File "/usr/lib/python3.7/threading.py", line 917, in _bootstrap_inner
-Dec 19 09:25:01 jukeoroni gunicorn[18042]:     self.run()
-Dec 19 09:25:01 jukeoroni gunicorn[18042]:   File "/usr/lib/python3.7/threading.py", line 865, in run
-Dec 19 09:25:01 jukeoroni gunicorn[18042]:     self._target(*self._args, **self._kwargs)
-Dec 19 09:25:01 jukeoroni gunicorn[18042]:   File "/data/django/jukeoroni/player/jukeoroni/juke_box.py", line 416, in track_list_generator_task
-Dec 19 09:25:01 jukeoroni gunicorn[18042]:     self.create_update_track_list()
-Dec 19 09:25:01 jukeoroni gunicorn[18042]:   File "/data/django/jukeoroni/player/jukeoroni/juke_box.py", line 562, in create_update_track_list
-Dec 19 09:25:01 jukeoroni gunicorn[18042]:     django_artist.delete()
-Dec 19 09:25:01 jukeoroni gunicorn[18042]:   File "/data/venv/lib/python3.7/site-packages/django/db/models/base.py", line 953, in delete
-Dec 19 09:25:01 jukeoroni gunicorn[18042]:     collector.collect([self], keep_parents=keep_parents)
-Dec 19 09:25:01 jukeoroni gunicorn[18042]:   File "/data/venv/lib/python3.7/site-packages/django/db/models/deletion.py", line 308, in collect
-Dec 19 09:25:01 jukeoroni gunicorn[18042]:     set(chain.from_iterable(protected_objects.values())),
-Dec 19 09:25:01 jukeoroni gunicorn[18042]: django.db.models.deletion.ProtectedError: ("Cannot delete some instances of model 'Artist' because they are referenced through protected foreign keys: 'Album.artist'.", {Back In Black (Master Series V) [DSD128]})
-            """
-
-            LOG.info(f'Artist removed from DB: {django_artist}')
-
-    LOG.info(f'Finished: track list generated successfully: {len(_files)} tracks, {len(_albums)} albums and {len(_artists)} artists found')
+    LOG.info(f'Finished: {album_type} track list generated successfully: {len(_files)} tracks, {len(_albums)} albums and {len(_artists)} artists found')
 ############################################
