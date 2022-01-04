@@ -82,12 +82,27 @@ class JukeOroniView(View):
             ret += '<link rel="icon" type="image/x-icon" href="/jukeoroni/favicon.ico">\n'
             ret += '</head>\n'
             ret += '<body style="background-color:#{0};">\n'.format(bg_color)
+            ret += '<center>'
+            ret += '<table border="0" cellspacing="0" style="text-align:center;margin-left:auto;margin-right:auto;border-collapse: collapse;">'
+            ret += '<tr style="border: none;">'
+            ret += '<td style="border-right: solid 1px #f00; border-left: solid 1px #f00;">'  #  border-right: solid 1px #f00; border-left: solid 1px #f00;
+            ret += '<a href="/transmission" target="_blank">Transmission</a>'
+
+            ret += '</td>'
+            ret += '<td style="border-right: solid 1px #f00; border-left: solid 1px #f00;">'
+            ret += '<a href="/webmin" target="_blank">Webmin</a>'
+
+            ret += '</td>'
+            ret += '</tr>'
+            ret += '</table>'
+            ret += '</center>'
+
+            ret += '<hr>\n'
+
             # ret += '<center><h1>Hello JukeOroni</h1></center>\n'
             ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/set_jukebox\';\">JukeBox</button>\n'
-            ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/set_meditationbox\';\">MeditationBox</button>\n'
             ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/set_radio\';\">Radio</button>\n'
-            ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/transmission\';\">Transmission</button>\n'
-            ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/webmin\';\">Webmin</button>\n'
+            ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/set_meditationbox\';\">MeditationBox</button>\n'
             ret += '<hr>\n'
 
             img = jukeoroni.layout_standby.get_layout(labels=jukeoroni.LABELS)
