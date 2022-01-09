@@ -5,6 +5,7 @@ from player.jukeoroni.displays import Meditationbox as MeditationboxLayout
 from player.jukeoroni.settings import (
     MEDITATION_DIR,
     ALBUM_TYPE_MEDITATION,
+    MODES
 )
 
 
@@ -21,6 +22,10 @@ class MeditationBox(BaseBox):
         self.LOG = logging.getLogger(__name__)
 
         self.LOG.info(f'Initializing {self.box_type}...')
+
+        self.set_loader_mode_album()
+
+        # self.jukeoroni.mode = MODES['jukebox']['standby'][jukeoroni.jukebox.loader_mode]
 
         # self.loader_mode = 'album'
         #
@@ -42,7 +47,7 @@ class MeditationBox(BaseBox):
 
     @property
     def box_type(self):
-        return 'MeditationBox'
+        return 'meditationbox'
 
     @property
     def album_type(self):

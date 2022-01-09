@@ -30,7 +30,7 @@ box.turn_off()
 
     @property
     def box_type(self):
-        return 'JukeBox'
+        return 'jukebox'
 
     @property
     def album_type(self):
