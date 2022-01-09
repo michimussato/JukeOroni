@@ -134,7 +134,7 @@ j.turn_off()
         self._buttons_watcher_thread = None
         self._state_watcher_thread = None
 
-        self._jukebox_playback_thread = None
+        # self._jukebox_playback_thread = None
         self._playback_thread = None
 
     def __str__(self):
@@ -592,7 +592,7 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
         assert isinstance(self.inserted_media, JukeboxTrack)
 
         self._playback_thread = threading.Thread(target=self._playback_task)
-        self._playback_thread.name = 'Playback Thread'
+        self._playback_thread.name = 'JukeOroni Playback Thread'
         self._playback_thread.daemon = False
         self._playback_thread.start()
 
@@ -608,7 +608,7 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
         LOG.info('playback finished')
         self.eject()
         self._playback_thread = None
-        self._jukebox_playback_thread = None
+        # self._jukebox_playback_thread = None
     ############################################
 
     ############################################
@@ -630,9 +630,11 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
             if self._playback_thread is not None:
                 self._playback_thread.join()
                 self._playback_thread = None
-            if self.mode == MODES['jukebox']['on_air'][self.jukebox.loader_mode]:
+            if self.mode == MODES['jukebox']['on_air'][self.jukebox.loader_mode] \
+                    or self.mode == MODES['jukebox']['standby'][self.jukebox.loader_mode]:
                 box = self.jukebox
-            elif self.mode == MODES['meditationbox']['on_air'][self.meditationbox.loader_mode]:
+            elif self.mode == MODES['meditationbox']['on_air'][self.meditationbox.loader_mode] \
+                    or self.mode == MODES['meditationbox']['standby'][self.meditationbox.loader_mode]:
                 box = self.meditationbox
             box.playing_track = self.inserted_media
 
@@ -757,9 +759,11 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
 
         elif isinstance(self.inserted_media, JukeboxTrack):
             self.eject()
-            if self.mode == MODES['jukebox']['on_air'][self.jukebox.loader_mode]:
+            if self.mode == MODES['jukebox']['on_air'][self.jukebox.loader_mode] \
+                    or self.mode == MODES['jukebox']['standby'][self.jukebox.loader_mode]:
                 self.set_display_jukebox()
-            elif self.mode == MODES['meditationbox']['on_air'][self.meditationbox.loader_mode]:
+            elif self.mode == MODES['meditationbox']['on_air'][self.meditationbox.loader_mode] \
+                    or self.mode == MODES['meditationbox']['standby'][self.meditationbox.loader_mode]:
                 self.set_display_meditation()
 
     def previous(self):
@@ -802,12 +806,16 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
         assert self.playback_proc is None, 'cannot eject media while playback is active. stop() first.'
         self.inserted_media = None
 
-        if self.mode == MODES['jukebox']['on_air'][self.jukebox.loader_mode]:
-            box = self.jukebox
-        elif self.mode == MODES['meditationbox']['on_air'][self.meditationbox.loader_mode]:
-            box = self.meditationbox
-
-        box.playing_track = None
+        # if self.mode == MODES['jukeoroni']['standby']:
+        #     self.jukebox.playing_track = None
+        #     self.meditationbox.playing_track = None
+        # elif self.mode == MODES['jukebox']['on_air'][self.jukebox.loader_mode]:
+        #     self.jukebox.playing_track = None
+        # elif self.mode == MODES['meditationbox']['on_air'][self.meditationbox.loader_mode]:
+        #     self.meditationbox.playing_track = None
+        # else:
+        self.jukebox.playing_track = None
+        self.meditationbox.playing_track = None
     ############################################
 
     @property

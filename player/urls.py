@@ -32,8 +32,8 @@ urlpatterns = [
     path('jukebox/albums/', JukeOroniView.albums, name='player_albums'),
     path('meditationbox/albums/', JukeOroniView.albums, name='player_albums'),
     # path('jukebox/tracks/play_track/<int:track_id>/', JukeOroniView.play_track, name='player_play_track'),
-    path('jukebox/tracks/', JukeOroniView.tracks, name='player_tracks'),
-    path('meditationbox/tracks/', JukeOroniView.tracks, name='player_tracks'),
+    # path('jukebox/tracks/', JukeOroniView.tracks, name='player_tracks'),
+    # path('meditationbox/tracks/', JukeOroniView.tracks, name='player_tracks'),
 
     # Radio
     path('radio/', JukeOroniView.radio_index, name='radio'),

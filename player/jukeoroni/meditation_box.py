@@ -24,6 +24,7 @@ class MeditationBox(BaseBox):
         self.LOG.info(f'Initializing {self.box_type}...')
 
         self.set_loader_mode_album()
+        self._need_first_album_track = True
 
         # self.jukeoroni.mode = MODES['jukebox']['standby'][jukeoroni.jukebox.loader_mode]
 

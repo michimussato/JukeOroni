@@ -230,7 +230,9 @@ box.turn_off()
                     if not self.loading_track.killed:
                         loading_track_copy = self.loading_track
                         self.tracks.append(loading_track_copy)
-                        self.tracks = list(set(self.tracks))
+                        # TODO: make sure not to add tracks that are
+                        #  already in the queue
+                        # self.tracks = list(set(self.tracks))  # buggy!! Fucks up order somehow
                     self.loading_track = None
 
             time.sleep(1.0)
