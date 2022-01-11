@@ -10,6 +10,10 @@ from player.models import Album, Channel, Station, Artist, Track
 from player.jukeoroni.settings import (
     MODES,
     RANDOM_ALBUMS,
+    ENABLE_JUKEBOX,
+    ENABLE_RADIO,
+    ENABLE_MEDITATION,
+    ENABLE_AUDIOBOOK,
 )
 
 
@@ -142,11 +146,17 @@ class JukeOroniView(View):
             ret += '<hr>\n'
 
             # ret += '<center><h1>Hello JukeOroni</h1></center>\n'
-            ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/set_jukebox\';\">JukeBox</button>\n'
-            ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/set_radio\';\">Radio</button>\n'
-            ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/set_meditationbox\';\">MeditationBox</button>\n'
-            ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/set_audiobookbox\';\">AudiobookBox</button>\n'
-            ret += '<hr>\n'
+            if any([ENABLE_JUKEBOX, ENABLE_RADIO, ENABLE_MEDITATION, ENABLE_AUDIOBOOK]):
+                if ENABLE_JUKEBOX:
+                    ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/set_jukebox\';\">JukeBox</button>\n'
+                if ENABLE_RADIO:
+                    ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/set_radio\';\">Radio</button>\n'
+                if ENABLE_MEDITATION:
+                    ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/set_meditationbox\';\">MeditationBox</button>\n'
+                if ENABLE_AUDIOBOOK:
+                    ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/set_audiobookbox\';\">AudiobookBox</button>\n'
+
+                ret += '<hr>\n'
 
             img = jukeoroni.layout_standby.get_layout(labels=jukeoroni.LABELS)
             encoded_img_data = encoded_screen(img)

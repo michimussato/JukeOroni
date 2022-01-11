@@ -229,16 +229,16 @@ MODES = {
         },
     'audiobookbox': {
             'standby': {
-                # 'random': {
-                #     'numeric': 4.0,
-                #     'name': 'audiobookbox standby random',
-                #     'buttons': {
-                #         'X000': 'Menu',
-                #         '0X00': 'Play',
-                #         '00X0': 'N//A',
-                #         '000X': 'Random -> Album',
-                #     },
-                # },
+                'random': {
+                    'numeric': 4.0,
+                    'name': 'audiobookbox standby random',
+                    'buttons': {
+                        'X000': 'Menu',
+                        '0X00': 'Play',
+                        '00X0': 'N//A',
+                        '000X': 'Random -> Album',
+                    },
+                },
                 'album': {
                     'numeric': 4.1,
                     'name': 'audiobookbox standby album',
@@ -261,16 +261,16 @@ MODES = {
                 # },
             },
             'on_air': {
-                # 'random': {
-                #     'numeric': 4.2,
-                #     'name': 'audiobookbox on_air random',
-                #     'buttons': {
-                #         'X000': 'Stop',
-                #         '0X00': 'Next',
-                #         '00X0': 'N//A',
-                #         '000X': 'Random -> Album',
-                #     },
-                # },
+                'random': {
+                    'numeric': 4.2,
+                    'name': 'audiobookbox on_air random',
+                    'buttons': {
+                        'X000': 'Stop',
+                        '0X00': 'Next',
+                        '00X0': 'N//A',
+                        '000X': 'Random -> Album',
+                    },
+                },
                 'album': {
                     'numeric': 4.3,
                     'name': 'audiobookbox on_air album',
