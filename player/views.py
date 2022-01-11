@@ -181,12 +181,12 @@ class JukeOroniView(View):
 
         return HttpResponseRedirect('/jukeoroni/meditationbox')
 
-    def set_audibookbox(self):
+    def set_audiobookbox(self):
         global jukeoroni
 
-        jukeoroni.mode = MODES['audibookbox']['standby'][jukeoroni.audibookbox.loader_mode]
+        jukeoroni.mode = MODES['audiobookbox']['standby'][jukeoroni.audiobookbox.loader_mode]
 
-        return HttpResponseRedirect('/jukeoroni/audibookbox')
+        return HttpResponseRedirect('/jukeoroni/audiobookbox')
 
     def set_radio(self):
         global jukeoroni
@@ -214,10 +214,10 @@ class JukeOroniView(View):
                 and not jukeoroni.mode == MODES['meditationbox']['standby']['album'] \
                 and not jukeoroni.mode == MODES['meditationbox']['on_air']['random'] \
                 and not jukeoroni.mode == MODES['meditationbox']['on_air']['album'] \
-                and not jukeoroni.mode == MODES['audibookbox']['standby']['random'] \
-                and not jukeoroni.mode == MODES['audibookbox']['standby']['album'] \
-                and not jukeoroni.mode == MODES['audibookbox']['on_air']['random'] \
-                and not jukeoroni.mode == MODES['audibookbox']['on_air']['album']:
+                and not jukeoroni.mode == MODES['audiobookbox']['standby']['random'] \
+                and not jukeoroni.mode == MODES['audiobookbox']['standby']['album'] \
+                and not jukeoroni.mode == MODES['audiobookbox']['on_air']['random'] \
+                and not jukeoroni.mode == MODES['audiobookbox']['on_air']['album']:
 
             return HttpResponseRedirect('/jukeoroni')
 
