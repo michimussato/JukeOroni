@@ -6,6 +6,7 @@ from player.jukeoroni.settings import (
     _JUKEBOX_ICON_IMAGE,
     _JUKEBOX_LOADING_IMAGE,
     _MEDITATION_ICON_IMAGE,
+    _AUDIOBOOK_ICON_IMAGE,
     _MOON_TEXUTRE,
     GLOBAL_LOGGING_LEVEL,
 )
@@ -57,6 +58,10 @@ class Resource(object):
     @property
     def MEDITATION_ICON_IMAGE(self):
         return Image.open(_MEDITATION_ICON_IMAGE)
+
+    @property
+    def AUDIOBOOK_ICON_IMAGE(self):
+        return Image.open(_AUDIOBOOK_ICON_IMAGE)
 
     @property
     def MOON_TEXUTRE(self):

@@ -26,24 +26,6 @@ class MeditationBox(BaseBox):
         self.set_loader_mode_album()
         self._need_first_album_track = True
 
-        # self.jukeoroni.mode = MODES['jukebox']['standby'][jukeoroni.jukebox.loader_mode]
-
-        # self.loader_mode = 'album'
-        #
-        # causes error: (maybe set_loader_mode_album()?)
-        #
-        # Exception in thread Track Loader Thread:
-        # Traceback (most recent call last):
-        #   File "/usr/lib/python3.7/threading.py", line 917, in _bootstrap_inner
-        #     self.run()
-        #   File "/usr/lib/python3.7/threading.py", line 865, in run
-        #     self._target(*self._args, **self._kwargs)
-        #   File "/data/django/jukeoroni/player/jukeoroni/base_box.py", line 210, in _track_loader_task
-        #     loading_track = self.get_next_track()
-        #   File "/data/django/jukeoroni/player/jukeoroni/base_box.py", line 325, in get_next_track
-        #     first_album_track = self.playing_track.first_album_track
-        # AttributeError: 'NoneType' object has no attribute 'first_album_track'
-
         self.layout = MeditationboxLayout()
 
     @property

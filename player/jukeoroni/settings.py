@@ -20,9 +20,10 @@ MEDIA_ROOT = f'/data/{DATA_SOURCE}/media/audio/'
 #     MEDIA_ROOT = f'/data/{DATA_SOURCE}/media/audio/'
 ALBUM_TYPE_MUSIC = 'music'
 ALBUM_TYPE_MEDITATION = 'meditation'
-ALBUM_TYPE_AUDIOBOOKS = 'audiobooks'
+ALBUM_TYPE_AUDIOBOOK = 'audiobook'
 MUSIC_DIR = os.path.join(MEDIA_ROOT, ALBUM_TYPE_MUSIC)
 MEDITATION_DIR = os.path.join(MEDIA_ROOT, ALBUM_TYPE_MEDITATION)
+AUDIOBOOK_DIR = os.path.join(MEDIA_ROOT, ALBUM_TYPE_AUDIOBOOK)
 FAULTY_ALBUMS = os.path.join(MEDIA_ROOT, 'faulty_albums_test.txt')
 MISSING_COVERS_FILE = os.path.join(MEDIA_ROOT, 'missing_covers_test.txt')
 AUDIO_FILES = ['.dsf', '.flac', '.wav', '.dff']
@@ -42,6 +43,7 @@ FFPLAY_CMD = 'ffplay -hide_banner -autoexit -vn -nodisp -loglevel error'.split('
 ENABLE_JUKEBOX = True
 ENABLE_RADIO = True
 ENABLE_MEDITATION = True
+ENABLE_AUDIOBOOK = False
 
 STATE_WATCHER_CADENCE = 0.5
 
@@ -67,7 +69,7 @@ MODES = {
                 'X000': ['N//A', 'Player'][int(ENABLE_JUKEBOX)],
                 '0X00': ['N//A', 'Radio'][int(ENABLE_RADIO)],
                 '00X0': ['N//A', 'Meditation'][int(ENABLE_MEDITATION)],
-                '000X': 'N//A',  # TODO cannot switch it back on after OFF
+                '000X': ['N//A', 'Audiobook'][int(ENABLE_AUDIOBOOK)],  # TODO cannot switch it back on after OFF
             },
         },
     },
@@ -225,6 +227,72 @@ MODES = {
                 # },
             },
         },
+    'audiobookbox': {
+            'standby': {
+                # 'random': {
+                #     'numeric': 4.0,
+                #     'name': 'audiobookbox standby random',
+                #     'buttons': {
+                #         'X000': 'Menu',
+                #         '0X00': 'Play',
+                #         '00X0': 'N//A',
+                #         '000X': 'Random -> Album',
+                #     },
+                # },
+                'album': {
+                    'numeric': 4.1,
+                    'name': 'audiobookbox standby album',
+                    'buttons': {
+                        'X000': 'Menu',
+                        '0X00': 'Play',
+                        '00X0': 'N//A',
+                        '000X': 'Album -> Random',
+                    },
+                },
+                # 'track': {
+                #     'numeric': 3.5,
+                #     'name': 'meditationbox standby track',
+                #     'buttons': {
+                #         'X000': 'Stop',
+                #         '0X00': 'Next',
+                #         '00X0': 'N//A',
+                #         '000X': 'Album -> Random',
+                #     },
+                # },
+            },
+            'on_air': {
+                # 'random': {
+                #     'numeric': 4.2,
+                #     'name': 'audiobookbox on_air random',
+                #     'buttons': {
+                #         'X000': 'Stop',
+                #         '0X00': 'Next',
+                #         '00X0': 'N//A',
+                #         '000X': 'Random -> Album',
+                #     },
+                # },
+                'album': {
+                    'numeric': 4.3,
+                    'name': 'audiobookbox on_air album',
+                    'buttons': {
+                        'X000': 'Stop',
+                        '0X00': 'Next',
+                        '00X0': 'N//A',
+                        '000X': 'Album -> Random',
+                    },
+                },
+                # 'track': {
+                #     'numeric': 3.4,
+                #     'name': 'meditationbox on_air album track',
+                #     'buttons': {
+                #         'X000': 'Stop',
+                #         '0X00': 'Next',
+                #         '00X0': 'N//A',
+                #         '000X': 'Album -> Random',
+                #     },
+                # },
+            },
+        },
 }
 
 
@@ -242,6 +310,9 @@ _JUKEBOX_ON_AIR_DEFAULT_IMAGE = '/data/django/jukeoroni/player/static/jukebox_on
 
 # meditation
 _MEDITATION_ICON_IMAGE = '/data/django/jukeoroni/player/static/meditation_box.jpg'
+
+# audiobook
+_AUDIOBOOK_ICON_IMAGE = '/data/django/jukeoroni/player/static/audiobook_box.jpg'
 
 # radio
 _RADIO_ICON_IMAGE = '/data/django/jukeoroni/player/static/radio.png'

@@ -11,6 +11,7 @@ from inky.inky_uc8159 import Inky  # , BLACK
 from player.jukeoroni.juke_radio import Radio
 from player.jukeoroni.juke_box import JukeBox
 from player.jukeoroni.meditation_box import MeditationBox
+from player.jukeoroni.audiobook_box import AudiobookBox
 from player.jukeoroni.displays import Off as OffLayout
 from player.jukeoroni.displays import Standby as StandbyLayout
 from player.models import Channel
@@ -110,6 +111,7 @@ j.turn_off()
         self.jukebox = JukeBox(jukeoroni=self)
         self.radio = Radio()
         self.meditationbox = MeditationBox(jukeoroni=self)
+        self.audiobookbox = AudiobookBox(jukeoroni=self)
 
         self.playback_proc = None
         self.inserted_media = None
@@ -244,6 +246,27 @@ j.turn_off()
                                                               artist=self.inserted_media.cover_artist)
                 except AttributeError:
                     bg = self.meditationbox.layout.get_layout(labels=self.LABELS, loading=True)
+                    LOG.exception('inserted_media problem: ')
+            self.set_image(image=bg)
+
+    def set_display_audiobook(self):
+        """
+        j.set_display_audiobook()
+        """
+        if not self.test:
+
+            # need to add None too, otherwise we might end up with
+            # NoneType Error for self.inserted_media.cover_album
+            if self.mode == MODES['audiobookbox']['standby']['album'] \
+                    or self.mode == MODES['audiobookbox']['standby']['random']:
+                bg = self.audiobookbox.layout.get_layout(labels=self.LABELS)
+            elif self.mode == MODES['audiobookbox']['on_air']['album'] \
+                    or self.mode == MODES['audiobookbox']['on_air']['random']:
+                try:
+                    bg = self.audiobookbox.layout.get_layout(labels=self.LABELS, cover=self.inserted_media.cover_album,
+                                                             artist=self.inserted_media.cover_artist)
+                except AttributeError:
+                    bg = self.audiobookbox.layout.get_layout(labels=self.LABELS, loading=True)
                     LOG.exception('inserted_media problem: ')
             self.set_image(image=bg)
     ############################################
@@ -496,6 +519,66 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
                             self.set_display_meditation()
                             self._current_time = new_time.strftime('%H:%M')
 
+            # AUDIOBOOKBOX STANDBY
+            elif self.mode == MODES['audiobookbox']['standby']['random'] \
+                    or self.mode == MODES['audiobookbox']['standby']['album']:
+
+                if update_mode:
+                    update_mode = False
+
+                    if self.mode == MODES['audiobookbox']['standby']['random']:
+                        self.stop()
+                        self.eject()
+                        if self.audiobookbox.loader_mode != 'random':
+                            self.audiobookbox.set_loader_mode_random()
+                        # self.set_display_jukebox()
+
+                    elif self.mode == MODES['audiobookbox']['standby']['album']:
+                        self.stop()
+                        self.eject()
+                        if self.audiobookbox.loader_mode != 'album':
+                            self.audiobookbox.set_loader_mode_album()
+
+                    self.set_display_audiobook()
+
+                else:
+                    if self._current_time != new_time.strftime('%H:%M'):
+                        if self._current_time is None or (int(new_time.strftime('%H:%M')[-2:])) % CLOCK_UPDATE_INTERVAL == 0:
+                            LOG.info('Display/Clock update.')
+                            self.set_display_audiobook()
+                            self._current_time = new_time.strftime('%H:%M')
+
+            # AUDIOBOOK ON_AIR
+            elif self.mode == MODES['audiobookbox']['on_air']['random'] \
+                    or self.mode == MODES['audiobookbox']['on_air']['album']:
+
+                # Make sure, meditation keeps playing if in mode without
+                # considering the update_mode flag
+
+                if self.mode == MODES['audiobookbox']['on_air']['random']:
+                    if self.audiobookbox.loader_mode != 'random':
+                        self.audiobookbox.set_loader_mode_random()
+                    # self.play_jukebox()
+                    # LOG.info(f'Playing: {self.jukebox.playing_track}')
+
+                elif self.mode == MODES['audiobookbox']['on_air']['album']:
+                    if self.audiobookbox.loader_mode != 'album':
+                        self.audiobookbox.set_loader_mode_album()
+
+                self.play_audiobookbox()
+                # LOG.info(f'Playing: {self.jukebox.playing_track}')
+
+                if update_mode:
+                    update_mode = False
+                    self.set_display_audiobook()
+
+                else:
+                    if self._current_time != new_time.strftime('%H:%M'):
+                        if self._current_time is None or (int(new_time.strftime('%H:%M')[-2:])) % CLOCK_UPDATE_INTERVAL == 0:
+                            LOG.info('Display/Clock update.')
+                            self.set_display_audiobook()
+                            self._current_time = new_time.strftime('%H:%M')
+
             time.sleep(STATE_WATCHER_CADENCE)
 
     # def play_box(self):
@@ -588,6 +671,34 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
 
             time.sleep(1.0)
 
+    def play_audiobookbox(self):
+        if self.audiobookbox.playing_track is not None:
+            return
+        elif not bool(self.audiobookbox.tracks):  # and self.playback_proc is None:
+            LOG.info('No tracks ready')
+            if self.audiobookbox.loading_track is not None:
+                LOG.info('Loading 1st track...')
+                if not self._loading_display_activated:
+                    self.set_display_audiobook()
+                    self._loading_display_activated = True
+            else:
+                LOG.warning('Not loading!!!')
+            # print('no tracks ready')
+            return
+
+        self._loading_display_activated = False
+
+        if self.inserted_media is None:  # and bool(self.jukebox.tracks):
+            self.insert(self.audiobookbox.next_track)
+
+        # TODO implement Play/Next combo
+        if isinstance(self.inserted_media, JukeboxTrack):
+            LOG.debug('Starting new playback thread')
+            self.jukeoroni_playback_thread()
+            self.set_display_audiobook()
+
+            time.sleep(1.0)
+
     def jukeoroni_playback_thread(self):
         assert isinstance(self.inserted_media, JukeboxTrack)
 
@@ -602,6 +713,8 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
             box = self.jukebox
         elif self.mode == MODES['meditationbox']['on_air'][self.meditationbox.loader_mode]:
             box = self.meditationbox
+        elif self.mode == MODES['audiobookbox']['on_air'][self.audiobookbox.loader_mode]:
+            box = self.audiobookbox
         box.playing_track = self.inserted_media
         self.inserted_media.play(jukeoroni=self)
         box.playing_track = None
@@ -636,6 +749,9 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
             elif self.mode == MODES['meditationbox']['on_air'][self.meditationbox.loader_mode] \
                     or self.mode == MODES['meditationbox']['standby'][self.meditationbox.loader_mode]:
                 box = self.meditationbox
+            elif self.mode == MODES['audiobookbox']['on_air'][self.audiobookbox.loader_mode] \
+                    or self.mode == MODES['audiobookbox']['standby'][self.audiobookbox.loader_mode]:
+                box = self.audiobookbox
             box.playing_track = self.inserted_media
 
     def play(self):
@@ -728,7 +844,8 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
         # track was inserted yet; could be still loading
         elif isinstance(self.inserted_media, JukeboxTrack) \
                 or self.mode == MODES['jukebox']['on_air'][self.jukebox.loader_mode] \
-                or self.mode == MODES['meditationbox']['on_air'][self.meditationbox.loader_mode]:
+                or self.mode == MODES['meditationbox']['on_air'][self.meditationbox.loader_mode] \
+                or self.mode == MODES['audiobookbox']['on_air'][self.audiobookbox.loader_mode]:
 
             self.playback_proc = None
 
@@ -765,6 +882,9 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
             elif self.mode == MODES['meditationbox']['on_air'][self.meditationbox.loader_mode] \
                     or self.mode == MODES['meditationbox']['standby'][self.meditationbox.loader_mode]:
                 self.set_display_meditation()
+            elif self.mode == MODES['audiobookbox']['on_air'][self.audiobookbox.loader_mode] \
+                    or self.mode == MODES['audiobookbox']['standby'][self.audiobookbox.loader_mode]:
+                self.set_display_audiobook()
 
     def previous(self):
         raise NotImplementedError
@@ -816,6 +936,7 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
         # else:
         self.jukebox.playing_track = None
         self.meditationbox.playing_track = None
+        self.audiobookbox.playing_track = None
     ############################################
 
     @property
@@ -862,6 +983,9 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
 
         # MeditationBox
         self.meditationbox.turn_on(disable_track_loader)
+
+        # AudiobookBox
+        # self.audiobookbox.turn_on(disable_track_loader)
     ############################################
 
     ############################################
@@ -1136,6 +1260,62 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
                 return
             elif button_mapped == '000X':
                 self.mode = MODES['meditationbox']['on_air']['random']
+                return
+            return
+
+        # AudiobookBox
+        # TODO: pause/resume
+        elif self.mode == MODES['audiobookbox']['standby']['random']:
+            if button_mapped == 'X000':
+                self.mode = MODES['jukeoroni']['standby']
+                return
+            elif button_mapped == '0X00':
+                self.mode = MODES['audiobookbox']['on_air']['random']
+                return
+            elif button_mapped == '00X0':
+                return
+            elif button_mapped == '000X':
+                self.mode = MODES['audiobookbox']['standby']['album']
+                return
+            return
+        elif self.mode == MODES['audiobookbox']['standby']['album']:
+            if button_mapped == 'X000':
+                self.mode = MODES['jukeoroni']['standby']
+                return
+            elif button_mapped == '0X00':
+                self.mode = MODES['audiobookbox']['on_air']['album']
+                return
+            elif button_mapped == '00X0':
+                return
+            elif button_mapped == '000X':
+                self.mode = MODES['audiobookbox']['standby']['random']
+                return
+            return
+
+        elif self.mode == MODES['audiobookbox']['on_air']['random']:
+            if button_mapped == 'X000':
+                self.mode = MODES['audiobookbox']['standby']['random']
+                return
+            elif button_mapped == '0X00':
+                self._flag_next = True
+                return
+            elif button_mapped == '00X0':
+                return
+            elif button_mapped == '000X':
+                self.mode = MODES['audiobookbox']['on_air']['album']
+                return
+            return
+        elif self.mode == MODES['audiobookbox']['on_air']['album']:
+            if button_mapped == 'X000':
+                self.mode = MODES['audiobookbox']['standby']['album']
+                return
+            elif button_mapped == '0X00':
+                self._flag_next = True
+                return
+            elif button_mapped == '00X0':
+                return
+            elif button_mapped == '000X':
+                self.mode = MODES['audiobookbox']['on_air']['random']
                 return
             return
 
