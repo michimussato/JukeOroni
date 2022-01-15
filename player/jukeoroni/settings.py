@@ -3,6 +3,7 @@ import os
 
 
 GLOBAL_LOGGING_LEVEL = logging.DEBUG
+DJANGO_LOGGING_LEVEL = GLOBAL_LOGGING_LEVEL
 
 
 LOG = logging.getLogger(__name__)
@@ -15,12 +16,14 @@ DEFAULT_TRACKLIST_REGEN_INTERVAL = _ONE_HOUR * 6  # in hours
 DATA_SOURCES = ['usb_hdd', 'googledrive']
 DATA_SOURCE = DATA_SOURCES[0]  # https://raspberrytips.com/mount-usb-drive-raspberry-pi/
 MEDIA_ROOT = f'/data/{DATA_SOURCE}/media/audio/'
+# LOG_ROOT = os.path.join(MEDIA_ROOT, 'jukeoroni_logs')
 # if not os.path.exists(MEDIA_ROOT):
 #     DATA_SOURCE = DATA_SOURCES[1]  # Fallback to google drive if usb drive is not available
 #     MEDIA_ROOT = f'/data/{DATA_SOURCE}/media/audio/'
-ALBUM_TYPE_MUSIC = 'music'
-ALBUM_TYPE_MEDITATION = 'meditation'
-ALBUM_TYPE_AUDIOBOOK = 'audiobook'
+ALBUM_TYPES = ['music', 'meditation', 'audiobook']
+ALBUM_TYPE_MUSIC = ALBUM_TYPES[0]  # 'music'
+ALBUM_TYPE_MEDITATION = ALBUM_TYPES[1]  # 'meditation'
+ALBUM_TYPE_AUDIOBOOK = ALBUM_TYPES[2]  # 'audiobook'
 MUSIC_DIR = os.path.join(MEDIA_ROOT, ALBUM_TYPE_MUSIC)
 MEDITATION_DIR = os.path.join(MEDIA_ROOT, ALBUM_TYPE_MEDITATION)
 AUDIOBOOK_DIR = os.path.join(MEDIA_ROOT, ALBUM_TYPE_AUDIOBOOK)

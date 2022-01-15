@@ -14,6 +14,10 @@ import os
 
 from jukeoroni._secrets import DJANGO_SECRET_KEY
 from pathlib import Path
+from player.jukeoroni.settings import (
+    MEDIA_ROOT,
+    DJANGO_LOGGING_LEVEL,
+)
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -30,7 +34,6 @@ SECRET_KEY = DJANGO_SECRET_KEY
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -46,26 +49,67 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'simple'
         },
+        'file': {
+            'level': 'ERROR',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(MEDIA_ROOT, 'jukeoroni_logs', 'django_error.log'),
+            'formatter': 'simple',
+        },
+        'file_juke_box': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(MEDIA_ROOT, 'jukeoroni_logs', 'jukebox_error.log'),
+            'formatter': 'simple',
+        },
+        'file_meditation_box': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(MEDIA_ROOT, 'jukeoroni_logs', 'meditationbox_error.log'),
+            'formatter': 'simple',
+        },
+        'file_create_update_track_list': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(MEDIA_ROOT, 'jukeoroni_logs', 'create_update_track_list_error.log'),
+            'formatter': 'simple',
+        },
     },
     'loggers': {
         'django.request': {
-            'handlers': ['console'],
-            'propagate': False,
+            'handlers': ['console', 'file'],
+            # 'propagate': False,
             'level': 'DEBUG',
         },
         'asyncio': {
+            'handlers': ['console', 'file'],
+            # 'propagate': True,
             'level': 'WARNING',
+        },
+        'player.jukeoroni.juke_box': {
+            'handlers': ['file_juke_box'],
+            # 'propagate': True,
+            'level': 'DEBUG',
+        },
+        'player.jukeoroni.meditation_box': {
+            'handlers': ['file_meditation_box'],
+            # 'propagate': True,
+            'level': 'DEBUG',
+        },
+        'player.jukeoroni.create_update_track_list': {
+            'handlers': ['file_create_update_track_list'],
+            # 'propagate': True,
+            'level': 'DEBUG',
         },
     },
     'root': {
         'level': 'DEBUG',
-        'handlers': ['console']
+        'handlers': ['console', 'file']
     }
 }
 
 
 LOG = logging.getLogger(__name__)
-LOG.setLevel(logging.INFO)
+LOG.setLevel(DJANGO_LOGGING_LEVEL)
 
 
 ALLOWED_HOSTS = ['*']
