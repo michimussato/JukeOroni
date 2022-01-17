@@ -1,13 +1,11 @@
 import os
 import logging
+from django.db.models.deletion import ProtectedError
 from player.jukeoroni.discogs import get_client, get_artist, get_album
 from player.models import Artist, Album, Track as DjangoTrack
 from player.jukeoroni.settings import (
     GLOBAL_LOGGING_LEVEL,
-    # MUSIC_DIR,
     AUDIO_FILES,
-    ALBUM_TYPES,
-    # ALBUM_TYPE_MUSIC,
 )
 
 
@@ -15,6 +13,7 @@ LOG = logging.getLogger(__name__)
 LOG.setLevel(GLOBAL_LOGGING_LEVEL)
 
 
+# TODO: maybe use a better character
 DELIMITER = ' - '
 
 
@@ -38,18 +37,12 @@ def create_update_track_list(box, directory, album_type):
         # MUSIC_DIR:  /data/usb_hdd/media/audio/music
         # path:       /data/usb_hdd/media/audio/music/on_device/HIM - 2008 - Razorblade Romance [DSD128]/
         _path = os.path.relpath(path, directory)
-        # _path =
         album = os.path.basename(_path)
         try:
-            # TODO: maybe use a better character
             artist, year, title = album.split(DELIMITER)
         except ValueError:
-            # with open(FAULTY_ALBUMS, 'a+') as f:
-            #     f.write(album + '\n')
-            # TODO: store this somewhere to fix it
             LOG.exception(f'Not a valid album path: {album}:')
             continue
-
 
         # COVER ARTIST
         # Artist can participate in Music and Meditation
@@ -93,7 +86,6 @@ def create_update_track_list(box, directory, album_type):
         title_stripped = title.split(' [')[0]
         query_album = Album.objects.filter(artist=model_artist, album_title__exact=title, year__exact=year, album_type=album_type)
 
-
         # COVER ALBUM
         if bool(query_album):
             model_album = query_album[0]
@@ -107,9 +99,6 @@ def create_update_track_list(box, directory, album_type):
                 else:
                     LOG.info('Could not find an online cover.')
 
-            # if not model_album.album_type == album_type:
-            #     query_album.update(album_type=album_type)
-
         else:
             cover_online = get_album(discogs_client, artist, title_stripped)
             model_album = Album(artist=model_artist, album_title=title, year=year, cover=img_path, cover_online=cover_online, album_type=album_type)
@@ -122,7 +111,6 @@ def create_update_track_list(box, directory, album_type):
         except Exception:
             LOG.exception(f'Cannot save album model {title} by {artist}:')
         # COVER ALBUM
-
 
         for _file in files:
             if os.path.splitext(_file)[1] in AUDIO_FILES:
@@ -163,67 +151,20 @@ def create_update_track_list(box, directory, album_type):
 
     django_albums = Album.objects.filter(album_type=album_type)
     for django_album in django_albums:
-
         if DELIMITER.join([django_album.artist.name, django_album.year, django_album.album_title]) not in _albums:
-            # print
-            # occurrences = list()
-            # for _album in _albums:
-            #     if str(django_album.album_title).lower() in str(_album).lower():
-            #         occurrences.append(_album)
-            #         LOG.debug(f'Album found in DB: {_album}')
-            # # occurrences = [i for i in _albums if str(django_album.album_title).lower() in i.lower()]
-            # LOG.debug(f'Occurrences in DB: {occurrences}')
-            # if not bool(occurrences):
             LOG.info(f'Removing album from DB: {DELIMITER.join([django_album.artist.name, django_album.year, django_album.album_title])}')
-            # Sacred Alliance [DSD][64] (Sacred Alliance [DSD][64])
-
-            # LOG.debug(f'albums: {_albums}')
-            # LOG.debug(f'{DELIMITER.join([django_album.artist.name, django_album.year, django_album.album_title]) not in _albums}')
-            # 'Anima - 2014 - Sacred Alliance [DSD][64]'
-            # Artist
             django_album.delete()
             LOG.info(f'Album removed from DB: {django_album}')
 
-        """
-Jan 14 20:19:45 jukeoroni gunicorn[4161]: [01-14-2022 20:19:45] [INFO] [Track List Generator Process (jukebox)|2950689888] [player.jukeoroni.create_update_track_list]: Removing album from DB: Motörhead [FLAC][24][192]
-Jan 14 20:19:45 jukeoroni gunicorn[4161]: Exception in thread Track List Generator Process (jukebox):
-Jan 14 20:19:45 jukeoroni gunicorn[4161]: Traceback (most recent call last):
-Jan 14 20:19:45 jukeoroni gunicorn[4161]:   File "/usr/lib/python3.7/threading.py", line 917, in _bootstrap_inner
-Jan 14 20:19:45 jukeoroni gunicorn[4161]:     self.run()
-Jan 14 20:19:45 jukeoroni gunicorn[4161]:   File "/usr/lib/python3.7/threading.py", line 865, in run
-Jan 14 20:19:45 jukeoroni gunicorn[4161]:     self._target(*self._args, **self._kwargs)
-Jan 14 20:19:45 jukeoroni gunicorn[4161]:   File "/data/django/jukeoroni/player/jukeoroni/base_box.py", line 183, in track_list_generator_task
-Jan 14 20:19:45 jukeoroni gunicorn[4161]:     create_update_track_list(box=self, directory=self.audio_dir, album_type=self.album_type)
-Jan 14 20:19:45 jukeoroni gunicorn[4161]:   File "/data/django/jukeoroni/player/jukeoroni/create_update_track_list.py", line 164, in create_update_track_list
-Jan 14 20:19:45 jukeoroni gunicorn[4161]:     django_album.delete()
-Jan 14 20:19:45 jukeoroni gunicorn[4161]:   File "/data/venv/lib/python3.7/site-packages/django/db/models/base.py", line 953, in delete
-Jan 14 20:19:45 jukeoroni gunicorn[4161]:     collector.collect([self], keep_parents=keep_parents)
-Jan 14 20:19:45 jukeoroni gunicorn[4161]:   File "/data/venv/lib/python3.7/site-packages/django/db/models/deletion.py", line 308, in collect
-Jan 14 20:19:45 jukeoroni gunicorn[4161]:     set(chain.from_iterable(protected_objects.values())),
-Jan 14 20:19:45 jukeoroni gunicorn[4161]: django.db.models.deletion.ProtectedError: ("Cannot delete some instances of model 'Album' because they are referenced through protected foreign keys: 'Track.album'.", {on_device/Motörhead - 1977 - Motörhead [FLAC][24][192]/01 Motorhead.flac, on_device/Motörhead - 1977 - Motörhead [FLAC][24][192]/02 Over The Top.flac})
-        """
-
-    # django_artists = Artist.objects.all()
-    # # Todo: need to add some logic to consider only album_type-specific artists, although
-    # #  one artist can occur in music and medititation albums at the same time
-    #
-    # # Is it really necessary to delete artists? They could actually remain inside the DB without side effects most likely
-    # for django_artist in django_artists:
-    #
-    #     if django_artist.name not in _artists:
-    #         LOG.info(f'Removing artist from DB: {django_artist}')
-    #         try:
-    #             django_artist.delete()
-    #             LOG.info(f'Artist removed from DB: {django_artist}')
-    #         except Exception:
-    #             LOG.exception(f'Could not delete Artist from DB: {django_artist}')
-    #             # Is the artist connected to albums of other album_types?
-    #             # _album_types = ALBUM_TYPES
-    #             # _album_types.pop(album_type)
-    #             #
-    #             # for _album_type in _album_types:
-    #             #     LOG.info(f'Artist is connected to album')
-
+    # no special logic required. if artist is still connected, it
+    # cannot be deleted
+    django_artists = Artist.objects.all()
+    for django_artist in django_artists:
+        try:
+            django_artist.delete()
+            LOG.info(f'Artist removed from DB: {django_artist}')
+        except ProtectedError:
+            LOG.debug(f'Artist {django_artist} is still connected. Ignored...')
 
     LOG.info(f'Finished: {album_type} track list generated successfully: {len(_files)} tracks, {len(_albums)} albums and {len(_artists)} artists found')
 ############################################
