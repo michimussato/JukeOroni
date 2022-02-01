@@ -12,14 +12,7 @@ from player.jukeoroni.images import Resource
 from player.models import Track as DjangoTrack
 
 
-from player.jukeoroni.settings import Settings  # (
-#     GLOBAL_LOGGING_LEVEL,
-#     MEDIA_ROOT,
-#     CACHE_COVERS,
-#     COVER_ONLINE_PREFERENCE,
-#     FFPLAY_CMD,
-#     CACHE_TRACKS,
-# )
+from player.jukeoroni.settings import Settings
 
 
 LOG = logging.getLogger(__name__)

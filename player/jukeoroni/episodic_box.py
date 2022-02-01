@@ -1,11 +1,8 @@
 import logging
 
 from player.jukeoroni.base_box import BaseBox
-from player.jukeoroni.displays import Audiobookbox as AudiobookboxLayout
-from player.jukeoroni.settings import Settings  # (
-#     AUDIOBOOK_DIR,
-#     ALBUM_TYPE_AUDIOBOOK,
-# )
+from player.jukeoroni.displays import Audiobookbox as EpisodicboxLayout
+from player.jukeoroni.settings import Settings
 
 
 class EpisodicBox(BaseBox):
@@ -29,7 +26,11 @@ box.turn_off()
         self.set_loader_mode_album()
         self._need_first_album_track = True
 
-        self.layout = AudiobookboxLayout()
+        self.layout = EpisodicboxLayout()
+
+    @property
+    def file_filter(self):
+        return Settings.EPISODIC_FILES
 
     @property
     def box_type(self):

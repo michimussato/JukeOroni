@@ -16,15 +16,7 @@ from player.jukeoroni.displays import Off as OffLayout
 from player.jukeoroni.displays import Standby as StandbyLayout
 from player.models import Channel
 from player.jukeoroni.box_track import JukeboxTrack
-from player.jukeoroni.settings import Settings  # (
-#     PIMORONI_SATURATION,
-#     STATE_WATCHER_CADENCE,
-#     CLOCK_UPDATE_INTERVAL,
-#     PIMORONI_WATCHER_UPDATE_INTERVAL,
-#     GLOBAL_LOGGING_LEVEL,
-#     MODES,
-#     FFPLAY_CMD,
-# )
+from player.jukeoroni.settings import Settings
 from player.jukeoroni.images import Resource
 
 

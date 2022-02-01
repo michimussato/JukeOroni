@@ -9,12 +9,7 @@ import time
 from player.models import Track as DjangoTrack
 from player.jukeoroni.box_track import JukeboxTrack
 from player.jukeoroni.create_update_track_list import create_update_track_list
-from player.jukeoroni.settings import Settings  # (
-#     GLOBAL_LOGGING_LEVEL,
-#     CACHE_TRACKS,
-#     MAX_CACHED_FILES,
-#     DEFAULT_TRACKLIST_REGEN_INTERVAL,
-# )
+from player.jukeoroni.settings import Settings
 from player.models import Album
 
 
@@ -76,16 +71,20 @@ box.turn_off()
         self._track_loader_thread = None
 
     @property
+    def file_filter(self):
+        raise NotImplementedError('Needs to be reimplemented')
+
+    @property
     def box_type(self):
-        raise NotImplementedError('Need to be reimplemented')
+        raise NotImplementedError('Needs to be reimplemented')
 
     @property
     def album_type(self):
-        raise NotImplementedError('Need to be reimplemented')
+        raise NotImplementedError('Needs to be reimplemented')
 
     @property
     def audio_dir(self):
-        raise NotImplementedError('Need to be reimplemented')
+        raise NotImplementedError('Needs to be reimplemented')
 
     def temp_cleanup(self):
         temp_dir = tempfile.gettempdir()
@@ -186,7 +185,7 @@ box.turn_off()
                     _waited = 0
                     if self._auto_update_tracklist:
                         self.track_list_updater_running = True
-                        create_update_track_list(box=self, directory=self.audio_dir, album_type=self.album_type)
+                        create_update_track_list(box=self, directory=self.audio_dir, album_type=self.album_type, file_filter=self.file_filter)
                     self.run_tracklist_generator_flag = False
                     self.track_list_updater_running = False
                     # instead of putting it to sleep, we

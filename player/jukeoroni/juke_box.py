@@ -2,10 +2,7 @@ import logging
 
 from player.jukeoroni.base_box import BaseBox
 from player.jukeoroni.displays import Jukebox as JukeboxLayout
-from player.jukeoroni.settings import Settings  # (
-#     MUSIC_DIR,
-#     ALBUM_TYPE_MUSIC,
-# )
+from player.jukeoroni.settings import Settings
 
 
 class JukeBox(BaseBox):
@@ -32,6 +29,10 @@ box.turn_off()
         self.LOG.info(f'Initializing {self.box_type}...')
 
         self.layout = JukeboxLayout()
+
+    @property
+    def file_filter(self):
+        return Settings.AUDIO_FILES
 
     @property
     def box_type(self):

@@ -3,10 +3,6 @@ import logging
 from player.jukeoroni.base_box import BaseBox
 from player.jukeoroni.displays import Audiobookbox as AudiobookboxLayout
 from player.jukeoroni.settings import Settings
-# from player.jukeoroni.settings import (
-#     AUDIOBOOK_DIR,
-#     ALBUM_TYPE_AUDIOBOOK,
-# )
 
 
 class AudiobookBox(BaseBox):

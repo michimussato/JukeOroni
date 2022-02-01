@@ -7,15 +7,6 @@ from player.jukeoroni.images import Resource
 
 from PIL import Image, ImageDraw, ImageFont, ImageOps, ImageChops, ImageEnhance
 from player.jukeoroni.settings import Settings
-# from player.jukeoroni.settings import (
-#     GLOBAL_LOGGING_LEVEL,
-#     LAT,
-#     LONG,
-#     TZ,
-#     ANTIALIAS,
-#     ARIAL,
-#     CALLIGRAPHIC
-# )
 
 
 LOG = logging.getLogger(__name__)

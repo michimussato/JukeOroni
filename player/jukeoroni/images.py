@@ -1,15 +1,4 @@
-from player.jukeoroni.settings import Settings  # (
-#     _RADIO_ICON_IMAGE,
-#     _RADIO_ON_AIR_DEFAULT_IMAGE,
-#     _JUKEBOX_ON_AIR_DEFAULT_IMAGE,
-#     _OFF_IMAGE,
-#     _JUKEBOX_ICON_IMAGE,
-#     _JUKEBOX_LOADING_IMAGE,
-#     _MEDITATION_ICON_IMAGE,
-#     _AUDIOBOOK_ICON_IMAGE,
-#     _MOON_TEXUTRE,
-#     GLOBAL_LOGGING_LEVEL,
-# )
+from player.jukeoroni.settings import Settings
 from player.jukeoroni.is_string_url import is_string_url
 from PIL import Image, ImageDraw
 import urllib.request
@@ -86,53 +75,52 @@ class Resource(object):
     def RADIO_ICON_IMAGE_SQUARE(self):
         """
         Oct 13 00:23:23 jukeoroni gunicorn[20629]: Exception in thread State Watcher Thread:
-Oct 13 00:23:23 jukeoroni gunicorn[20629]: Traceback (most recent call last):
-Oct 13 00:23:23 jukeoroni gunicorn[20629]:   File "/usr/lib/python3.7/threading.py", line 917, in _bootstrap_inner
-Oct 13 00:23:23 jukeoroni gunicorn[20629]:     self.run()
-Oct 13 00:23:23 jukeoroni gunicorn[20629]:   File "/usr/lib/python3.7/threading.py", line 865, in run
-Oct 13 00:23:23 jukeoroni gunicorn[20629]:     self._target(*self._args, **self._kwargs)
-Oct 13 00:23:23 jukeoroni gunicorn[20629]:   File "/data/django/jukeoroni/player/jukeoroni/jukeoroni.py", line 325, in state_watcher_task
-Oct 13 00:23:23 jukeoroni gunicorn[20629]:     self.set_display_radio()
-Oct 13 00:23:23 jukeoroni gunicorn[20629]:   File "/data/django/jukeoroni/player/jukeoroni/jukeoroni.py", line 252, in set_display_radio
-Oct 13 00:23:23 jukeoroni gunicorn[20629]:     bg = self.layout_radio.get_layout(labels=self.LABELS, cover=self.radio.cover, title=self.radio.stream_title)
-Oct 13 00:23:23 jukeoroni gunicorn[20629]:   File "/data/django/jukeoroni/player/jukeoroni/juke_radio.py", line 102, in cover
-Oct 13 00:23:23 jukeoroni gunicorn[20629]:     cover = Resource().RADIO_ICON_IMAGE_SQUARE
-Oct 13 00:23:23 jukeoroni gunicorn[20629]:   File "/data/django/jukeoroni/player/jukeoroni/images.py", line 45, in RADIO_ICON_IMAGE_SQUARE
-Oct 13 00:23:23 jukeoroni gunicorn[20629]:     return self.squareify(self.RADIO_ICON_IMAGE).resize((448, 448))
-Oct 13 00:23:23 jukeoroni gunicorn[20629]:   File "/data/venv/lib/python3.7/site-packages/PIL/Image.py", line 1978, in resize
-Oct 13 00:23:23 jukeoroni gunicorn[20629]:     im = self.convert({"LA": "La", "RGBA": "RGBa"}[self.mode])
-Oct 13 00:23:23 jukeoroni gunicorn[20629]:   File "/data/venv/lib/python3.7/site-packages/PIL/Image.py", line 915, in convert
-Oct 13 00:23:23 jukeoroni gunicorn[20629]:     self.load()
-Oct 13 00:23:23 jukeoroni gunicorn[20629]:   File "/data/venv/lib/python3.7/site-packages/PIL/ImageFile.py", line 237, in load
-Oct 13 00:23:23 jukeoroni gunicorn[20629]:     s = read(self.decodermaxblock)
-Oct 13 00:23:23 jukeoroni gunicorn[20629]:   File "/data/venv/lib/python3.7/site-packages/PIL/PngImagePlugin.py", line 896, in load_read
-Oct 13 00:23:23 jukeoroni gunicorn[20629]:     cid, pos, length = self.png.read()
-Oct 13 00:23:23 jukeoroni gunicorn[20629]:   File "/data/venv/lib/python3.7/site-packages/PIL/PngImagePlugin.py", line 166, in read
-Oct 13 00:23:23 jukeoroni gunicorn[20629]:     raise SyntaxError(f"broken PNG file (chunk {repr(cid)})")
-Oct 13 00:23:23 jukeoroni gunicorn[20629]:   File "<string>", line None
-Oct 13 00:23:23 jukeoroni gunicorn[20629]: SyntaxError: broken PNG file (chunk b'\xfa}\x96\xd7')
-Oct 13 00:23:23 jukeoroni gunicorn[20629]: [10-13-2021 00:23:23] [ERROR] [MainThread|3069569744] [django.request]: Internal Server Error: /jukeoroni/radio/
-Oct 13 00:23:23 jukeoroni gunicorn[20629]: Traceback (most recent call last):
-Oct 13 00:23:23 jukeoroni gunicorn[20629]:   File "/data/venv/lib/python3.7/site-packages/django/core/handlers/exception.py", line 47, in inner
-Oct 13 00:23:23 jukeoroni gunicorn[20629]:     response = get_response(request)
-Oct 13 00:23:23 jukeoroni gunicorn[20629]:   File "/data/venv/lib/python3.7/site-packages/django/core/handlers/base.py", line 181, in _get_response
-Oct 13 00:23:23 jukeoroni gunicorn[20629]:     response = wrapped_callback(request, *callback_args, **callback_kwargs)
-Oct 13 00:23:23 jukeoroni gunicorn[20629]:   File "/data/django/jukeoroni/player/views.py", line 337, in radio_index
-Oct 13 00:23:23 jukeoroni gunicorn[20629]:     img = jukeoroni.layout_radio.get_layout(labels=jukeoroni.LABELS, cover=jukeoroni.radio.cover, title=jukeoroni.radio.stream_title)
-Oct 13 00:23:23 jukeoroni gunicorn[20629]:   File "/data/django/jukeoroni/player/jukeoroni/juke_radio.py", line 102, in cover
-Oct 13 00:23:23 jukeoroni gunicorn[20629]:     cover = Resource().RADIO_ICON_IMAGE_SQUARE
-Oct 13 00:23:23 jukeoroni gunicorn[20629]:   File "/data/django/jukeoroni/player/jukeoroni/images.py", line 45, in RADIO_ICON_IMAGE_SQUARE
-Oct 13 00:23:23 jukeoroni gunicorn[20629]:     return self.squareify(self.RADIO_ICON_IMAGE).resize((448, 448))
-Oct 13 00:23:23 jukeoroni gunicorn[20629]:   File "/data/venv/lib/python3.7/site-packages/PIL/Image.py", line 1978, in resize
-Oct 13 00:23:23 jukeoroni gunicorn[20629]:     im = self.convert({"LA": "La", "RGBA": "RGBa"}[self.mode])
-Oct 13 00:23:23 jukeoroni gunicorn[20629]:   File "/data/venv/lib/python3.7/site-packages/PIL/Image.py", line 915, in convert
-Oct 13 00:23:23 jukeoroni gunicorn[20629]:     self.load()
-Oct 13 00:23:23 jukeoroni gunicorn[20629]:   File "/data/venv/lib/python3.7/site-packages/PIL/ImageFile.py", line 274, in load
-Oct 13 00:23:23 jukeoroni gunicorn[20629]:     raise_oserror(err_code)
-Oct 13 00:23:23 jukeoroni gunicorn[20629]:   File "/data/venv/lib/python3.7/site-packages/PIL/ImageFile.py", line 67, in raise_oserror
-Oct 13 00:23:23 jukeoroni gunicorn[20629]:     raise OSError(message + " when reading image file")
-Oct 13 00:23:23 jukeoroni gunicorn[20629]: OSError: unrecognized data stream contents when reading image file
-
+        Oct 13 00:23:23 jukeoroni gunicorn[20629]: Traceback (most recent call last):
+        Oct 13 00:23:23 jukeoroni gunicorn[20629]:   File "/usr/lib/python3.7/threading.py", line 917, in _bootstrap_inner
+        Oct 13 00:23:23 jukeoroni gunicorn[20629]:     self.run()
+        Oct 13 00:23:23 jukeoroni gunicorn[20629]:   File "/usr/lib/python3.7/threading.py", line 865, in run
+        Oct 13 00:23:23 jukeoroni gunicorn[20629]:     self._target(*self._args, **self._kwargs)
+        Oct 13 00:23:23 jukeoroni gunicorn[20629]:   File "/data/django/jukeoroni/player/jukeoroni/jukeoroni.py", line 325, in state_watcher_task
+        Oct 13 00:23:23 jukeoroni gunicorn[20629]:     self.set_display_radio()
+        Oct 13 00:23:23 jukeoroni gunicorn[20629]:   File "/data/django/jukeoroni/player/jukeoroni/jukeoroni.py", line 252, in set_display_radio
+        Oct 13 00:23:23 jukeoroni gunicorn[20629]:     bg = self.layout_radio.get_layout(labels=self.LABELS, cover=self.radio.cover, title=self.radio.stream_title)
+        Oct 13 00:23:23 jukeoroni gunicorn[20629]:   File "/data/django/jukeoroni/player/jukeoroni/juke_radio.py", line 102, in cover
+        Oct 13 00:23:23 jukeoroni gunicorn[20629]:     cover = Resource().RADIO_ICON_IMAGE_SQUARE
+        Oct 13 00:23:23 jukeoroni gunicorn[20629]:   File "/data/django/jukeoroni/player/jukeoroni/images.py", line 45, in RADIO_ICON_IMAGE_SQUARE
+        Oct 13 00:23:23 jukeoroni gunicorn[20629]:     return self.squareify(self.RADIO_ICON_IMAGE).resize((448, 448))
+        Oct 13 00:23:23 jukeoroni gunicorn[20629]:   File "/data/venv/lib/python3.7/site-packages/PIL/Image.py", line 1978, in resize
+        Oct 13 00:23:23 jukeoroni gunicorn[20629]:     im = self.convert({"LA": "La", "RGBA": "RGBa"}[self.mode])
+        Oct 13 00:23:23 jukeoroni gunicorn[20629]:   File "/data/venv/lib/python3.7/site-packages/PIL/Image.py", line 915, in convert
+        Oct 13 00:23:23 jukeoroni gunicorn[20629]:     self.load()
+        Oct 13 00:23:23 jukeoroni gunicorn[20629]:   File "/data/venv/lib/python3.7/site-packages/PIL/ImageFile.py", line 237, in load
+        Oct 13 00:23:23 jukeoroni gunicorn[20629]:     s = read(self.decodermaxblock)
+        Oct 13 00:23:23 jukeoroni gunicorn[20629]:   File "/data/venv/lib/python3.7/site-packages/PIL/PngImagePlugin.py", line 896, in load_read
+        Oct 13 00:23:23 jukeoroni gunicorn[20629]:     cid, pos, length = self.png.read()
+        Oct 13 00:23:23 jukeoroni gunicorn[20629]:   File "/data/venv/lib/python3.7/site-packages/PIL/PngImagePlugin.py", line 166, in read
+        Oct 13 00:23:23 jukeoroni gunicorn[20629]:     raise SyntaxError(f"broken PNG file (chunk {repr(cid)})")
+        Oct 13 00:23:23 jukeoroni gunicorn[20629]:   File "<string>", line None
+        Oct 13 00:23:23 jukeoroni gunicorn[20629]: SyntaxError: broken PNG file (chunk b'\xfa}\x96\xd7')
+        Oct 13 00:23:23 jukeoroni gunicorn[20629]: [10-13-2021 00:23:23] [ERROR] [MainThread|3069569744] [django.request]: Internal Server Error: /jukeoroni/radio/
+        Oct 13 00:23:23 jukeoroni gunicorn[20629]: Traceback (most recent call last):
+        Oct 13 00:23:23 jukeoroni gunicorn[20629]:   File "/data/venv/lib/python3.7/site-packages/django/core/handlers/exception.py", line 47, in inner
+        Oct 13 00:23:23 jukeoroni gunicorn[20629]:     response = get_response(request)
+        Oct 13 00:23:23 jukeoroni gunicorn[20629]:   File "/data/venv/lib/python3.7/site-packages/django/core/handlers/base.py", line 181, in _get_response
+        Oct 13 00:23:23 jukeoroni gunicorn[20629]:     response = wrapped_callback(request, *callback_args, **callback_kwargs)
+        Oct 13 00:23:23 jukeoroni gunicorn[20629]:   File "/data/django/jukeoroni/player/views.py", line 337, in radio_index
+        Oct 13 00:23:23 jukeoroni gunicorn[20629]:     img = jukeoroni.layout_radio.get_layout(labels=jukeoroni.LABELS, cover=jukeoroni.radio.cover, title=jukeoroni.radio.stream_title)
+        Oct 13 00:23:23 jukeoroni gunicorn[20629]:   File "/data/django/jukeoroni/player/jukeoroni/juke_radio.py", line 102, in cover
+        Oct 13 00:23:23 jukeoroni gunicorn[20629]:     cover = Resource().RADIO_ICON_IMAGE_SQUARE
+        Oct 13 00:23:23 jukeoroni gunicorn[20629]:   File "/data/django/jukeoroni/player/jukeoroni/images.py", line 45, in RADIO_ICON_IMAGE_SQUARE
+        Oct 13 00:23:23 jukeoroni gunicorn[20629]:     return self.squareify(self.RADIO_ICON_IMAGE).resize((448, 448))
+        Oct 13 00:23:23 jukeoroni gunicorn[20629]:   File "/data/venv/lib/python3.7/site-packages/PIL/Image.py", line 1978, in resize
+        Oct 13 00:23:23 jukeoroni gunicorn[20629]:     im = self.convert({"LA": "La", "RGBA": "RGBa"}[self.mode])
+        Oct 13 00:23:23 jukeoroni gunicorn[20629]:   File "/data/venv/lib/python3.7/site-packages/PIL/Image.py", line 915, in convert
+        Oct 13 00:23:23 jukeoroni gunicorn[20629]:     self.load()
+        Oct 13 00:23:23 jukeoroni gunicorn[20629]:   File "/data/venv/lib/python3.7/site-packages/PIL/ImageFile.py", line 274, in load
+        Oct 13 00:23:23 jukeoroni gunicorn[20629]:     raise_oserror(err_code)
+        Oct 13 00:23:23 jukeoroni gunicorn[20629]:   File "/data/venv/lib/python3.7/site-packages/PIL/ImageFile.py", line 67, in raise_oserror
+        Oct 13 00:23:23 jukeoroni gunicorn[20629]:     raise OSError(message + " when reading image file")
+        Oct 13 00:23:23 jukeoroni gunicorn[20629]: OSError: unrecognized data stream contents when reading image file
         """
         return self.squareify(self.RADIO_ICON_IMAGE).resize((448, 448))
 
