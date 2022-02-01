@@ -14,10 +14,7 @@ import os
 
 from jukeoroni._secrets import DJANGO_SECRET_KEY
 from pathlib import Path
-from player.jukeoroni.settings import Settings  # (
-#     MEDIA_ROOT,
-#     DJANGO_LOGGING_LEVEL,
-# )
+from player.jukeoroni.settings import Settings
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.

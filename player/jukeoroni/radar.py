@@ -10,7 +10,7 @@ import selenium.webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
-from player.jukeoroni.settings import Settings  # RADAR_UPDATE_INTERVAL, GLOBAL_LOGGING_LEVEL, SMALL_WIDGET_SIZE
+from player.jukeoroni.settings import Settings
 from player.jukeoroni.images import Resource
 
 

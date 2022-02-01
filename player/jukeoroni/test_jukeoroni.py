@@ -6,7 +6,7 @@ import unittest
 from subprocess import Popen
 from django.test import TestCase
 from player.jukeoroni.jukeoroni import JukeOroni
-from player.jukeoroni.settings import Settings  # GLOBAL_LOGGING_LEVEL
+from player.jukeoroni.settings import Settings
 from player.models import Channel
 
 

@@ -8,7 +8,7 @@ import time
 
 from django.test import TestCase
 from player.jukeoroni.juke_box import JukeBox
-from player.jukeoroni.settings import Settings  # GLOBAL_LOGGING_LEVEL
+from player.jukeoroni.settings import Settings
 # from player.models import Channel
 
 

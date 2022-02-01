@@ -2,7 +2,7 @@ import math
 from datetime import datetime, timedelta
 import time
 import logging
-from player.jukeoroni.settings import Settings  # GLOBAL_LOGGING_LEVEL
+from player.jukeoroni.settings import Settings
 
 
 LOG = logging.getLogger(__name__)

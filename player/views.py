@@ -7,14 +7,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.views import View
 from player.jukeoroni.jukeoroni import JukeOroni
 from player.models import Album, Channel, Station, Artist, Track
-from player.jukeoroni.settings import Settings  # (
-#     MODES,
-#     RANDOM_ALBUMS,
-#     ENABLE_JUKEBOX,
-#     ENABLE_RADIO,
-#     ENABLE_MEDITATION,
-#     ENABLE_AUDIOBOOK,
-# )
+from player.jukeoroni.settings import Settings
 
 
 PIMORONI_SATURATION = 1.0

@@ -34,6 +34,8 @@ class Settings:
     FAULTY_ALBUMS = os.path.join(MEDIA_ROOT, 'faulty_albums_test.txt')
     MISSING_COVERS_FILE = os.path.join(MEDIA_ROOT, 'missing_covers_test.txt')
     AUDIO_FILES = ['.dsf', '.flac', '.wav', '.dff']
+    MEDITATION_FILTER = ['.dsf', '.flac', '.wav', '.dff']
+    EPISODIC_FILES = ['.dsf', '.flac', '.wav', '.dff', '.mp3']
 
 
     # inky
