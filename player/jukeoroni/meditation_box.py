@@ -2,11 +2,11 @@ import logging
 
 from player.jukeoroni.base_box import BaseBox
 from player.jukeoroni.displays import Meditationbox as MeditationboxLayout
-from player.jukeoroni.settings import (
-    MEDITATION_DIR,
-    ALBUM_TYPE_MEDITATION,
-    MODES
-)
+from player.jukeoroni.settings import Settings  # (
+#     MEDITATION_DIR,
+#     ALBUM_TYPE_MEDITATION,
+#     MODES
+# )
 
 
 # class MeditationTrack(JukeboxTrack):
@@ -34,11 +34,11 @@ class MeditationBox(BaseBox):
 
     @property
     def album_type(self):
-        return ALBUM_TYPE_MEDITATION
+        return Settings.ALBUM_TYPE_MEDITATION
 
     @property
     def audio_dir(self):
-        return MEDITATION_DIR
+        return Settings.MEDITATION_DIR
 
     # # We could set a default Meditation Album like so:
     # @property

@@ -12,25 +12,25 @@ from player.jukeoroni.images import Resource
 from player.models import Track as DjangoTrack
 
 
-from player.jukeoroni.settings import (
-    GLOBAL_LOGGING_LEVEL,
-    MEDIA_ROOT,
-    CACHE_COVERS,
-    COVER_ONLINE_PREFERENCE,
-    FFPLAY_CMD,
-    CACHE_TRACKS,
-)
+from player.jukeoroni.settings import Settings  # (
+#     GLOBAL_LOGGING_LEVEL,
+#     MEDIA_ROOT,
+#     CACHE_COVERS,
+#     COVER_ONLINE_PREFERENCE,
+#     FFPLAY_CMD,
+#     CACHE_TRACKS,
+# )
 
 
 LOG = logging.getLogger(__name__)
-LOG.setLevel(GLOBAL_LOGGING_LEVEL)
+LOG.setLevel(Settings.GLOBAL_LOGGING_LEVEL)
 
 
 class JukeboxTrack(object):
     def __init__(self, django_track, cached=True):
         self.django_track = django_track
         # self.path = self.django_track.audio_source
-        self.path = os.path.join(MEDIA_ROOT, self.django_track.album.album_type, self.django_track.audio_source)
+        self.path = os.path.join(Settings.MEDIA_ROOT, self.django_track.album.album_type, self.django_track.audio_source)
         LOG.info(self.path)
         # self.path = u'{0}'.format(str(os.path.join(MUSIC_DIR, self.django_track.audio_source)))
         self.cached = cached
@@ -100,7 +100,7 @@ class JukeboxTrack(object):
         return self.album.artist
 
     def cache_online_covers(self):
-        if CACHE_COVERS:
+        if Settings.CACHE_COVERS:
             self._cache_online_covers_task_thread = threading.Thread(target=self._cache_covers)
             self._cache_online_covers_task_thread.name = 'Track Cover Loader Thread'
             self._cache_online_covers_task_thread.daemon = False
@@ -113,15 +113,15 @@ class JukeboxTrack(object):
     def _cache_cover_album(self):
         if self.album.cover is not None:
             LOG.info(f'Loading offline album cover for Track "{self}"...')
-            self._cover_album = Image.open(os.path.join(MEDIA_ROOT, self.django_track.album.album_type, self.album.cover))
+            self._cover_album = Image.open(os.path.join(Settings.MEDIA_ROOT, self.django_track.album.album_type, self.album.cover))
         else:
             LOG.info(f'Offline album cover for Track "{self}" is None...')
 
-        if not COVER_ONLINE_PREFERENCE and self.album.cover is not None:
+        if not Settings.COVER_ONLINE_PREFERENCE and self.album.cover is not None:
             LOG.info('Loading offline album cover...')
-            self._cover_album = Image.open(os.path.join(MEDIA_ROOT, self.django_track.album.album_type, self.album.cover))
+            self._cover_album = Image.open(os.path.join(Settings.MEDIA_ROOT, self.django_track.album.album_type, self.album.cover))
 
-        elif COVER_ONLINE_PREFERENCE and self.album.cover_online is not None or self.album.cover is None:
+        elif Settings.COVER_ONLINE_PREFERENCE and self.album.cover_online is not None or self.album.cover is None:
             LOG.info(f'Loading online album cover for Track "{self}"...')
             _cover_album_online = Resource().from_url(url=self.album.cover_online)
             if _cover_album_online is not None:
@@ -185,7 +185,7 @@ class JukeboxTrack(object):
             self.killed = True
 
     def cache(self):
-        if CACHE_TRACKS:
+        if Settings.CACHE_TRACKS:
             self._cache_task_thread = multiprocessing.Process(target=self._cache)
             self._cache_task_thread.name = 'Track Cacher Progress Thread'
             self._cache_task_thread.daemon = False
@@ -254,7 +254,7 @@ class JukeboxTrack(object):
             LOG.info(f'starting playback: \"{self.path}\" from: \"{self.playing_from}\"')
             self.django_track.played += 1
             self.django_track.save()
-            jukeoroni.playback_proc = subprocess.Popen(FFPLAY_CMD + [self.playing_from], shell=False)
+            jukeoroni.playback_proc = subprocess.Popen(Settings.FFPLAY_CMD + [self.playing_from], shell=False)
             try:
                 jukeoroni.playback_proc.communicate()
             except AttributeError:

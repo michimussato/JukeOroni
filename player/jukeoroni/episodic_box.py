@@ -2,14 +2,13 @@ import logging
 
 from player.jukeoroni.base_box import BaseBox
 from player.jukeoroni.displays import Audiobookbox as AudiobookboxLayout
-from player.jukeoroni.settings import Settings
-# from player.jukeoroni.settings import (
+from player.jukeoroni.settings import Settings  # (
 #     AUDIOBOOK_DIR,
 #     ALBUM_TYPE_AUDIOBOOK,
 # )
 
 
-class AudiobookBox(BaseBox):
+class EpisodicBox(BaseBox):
     """
 from player.jukeoroni.juke_box import Jukebox
 box = Jukebox()
@@ -34,12 +33,12 @@ box.turn_off()
 
     @property
     def box_type(self):
-        return 'audiobookbox'
+        return 'episodicbox'
 
-    @property
-    def album_type(self):
-        return Settings.ALBUM_TYPE_AUDIOBOOK
+    # @property
+    # def album_type(self):
+    #     return ALBUM_TYPE_AUDIOBOOK
 
-    @property
-    def audio_dir(self):
-        return Settings.AUDIOBOOK_DIR
+    # @property
+    # def audio_dir(self):
+    #     return AUDIOBOOK_DIR

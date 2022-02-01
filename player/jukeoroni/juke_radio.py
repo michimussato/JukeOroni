@@ -11,13 +11,13 @@ from player.jukeoroni.is_string_url import is_string_url
 from player.jukeoroni.key_from_nested_dict import find_by_key
 from player.models import Channel
 from player.jukeoroni.images import Resource
-from player.jukeoroni.settings import (
-    GLOBAL_LOGGING_LEVEL,
-)
+from player.jukeoroni.settings import Settings  # (
+#     GLOBAL_LOGGING_LEVEL,
+# )
 
 
 LOG = logging.getLogger(__name__)
-LOG.setLevel(GLOBAL_LOGGING_LEVEL)
+LOG.setLevel(Settings.GLOBAL_LOGGING_LEVEL)
 
 
 class Radio(object):

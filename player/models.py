@@ -71,3 +71,10 @@ class Channel(models.Model):
 
     def __repr__(self):
         return self.display_name_short
+
+
+# class Setting(models.Model):
+#     key = models.CharField()
+#     data_type = models.CharField()
+#     values = models.
+#     index = models.Index

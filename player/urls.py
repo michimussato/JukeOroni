@@ -1,13 +1,5 @@
 from django.urls import path
 from player.views import JukeOroniView
-# from player.jukeoroni.settings import (
-#     # MODES,
-#     # RANDOM_ALBUMS,
-#     ENABLE_JUKEBOX,
-#     ENABLE_RADIO,
-#     ENABLE_MEDITATION,
-#     ENABLE_AUDIOBOOK,
-# )
 
 
 urlpatterns = [

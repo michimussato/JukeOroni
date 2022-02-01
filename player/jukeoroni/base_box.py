@@ -9,16 +9,22 @@ import time
 from player.models import Track as DjangoTrack
 from player.jukeoroni.box_track import JukeboxTrack
 from player.jukeoroni.create_update_track_list import create_update_track_list
-from player.jukeoroni.settings import (
-    GLOBAL_LOGGING_LEVEL,
-    CACHE_TRACKS,
-    MAX_CACHED_FILES,
-    DEFAULT_TRACKLIST_REGEN_INTERVAL,
-)
+from player.jukeoroni.settings import Settings  # (
+#     GLOBAL_LOGGING_LEVEL,
+#     CACHE_TRACKS,
+#     MAX_CACHED_FILES,
+#     DEFAULT_TRACKLIST_REGEN_INTERVAL,
+# )
 from player.models import Album
 
 
 class BaseBox(object):
+
+    # box_type = None
+    # album_type = ALBUM_TYPE_MUSIC
+    # audio_dir = MUSIC_DIR
+
+
     """
 from player.jukeoroni.juke_box import Jukebox
 box = Jukebox()
@@ -35,7 +41,7 @@ box.turn_off()
         # all classes inherited from BaseBox
         # log as [player.jukeoroni.base_box]
         self.LOG = logging.getLogger(__name__)
-        self.LOG.setLevel(GLOBAL_LOGGING_LEVEL)
+        self.LOG.setLevel(Settings.GLOBAL_LOGGING_LEVEL)
 
         # self.box_type = None
 
@@ -175,7 +181,7 @@ box.turn_off()
 
             else:
                 if _waited is None \
-                        or _waited % DEFAULT_TRACKLIST_REGEN_INTERVAL == 0\
+                        or _waited % Settings.DEFAULT_TRACKLIST_REGEN_INTERVAL == 0\
                         or self.run_tracklist_generator_flag:
                     _waited = 0
                     if self._auto_update_tracklist:
@@ -202,13 +208,13 @@ box.turn_off()
 
     def _track_loader_task(self):
         while self.on:
-            self.LOG.debug(f'{len(self.tracks)} of {MAX_CACHED_FILES} tracks cached. Queue: {self.tracks}')
+            self.LOG.debug(f'{len(self.tracks)} of {Settings.MAX_CACHED_FILES} tracks cached. Queue: {self.tracks}')
 
             # This is to check that the source files did not disappear in the meantime
             # Remove them if they did
             self.tracks = [track for track in self.tracks if os.path.isfile(track.path)]
 
-            if len(self.tracks) < MAX_CACHED_FILES:
+            if len(self.tracks) < Settings.MAX_CACHED_FILES:
                 loading_track = self.get_next_track()
 
                 if loading_track is None:
@@ -222,7 +228,7 @@ box.turn_off()
 
                 self.LOG.info(f'Next track OK: {loading_track}')
 
-                self.loading_track = JukeboxTrack(django_track=loading_track, cached=CACHE_TRACKS)
+                self.loading_track = JukeboxTrack(django_track=loading_track, cached=Settings.CACHE_TRACKS)
                 self.loading_track.cache()
                 self.loading_track.cache_online_covers()
 

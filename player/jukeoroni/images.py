@@ -1,15 +1,15 @@
-from player.jukeoroni.settings import (
-    _RADIO_ICON_IMAGE,
-    _RADIO_ON_AIR_DEFAULT_IMAGE,
-    _JUKEBOX_ON_AIR_DEFAULT_IMAGE,
-    _OFF_IMAGE,
-    _JUKEBOX_ICON_IMAGE,
-    _JUKEBOX_LOADING_IMAGE,
-    _MEDITATION_ICON_IMAGE,
-    _AUDIOBOOK_ICON_IMAGE,
-    _MOON_TEXUTRE,
-    GLOBAL_LOGGING_LEVEL,
-)
+from player.jukeoroni.settings import Settings  # (
+#     _RADIO_ICON_IMAGE,
+#     _RADIO_ON_AIR_DEFAULT_IMAGE,
+#     _JUKEBOX_ON_AIR_DEFAULT_IMAGE,
+#     _OFF_IMAGE,
+#     _JUKEBOX_ICON_IMAGE,
+#     _JUKEBOX_LOADING_IMAGE,
+#     _MEDITATION_ICON_IMAGE,
+#     _AUDIOBOOK_ICON_IMAGE,
+#     _MOON_TEXUTRE,
+#     GLOBAL_LOGGING_LEVEL,
+# )
 from player.jukeoroni.is_string_url import is_string_url
 from PIL import Image, ImageDraw
 import urllib.request
@@ -18,7 +18,7 @@ import logging
 
 
 LOG = logging.getLogger(__name__)
-LOG.setLevel(GLOBAL_LOGGING_LEVEL)
+LOG.setLevel(Settings.GLOBAL_LOGGING_LEVEL)
 
 
 class Resource(object):
@@ -28,44 +28,44 @@ class Resource(object):
 
     @property
     def OFF_IMAGE(self):
-        return Image.open(_OFF_IMAGE)
+        return Image.open(Settings._OFF_IMAGE)
 
     @property
     def DEFAULT_ALBUM_COVER(self):
         # TODO: add default album cover image
-        return Image.open(_OFF_IMAGE)
+        return Image.open(Settings._OFF_IMAGE)
 
     @property
     def RADIO_ICON_IMAGE(self):
-        return Image.open(_RADIO_ICON_IMAGE)
+        return Image.open(Settings._RADIO_ICON_IMAGE)
 
     @property
     def RADIO_ON_AIR_DEFAULT_IMAGE(self):
-        return Image.open(_RADIO_ON_AIR_DEFAULT_IMAGE)
+        return Image.open(Settings._RADIO_ON_AIR_DEFAULT_IMAGE)
 
     @property
     def JUKEBOX_ICON_IMAGE(self):
-        return Image.open(_JUKEBOX_ICON_IMAGE)
+        return Image.open(Settings._JUKEBOX_ICON_IMAGE)
 
     @property
     def JUKEBOX_LOADING_IMAGE(self):
-        return Image.open(_JUKEBOX_LOADING_IMAGE)
+        return Image.open(Settings._JUKEBOX_LOADING_IMAGE)
 
     @property
     def JUKEBOX_ON_AIR_DEFAULT_IMAGE(self):
-        return Image.open(_JUKEBOX_ON_AIR_DEFAULT_IMAGE)
+        return Image.open(Settings._JUKEBOX_ON_AIR_DEFAULT_IMAGE)
 
     @property
     def MEDITATION_ICON_IMAGE(self):
-        return Image.open(_MEDITATION_ICON_IMAGE)
+        return Image.open(Settings._MEDITATION_ICON_IMAGE)
 
     @property
     def AUDIOBOOK_ICON_IMAGE(self):
-        return Image.open(_AUDIOBOOK_ICON_IMAGE)
+        return Image.open(Settings._AUDIOBOOK_ICON_IMAGE)
 
     @property
     def MOON_TEXUTRE(self):
-        return Image.open(_MOON_TEXUTRE)
+        return Image.open(Settings._MOON_TEXUTRE)
 
     @property
     def PLACEHOLDER_SQUARE(self):

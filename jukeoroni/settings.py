@@ -14,10 +14,10 @@ import os
 
 from jukeoroni._secrets import DJANGO_SECRET_KEY
 from pathlib import Path
-from player.jukeoroni.settings import (
-    MEDIA_ROOT,
-    DJANGO_LOGGING_LEVEL,
-)
+from player.jukeoroni.settings import Settings  # (
+#     MEDIA_ROOT,
+#     DJANGO_LOGGING_LEVEL,
+# )
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -56,7 +56,7 @@ LOGGING = {
             'when': 'midnight',
             'interval': 1,
             'backupCount': 7,
-            'filename': os.path.join(MEDIA_ROOT, 'jukeoroni_logs', 'django_error.log'),
+            'filename': os.path.join(Settings.MEDIA_ROOT, 'jukeoroni_logs', 'django_error.log'),
             'formatter': 'simple',
         },
         'file_juke_box': {
@@ -66,7 +66,7 @@ LOGGING = {
             'when': 'midnight',
             'interval': 1,
             'backupCount': 7,
-            'filename': os.path.join(MEDIA_ROOT, 'jukeoroni_logs', 'jukebox_error.log'),
+            'filename': os.path.join(Settings.MEDIA_ROOT, 'jukeoroni_logs', 'jukebox_error.log'),
             'formatter': 'simple',
         },
         'file_meditation_box': {
@@ -76,7 +76,7 @@ LOGGING = {
             'when': 'midnight',
             'interval': 1,
             'backupCount': 7,
-            'filename': os.path.join(MEDIA_ROOT, 'jukeoroni_logs', 'meditationbox_error.log'),
+            'filename': os.path.join(Settings.MEDIA_ROOT, 'jukeoroni_logs', 'meditationbox_error.log'),
             'formatter': 'simple',
         },
         'file_create_update_track_list': {
@@ -86,7 +86,7 @@ LOGGING = {
             'when': 'midnight',
             'interval': 1,
             'backupCount': 7,
-            'filename': os.path.join(MEDIA_ROOT, 'jukeoroni_logs', 'create_update_track_list_error.log'),
+            'filename': os.path.join(Settings.MEDIA_ROOT, 'jukeoroni_logs', 'create_update_track_list_error.log'),
             'formatter': 'simple',
         },
     },
@@ -125,7 +125,7 @@ LOGGING = {
 
 
 LOG = logging.getLogger(__name__)
-LOG.setLevel(DJANGO_LOGGING_LEVEL)
+LOG.setLevel(Settings.DJANGO_LOGGING_LEVEL)
 
 
 ALLOWED_HOSTS = ['*']

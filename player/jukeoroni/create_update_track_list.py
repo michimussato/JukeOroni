@@ -3,14 +3,14 @@ import logging
 from django.db.models.deletion import ProtectedError
 from player.jukeoroni.discogs import get_client, get_artist, get_album
 from player.models import Artist, Album, Track as DjangoTrack
-from player.jukeoroni.settings import (
-    GLOBAL_LOGGING_LEVEL,
-    AUDIO_FILES,
-)
+from player.jukeoroni.settings import Settings  # (
+#     GLOBAL_LOGGING_LEVEL,
+#     AUDIO_FILES,
+# )
 
 
 LOG = logging.getLogger(__name__)
-LOG.setLevel(GLOBAL_LOGGING_LEVEL)
+LOG.setLevel(Settings.GLOBAL_LOGGING_LEVEL)
 
 
 # TODO: maybe use a better character
@@ -113,7 +113,7 @@ def create_update_track_list(box, directory, album_type):
         # COVER ALBUM
 
         for _file in files:
-            if os.path.splitext(_file)[1] in AUDIO_FILES:
+            if os.path.splitext(_file)[1] in Settings.AUDIO_FILES:
                 file_path = os.path.join(_path, _file)
                 query_track = DjangoTrack.objects.filter(audio_source__exact=file_path)
                 if len(query_track) > 1:

@@ -10,12 +10,12 @@ import selenium.webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
-from player.jukeoroni.settings import RADAR_UPDATE_INTERVAL, GLOBAL_LOGGING_LEVEL, SMALL_WIDGET_SIZE
+from player.jukeoroni.settings import Settings  # RADAR_UPDATE_INTERVAL, GLOBAL_LOGGING_LEVEL, SMALL_WIDGET_SIZE
 from player.jukeoroni.images import Resource
 
 
 LOG = logging.getLogger(__name__)
-LOG.setLevel(GLOBAL_LOGGING_LEVEL)
+LOG.setLevel(Settings.GLOBAL_LOGGING_LEVEL)
 
 
 INVERT_RADAR = True
@@ -75,7 +75,7 @@ class Radar(object):
         self.radar_thread = None
 
     def _radar_task(self, **kwargs):
-        update_interval = RADAR_UPDATE_INTERVAL * 60.0
+        update_interval = Settings.RADAR_UPDATE_INTERVAL * 60.0
         _waited = None
         while self.on:
             if _waited is None or _waited % update_interval == 0:

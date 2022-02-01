@@ -8,12 +8,12 @@ import time
 
 from django.test import TestCase
 from player.jukeoroni.juke_box import JukeBox
-from player.jukeoroni.settings import GLOBAL_LOGGING_LEVEL
+from player.jukeoroni.settings import Settings  # GLOBAL_LOGGING_LEVEL
 # from player.models import Channel
 
 
 LOG = logging.getLogger(__name__)
-LOG.setLevel(GLOBAL_LOGGING_LEVEL)
+LOG.setLevel(Settings.GLOBAL_LOGGING_LEVEL)
 
 # ps = subprocess.Popen(['ps -o cmd -p $(pidof ffplay) | grep -i ffplay'], shell=True,
 #                       stdout=subprocess.PIPE, stderr=subprocess.PIPE)

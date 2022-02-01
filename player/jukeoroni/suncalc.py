@@ -2,11 +2,11 @@ import math
 from datetime import datetime, timedelta
 import time
 import logging
-from player.jukeoroni.settings import GLOBAL_LOGGING_LEVEL
+from player.jukeoroni.settings import Settings  # GLOBAL_LOGGING_LEVEL
 
 
 LOG = logging.getLogger(__name__)
-LOG.setLevel(GLOBAL_LOGGING_LEVEL)
+LOG.setLevel(Settings.GLOBAL_LOGGING_LEVEL)
 
 
 PI = 3.141592653589793  # math.pi

@@ -8,16 +8,16 @@ import scipy.cluster
 from PIL import Image, ImageDraw, ImageFont, ImageOps
 from player.jukeoroni.clock import Clock
 from player.jukeoroni.radar import Radar
-from player.jukeoroni.settings import (
-    GLOBAL_LOGGING_LEVEL,
-    SMALL_WIDGET_SIZE,
-    DRAW_HOST_INFO,
-)
+from player.jukeoroni.settings import Settings  # (
+#     GLOBAL_LOGGING_LEVEL,
+#     SMALL_WIDGET_SIZE,
+#     DRAW_HOST_INFO,
+# )
 from player.jukeoroni.images import Resource
 
 
 LOG = logging.getLogger(__name__)
-LOG.setLevel(GLOBAL_LOGGING_LEVEL)
+LOG.setLevel(Settings.GLOBAL_LOGGING_LEVEL)
 
 
 """
@@ -226,21 +226,21 @@ class Standby(Layout):
         _radar_image = self.radar.radar_image
 
         if _radar_image is not None:
-            _radar_image = Resource().round_resize(image=_radar_image, corner=40, fixed=SMALL_WIDGET_SIZE)
+            _radar_image = Resource().round_resize(image=_radar_image, corner=40, fixed=Settings.SMALL_WIDGET_SIZE)
             LOG.info(f'_radar_image.size is {str(_radar_image.size)}')
 
-            _radar_bottom_centered = (int(600 - SMALL_WIDGET_SIZE - self.border),
-                                      int(448 / 2 + round(self.border / 2) - round(SMALL_WIDGET_SIZE / 2)))
+            _radar_bottom_centered = (int(600 - Settings.SMALL_WIDGET_SIZE - self.border),
+                                      int(448 / 2 + round(self.border / 2) - round(Settings.SMALL_WIDGET_SIZE / 2)))
 
-            _radar_bottom_right_centered = (int(600 - SMALL_WIDGET_SIZE - self.border),
-                                            int(0 + 224 / 2 + round(self.border / 2) - round(SMALL_WIDGET_SIZE / 2)))
+            _radar_bottom_right_centered = (int(600 - Settings.SMALL_WIDGET_SIZE - self.border),
+                                            int(0 + 224 / 2 + round(self.border / 2) - round(Settings.SMALL_WIDGET_SIZE / 2)))
 
             # _radar_bottom_right = (int(600-w-self.border), self.border)
             bg.paste(_radar_image, _radar_bottom_centered, mask=_radar_image)
 
         bg.paste(buttons_overlay, box=(0, 0), mask=buttons_overlay)
 
-        if DRAW_HOST_INFO:
+        if Settings.DRAW_HOST_INFO:
             _host_info = host_info()
 
             font_size = 16
@@ -387,28 +387,28 @@ Exception Value: broken PNG file (chunk b"Em\xd5'")
         bg.paste(cover, box=(buttons_overlay.size[0] + self.border, _cover_center), mask=cover)
 
         # SMALL_WIDGET_SIZE = 151
-        _clock = self._clock.get_clock(size=SMALL_WIDGET_SIZE, draw_logo=False, draw_moon_phase=True, draw_moon=True, draw_date=False, hours=24, draw_sun=True, square=True)
-        _clock = Resource().round_resize(image=_clock, corner=40, fixed=SMALL_WIDGET_SIZE)
-        _clock_bottom_left_centered = (int(600 - SMALL_WIDGET_SIZE - self.border),
-                                       int(224 + 224/2 + round(self.border/2) - round(SMALL_WIDGET_SIZE/2)))
-        _clock_bottom_left = (int(600 - SMALL_WIDGET_SIZE - self.border),
-                              int(448 - SMALL_WIDGET_SIZE - self.border))
+        _clock = self._clock.get_clock(size=Settings.SMALL_WIDGET_SIZE, draw_logo=False, draw_moon_phase=True, draw_moon=True, draw_date=False, hours=24, draw_sun=True, square=True)
+        _clock = Resource().round_resize(image=_clock, corner=40, fixed=Settings.SMALL_WIDGET_SIZE)
+        _clock_bottom_left_centered = (int(600 - Settings.SMALL_WIDGET_SIZE - self.border),
+                                       int(224 + 224/2 + round(self.border/2) - round(Settings.SMALL_WIDGET_SIZE/2)))
+        _clock_bottom_left = (int(600 - Settings.SMALL_WIDGET_SIZE - self.border),
+                              int(448 - Settings.SMALL_WIDGET_SIZE - self.border))
 
         bg.paste(_clock, box=_clock_bottom_left_centered, mask=_clock)
 
         _radar_image = self.radar.radar_image
 
         if _radar_image is not None:
-            _radar_image = Resource().round_resize(image=_radar_image, corner=40, fixed=SMALL_WIDGET_SIZE)
+            _radar_image = Resource().round_resize(image=_radar_image, corner=40, fixed=Settings.SMALL_WIDGET_SIZE)
             LOG.info(f'_radar_image.size is {str(_radar_image.size)}')
             # _radar_bottom_right = (int(600 - w - self.border), self.border)
-            _radar_bottom_right_centered = (int(600 - SMALL_WIDGET_SIZE - self.border),
-                                            int(0 + 224 / 2 + round(self.border / 2) - round(SMALL_WIDGET_SIZE / 2)))
+            _radar_bottom_right_centered = (int(600 - Settings.SMALL_WIDGET_SIZE - self.border),
+                                            int(0 + 224 / 2 + round(self.border / 2) - round(Settings.SMALL_WIDGET_SIZE / 2)))
             bg.paste(_radar_image, box=_radar_bottom_right_centered, mask=_radar_image)
 
         bg.paste(buttons_overlay, box=(0, 0), mask=buttons_overlay)
 
-        if DRAW_HOST_INFO:
+        if Settings.DRAW_HOST_INFO:
 
             _host_info = host_info()
 
@@ -466,30 +466,30 @@ class Radio(Layout):
         bg.paste(cover, box=(buttons_overlay.size[0] + self.border, _cover_center), mask=cover)
 
         # SMALL_WIDGET_SIZE = 151
-        _clock = self._clock.get_clock(size=SMALL_WIDGET_SIZE, draw_logo=False, draw_moon=True, draw_moon_phase=True, draw_date=False, hours=24, draw_sun=True, square=True)
-        _clock = Resource().round_resize(image=_clock, corner=40, fixed=SMALL_WIDGET_SIZE)
-        _clock_bottom_left_centered = (int(600 - SMALL_WIDGET_SIZE - self.border),
-                                       int(224 + 224/2 + round(self.border/2) - round(SMALL_WIDGET_SIZE/2)))
-        _clock_bottom_left = (int(600 - SMALL_WIDGET_SIZE - self.border),
-                              int(448 - SMALL_WIDGET_SIZE - self.border))
+        _clock = self._clock.get_clock(size=Settings.SMALL_WIDGET_SIZE, draw_logo=False, draw_moon=True, draw_moon_phase=True, draw_date=False, hours=24, draw_sun=True, square=True)
+        _clock = Resource().round_resize(image=_clock, corner=40, fixed=Settings.SMALL_WIDGET_SIZE)
+        _clock_bottom_left_centered = (int(600 - Settings.SMALL_WIDGET_SIZE - self.border),
+                                       int(224 + 224/2 + round(self.border/2) - round(Settings.SMALL_WIDGET_SIZE/2)))
+        _clock_bottom_left = (int(600 - Settings.SMALL_WIDGET_SIZE - self.border),
+                              int(448 - Settings.SMALL_WIDGET_SIZE - self.border))
 
         bg.paste(_clock, box=_clock_bottom_left_centered, mask=_clock)
 
         _radar_image = self.radar.radar_image
 
         if _radar_image is not None:
-            _radar_image = Resource().round_resize(image=_radar_image, corner=40, fixed=SMALL_WIDGET_SIZE)
+            _radar_image = Resource().round_resize(image=_radar_image, corner=40, fixed=Settings.SMALL_WIDGET_SIZE)
             LOG.info(f'_radar_image.size is {str(_radar_image.size)}')
 
-            _radar_bottom_right_centered = (int(600 - SMALL_WIDGET_SIZE - self.border),
-                                            int(0 + 224 / 2 + round(self.border / 2) - round(SMALL_WIDGET_SIZE / 2)))
+            _radar_bottom_right_centered = (int(600 - Settings.SMALL_WIDGET_SIZE - self.border),
+                                            int(0 + 224 / 2 + round(self.border / 2) - round(Settings.SMALL_WIDGET_SIZE / 2)))
 
             # _radar_bottom_right = (int(600 - w - self.border), self.border)
             bg.paste(_radar_image, box=_radar_bottom_right_centered, mask=_radar_image)
 
         bg.paste(buttons_overlay, box=(0, 0), mask=buttons_overlay)
 
-        if DRAW_HOST_INFO:
+        if Settings.DRAW_HOST_INFO:
             _host_info = host_info()
 
             font_size = 16
@@ -676,30 +676,30 @@ Exception Value: broken PNG file (chunk b"Em\xd5'")
         bg.paste(cover, box=(buttons_overlay.size[0] + self.border, _cover_center), mask=cover)
 
         # SMALL_WIDGET_SIZE = 151
-        _clock = self._clock.get_clock(size=SMALL_WIDGET_SIZE, draw_logo=False, draw_moon_phase=True,
+        _clock = self._clock.get_clock(size=Settings.SMALL_WIDGET_SIZE, draw_logo=False, draw_moon_phase=True,
                                        draw_moon=True, draw_date=False, hours=24, draw_sun=True, square=True)
-        _clock = Resource().round_resize(image=_clock, corner=40, fixed=SMALL_WIDGET_SIZE)
-        _clock_bottom_left_centered = (int(600 - SMALL_WIDGET_SIZE - self.border),
-                                       int(224 + 224 / 2 + round(self.border / 2) - round(SMALL_WIDGET_SIZE / 2)))
-        _clock_bottom_left = (int(600 - SMALL_WIDGET_SIZE - self.border),
-                              int(448 - SMALL_WIDGET_SIZE - self.border))
+        _clock = Resource().round_resize(image=_clock, corner=40, fixed=Settings.SMALL_WIDGET_SIZE)
+        _clock_bottom_left_centered = (int(600 - Settings.SMALL_WIDGET_SIZE - self.border),
+                                       int(224 + 224 / 2 + round(self.border / 2) - round(Settings.SMALL_WIDGET_SIZE / 2)))
+        _clock_bottom_left = (int(600 - Settings.SMALL_WIDGET_SIZE - self.border),
+                              int(448 - Settings.SMALL_WIDGET_SIZE - self.border))
 
         bg.paste(_clock, box=_clock_bottom_left_centered, mask=_clock)
 
         _radar_image = self.radar.radar_image
 
         if _radar_image is not None:
-            _radar_image = Resource().round_resize(image=_radar_image, corner=40, fixed=SMALL_WIDGET_SIZE)
+            _radar_image = Resource().round_resize(image=_radar_image, corner=40, fixed=Settings.SMALL_WIDGET_SIZE)
             LOG.info(f'_radar_image.size is {str(_radar_image.size)}')
             # _radar_bottom_right = (int(600 - w - self.border), self.border)
-            _radar_bottom_right_centered = (int(600 - SMALL_WIDGET_SIZE - self.border),
+            _radar_bottom_right_centered = (int(600 - Settings.SMALL_WIDGET_SIZE - self.border),
                                             int(0 + 224 / 2 + round(self.border / 2) - round(
-                                                SMALL_WIDGET_SIZE / 2)))
+                                                Settings.SMALL_WIDGET_SIZE / 2)))
             bg.paste(_radar_image, box=_radar_bottom_right_centered, mask=_radar_image)
 
         bg.paste(buttons_overlay, box=(0, 0), mask=buttons_overlay)
 
-        if DRAW_HOST_INFO:
+        if Settings.DRAW_HOST_INFO:
             _host_info = host_info()
 
             font_size = 16
@@ -734,7 +734,7 @@ class Audiobookbox(Layout):
         if loading:
             # TODO:
             #  cover = Resource().squareify(Resource().JUKEBOX_LOADING_IMAGE)
-            cover = Resource().JUKEBOX_LOADING_IMAGE
+            cover = Resource.JUKEBOX_LOADING_IMAGE
 
         else:
             if cover is None:
@@ -856,30 +856,30 @@ Exception Value: broken PNG file (chunk b"Em\xd5'")
         bg.paste(cover, box=(buttons_overlay.size[0] + self.border, _cover_center), mask=cover)
 
         # SMALL_WIDGET_SIZE = 151
-        _clock = self._clock.get_clock(size=SMALL_WIDGET_SIZE, draw_logo=False, draw_moon_phase=True,
+        _clock = self._clock.get_clock(size=Settings.SMALL_WIDGET_SIZE, draw_logo=False, draw_moon_phase=True,
                                        draw_moon=True, draw_date=False, hours=24, draw_sun=True, square=True)
-        _clock = Resource().round_resize(image=_clock, corner=40, fixed=SMALL_WIDGET_SIZE)
-        _clock_bottom_left_centered = (int(600 - SMALL_WIDGET_SIZE - self.border),
-                                       int(224 + 224 / 2 + round(self.border / 2) - round(SMALL_WIDGET_SIZE / 2)))
-        _clock_bottom_left = (int(600 - SMALL_WIDGET_SIZE - self.border),
-                              int(448 - SMALL_WIDGET_SIZE - self.border))
+        _clock = Resource().round_resize(image=_clock, corner=40, fixed=Settings.SMALL_WIDGET_SIZE)
+        _clock_bottom_left_centered = (int(600 - Settings.SMALL_WIDGET_SIZE - self.border),
+                                       int(224 + 224 / 2 + round(self.border / 2) - round(Settings.SMALL_WIDGET_SIZE / 2)))
+        _clock_bottom_left = (int(600 - Settings.SMALL_WIDGET_SIZE - self.border),
+                              int(448 - Settings.SMALL_WIDGET_SIZE - self.border))
 
         bg.paste(_clock, box=_clock_bottom_left_centered, mask=_clock)
 
         _radar_image = self.radar.radar_image
 
         if _radar_image is not None:
-            _radar_image = Resource().round_resize(image=_radar_image, corner=40, fixed=SMALL_WIDGET_SIZE)
+            _radar_image = Resource().round_resize(image=_radar_image, corner=40, fixed=Settings.SMALL_WIDGET_SIZE)
             LOG.info(f'_radar_image.size is {str(_radar_image.size)}')
             # _radar_bottom_right = (int(600 - w - self.border), self.border)
-            _radar_bottom_right_centered = (int(600 - SMALL_WIDGET_SIZE - self.border),
+            _radar_bottom_right_centered = (int(600 - Settings.SMALL_WIDGET_SIZE - self.border),
                                             int(0 + 224 / 2 + round(self.border / 2) - round(
-                                                SMALL_WIDGET_SIZE / 2)))
+                                                Settings.SMALL_WIDGET_SIZE / 2)))
             bg.paste(_radar_image, box=_radar_bottom_right_centered, mask=_radar_image)
 
         bg.paste(buttons_overlay, box=(0, 0), mask=buttons_overlay)
 
-        if DRAW_HOST_INFO:
+        if Settings.DRAW_HOST_INFO:
             _host_info = host_info()
 
             font_size = 16

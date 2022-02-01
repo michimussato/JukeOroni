@@ -6,19 +6,20 @@ import player.jukeoroni.suncalc as suncalc
 from player.jukeoroni.images import Resource
 
 from PIL import Image, ImageDraw, ImageFont, ImageOps, ImageChops, ImageEnhance
-from player.jukeoroni.settings import (
-    GLOBAL_LOGGING_LEVEL,
-    LAT,
-    LONG,
-    TZ,
-    ANTIALIAS,
-    ARIAL,
-    CALLIGRAPHIC
-)
+from player.jukeoroni.settings import Settings
+# from player.jukeoroni.settings import (
+#     GLOBAL_LOGGING_LEVEL,
+#     LAT,
+#     LONG,
+#     TZ,
+#     ANTIALIAS,
+#     ARIAL,
+#     CALLIGRAPHIC
+# )
 
 
 LOG = logging.getLogger(__name__)
-LOG.setLevel(GLOBAL_LOGGING_LEVEL)
+LOG.setLevel(Settings.GLOBAL_LOGGING_LEVEL)
 
 
 try:
@@ -27,7 +28,7 @@ try:
     LOG.info('Using Djangos timezone')
 except ImportError:
     LOG.exception('Setting timezone manually')
-    tz = TZ
+    tz = Settings.TZ
 
 
 class Clock(object):
@@ -35,7 +36,7 @@ class Clock(object):
     @staticmethod
     def get_clock(draw_logo, draw_date, size=448, hours=12, draw_sun=False, draw_moon=False, draw_moon_tex=True, draw_moon_phase=False, square=False):
 
-        _size = size * ANTIALIAS
+        _size = size * Settings.ANTIALIAS
 
         assert hours in [12, 24], 'hours can only be 12 or 24'
 
@@ -140,7 +141,7 @@ class Clock(object):
         if draw_logo:
             logo_img = Image.new(mode='RGBA', size=(_size, _size), color=(0, 0, 0, 0))
             logo_draw = ImageDraw.Draw(logo_img)
-            font_logo = ImageFont.truetype(CALLIGRAPHIC, round(_size * 0.140))
+            font_logo = ImageFont.truetype(Settings.CALLIGRAPHIC, round(_size * 0.140))
             text_logo = 'JukeOroni'
             length_logo = font_logo.getlength(text_logo)
             logo_draw.text((round(_size / 2) - length_logo / 2, round(_size * 0.536)), text_logo, fill=white, font=font_logo)
@@ -151,7 +152,7 @@ class Clock(object):
         if draw_date:
             date_img = Image.new(mode='RGBA', size=(_size, _size), color=(0, 0, 0, 0))
             date_draw = ImageDraw.Draw(date_img)
-            font_date = ImageFont.truetype(CALLIGRAPHIC, round(_size * 0.120))
+            font_date = ImageFont.truetype(Settings.CALLIGRAPHIC, round(_size * 0.120))
             # font_date = ImageFont.truetype(ARIAL, round(_size * 0.035))
             # text_date = datetime.datetime.now().strftime('%A, %B %d %Y')
             # text_date = datetime.datetime.now().strftime('%x')
@@ -233,7 +234,7 @@ class Clock(object):
 
         if draw_sun:
             _draw_sun = ImageDraw.Draw(comp)
-            _sun = suncalc.getTimes(datetime.datetime.now(), LAT, LONG)
+            _sun = suncalc.getTimes(datetime.datetime.now(), Settings.LAT, Settings.LONG)
 
             decimal_sunrise = float(_sun['sunrise'].strftime('%H')) + float(_sun['sunrise'].strftime('%M')) / 60
             arc_length_sunrise = decimal_sunrise / hours * 360.0
@@ -256,9 +257,9 @@ class Clock(object):
             _draw_moon = ImageDraw.Draw(comp)
             now = datetime.datetime.today()
 
-            _moon_yesterday = suncalc.getMoonTimes(now - datetime.timedelta(hours=24), LAT, LONG)
-            _moon_today = suncalc.getMoonTimes(now, LAT, LONG)
-            _moon_tomorrow = suncalc.getMoonTimes(now + datetime.timedelta(hours=24), LAT, LONG)
+            _moon_yesterday = suncalc.getMoonTimes(now - datetime.timedelta(hours=24), Settings.LAT, Settings.LONG)
+            _moon_today = suncalc.getMoonTimes(now, Settings.LAT, Settings.LONG)
+            _moon_tomorrow = suncalc.getMoonTimes(now + datetime.timedelta(hours=24), Settings.LAT, Settings.LONG)
 
             LOG.debug(f'Moon Yesterday: {_moon_yesterday}')
             LOG.debug(f'Moon Today: {_moon_today}')
@@ -299,68 +300,48 @@ class Clock(object):
                     break
 
             _moon = dict()
-            _moon['rise'] = moon_rise
+            try:
+                _moon['rise'] = moon_rise
 
-            """
-Traceback (most recent call last):
-  File "/data/venv/lib/python3.7/site-packages/django/core/handlers/exception.py", line 47, in inner
-    response = get_response(request)
-  File "/data/venv/lib/python3.7/site-packages/django/core/handlers/base.py", line 181, in _get_response
-    response = wrapped_callback(request, *callback_args, **callback_kwargs)
-  File "/data/django/jukeoroni/player/views.py", line 468, in radio_index
-    img = jukeoroni.layout_radio.get_layout(labels=jukeoroni.LABELS, cover=jukeoroni.radio.cover, title=jukeoroni.radio.stream_title)
-  File "/data/django/jukeoroni/player/jukeoroni/displays.py", line 468, in get_layout
-    _clock = self._clock.get_clock(size=SMALL_WIDGET_SIZE, draw_logo=False, draw_moon=True, draw_moon_phase=True, draw_date=False, hours=24, draw_sun=True, square=True)
-  File "/data/django/jukeoroni/player/jukeoroni/clock.py", line 302, in get_clock
-    _moon['rise'] = moon_rise
+                _moon['set'] = moon_set
 
-Exception Type: UnboundLocalError at /jukeoroni/radio/
-Exception Value: local variable 'moon_rise' referenced before assignment
-            """
+                decimal_moonrise = float(_moon['rise'].strftime('%H')) + float(_moon['rise'].strftime('%M')) / 60
+                arc_length_moonrise = decimal_moonrise / hours * 360.0
+                LOG.info(f'Moonrise: {str(_moon["rise"].strftime("%H:%M"))}')
 
-            """
-Nov 12 00:23:06 jukeoroni gunicorn[24292]: [11-12-2021 00:23:06] [INFO] [MainThread|3069790928] [player.jukeoroni.clock]: Sunrise: 07:24
-Nov 12 00:23:06 jukeoroni gunicorn[24292]: [11-12-2021 00:23:06] [INFO] [MainThread|3069790928] [player.jukeoroni.clock]: Sunset: 16:55
-Nov 12 00:23:06 jukeoroni gunicorn[24292]: [11-12-2021 00:23:06] [DEBUG] [MainThread|3069790928] [player.jukeoroni.clock]: Moon Yesterday: {'rise': datetime.datetime(2021, 11, 11, 23, 22, 2, 101589), 'set': datetime.datetime(2021, 11, 11, 22, 48, 46, 40598)}
-Nov 12 00:23:06 jukeoroni gunicorn[24292]: [11-12-2021 00:23:06] [DEBUG] [MainThread|3069790928] [player.jukeoroni.clock]: Moon Today: {'rise': datetime.datetime(2021, 11, 12, 14, 33, 25, 261010), 'set': datetime.datetime(2021, 11, 12, 0, 55, 5, 881777)}
-Nov 12 00:23:06 jukeoroni gunicorn[24292]: [11-12-2021 00:23:06] [DEBUG] [MainThread|3069790928] [player.jukeoroni.clock]: Moon Tomorrow: {'rise': datetime.datetime(2021, 11, 13, 14, 56, 17, 298467), 'set': datetime.datetime(2021, 11, 13, 0, 40, 50, 623905)}
-Nov 12 00:23:06 jukeoroni gunicorn[24292]: [11-12-2021 00:23:06] [DEBUG] [MainThread|3069790928] [player.jukeoroni.clock]: Moon sets: [datetime.datetime(2021, 11, 11, 22, 48, 46, 40598), datetime.datetime(2021, 11, 12, 0, 55, 5, 881777), datetime.datetime(2021, 11, 13, 0, 40, 50, 623905)]
-Nov 12 00:23:06 jukeoroni gunicorn[24292]: [11-12-2021 00:23:06] [DEBUG] [MainThread|3069790928] [player.jukeoroni.clock]: Moon Set for relevant cycle is: 2021-11-11 22:48:46.040598
-Nov 12 00:23:06 jukeoroni gunicorn[24292]: [11-12-2021 00:23:06] [DEBUG] [MainThread|3069790928] [player.jukeoroni.clock]: Moon rises: [datetime.datetime(2021, 11, 13, 14, 56, 17, 298467), datetime.datetime(2021, 11, 12, 14, 33, 25, 261010), datetime.datetime(2021, 11, 11, 23, 22, 2, 101589)]
-Nov 12 00:23:06 jukeoroni gunicorn[24292]: [11-12-2021 00:23:06] [ERROR] [MainThread|3069790928] [django.request]: Internal Server Error: /jukeoroni/jukebox/
-Nov 12 00:23:06 jukeoroni gunicorn[24292]: Traceback (most recent call last):
-Nov 12 00:23:06 jukeoroni gunicorn[24292]:   File "/data/venv/lib/python3.7/site-packages/django/core/handlers/exception.py", line 47, in inner
-Nov 12 00:23:06 jukeoroni gunicorn[24292]:     response = get_response(request)
-Nov 12 00:23:06 jukeoroni gunicorn[24292]:   File "/data/venv/lib/python3.7/site-packages/django/core/handlers/base.py", line 181, in _get_response
-Nov 12 00:23:06 jukeoroni gunicorn[24292]:     response = wrapped_callback(request, *callback_args, **callback_kwargs)
-Nov 12 00:23:06 jukeoroni gunicorn[24292]:   File "/data/django/jukeoroni/player/views.py", line 142, in jukebox_index
-Nov 12 00:23:06 jukeoroni gunicorn[24292]:     img = jukeoroni.jukebox.layout.get_layout(labels=jukeoroni.LABELS)
-Nov 12 00:23:06 jukeoroni gunicorn[24292]:   File "/data/django/jukeoroni/player/jukeoroni/displays.py", line 342, in get_layout
-Nov 12 00:23:06 jukeoroni gunicorn[24292]:     _clock = self._clock.get_clock(size=SMALL_WIDGET_SIZE, draw_logo=False, draw_moon_phase=True, draw_moon=True, draw_date=False, hours=24, draw_sun=True, square=True)
-Nov 12 00:23:06 jukeoroni gunicorn[24292]:   File "/data/django/jukeoroni/player/jukeoroni/clock.py", line 301, in get_clock
-Nov 12 00:23:06 jukeoroni gunicorn[24292]: UnboundLocalError: local variable 'moon_rise' referenced before assignment
-            """
+                decimal_moonset = float(_moon['set'].strftime('%H')) + float(_moon['set'].strftime('%M')) / 60
+                arc_length_moonset = decimal_moonset / hours * 360.0
+                LOG.info(f'Moonset: {str(_moon["set"].strftime("%H:%M"))}')
 
-            _moon['set'] = moon_set
+                color = (0, 128, 255, 255)
+                _size_astral = 0.20  # TODO: bigger means smaller circle
+                _width = 0.012
+                size_astral = [(round(_size * _size_astral), round(_size * _size_astral)), (round(_size - _size * _size_astral), round(_size - _size * _size_astral))]
+                width_astral = round(_size * _width)
+                _draw_moon.arc(size_astral, start=arc_length_moonrise+arc_twelve, end=arc_length_moonset+arc_twelve, fill=color,
+                               width=width_astral)
 
-            decimal_moonrise = float(_moon['rise'].strftime('%H')) + float(_moon['rise'].strftime('%M')) / 60
-            arc_length_moonrise = decimal_moonrise / hours * 360.0
-            LOG.info(f'Moonrise: {str(_moon["rise"].strftime("%H:%M"))}')
-
-            decimal_moonset = float(_moon['set'].strftime('%H')) + float(_moon['set'].strftime('%M')) / 60
-            arc_length_moonset = decimal_moonset / hours * 360.0
-            LOG.info(f'Moonset: {str(_moon["set"].strftime("%H:%M"))}')
-
-            color = (0, 128, 255, 255)
-            _size_astral = 0.20  # TODO: bigger means smaller circle
-            _width = 0.012
-            size_astral = [(round(_size * _size_astral), round(_size * _size_astral)), (round(_size - _size * _size_astral), round(_size - _size * _size_astral))]
-            width_astral = round(_size * _width)
-            _draw_moon.arc(size_astral, start=arc_length_moonrise+arc_twelve, end=arc_length_moonset+arc_twelve, fill=color,
-                           width=width_astral)
+            except UnboundLocalError:
+                """
+                Traceback (most recent call last):
+                  File "/data/venv/lib/python3.7/site-packages/django/core/handlers/exception.py", line 47, in inner
+                    response = get_response(request)
+                  File "/data/venv/lib/python3.7/site-packages/django/core/handlers/base.py", line 181, in _get_response
+                    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+                  File "/data/django/jukeoroni/player/views.py", line 643, in radio_index
+                    img = jukeoroni.layout_radio.get_layout(labels=jukeoroni.LABELS, cover=jukeoroni.radio.cover, title=jukeoroni.radio.stream_title)
+                  File "/data/django/jukeoroni/player/jukeoroni/displays.py", line 469, in get_layout
+                    _clock = self._clock.get_clock(size=SMALL_WIDGET_SIZE, draw_logo=False, draw_moon=True, draw_moon_phase=True, draw_date=False, hours=24, draw_sun=True, square=True)
+                  File "/data/django/jukeoroni/player/jukeoroni/clock.py", line 302, in get_clock
+                    _moon['rise'] = moon_rise
+                
+                Exception Type: UnboundLocalError at /jukeoroni/radio/
+                Exception Value: local variable 'moon_rise' referenced before assignment
+                """
+                LOG.exception('No Moon Rise found that happens before Moon Set:')
 
         comp = comp.rotate(90, expand=False)
 
-        comp = comp.resize((round(_size/ANTIALIAS), round(_size/ANTIALIAS)), Image.ANTIALIAS)
+        comp = comp.resize((round(_size/Settings.ANTIALIAS), round(_size/Settings.ANTIALIAS)), Image.ANTIALIAS)
 
         return comp
