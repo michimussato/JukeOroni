@@ -42,6 +42,7 @@ class Settings:
     SMALL_WIDGET_SIZE = 160
     FFPLAY_CMD = 'ffplay -hide_banner -autoexit -vn -nodisp -loglevel error'.split(' ')
 
+    # Sync Rclone folder over to local usb hdd (make an exact copy)
     # rsync -rltv8DW --delete-before --progress --info=progress2 --dry-run --exclude "*DS_Store" --delete-excluded "/data/googledrive/media/audio/music/new/" "/data/usb_hdd/media/audio/music/new" > /data/usb_hdd/rsync_music.txt &
     RSYNC_CMD = f'rsync -rltv8DW --delete-before --progress --info=progress2 --exclude "*DS_Store" --delete-excluded "{MEDIA_ROOT_RCLONE}/{ALBUM_TYPE_MUSIC}/" "/{MEDIA_ROOT}/{ALBUM_TYPE_MUSIC}"'.split(' ')
 

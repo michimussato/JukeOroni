@@ -22,7 +22,7 @@ jukeoroni = JukeOroni(test=False)
 jukeoroni.turn_on(disable_track_loader=False)
 jukeoroni.jukebox.set_auto_update_tracklist_on()
 jukeoroni.meditationbox.set_auto_update_tracklist_on()
-# jukeoroni.audiobookbox.set_auto_update_tracklist_on()
+# jukeoroni.episodicbox.set_auto_update_tracklist_on()
 # jukeoroni.jukebox.track_list_generator_thread()
 
 

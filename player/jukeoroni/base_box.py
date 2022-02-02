@@ -97,7 +97,6 @@ box.turn_off()
     def next_track(self):
         if not bool(self.tracks):
             return None
-        # while
         return self.tracks.pop(0)
 
     def turn_on(self, disable_track_loader=False):
