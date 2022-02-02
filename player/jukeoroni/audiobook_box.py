@@ -34,8 +34,8 @@ box.turn_off()
 
     @property
     def album_type(self):
-        return Settings.ALBUM_TYPE_AUDIOBOOK
+        return Settings.ALBUM_TYPE_EPISODIC
 
     @property
     def audio_dir(self):
-        return Settings.AUDIOBOOK_DIR
+        return Settings.EPISODIC_DIR

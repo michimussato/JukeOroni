@@ -50,7 +50,7 @@ class Resource(object):
 
     @property
     def AUDIOBOOK_ICON_IMAGE(self):
-        return Image.open(Settings._AUDIOBOOK_ICON_IMAGE)
+        return Image.open(Settings._EPISODIC_ICON_IMAGE)
 
     @property
     def MOON_TEXUTRE(self):

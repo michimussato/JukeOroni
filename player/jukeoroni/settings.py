@@ -2,14 +2,6 @@ import logging
 import os
 
 
-# GLOBAL_LOGGING_LEVEL = logging.DEBUG
-# DJANGO_LOGGING_LEVEL = GLOBAL_LOGGING_LEVEL
-
-
-# LOG = logging.getLogger(__name__)
-# LOG.setLevel(GLOBAL_LOGGING_LEVEL)
-
-
 class Settings:
     GLOBAL_LOGGING_LEVEL = logging.DEBUG
     DJANGO_LOGGING_LEVEL = GLOBAL_LOGGING_LEVEL
@@ -19,24 +11,25 @@ class Settings:
     DEFAULT_TRACKLIST_REGEN_INTERVAL = _ONE_HOUR * 6  # in hours
     DATA_SOURCES = ['usb_hdd', 'googledrive']
     DATA_SOURCE = DATA_SOURCES[0]  # https://raspberrytips.com/mount-usb-drive-raspberry-pi/
+    DATA_SOURCE_RCLONE = DATA_SOURCES[1]
     MEDIA_ROOT = f'/data/{DATA_SOURCE}/media/audio/'
+    MEDIA_ROOT_RCLONE = f'/data/{DATA_SOURCE_RCLONE}/media/audio/'
     # LOG_ROOT = os.path.join(MEDIA_ROOT, 'jukeoroni_logs')
     # if not os.path.exists(MEDIA_ROOT):
     #     DATA_SOURCE = DATA_SOURCES[1]  # Fallback to google drive if usb drive is not available
     #     MEDIA_ROOT = f'/data/{DATA_SOURCE}/media/audio/'
-    ALBUM_TYPES = ['music', 'meditation', 'audiobook']
+    ALBUM_TYPES = ['music', 'meditation', 'episodic']
     ALBUM_TYPE_MUSIC = ALBUM_TYPES[0]  # 'music'
     ALBUM_TYPE_MEDITATION = ALBUM_TYPES[1]  # 'meditation'
-    ALBUM_TYPE_AUDIOBOOK = ALBUM_TYPES[2]  # 'audiobook'
+    ALBUM_TYPE_EPISODIC = ALBUM_TYPES[2]  # 'episodic'
     MUSIC_DIR = os.path.join(MEDIA_ROOT, ALBUM_TYPE_MUSIC)
     MEDITATION_DIR = os.path.join(MEDIA_ROOT, ALBUM_TYPE_MEDITATION)
-    AUDIOBOOK_DIR = os.path.join(MEDIA_ROOT, ALBUM_TYPE_AUDIOBOOK)
+    EPISODIC_DIR = os.path.join(MEDIA_ROOT, ALBUM_TYPE_EPISODIC)
     FAULTY_ALBUMS = os.path.join(MEDIA_ROOT, 'faulty_albums_test.txt')
     MISSING_COVERS_FILE = os.path.join(MEDIA_ROOT, 'missing_covers_test.txt')
     AUDIO_FILES = ['.dsf', '.flac', '.wav', '.dff']
     MEDITATION_FILTER = ['.dsf', '.flac', '.wav', '.dff']
     EPISODIC_FILES = ['.dsf', '.flac', '.wav', '.dff', '.mp3']
-
 
     # inky
     PIMORONI_SATURATION = 0.5  # Default: 0.5
@@ -49,10 +42,13 @@ class Settings:
     SMALL_WIDGET_SIZE = 160
     FFPLAY_CMD = 'ffplay -hide_banner -autoexit -vn -nodisp -loglevel error'.split(' ')
 
+    # rsync -rltv8DW --delete-before --progress --info=progress2 --dry-run --exclude "*DS_Store" --delete-excluded "/data/googledrive/media/audio/music/new/" "/data/usb_hdd/media/audio/music/new" > /data/usb_hdd/rsync_music.txt &
+    RSYNC_CMD = f'rsync -rltv8DW --delete-before --progress --info=progress2 --exclude "*DS_Store" --delete-excluded "{MEDIA_ROOT_RCLONE}/{ALBUM_TYPE_MUSIC}/" "/{MEDIA_ROOT}/{ALBUM_TYPE_MUSIC}"'.split(' ')
+
     ENABLE_JUKEBOX = True
     ENABLE_RADIO = True
     ENABLE_MEDITATION = True
-    ENABLE_AUDIOBOOK = False
+    ENABLE_EPISODIC = False
 
     STATE_WATCHER_CADENCE = 0.5
 
@@ -60,16 +56,16 @@ class Settings:
 
     MODES = {
         'jukeoroni': {
-            'off': {
-                'numeric': 0.0,
-                'name': 'off',
-                'buttons': {
-                    'X000': 'N//A',
-                    '0X00': 'N//A',
-                    '00X0': 'N//A',
-                    '000X': 'ON',  # TODO: ON is not working yet
-                },
-            },
+            # 'off': {
+            #     'numeric': 0.0,
+            #     'name': 'off',
+            #     'buttons': {
+            #         'X000': 'N//A',
+            #         '0X00': 'N//A',
+            #         '00X0': 'N//A',
+            #         '000X': 'ON',  # TODO: ON is not working yet
+            #     },
+            # },
             'standby': {
                 'numeric': 1.0,
                 'name': 'standby',
@@ -78,7 +74,7 @@ class Settings:
                     'X000': ['N//A', 'Player'][int(ENABLE_JUKEBOX)],
                     '0X00': ['N//A', 'Radio'][int(ENABLE_RADIO)],
                     '00X0': ['N//A', 'Meditation'][int(ENABLE_MEDITATION)],
-                    '000X': ['N//A', 'Audiobook'][int(ENABLE_AUDIOBOOK)],  # TODO cannot switch it back on after OFF
+                    '000X': ['N//A', 'Episodic'][int(ENABLE_EPISODIC)],
                 },
             },
         },
@@ -236,11 +232,11 @@ class Settings:
                     # },
                 },
             },
-        'audiobookbox': {
+        'episodicbox': {
                 'standby': {
                     'random': {
                         'numeric': 4.0,
-                        'name': 'audiobookbox standby random',
+                        'name': 'episodicbox standby random',
                         'buttons': {
                             'X000': 'Menu',
                             '0X00': 'Play',
@@ -250,7 +246,7 @@ class Settings:
                     },
                     'album': {
                         'numeric': 4.1,
-                        'name': 'audiobookbox standby album',
+                        'name': 'episodicbox standby album',
                         'buttons': {
                             'X000': 'Menu',
                             '0X00': 'Play',
@@ -272,7 +268,7 @@ class Settings:
                 'on_air': {
                     'random': {
                         'numeric': 4.2,
-                        'name': 'audiobookbox on_air random',
+                        'name': 'episodicbox on_air random',
                         'buttons': {
                             'X000': 'Stop',
                             '0X00': 'Next',
@@ -282,7 +278,7 @@ class Settings:
                     },
                     'album': {
                         'numeric': 4.3,
-                        'name': 'audiobookbox on_air album',
+                        'name': 'episodicbox on_air album',
                         'buttons': {
                             'X000': 'Stop',
                             '0X00': 'Next',
@@ -304,7 +300,6 @@ class Settings:
             },
     }
 
-
     # box
     CACHE_TRACKS = [True, False][1] if DATA_SOURCE == DATA_SOURCES[0] else [True, False][0]
     CACHE_COVERS = [True, False][0]
@@ -316,17 +311,15 @@ class Settings:
     # AUDIO_FILES = ['.dsf', '.flac', '.wav', '.dff']
     # DEFAULT_TRACKLIST_REGEN_INTERVAL = 12  # in hours
 
-
     # meditation
     _MEDITATION_ICON_IMAGE = '/data/django/jukeoroni/player/static/meditation_box.jpg'
 
-    # audiobook
-    _AUDIOBOOK_ICON_IMAGE = '/data/django/jukeoroni/player/static/audiobook_box.jpg'
+    # episodic
+    _EPISODIC_ICON_IMAGE = '/data/django/jukeoroni/player/static/episodic_box.jpg'
 
     # radio
     _RADIO_ICON_IMAGE = '/data/django/jukeoroni/player/static/radio.png'
     _RADIO_ON_AIR_DEFAULT_IMAGE = '/data/django/jukeoroni/player/static/radio_on_air_default.jpg'
-
 
     # clock
     LAT, LONG = 47.39134, 8.85971
@@ -337,10 +330,8 @@ class Settings:
     CLOCK_UPDATE_INTERVAL = 10  # in minutes
     _MOON_TEXUTRE = '/data/django/jukeoroni/player/static/moon_texture_small.png'
 
-
     # radar
     RADAR_UPDATE_INTERVAL = 5  # in minutes
-
 
     # web
     RANDOM_ALBUMS = 3

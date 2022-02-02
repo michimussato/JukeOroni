@@ -139,14 +139,14 @@ class JukeOroniView(View):
             ret += '<hr>\n'
 
             # ret += '<center><h1>Hello JukeOroni</h1></center>\n'
-            if any([Settings.ENABLE_JUKEBOX, Settings.ENABLE_RADIO, Settings.ENABLE_MEDITATION, Settings.ENABLE_AUDIOBOOK]):
+            if any([Settings.ENABLE_JUKEBOX, Settings.ENABLE_RADIO, Settings.ENABLE_MEDITATION, Settings.ENABLE_EPISODIC]):
                 if Settings.ENABLE_JUKEBOX:
                     ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/set_jukebox\';\">JukeBox</button>\n'
                 if Settings.ENABLE_RADIO:
                     ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/set_radio\';\">Radio</button>\n'
                 if Settings.ENABLE_MEDITATION:
                     ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/set_meditationbox\';\">MeditationBox</button>\n'
-                if Settings.ENABLE_AUDIOBOOK:
+                if Settings.ENABLE_EPISODIC:
                     ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/set_audiobookbox\';\">AudiobookBox</button>\n'
 
                 ret += '<hr>\n'
