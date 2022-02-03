@@ -48,9 +48,14 @@ class Resource(object):
     def MEDITATION_ICON_IMAGE(self):
         return Image.open(Settings._MEDITATION_ICON_IMAGE)
 
+
     @property
-    def AUDIOBOOK_ICON_IMAGE(self):
-        return Image.open(Settings._EPISODIC_ICON_IMAGE)
+    def PODCAST_ICON_IMAGE(self):
+        return Image.open(Settings._PODCAST_ICON_IMAGE)
+
+    # @property
+    # def AUDIOBOOK_ICON_IMAGE(self):
+    #     return Image.open(Settings._EPISODIC_ICON_IMAGE)
 
     @property
     def MOON_TEXUTRE(self):

@@ -73,6 +73,23 @@ class Channel(models.Model):
         return self.display_name_short
 
 
+class Podcast(models.Model):
+    # channel = models.CharField(max_length=200, unique=True, null=False, blank=False)
+    # station = models.ForeignKey(Station, on_delete=models.PROTECT, null=True, blank=True)
+    display_name = models.CharField(max_length=200, unique=True, null=False, blank=False)
+    display_name_short = models.CharField(max_length=200, unique=True, null=False, blank=False)
+    url = models.URLField(max_length=200, unique=True, null=False, blank=False)
+    image_url = models.URLField(max_length=200, unique=True, null=False, blank=False)
+    is_enabled = models.BooleanField(default=True)
+
+
+class Episode(models.Model):
+    podcast = models.ForeignKey(Podcast, on_delete=models.PROTECT, null=True, blank=True)
+    played = models.BooleanField(default=False)
+    # time_mark =
+    guid = models.UUIDField(default=None, editable=False, blank=False, null=True)
+
+
 # class Setting(models.Model):
 #     key = models.CharField()
 #     data_type = models.CharField()

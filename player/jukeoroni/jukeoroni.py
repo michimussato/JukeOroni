@@ -12,6 +12,7 @@ from player.jukeoroni.juke_radio import Radio
 from player.jukeoroni.juke_box import JukeBox
 from player.jukeoroni.meditation_box import MeditationBox
 from player.jukeoroni.audiobook_box import AudiobookBox
+from player.jukeoroni.podcast_box import PodcastBox
 from player.jukeoroni.displays import Off as OffLayout
 from player.jukeoroni.displays import Standby as StandbyLayout
 from player.models import Channel
@@ -104,6 +105,7 @@ j.turn_off()
         self.radio = Radio()
         self.meditationbox = MeditationBox(jukeoroni=self)
         self.audiobookbox = AudiobookBox(jukeoroni=self)
+        self.podcastbox = PodcastBox(jukeoroni=self)
 
         self.playback_proc = None
         self.inserted_media = None
@@ -978,6 +980,9 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
 
         # AudiobookBox
         # self.audiobookbox.turn_on(disable_track_loader)
+
+        # AudiobookBox
+        self.podcastbox.turn_on(disable_track_loader)
     ############################################
 
     ############################################

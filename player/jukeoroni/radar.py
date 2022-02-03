@@ -18,10 +18,6 @@ LOG = logging.getLogger(__name__)
 LOG.setLevel(Settings.GLOBAL_LOGGING_LEVEL)
 
 
-INVERT_RADAR = True
-ENHANCE_IMAGE = True
-
-
 # class _RadarThread(threading.Thread):
 #     def __init__(self, *args, **kwargs):
 #         super().__init__(*args, **kwargs)
@@ -121,14 +117,14 @@ class Radar(object):
             im = im.crop((cut, cut, w-cut, h-cut))
             # im.save('/home/pi/radar.png')
 
-            if INVERT_RADAR:
+            if Settings.INVERT_RADAR:
                 r, g, b, a = im.split()
                 rgb_image = Image.merge('RGB', (r, g, b))
                 inverted_image = ImageOps.invert(rgb_image)
                 r2, g2, b2 = inverted_image.split()
                 im = Image.merge('RGBA', (r2, g2, b2, a))
 
-            if ENHANCE_IMAGE:
+            if Settings.ENHANCE_IMAGE:
                 # https://pythonexamples.org/python-pillow-adjust-image-sharpness/
                 filter_bright = ImageEnhance.Brightness(im)
                 im = filter_bright.enhance(1.5)

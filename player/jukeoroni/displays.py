@@ -71,7 +71,8 @@ BUTTONS_ICONS = {
     'Radio': '/data/django/jukeoroni/player/static/buttons_overlay/icon_radio.png',
     'Player': '/data/django/jukeoroni/player/static/buttons_overlay/icon_player.png',
     'Meditation': '/data/django/jukeoroni/player/static/buttons_overlay/icon_meditation.png',
-    'Audiobook': '/data/django/jukeoroni/player/static/buttons_overlay/icon_audiobook.png',
+    # 'Audiobook': '/data/django/jukeoroni/player/static/buttons_overlay/icon_audiobook.png',
+    'Podcast': '/data/django/jukeoroni/player/static/buttons_overlay/icon_podcast.png',
     'Random -> Album': '/data/django/jukeoroni/player/static/buttons_overlay/icon_random.png',
     'Album -> Random': '/data/django/jukeoroni/player/static/buttons_overlay/icon_album.png',
     # 'N//A': '/data/django/jukeoroni/player/static/buttons_overlay/icon_na.png',
@@ -653,24 +654,24 @@ class Audiobookbox(Layout):
 
     def get_layout(self, labels, loading=False, cover=None, artist=None):
 
-        if loading:
-            # TODO:
-            #  cover = Resource().squareify(Resource().JUKEBOX_LOADING_IMAGE)
-            cover = Resource.JUKEBOX_LOADING_IMAGE
-
-        else:
-            if cover is None:
-                # TODO change RADIO_ICON_IMAGE
-                cover = Resource().AUDIOBOOK_ICON_IMAGE
-            else:
-                assert isinstance(cover,
-                                  Image.Image), f'album cover type must be PIL.Image.Image() (not rotated): {cover}'
-            if artist is None:
-                pass
-            else:
-                assert isinstance(artist, Image.Image), 'artist cover type must be PIL.Image.Image() (not rotated)'
-
-        # mean_color = mean_color(cover)
+        # if loading:
+        #     # TODO:
+        #     #  cover = Resource().squareify(Resource().JUKEBOX_LOADING_IMAGE)
+        #     cover = Resource().JUKEBOX_LOADING_IMAGE
+        #
+        # else:
+        #     if cover is None:
+        #         # TODO change RADIO_ICON_IMAGE
+        #         cover = Resource().AUDIOBOOK_ICON_IMAGE
+        #     else:
+        #         assert isinstance(cover,
+        #                           Image.Image), f'album cover type must be PIL.Image.Image() (not rotated): {cover}'
+        #     if artist is None:
+        #         pass
+        #     else:
+        #         assert isinstance(artist, Image.Image), 'artist cover type must be PIL.Image.Image() (not rotated)'
+        #
+        # # mean_color = mean_color(cover)
 
         buttons_overlay = buttons_img_overlay(labels, gradient_color=mean_color(cover))
         bg = Image.new(mode='RGBA', size=(600, 448), color=self.bg_color)
@@ -773,6 +774,112 @@ Exception Value: broken PNG file (chunk b"Em\xd5'")
                         mask=cover_artist)
             cover = Image.alpha_composite(cover_copy,
                                           cover)  # this is necessary to prevent alpha AA artifacts (background shining through)
+
+        _cover_center = round(bg.size[1] / 2 - cover_size / 2)
+        bg.paste(cover, box=(buttons_overlay.size[0] + self.border, _cover_center), mask=cover)
+
+        # SMALL_WIDGET_SIZE = 151
+        _clock = self._clock.get_clock(size=Settings.SMALL_WIDGET_SIZE, draw_logo=False, draw_moon_phase=True,
+                                       draw_moon=True, draw_date=False, hours=24, draw_sun=True, square=True)
+        _clock = Resource().round_resize(image=_clock, corner=40, fixed=Settings.SMALL_WIDGET_SIZE)
+        _clock_bottom_left_centered = (int(600 - Settings.SMALL_WIDGET_SIZE - self.border),
+                                       int(224 + 224 / 2 + round(self.border / 2) - round(Settings.SMALL_WIDGET_SIZE / 2)))
+        _clock_bottom_left = (int(600 - Settings.SMALL_WIDGET_SIZE - self.border),
+                              int(448 - Settings.SMALL_WIDGET_SIZE - self.border))
+
+        bg.paste(_clock, box=_clock_bottom_left_centered, mask=_clock)
+
+        _radar_image = self.radar.radar_image
+
+        if _radar_image is not None:
+            _radar_image = Resource().round_resize(image=_radar_image, corner=40, fixed=Settings.SMALL_WIDGET_SIZE)
+            LOG.info(f'_radar_image.size is {str(_radar_image.size)}')
+            # _radar_bottom_right = (int(600 - w - self.border), self.border)
+            _radar_bottom_right_centered = (int(600 - Settings.SMALL_WIDGET_SIZE - self.border),
+                                            int(0 + 224 / 2 + round(self.border / 2) - round(
+                                                Settings.SMALL_WIDGET_SIZE / 2)))
+            bg.paste(_radar_image, box=_radar_bottom_right_centered, mask=_radar_image)
+
+        bg.paste(buttons_overlay, box=(0, 0), mask=buttons_overlay)
+
+        if Settings.DRAW_HOST_INFO:
+            _host_info = host_info()
+
+            font_size = 16
+            font = ImageFont.truetype(r'/data/django/jukeoroni/player/static/arial_narrow.ttf', size=font_size)
+            length = font.getlength(_host_info)
+
+            widget_ip_overlay = Image.new(mode='RGBA', size=bg.size, color=(0, 0, 0, 0))
+            draw_ip = ImageDraw.Draw(widget_ip_overlay, mode='RGBA')
+
+            draw_ip.text((round(widget_ip_overlay.size[0] - length - BORDER), 0), _host_info,
+                         fill=(255, 255, 255, 255), font=font)
+
+            bg = Image.alpha_composite(bg, widget_ip_overlay)
+
+        return bg
+
+
+class Podcastbox(Layout):
+    # bg_color = (0, 0, 255, 255)
+
+    # def get_layout(self, labels, cover, title):
+        # raise NotImplementedError
+
+# class Jukebox(Layout):
+    # bg_color = (0, 255, 0, 255)
+
+    # TODO!!!
+    #  If the default image gets currupted, playback won't work anymore!!
+
+    def get_layout(self, labels, loading=False, cover=None, artist=None):
+
+        if loading:
+            # TODO:
+            #  cover = Resource().squareify(Resource().JUKEBOX_LOADING_IMAGE)
+            cover = Resource().JUKEBOX_LOADING_IMAGE
+
+        else:
+            if cover is None:
+                # TODO change RADIO_ICON_IMAGE
+                cover = Resource().PODCAST_ICON_IMAGE
+            else:
+                assert isinstance(cover,
+                                  Image.Image), f'album cover type must be PIL.Image.Image() (not rotated): {cover}'
+            if artist is None:
+                pass
+            else:
+                assert isinstance(artist, Image.Image), 'artist cover type must be PIL.Image.Image() (not rotated)'
+
+        # mean_color = mean_color(cover)
+
+        buttons_overlay = buttons_img_overlay(labels, gradient_color=mean_color(cover))
+        bg = Image.new(mode='RGBA', size=(600, 448), color=self.bg_color)
+
+        cover_size = self.main_size
+
+        cover.putalpha(255)
+        cover = cover.resize((cover_size, cover_size), Image.ANTIALIAS)
+        # TODO: corrupts PIL.Image
+
+        cover = cover.rotate(90, expand=True)
+
+        cover = Resource().round_resize(image=cover, corner=40, factor=1.0)
+
+        # if artist:
+        #     scale_cover_artist = 4
+        #     cover_artist = artist.rotate(90, expand=True)
+        #     # TODO move to rounde_resize
+        #     cover_artist = cover_artist.resize(
+        #         (round(cover_size / scale_cover_artist), round(cover_size / scale_cover_artist)), Image.ANTIALIAS)
+        #     cover_artist = Resource().round_resize(image=cover_artist, corner=20, factor=1.0)
+        #
+        #     cover_copy = cover.copy()
+        #
+        #     cover.paste(cover_artist, box=(round(cover_size - cover_size / scale_cover_artist) - 20, 20),
+        #                 mask=cover_artist)
+        #     cover = Image.alpha_composite(cover_copy,
+        #                                   cover)  # this is necessary to prevent alpha AA artifacts (background shining through)
 
         _cover_center = round(bg.size[1] / 2 - cover_size / 2)
         bg.paste(cover, box=(buttons_overlay.size[0] + self.border, _cover_center), mask=cover)

@@ -236,10 +236,19 @@ class JukeboxTrack(object):
 
     def __del__(self):
         if self.cached:
+
+            """
+            Exception ignored in: <function JukeboxTrack.__del__ at 0xb237aed0>
+            Traceback (most recent call last):
+              File "/data/django/jukeoroni/player/jukeoroni/box_track.py", line 240, in __del__
+                os.remove(self.cache_tmp)
+            TypeError: remove: path should be string, bytes or os.PathLike, not NoneType
+            """
+
             try:
                 os.remove(self.cache_tmp)
                 LOG.info(f'removed from local filesystem: \"{self.cache_tmp}\"')
-            except OSError:
+            except (OSError, TypeError):
                 LOG.exception('Cached track could not be deleted:')
 
     def play(self, jukeoroni):

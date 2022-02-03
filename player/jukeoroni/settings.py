@@ -18,10 +18,11 @@ class Settings:
     # if not os.path.exists(MEDIA_ROOT):
     #     DATA_SOURCE = DATA_SOURCES[1]  # Fallback to google drive if usb drive is not available
     #     MEDIA_ROOT = f'/data/{DATA_SOURCE}/media/audio/'
-    ALBUM_TYPES = ['music', 'meditation', 'episodic']
+    ALBUM_TYPES = ['music', 'meditation', 'episodic', 'podcast']
     ALBUM_TYPE_MUSIC = ALBUM_TYPES[0]  # 'music'
     ALBUM_TYPE_MEDITATION = ALBUM_TYPES[1]  # 'meditation'
     ALBUM_TYPE_EPISODIC = ALBUM_TYPES[2]  # 'episodic'
+    ALBUM_TYPE_PODCAST = ALBUM_TYPES[3]  # 'episodic'
     MUSIC_DIR = os.path.join(MEDIA_ROOT, ALBUM_TYPE_MUSIC)
     MEDITATION_DIR = os.path.join(MEDIA_ROOT, ALBUM_TYPE_MEDITATION)
     EPISODIC_DIR = os.path.join(MEDIA_ROOT, ALBUM_TYPE_EPISODIC)
@@ -49,6 +50,7 @@ class Settings:
     ENABLE_JUKEBOX = True
     ENABLE_RADIO = True
     ENABLE_MEDITATION = True
+    ENABLE_PODCAST = True
     ENABLE_EPISODIC = False
 
     STATE_WATCHER_CADENCE = 0.5
@@ -57,16 +59,16 @@ class Settings:
 
     MODES = {
         'jukeoroni': {
-            # 'off': {
-            #     'numeric': 0.0,
-            #     'name': 'off',
-            #     'buttons': {
-            #         'X000': 'N//A',
-            #         '0X00': 'N//A',
-            #         '00X0': 'N//A',
-            #         '000X': 'ON',  # TODO: ON is not working yet
-            #     },
-            # },
+            'off': {
+                'numeric': 0.0,
+                'name': 'off',
+                'buttons': {
+                    'X000': 'N//A',
+                    '0X00': 'N//A',
+                    '00X0': 'N//A',
+                    '000X': 'ON',  # TODO: ON is not working yet
+                },
+            },
             'standby': {
                 'numeric': 1.0,
                 'name': 'standby',
@@ -75,7 +77,9 @@ class Settings:
                     'X000': ['N//A', 'Player'][int(ENABLE_JUKEBOX)],
                     '0X00': ['N//A', 'Radio'][int(ENABLE_RADIO)],
                     '00X0': ['N//A', 'Meditation'][int(ENABLE_MEDITATION)],
-                    '000X': ['N//A', 'Episodic'][int(ENABLE_EPISODIC)],
+                    # '000X': ['N//A', 'Audiobook'][int(ENABLE_AUDIOBOOK)],
+                    '000X': ['N//A', 'Podcast'][int(ENABLE_PODCAST)],
+                    # '000X': ['N//A', 'Episodic'][int(ENABLE_EPISODIC)],
                 },
             },
         },
@@ -233,11 +237,77 @@ class Settings:
                     # },
                 },
             },
-        'episodicbox': {
+        # 'episodicbox': {
+        #         'standby': {
+        #             'random': {
+        #                 'numeric': 4.0,
+        #                 'name': 'episodicbox standby random',
+        #                 'buttons': {
+        #                     'X000': 'Menu',
+        #                     '0X00': 'Play',
+        #                     '00X0': 'N//A',
+        #                     '000X': 'Random -> Album',
+        #                 },
+        #             },
+        #             'album': {
+        #                 'numeric': 4.1,
+        #                 'name': 'episodicbox standby album',
+        #                 'buttons': {
+        #                     'X000': 'Menu',
+        #                     '0X00': 'Play',
+        #                     '00X0': 'N//A',
+        #                     '000X': 'Album -> Random',
+        #                 },
+        #             },
+        #             # 'track': {
+        #             #     'numeric': 3.5,
+        #             #     'name': 'meditationbox standby track',
+        #             #     'buttons': {
+        #             #         'X000': 'Stop',
+        #             #         '0X00': 'Next',
+        #             #         '00X0': 'N//A',
+        #             #         '000X': 'Album -> Random',
+        #             #     },
+        #             # },
+        #         },
+        #         'on_air': {
+        #             'random': {
+        #                 'numeric': 4.2,
+        #                 'name': 'episodicbox on_air random',
+        #                 'buttons': {
+        #                     'X000': 'Stop',
+        #                     '0X00': 'Next',
+        #                     '00X0': 'N//A',
+        #                     '000X': 'Random -> Album',
+        #                 },
+        #             },
+        #             'album': {
+        #                 'numeric': 4.3,
+        #                 'name': 'episodicbox on_air album',
+        #                 'buttons': {
+        #                     'X000': 'Stop',
+        #                     '0X00': 'Next',
+        #                     '00X0': 'N//A',
+        #                     '000X': 'Album -> Random',
+        #                 },
+        #             },
+        #             # 'track': {
+        #             #     'numeric': 3.4,
+        #             #     'name': 'meditationbox on_air album track',
+        #             #     'buttons': {
+        #             #         'X000': 'Stop',
+        #             #         '0X00': 'Next',
+        #             #         '00X0': 'N//A',
+        #             #         '000X': 'Album -> Random',
+        #             #     },
+        #             # },
+        #         },
+        #     },
+        'podcastbox': {
                 'standby': {
                     'random': {
-                        'numeric': 4.0,
-                        'name': 'episodicbox standby random',
+                        'numeric': 5.0,
+                        'name': 'podcastbox standby random',
                         'buttons': {
                             'X000': 'Menu',
                             '0X00': 'Play',
@@ -246,8 +316,8 @@ class Settings:
                         },
                     },
                     'album': {
-                        'numeric': 4.1,
-                        'name': 'episodicbox standby album',
+                        'numeric': 5.1,
+                        'name': 'podcastbox standby album',
                         'buttons': {
                             'X000': 'Menu',
                             '0X00': 'Play',
@@ -256,8 +326,8 @@ class Settings:
                         },
                     },
                     # 'track': {
-                    #     'numeric': 3.5,
-                    #     'name': 'meditationbox standby track',
+                    #     'numeric': 5.5,
+                    #     'name': 'podcastbox standby track',
                     #     'buttons': {
                     #         'X000': 'Stop',
                     #         '0X00': 'Next',
@@ -268,8 +338,8 @@ class Settings:
                 },
                 'on_air': {
                     'random': {
-                        'numeric': 4.2,
-                        'name': 'episodicbox on_air random',
+                        'numeric': 5.2,
+                        'name': 'podcastbox on_air random',
                         'buttons': {
                             'X000': 'Stop',
                             '0X00': 'Next',
@@ -278,8 +348,8 @@ class Settings:
                         },
                     },
                     'album': {
-                        'numeric': 4.3,
-                        'name': 'episodicbox on_air album',
+                        'numeric': 5.3,
+                        'name': 'podcastbox on_air album',
                         'buttons': {
                             'X000': 'Stop',
                             '0X00': 'Next',
@@ -288,8 +358,74 @@ class Settings:
                         },
                     },
                     # 'track': {
-                    #     'numeric': 3.4,
-                    #     'name': 'meditationbox on_air album track',
+                    #     'numeric': 5.4,
+                    #     'name': 'podcastbox on_air album track',
+                    #     'buttons': {
+                    #         'X000': 'Stop',
+                    #         '0X00': 'Next',
+                    #         '00X0': 'N//A',
+                    #         '000X': 'Album -> Random',
+                    #     },
+                    # },
+                },
+            },
+        'audiobookbox': {
+                'standby': {
+                    'random': {
+                        'numeric': 6.0,
+                        'name': 'audiobookbox standby random',
+                        'buttons': {
+                            'X000': 'Menu',
+                            '0X00': 'Play',
+                            '00X0': 'N//A',
+                            '000X': 'Random -> Album',
+                        },
+                    },
+                    'album': {
+                        'numeric': 6.1,
+                        'name': 'audiobookbox standby album',
+                        'buttons': {
+                            'X000': 'Menu',
+                            '0X00': 'Play',
+                            '00X0': 'N//A',
+                            '000X': 'Album -> Random',
+                        },
+                    },
+                    # 'track': {
+                    #     'numeric': 6.5,
+                    #     'name': 'audiobookbox standby track',
+                    #     'buttons': {
+                    #         'X000': 'Stop',
+                    #         '0X00': 'Next',
+                    #         '00X0': 'N//A',
+                    #         '000X': 'Album -> Random',
+                    #     },
+                    # },
+                },
+                'on_air': {
+                    'random': {
+                        'numeric': 6.2,
+                        'name': 'audiobookbox on_air random',
+                        'buttons': {
+                            'X000': 'Stop',
+                            '0X00': 'Next',
+                            '00X0': 'N//A',
+                            '000X': 'Random -> Album',
+                        },
+                    },
+                    'album': {
+                        'numeric': 6.3,
+                        'name': 'audiobookbox on_air album',
+                        'buttons': {
+                            'X000': 'Stop',
+                            '0X00': 'Next',
+                            '00X0': 'N//A',
+                            '000X': 'Album -> Random',
+                        },
+                    },
+                    # 'track': {
+                    #     'numeric': 6.4,
+                    #     'name': 'audiobookbox on_air album track',
                     #     'buttons': {
                     #         'X000': 'Stop',
                     #         '0X00': 'Next',
@@ -315,8 +451,11 @@ class Settings:
     # meditation
     _MEDITATION_ICON_IMAGE = '/data/django/jukeoroni/player/static/meditation_box.jpg'
 
-    # episodic
-    _EPISODIC_ICON_IMAGE = '/data/django/jukeoroni/player/static/episodic_box.jpg'
+    # # episodic
+    # _EPISODIC_ICON_IMAGE = '/data/django/jukeoroni/player/static/episodic_box.jpg'
+
+    # Podcast
+    _PODCAST_ICON_IMAGE = '/data/django/jukeoroni/player/static/podcast_box.jpg'
 
     # radio
     _RADIO_ICON_IMAGE = '/data/django/jukeoroni/player/static/radio.png'
@@ -333,6 +472,8 @@ class Settings:
 
     # radar
     RADAR_UPDATE_INTERVAL = 5  # in minutes
+    INVERT_RADAR = False
+    ENHANCE_IMAGE = True
 
     # web
     RANDOM_ALBUMS = 3
