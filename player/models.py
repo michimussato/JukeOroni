@@ -74,13 +74,13 @@ class Channel(models.Model):
 
 
 class Podcast(models.Model):
-    title_channel = models.CharField(max_length=200, editable=False, unique=True, null=False, blank=False)
+    title_channel = models.CharField(max_length=200, editable=False, unique=False, null=False, blank=False)
     image_url = models.URLField(max_length=200, editable=False, unique=False, null=False, blank=False)
     author_channel = models.CharField(max_length=200, editable=False, unique=False, null=False, blank=False)
     # channel = models.CharField(max_length=200, unique=True, null=False, blank=False)
     # station = models.ForeignKey(Station, on_delete=models.PROTECT, null=True, blank=True)
-    display_name = models.CharField(max_length=200, editable=False, unique=True, null=False, blank=False)
-    display_name_short = models.CharField(max_length=200, editable=False, unique=True, null=False, blank=False)
+    display_name = models.CharField(max_length=200, editable=False, unique=False, null=False, blank=False)
+    display_name_short = models.CharField(max_length=200, editable=False, unique=False, null=False, blank=False)
     url = models.URLField(max_length=200, editable=True, unique=True, null=False, blank=False)
     is_enabled = models.BooleanField(default=True)
 

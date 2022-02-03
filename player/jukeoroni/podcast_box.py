@@ -7,6 +7,7 @@ from player.models import Podcast, Episode
 from player.jukeoroni.base_box import BaseBox
 from player.jukeoroni.displays import Podcastbox as PodcastboxLayout
 from player.jukeoroni.settings import Settings
+from django.core.exceptions import ObjectDoesNotExist
 
 
 class PodcastBox(BaseBox):
@@ -32,8 +33,9 @@ box.turn_off()
 
         self.layout = PodcastboxLayout()
 
-        podcast = Podcast.objects.all()[0]
-        self.parse_xml_from_url(url=podcast.url)
+        for podcast in Podcast.objects.all():
+        # podcast = Podcast.objects.all()[0]
+            self.parse_xml_from_url(url=podcast.url)
 
     @property
     def box_type(self):
@@ -158,10 +160,10 @@ episodes_feedburner = box.parse_xml_from_url('https://feeds.feedburner.com/tedta
             p.image_url = image.text
             p.save()
 
-            episode_objects = Episode.objects.get(guid__exact=guid.text)
-            if episode_objects:
-                e = episode_objects
-            else:
+            try:
+                e = Episode.objects.get(guid__exact=guid.text)
+                # e = episode_objects[0]
+            except ObjectDoesNotExist:
                 e = Episode()
             e.podcast = p
             e.title_episode = title_episode.text
