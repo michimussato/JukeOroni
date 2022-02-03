@@ -1316,5 +1316,61 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
                 return
             return
 
+        # PodcastBox
+        # TODO: pause/resume
+        elif self.mode == Settings.MODES['podcastbox']['standby']['random']:
+            if button_mapped == 'X000':
+                self.mode = Settings.MODES['jukeoroni']['standby']
+                return
+            elif button_mapped == '0X00':
+                self.mode = Settings.MODES['podcastbox']['on_air']['random']
+                return
+            elif button_mapped == '00X0':
+                return
+            elif button_mapped == '000X':
+                self.mode = Settings.MODES['podcastbox']['standby']['album']
+                return
+            return
+        elif self.mode == Settings.MODES['podcastbox']['standby']['album']:
+            if button_mapped == 'X000':
+                self.mode = Settings.MODES['jukeoroni']['standby']
+                return
+            elif button_mapped == '0X00':
+                self.mode = Settings.MODES['podcastbox']['on_air']['album']
+                return
+            elif button_mapped == '00X0':
+                return
+            elif button_mapped == '000X':
+                self.mode = Settings.MODES['podcastbox']['standby']['random']
+                return
+            return
+
+        elif self.mode == Settings.MODES['podcastbox']['on_air']['random']:
+            if button_mapped == 'X000':
+                self.mode = Settings.MODES['podcastbox']['standby']['random']
+                return
+            elif button_mapped == '0X00':
+                self._flag_next = True
+                return
+            elif button_mapped == '00X0':
+                return
+            elif button_mapped == '000X':
+                self.mode = Settings.MODES['podcastbox']['on_air']['album']
+                return
+            return
+        elif self.mode == Settings.MODES['podcastbox']['on_air']['album']:
+            if button_mapped == 'X000':
+                self.mode = Settings.MODES['podcastbox']['standby']['album']
+                return
+            elif button_mapped == '0X00':
+                self._flag_next = True
+                return
+            elif button_mapped == '00X0':
+                return
+            elif button_mapped == '000X':
+                self.mode = Settings.MODES['podcastbox']['on_air']['random']
+                return
+            return
+
         return
     ############################################

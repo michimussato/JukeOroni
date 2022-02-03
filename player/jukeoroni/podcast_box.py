@@ -29,13 +29,13 @@ box.turn_off()
         self.LOG.info(f'Initializing {self.box_type}...')
 
         self.set_loader_mode_album()
-        self._need_first_album_track = True
+        self._need_first_album_track = True  # TODO NEED NEXT EPISODE OR CONTINUE (maybe a few seconds earlier?)
 
         self.layout = PodcastboxLayout()
 
-        for podcast in Podcast.objects.all():
-        # podcast = Podcast.objects.all()[0]
-            self.parse_xml_from_url(url=podcast.url)
+        # for podcast in Podcast.objects.all():
+        # # podcast = Podcast.objects.all()[0]
+        #     self.parse_xml_from_url(url=podcast.url)
 
     @property
     def box_type(self):
@@ -56,6 +56,8 @@ box.turn_off()
 
         self.on = True
 
+        self.update_podcasts()
+
         # self.track_list_generator_thread()
         # if not disable_track_loader:
         #     self.track_loader_thread()
@@ -63,8 +65,14 @@ box.turn_off()
 
         # self.parse_xml_from_url()
 
+    def update_podcasts(self):
+        for podcast in self.podcasts:
+            self.LOG.info(f'Updating Podcast from URL {podcast.url}')
+            self.parse_xml_from_url(url=podcast.url)
+
+    @property
     def podcasts(self):
-        return list()
+        return Podcast.objects.all()
 
     def parse_xml_from_url(self, url):
         """
@@ -85,7 +93,7 @@ episodes_feedburner = box.parse_xml_from_url('https://feeds.feedburner.com/tedta
         tree = ET.fromstring(response)
         # root = tree.getroot()
 
-        self.LOG.debug(f'Parsing Podcast XML URL: {url}')
+        self.LOG.info(f'Parsing Podcast XML from URL {url}')
 
         title_channel = tree.find('.//channel/title')
 
@@ -184,5 +192,7 @@ episodes_feedburner = box.parse_xml_from_url('https://feeds.feedburner.com/tedta
 
         # for i in _episodes:
         #     print(i)
+
+        self.LOG.info(f'Podcast {p} updated ({url})')
 
         return _episodes

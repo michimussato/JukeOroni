@@ -66,6 +66,11 @@ def get_active_box(_jukeoroni):
             or _jukeoroni.mode == Settings.MODES['audiobookbox']['on_air']['random'] \
             or _jukeoroni.mode == Settings.MODES['audiobookbox']['on_air']['album']:
         box = _jukeoroni.audiobookbox
+    elif _jukeoroni.mode == Settings.MODES['podcastbox']['standby']['random'] \
+            or _jukeoroni.mode == Settings.MODES['podcastbox']['standby']['album'] \
+            or _jukeoroni.mode == Settings.MODES['podcastbox']['on_air']['random'] \
+            or _jukeoroni.mode == Settings.MODES['podcastbox']['on_air']['album']:
+        box = _jukeoroni.podcastbox
     else:
         # LOG.error(_jukeoroni.mode)
         raise NotImplementedError('No Box!!!')
@@ -99,11 +104,18 @@ class JukeOroniView(View):
             return HttpResponseRedirect('meditationbox/')
 
         elif jukeoroni.mode == Settings.MODES['audiobookbox']['standby']['album'] \
-            or jukeoroni.mode == Settings.MODES['audiobookbox']['standby']['random'] \
-            or jukeoroni.mode == Settings.MODES['audiobookbox']['on_air']['album'] \
-            or jukeoroni.mode == Settings.MODES['audiobookbox']['on_air']['random']:
+                or jukeoroni.mode == Settings.MODES['audiobookbox']['standby']['random'] \
+                or jukeoroni.mode == Settings.MODES['audiobookbox']['on_air']['album'] \
+                or jukeoroni.mode == Settings.MODES['audiobookbox']['on_air']['random']:
 
             return HttpResponseRedirect('audiobookbox/')
+
+        elif jukeoroni.mode == Settings.MODES['podcastbox']['standby']['album'] \
+                or jukeoroni.mode == Settings.MODES['podcastbox']['standby']['random'] \
+                or jukeoroni.mode == Settings.MODES['podcastbox']['on_air']['album'] \
+                or jukeoroni.mode == Settings.MODES['podcastbox']['on_air']['random']:
+
+            return HttpResponseRedirect('podcastbox/')
 
         elif jukeoroni.mode == Settings.MODES['jukeoroni']['standby'] \
                 or jukeoroni.mode == Settings.MODES['jukeoroni']['off']:
@@ -146,8 +158,10 @@ class JukeOroniView(View):
                     ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/set_radio\';\">Radio</button>\n'
                 if Settings.ENABLE_MEDITATION:
                     ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/set_meditationbox\';\">MeditationBox</button>\n'
-                if Settings.ENABLE_EPISODIC:
+                if Settings.ENABLE_AUDIOBOOK:
                     ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/set_audiobookbox\';\">AudiobookBox</button>\n'
+                if Settings.ENABLE_PODCAST:
+                    ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/set_podcastbox\';\">PodcastBox</button>\n'
 
                 ret += '<hr>\n'
 
@@ -181,6 +195,13 @@ class JukeOroniView(View):
 
         return HttpResponseRedirect('/jukeoroni/audiobookbox')
 
+    def set_podcastbox(self):
+        global jukeoroni
+
+        jukeoroni.mode = Settings.MODES['podcastbox']['standby'][jukeoroni.podcastbox.loader_mode]
+
+        return HttpResponseRedirect('/jukeoroni/podcastbox')
+
     def set_radio(self):
         global jukeoroni
 
@@ -210,7 +231,11 @@ class JukeOroniView(View):
                 and not jukeoroni.mode == Settings.MODES['audiobookbox']['standby']['random'] \
                 and not jukeoroni.mode == Settings.MODES['audiobookbox']['standby']['album'] \
                 and not jukeoroni.mode == Settings.MODES['audiobookbox']['on_air']['random'] \
-                and not jukeoroni.mode == Settings.MODES['audiobookbox']['on_air']['album']:
+                and not jukeoroni.mode == Settings.MODES['audiobookbox']['on_air']['album'] \
+                and not jukeoroni.mode == Settings.MODES['podcastbox']['standby']['random'] \
+                and not jukeoroni.mode == Settings.MODES['podcastbox']['standby']['album'] \
+                and not jukeoroni.mode == Settings.MODES['podcastbox']['on_air']['random'] \
+                and not jukeoroni.mode == Settings.MODES['podcastbox']['on_air']['album']:
 
             return HttpResponseRedirect('/jukeoroni')
 
@@ -409,6 +434,15 @@ class JukeOroniView(View):
             pass
             # jukeoroni.mode = MODES['audiobookbox']['on_air']['random']
 
+        elif jukeoroni.mode == Settings.MODES['podcastbox']['standby']['random']:
+            jukeoroni.mode = Settings.MODES['podcastbox']['standby']['album']
+        elif jukeoroni.mode == Settings.MODES['podcastbox']['on_air']['random']:
+            jukeoroni.mode = Settings.MODES['podcastbox']['on_air']['album']
+        elif jukeoroni.mode == Settings.MODES['podcastbox']['standby']['album']:
+            jukeoroni.mode = Settings.MODES['podcastbox']['standby']['random']
+        elif jukeoroni.mode == Settings.MODES['podcastbox']['on_air']['album']:
+            jukeoroni.mode = Settings.MODES['podcastbox']['on_air']['random']
+
         return HttpResponseRedirect('/jukeoroni')
 
     def play_next(self):
@@ -517,7 +551,11 @@ class JukeOroniView(View):
                 and not jukeoroni.mode == Settings.MODES['audiobookbox']['standby']['random'] \
                 and not jukeoroni.mode == Settings.MODES['audiobookbox']['standby']['album'] \
                 and not jukeoroni.mode == Settings.MODES['audiobookbox']['on_air']['random'] \
-                and not jukeoroni.mode == Settings.MODES['audiobookbox']['on_air']['album']:
+                and not jukeoroni.mode == Settings.MODES['audiobookbox']['on_air']['album'] \
+                and not jukeoroni.mode == Settings.MODES['podcastbox']['standby']['random'] \
+                and not jukeoroni.mode == Settings.MODES['podcastbox']['standby']['album'] \
+                and not jukeoroni.mode == Settings.MODES['podcastbox']['on_air']['random'] \
+                and not jukeoroni.mode == Settings.MODES['podcastbox']['on_air']['album']:
 
             return HttpResponseRedirect('/jukeoroni')
 
@@ -580,7 +618,11 @@ class JukeOroniView(View):
                 and not jukeoroni.mode == Settings.MODES['audiobookbox']['standby']['random'] \
                 and not jukeoroni.mode == Settings.MODES['audiobookbox']['standby']['album'] \
                 and not jukeoroni.mode == Settings.MODES['audiobookbox']['on_air']['random'] \
-                and not jukeoroni.mode == Settings.MODES['audiobookbox']['on_air']['album']:
+                and not jukeoroni.mode == Settings.MODES['audiobookbox']['on_air']['album'] \
+                and not jukeoroni.mode == Settings.MODES['podcastbox']['standby']['random'] \
+                and not jukeoroni.mode == Settings.MODES['podcastbox']['standby']['album'] \
+                and not jukeoroni.mode == Settings.MODES['podcastbox']['on_air']['random'] \
+                and not jukeoroni.mode == Settings.MODES['podcastbox']['on_air']['album']:
 
             return HttpResponseRedirect('/jukeoroni')
 

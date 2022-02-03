@@ -74,13 +74,13 @@ class Channel(models.Model):
 
 
 class Podcast(models.Model):
-    title_channel = models.CharField(max_length=200, editable=False, unique=False, null=False, blank=False)
-    image_url = models.URLField(max_length=200, editable=False, unique=False, null=False, blank=False)
-    author_channel = models.CharField(max_length=200, editable=False, unique=False, null=False, blank=False)
+    title_channel = models.CharField(max_length=200, editable=True, unique=False, null=False, blank=False)
+    image_url = models.URLField(max_length=200, editable=True, unique=False, null=False, blank=False)
+    author_channel = models.CharField(max_length=200, editable=True, unique=False, null=False, blank=False)
     # channel = models.CharField(max_length=200, unique=True, null=False, blank=False)
     # station = models.ForeignKey(Station, on_delete=models.PROTECT, null=True, blank=True)
-    display_name = models.CharField(max_length=200, editable=False, unique=False, null=False, blank=False)
-    display_name_short = models.CharField(max_length=200, editable=False, unique=False, null=False, blank=False)
+    # display_name = models.CharField(max_length=200, editable=True, unique=False, null=False, blank=False)
+    # display_name_short = models.CharField(max_length=200, editable=False, unique=False, null=False, blank=False)
     url = models.URLField(max_length=200, editable=True, unique=True, null=False, blank=False)
     is_enabled = models.BooleanField(default=True)
 
@@ -92,7 +92,7 @@ class Podcast(models.Model):
 
 
 class Episode(models.Model):
-    podcast = models.ForeignKey(Podcast, on_delete=models.PROTECT, null=False, blank=False)
+    podcast = models.ForeignKey(Podcast, on_delete=models.CASCADE, null=False, blank=False)
     title_episode = models.CharField(default=None, max_length=200, unique=False, null=True, blank=True)
     author_episode = models.CharField(default=None, max_length=200, unique=False, null=True, blank=True)
     duration = models.CharField(default=None, max_length=200, unique=False, null=True, blank=True)
@@ -103,7 +103,7 @@ class Episode(models.Model):
     meta_type = models.CharField(default=None, max_length=200, unique=False, null=True, blank=True)
     length = models.CharField(default=None, max_length=200, unique=False, null=True, blank=True)
     url = models.URLField(default=None, unique=True, null=False, blank=False)
-    played = models.BooleanField(default=False)
+    # played = models.BooleanField(default=False)
     progress = models.FloatField(default=0.0, null=False, blank=False)
     # time_mark =
 
@@ -112,7 +112,6 @@ class Episode(models.Model):
 
     def __repr__(self):
         return f'{self.podcast.title_channel} - {self.title_episode}'
-
 
 
 # class Setting(models.Model):

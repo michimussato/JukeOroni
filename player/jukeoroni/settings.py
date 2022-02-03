@@ -51,6 +51,7 @@ class Settings:
     ENABLE_RADIO = True
     ENABLE_MEDITATION = True
     ENABLE_PODCAST = True
+    ENABLE_AUDIOBOOK = False
     ENABLE_EPISODIC = False
 
     STATE_WATCHER_CADENCE = 0.5
