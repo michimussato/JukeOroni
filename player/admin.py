@@ -2,7 +2,7 @@ from django.contrib import admin
 
 
 # Register your models here.
-from .models import Artist, Album, Track, Channel, Station
+from .models import Artist, Album, Track, Channel, Station, Podcast, Episode
 
 
 """
@@ -33,3 +33,5 @@ admin.site.register(Album)
 admin.site.register(Track)
 admin.site.register(Station)
 admin.site.register(Channel)
+admin.site.register(Podcast)
+admin.site.register(Episode)

@@ -2,7 +2,8 @@ import logging
 import xml.etree.ElementTree as ET
 import urllib.request
 import datetime
-import uuid
+# import uuid
+from player.models import Podcast, Episode
 from player.jukeoroni.base_box import BaseBox
 from player.jukeoroni.displays import Podcastbox as PodcastboxLayout
 from player.jukeoroni.settings import Settings
@@ -30,6 +31,9 @@ box.turn_off()
         self._need_first_album_track = True
 
         self.layout = PodcastboxLayout()
+
+        podcast = Podcast.objects.all()[0]
+        self.parse_xml_from_url(url=podcast.url)
 
     @property
     def box_type(self):
@@ -83,6 +87,8 @@ episodes_feedburner = box.parse_xml_from_url('https://feeds.feedburner.com/tedta
 
         title_channel = tree.find('.//channel/title')
 
+        # TODO title_channel.text => Podcast.title_channel
+
         namespaces = {
             'itunes': 'http://www.itunes.com/dtds/podcast-1.0.dtd',
             'atom': 'http://www.w3.org/2005/Atom'
@@ -91,6 +97,9 @@ episodes_feedburner = box.parse_xml_from_url('https://feeds.feedburner.com/tedta
         # print(author_channel.text)
         image = tree.find('.//image/url')
         image_url = image.text
+
+        # TODO author_channel.text => Podcast.author_channel
+        # TODO image.text => Podcast.image_url
 
         episodes = tree.findall('.//item')
         self.LOG.debug(f'Podcast "{title_channel.text}" (by "{author_channel.text}") has {len(episodes)} episodes.')
@@ -111,21 +120,25 @@ episodes_feedburner = box.parse_xml_from_url('https://feeds.feedburner.com/tedta
             # print(title_episode.tag)  # title
             # print(title.attrib)  # {}
             # print(title_episode.text)  # Dark Social 2: Telegram - Königin der Dunkelheit
-            _episode['title'] = title_episode.text
-            _episode['author'] = author_episode.text
-            _episode['author_channel'] = author_channel.text
+            _episode['title'] = title_episode.text  # TODO title_episode.text => Episode.title_episode
+            _episode['author'] = author_episode.text  # TODO author_episode.text => Episode.author_episode
+            _episode['author_channel'] = author_channel.text  # TODO author_channel.text => Podcast.author_channel
             # _episode['duration'] = int(duration.text)
-            _episode['duration'] = duration.text
-            _episode['pub_date'] = datetime.datetime.strptime(pub_date.text, '%a, %d %b %Y %H:%M:%S %z')
+            _episode['duration'] = duration.text  # TODO duration.text => Episode.duration
+            _episode['pub_date'] = datetime.datetime.strptime(pub_date.text, '%a, %d %b %Y %H:%M:%S %z')  # TODO datetime.datetime.strptime(pub_date.text, '%a, %d %b %Y %H:%M:%S %z') => Episode.pub_date
 
             # print(dir(title_episode))
             # print(guid.text)  # c802f10b-9375-4562-ad23-e3fbb930d0ff
             # _episode['guid'] = uuid.UUID(guid.text)
-            _episode['guid'] = guid.text
+            _episode['guid'] = guid.text  # TODO guid.text => Episode.guid
             # print(enclosure.text)  # None
             # print(enclosure.tag)  # enclosure
             # print(enclosure.attrib)  # {'type': 'audio/mpeg', 'length': '48734055', 'url': 'https://podcasts.srf.ch/world/audio/Hotspot_02-02-2022-0602.1643718239686.mp3?assetId=c802f10b-9375-4562-ad23-e3fbb930d0ff'}
-            _episode['attrib'] = enclosure.attrib
+            _episode['attrib'] = enclosure.attrib  # enclosure.attrib => Episode.attrib
+            _episode['meta_type'] = enclosure.attrib.get('type', None)  # TODO enclosure.attrib.get('type', None) => Episode.meta_type
+            _episode['length'] = enclosure.attrib.get('length', None)  # TODO enclosure.attrib.get('length', None) => Episode.length
+            _episode['url'] = enclosure.attrib.get('url', None)  # TODO enclosure.attrib.get('url', None) = Episode.url
+
             # print(enclosure.tail)  # None
 
             # itunes = episode.find('itunes:duration')
@@ -138,6 +151,29 @@ episodes_feedburner = box.parse_xml_from_url('https://feeds.feedburner.com/tedta
             # print(_episode)
 
             _episodes.append(_episode.copy())
+
+            p = Podcast.objects.get(url__exact=url)
+            p.author_channel = author_channel.text
+            p.title_channel = title_channel.text
+            p.image_url = image.text
+            p.save()
+
+            episode_objects = Episode.objects.get(guid__exact=guid.text)
+            if episode_objects:
+                e = episode_objects
+            else:
+                e = Episode()
+            e.podcast = p
+            e.title_episode = title_episode.text
+            e.author_episode = author_episode.text
+            e.duration = duration.text
+            e.pub_date = datetime.datetime.strptime(pub_date.text, '%a, %d %b %Y %H:%M:%S %z')
+            e.guid = guid.text
+            e.meta_type = enclosure.attrib.get('type', None)
+            e.length = enclosure.attrib.get('length', None)
+            e.url = enclosure.attrib.get('url', None)
+
+            e.save()
 
             # break
 

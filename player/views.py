@@ -20,8 +20,8 @@ PIMORONI_FONT = '/data/django/jukeoroni/player/static/gotham-black.ttf'
 
 jukeoroni = JukeOroni(test=False)
 jukeoroni.turn_on(disable_track_loader=False)
-jukeoroni.jukebox.set_auto_update_tracklist_on()
-jukeoroni.meditationbox.set_auto_update_tracklist_on()
+# jukeoroni.jukebox.set_auto_update_tracklist_on()
+# jukeoroni.meditationbox.set_auto_update_tracklist_on()
 # jukeoroni.episodicbox.set_auto_update_tracklist_on()
 # jukeoroni.jukebox.track_list_generator_thread()
 
@@ -645,6 +645,7 @@ class JukeOroniView(View):
             str(encoded_img_data).lstrip('b\'').rstrip('\''))
         ret += '<hr>\n'
         ret += '<center><h1>Channels</h1></center>\n'
+        # if bool(stations):
         for station in stations:
             channels = Channel.objects.filter(station=station).order_by('display_name')
             if channels:
@@ -655,6 +656,18 @@ class JukeOroniView(View):
                         ret += f'<button style=\"width:100%; background-color:green; \" onclick=\"window.location.href = \'stop\';\">{channel.display_name}</button>\n'
                     else:
                         ret += f'<button style=\"width:100%\" onclick=\"window.location.href = \'{channel.display_name_short}/play\';\">{channel.display_name}</button>\n'
+
+        # in case the channel has no station assigned
+        channels_unstationed = Channel.objects.filter(station=None).order_by('display_name')
+        if channels_unstationed:
+            ret += f'<center><h2>Uncategorized</h2></center>\n'
+        for channel_unstationed in channels_unstationed:
+            if channel_unstationed.is_enabled:
+                if channel_unstationed == jukeoroni.radio.is_on_air:
+                    ret += f'<button style=\"width:100%; background-color:green; \" onclick=\"window.location.href = \'stop\';\">{channel_unstationed.display_name}</button>\n'
+                else:
+                    ret += f'<button style=\"width:100%\" onclick=\"window.location.href = \'{channel_unstationed.display_name_short}/play\';\">{channel_unstationed.display_name}</button>\n'
+
         ret += '</body>\n'
         ret += '</html>\n'
         return HttpResponse(ret)
