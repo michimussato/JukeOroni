@@ -85,6 +85,10 @@ BUTTONS_ICONS = {
 
 
 INVERT_BUTTONS = True
+GRADIENT_BUTTONS = True
+GRADIENT_BG = True
+GRADIENT_BG_OPACITY = 0.3
+GRADIENT_BG_BLACK_SIZE = BUTTONS_HEIGHT
 
 
 def mean_color(img):
@@ -113,9 +117,9 @@ def mean_color(img):
     return rgb
 
 
-def buttons_img_overlay(labels, gradient_color=None):
+def buttons_img_overlay(labels, gradient_color=(255, 255, 255)):
 
-    gradient_color = gradient_color or (255, 255, 255)
+    # gradient_color = gradient_color or (255, 255, 255)
 
     # widget_buttons = Image.new(mode='RGBA', size=(448, 448), color=(0, 0, 0, 180))
     widget_buttons = Image.new(mode='RGBA', size=(448, 448), color=(0, 0, 0, 0))
@@ -143,27 +147,28 @@ def buttons_img_overlay(labels, gradient_color=None):
 
     comp_buttons = Image.new(mode='RGBA', size=widget_buttons.size)
 
-    # create gradient
-    # https://stackoverflow.com/questions/39976028/python-pillow-make-gradient-for-transparency
-    # Change the bg color of the gradient background here
-    bg_color = gradient_color
-    initial_opacity = 0.8
+    if GRADIENT_BUTTONS:
+        # create gradient
+        # https://stackoverflow.com/questions/39976028/python-pillow-make-gradient-for-transparency
+        # Change the bg color of the gradient background here
+        bg_color = gradient_color
+        initial_opacity = 0.8
 
-    height = comp_buttons.size[1]
-    # gradient = 12.0
-    gradient = height / (BUTTONS_HEIGHT + BORDER*2)
-    alpha_gradient = Image.new('L', (1, height), color=255)
-    for x in range(height):
-        a = int((initial_opacity * 255.0) * (1.0 - gradient * float(x) / height))
-        if a > 0:
-            alpha_gradient.putpixel((0, x), a)
-        else:
-            alpha_gradient.putpixel((0, x), 0)
-    alpha = alpha_gradient.resize(comp_buttons.size)
-    black_im = Image.new('RGBA', comp_buttons.size, color=bg_color)
-    black_im.putalpha(alpha)
+        height = comp_buttons.size[1]
+        # gradient = 12.0
+        gradient = height / (BUTTONS_HEIGHT + BORDER*2)
+        alpha_gradient = Image.new('L', (1, height), color=255)
+        for x in range(height):
+            a = int((initial_opacity * 255.0) * (1.0 - gradient * float(x) / height))
+            if a > 0:
+                alpha_gradient.putpixel((0, x), a)
+            else:
+                alpha_gradient.putpixel((0, x), 0)
+        alpha = alpha_gradient.resize(comp_buttons.size)
+        black_im = Image.new('RGBA', comp_buttons.size, color=bg_color)
+        black_im.putalpha(alpha)
 
-    comp_buttons.paste(black_im)
+        comp_buttons.paste(black_im)
 
     comp_buttons = Image.alpha_composite(comp_buttons, widget_buttons)
     comp_buttons = comp_buttons.rotate(90, expand=False)
@@ -279,10 +284,44 @@ class Jukebox(Layout):
             else:
                 assert isinstance(artist, Image.Image), 'artist cover type must be PIL.Image.Image() (not rotated)'
 
-        # mean_color = mean_color(cover)
+        mc = mean_color(cover)
 
-        buttons_overlay = buttons_img_overlay(labels, gradient_color=mean_color(cover))
+        buttons_overlay = buttons_img_overlay(labels, gradient_color=mc)
         bg = Image.new(mode='RGBA', size=(600, 448), color=self.bg_color)
+
+
+
+        if GRADIENT_BG:
+            # bg.putalpha(0)
+            # create gradient
+            # https://stackoverflow.com/questions/39976028/python-pillow-make-gradient-for-transparency
+            # Change the bg color of the gradient background here
+            bg_gradient = Image.new(mode='RGBA', size=bg.size, color=self.bg_color)
+            bg_gradient.putalpha(0)
+            bg_color = mc
+            # target_opacity = 0.5
+
+
+            width = bg_gradient.size[0]
+            # gradient = 12.0
+            # gradient = 100  # / (BUTTONS_HEIGHT + BORDER * 2)
+            alpha_gradient = Image.new('L', (width, 1), color=255)
+            for x in range(width):
+                a = int(0.0 - GRADIENT_BG_BLACK_SIZE + x * (float(x) / width) * GRADIENT_BG_OPACITY)
+                # a = int((initial_opacity * 255.0) * (1.0 - gradient * float(x) / width))
+                if a > 0:
+                    alpha_gradient.putpixel((x, 0), a)
+                else:
+                    alpha_gradient.putpixel((x, 0), 0)
+            alpha = alpha_gradient.resize(bg_gradient.size)
+            black_im = Image.new('RGBA', bg_gradient.size, color=bg_color)
+            black_im.putalpha(alpha)
+
+            bg_gradient.paste(black_im)
+
+            bg = Image.alpha_composite(bg, bg_gradient)
+
+
 
         cover_size = self.main_size
 
@@ -356,8 +395,44 @@ class Radio(Layout):
 
         assert isinstance(cover, Image.Image), f'Radio Channel cover type must be PIL.Image.Image() (not rotated). Got: {cover}'
 
-        buttons_overlay = buttons_img_overlay(labels, gradient_color=mean_color(cover))
+        mc = mean_color(cover)
+
+        buttons_overlay = buttons_img_overlay(labels, gradient_color=mc)
         bg = Image.new(mode='RGBA', size=(600, 448), color=self.bg_color)
+
+
+
+        if GRADIENT_BG:
+            # bg.putalpha(0)
+            # create gradient
+            # https://stackoverflow.com/questions/39976028/python-pillow-make-gradient-for-transparency
+            # Change the bg color of the gradient background here
+            bg_gradient = Image.new(mode='RGBA', size=bg.size, color=self.bg_color)
+            bg_gradient.putalpha(0)
+            bg_color = mc
+            # target_opacity = 0.5
+
+
+            width = bg_gradient.size[0]
+            # gradient = 12.0
+            # gradient = 100  # / (BUTTONS_HEIGHT + BORDER * 2)
+            alpha_gradient = Image.new('L', (width, 1), color=255)
+            for x in range(width):
+                a = int(0.0 - GRADIENT_BG_BLACK_SIZE + x * (float(x) / width) * GRADIENT_BG_OPACITY)
+                # a = int((initial_opacity * 255.0) * (1.0 - gradient * float(x) / width))
+                if a > 0:
+                    alpha_gradient.putpixel((x, 0), a)
+                else:
+                    alpha_gradient.putpixel((x, 0), 0)
+            alpha = alpha_gradient.resize(bg_gradient.size)
+            black_im = Image.new('RGBA', bg_gradient.size, color=bg_color)
+            black_im.putalpha(alpha)
+
+            bg_gradient.paste(black_im)
+
+            bg = Image.alpha_composite(bg, bg_gradient)
+
+
 
         cover_size = self.main_size
 
@@ -491,10 +566,46 @@ class Meditationbox(Layout):
             else:
                 assert isinstance(artist, Image.Image), 'artist cover type must be PIL.Image.Image() (not rotated)'
 
-        # mean_color = mean_color(cover)
+        mc = mean_color(cover)
 
-        buttons_overlay = buttons_img_overlay(labels, gradient_color=mean_color(cover))
+        buttons_overlay = buttons_img_overlay(labels, gradient_color=mc)
         bg = Image.new(mode='RGBA', size=(600, 448), color=self.bg_color)
+
+
+
+
+
+        if GRADIENT_BG:
+            # bg.putalpha(0)
+            # create gradient
+            # https://stackoverflow.com/questions/39976028/python-pillow-make-gradient-for-transparency
+            # Change the bg color of the gradient background here
+            bg_gradient = Image.new(mode='RGBA', size=bg.size, color=self.bg_color)
+            bg_gradient.putalpha(0)
+            bg_color = mc
+            # target_opacity = 0.5
+
+
+            width = bg_gradient.size[0]
+            # gradient = 12.0
+            # gradient = 100  # / (BUTTONS_HEIGHT + BORDER * 2)
+            alpha_gradient = Image.new('L', (width, 1), color=255)
+            for x in range(width):
+                a = int(0.0 - GRADIENT_BG_BLACK_SIZE + x * (float(x) / width) * GRADIENT_BG_OPACITY)
+                # a = int((initial_opacity * 255.0) * (1.0 - gradient * float(x) / width))
+                if a > 0:
+                    alpha_gradient.putpixel((x, 0), a)
+                else:
+                    alpha_gradient.putpixel((x, 0), 0)
+            alpha = alpha_gradient.resize(bg_gradient.size)
+            black_im = Image.new('RGBA', bg_gradient.size, color=bg_color)
+            black_im.putalpha(alpha)
+
+            bg_gradient.paste(black_im)
+
+            bg = Image.alpha_composite(bg, bg_gradient)
+
+
 
         cover_size = self.main_size
 
@@ -671,10 +782,47 @@ class Audiobookbox(Layout):
         #     else:
         #         assert isinstance(artist, Image.Image), 'artist cover type must be PIL.Image.Image() (not rotated)'
         #
-        # # mean_color = mean_color(cover)
+        mc = mean_color(cover)
 
-        buttons_overlay = buttons_img_overlay(labels, gradient_color=mean_color(cover))
+        buttons_overlay = buttons_img_overlay(labels, gradient_color=mc)
         bg = Image.new(mode='RGBA', size=(600, 448), color=self.bg_color)
+
+
+
+
+
+
+        if GRADIENT_BG:
+            # bg.putalpha(0)
+            # create gradient
+            # https://stackoverflow.com/questions/39976028/python-pillow-make-gradient-for-transparency
+            # Change the bg color of the gradient background here
+            bg_gradient = Image.new(mode='RGBA', size=bg.size, color=self.bg_color)
+            bg_gradient.putalpha(0)
+            bg_color = mc
+            # target_opacity = 0.5
+
+
+            width = bg_gradient.size[0]
+            # gradient = 12.0
+            # gradient = 100  # / (BUTTONS_HEIGHT + BORDER * 2)
+            alpha_gradient = Image.new('L', (width, 1), color=255)
+            for x in range(width):
+                a = int(0.0 - GRADIENT_BG_BLACK_SIZE + x * (float(x) / width) * GRADIENT_BG_OPACITY)
+                # a = int((initial_opacity * 255.0) * (1.0 - gradient * float(x) / width))
+                if a > 0:
+                    alpha_gradient.putpixel((x, 0), a)
+                else:
+                    alpha_gradient.putpixel((x, 0), 0)
+            alpha = alpha_gradient.resize(bg_gradient.size)
+            black_im = Image.new('RGBA', bg_gradient.size, color=bg_color)
+            black_im.putalpha(alpha)
+
+            bg_gradient.paste(black_im)
+
+            bg = Image.alpha_composite(bg, bg_gradient)
+
+
 
         cover_size = self.main_size
 
@@ -851,10 +999,46 @@ class Podcastbox(Layout):
             else:
                 assert isinstance(artist, Image.Image), 'artist cover type must be PIL.Image.Image() (not rotated)'
 
-        # mean_color = mean_color(cover)
+        mc = mean_color(cover)
 
-        buttons_overlay = buttons_img_overlay(labels, gradient_color=mean_color(cover))
+        buttons_overlay = buttons_img_overlay(labels, gradient_color=mc)
         bg = Image.new(mode='RGBA', size=(600, 448), color=self.bg_color)
+
+
+
+
+
+        if GRADIENT_BG:
+            # bg.putalpha(0)
+            # create gradient
+            # https://stackoverflow.com/questions/39976028/python-pillow-make-gradient-for-transparency
+            # Change the bg color of the gradient background here
+            bg_gradient = Image.new(mode='RGBA', size=bg.size, color=self.bg_color)
+            bg_gradient.putalpha(0)
+            bg_color = mc
+            # target_opacity = 0.5
+
+
+            width = bg_gradient.size[0]
+            # gradient = 12.0
+            # gradient = 100  # / (BUTTONS_HEIGHT + BORDER * 2)
+            alpha_gradient = Image.new('L', (width, 1), color=255)
+            for x in range(width):
+                a = int(0.0 - GRADIENT_BG_BLACK_SIZE + x * (float(x) / width) * GRADIENT_BG_OPACITY)
+                # a = int((initial_opacity * 255.0) * (1.0 - gradient * float(x) / width))
+                if a > 0:
+                    alpha_gradient.putpixel((x, 0), a)
+                else:
+                    alpha_gradient.putpixel((x, 0), 0)
+            alpha = alpha_gradient.resize(bg_gradient.size)
+            black_im = Image.new('RGBA', bg_gradient.size, color=bg_color)
+            black_im.putalpha(alpha)
+
+            bg_gradient.paste(black_im)
+
+            bg = Image.alpha_composite(bg, bg_gradient)
+
+
 
         cover_size = self.main_size
 
