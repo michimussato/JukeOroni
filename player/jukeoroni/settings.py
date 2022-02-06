@@ -497,7 +497,7 @@ class Settings:
 
     # radar
     RADAR_UPDATE_INTERVAL = 5  # in minutes
-    INVERT_RADAR = False
+    INVERT_RADAR = True
     ENHANCE_IMAGE = True
 
     # web

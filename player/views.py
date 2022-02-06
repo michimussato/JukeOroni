@@ -19,6 +19,7 @@ PIMORONI_FONT = '/data/django/jukeoroni/player/static/gotham-black.ttf'
 
 
 padding = '2px 5px'
+COLUMN_WIDTH = 101
 
 
 jukeoroni = JukeOroni(test=False)
@@ -203,27 +204,27 @@ class JukeOroniView(View):
                 # padding = '2px 5px'
 
                 if Settings.ENABLE_JUKEBOX:
-                    ret += f'<td style="border-right: solid 1px #000;border-left: solid 1px #000;padding: {padding};">'
+                    ret += f'<td width="{COLUMN_WIDTH}" style="border-right: solid 1px #000;border-left: solid 1px #000;padding: {padding};">'
                     ret += '<a href="/jukeoroni/set_jukebox" target="_self">JukeBox</a>'
                     ret += '</td>'
                     # ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/set_jukebox\';\">JukeBox</button>\n'
                 if Settings.ENABLE_RADIO:
-                    ret += f'<td style="border-right: solid 1px #000;border-left: solid 1px #000;padding: {padding};">'
+                    ret += f'<td width="{COLUMN_WIDTH}" style="border-right: solid 1px #000;border-left: solid 1px #000;padding: {padding};">'
                     ret += '<a href="/jukeoroni/set_radio" target="_self">Radio</a>'
                     ret += '</td>'
                     # ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/set_radio\';\">Radio</button>\n'
                 if Settings.ENABLE_MEDITATION:
-                    ret += f'<td style="border-right: solid 1px #000;border-left: solid 1px #000;padding: {padding};">'
+                    ret += f'<td width="{COLUMN_WIDTH}" style="border-right: solid 1px #000;border-left: solid 1px #000;padding: {padding};">'
                     ret += '<a href="/jukeoroni/set_meditationbox" target="_self">MeditationBox</a>'
                     ret += '</td>'
                     # ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/set_meditationbox\';\">MeditationBox</button>\n'
                 if Settings.ENABLE_AUDIOBOOK:
-                    ret += f'<td style="border-right: solid 1px #000;border-left: solid 1px #000;padding: {padding};">'
+                    ret += f'<td width="{COLUMN_WIDTH}" style="border-right: solid 1px #000;border-left: solid 1px #000;padding: {padding};">'
                     ret += '<a href="/jukeoroni/set_audiobookbox" target="_self">AudiobookBox</a>'
                     ret += '</td>'
                     # ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/set_audiobookbox\';\">AudiobookBox</button>\n'
                 if Settings.ENABLE_PODCAST:
-                    ret += f'<td style="border-right: solid 1px #000;border-left: solid 1px #000;padding: {padding};">'
+                    ret += f'<td width="{COLUMN_WIDTH}" style="border-right: solid 1px #000;border-left: solid 1px #000;padding: {padding};">'
                     ret += '<a href="/jukeoroni/set_podcastbox" target="_self">PodcastBox</a>'
                     ret += '</td>'
                     # ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/set_podcastbox\';\">PodcastBox</button>\n'
@@ -317,22 +318,22 @@ class JukeOroniView(View):
         ret += '<table border="0" cellspacing="0" style="text-align:center;margin-left:auto;margin-right:auto;border-collapse: collapse;">'
         ret += '<tr style="border: none;">'
 
-        ret += f'<td style="border-right: solid 1px #000;border-left: solid 1px #000;padding: {padding};">'
+        ret += f'<td width="{COLUMN_WIDTH}" style="border-right: solid 1px #000;border-left: solid 1px #000;padding: {padding};">'
         if jukeoroni.mode == Settings.MODES[box.box_type]['on_air'][box.loader_mode]:
             ret += '<a href="/jukeoroni/{0}/stop" target="_self">Stop</a>'.format(str(box.box_type))
         else:
             ret += '<a href="/jukeoroni/set_standby" target="_self">Back</a>'
         ret += '</td>'
 
-        ret += f'<td style="border-right: solid 1px #000;border-left: solid 1px #000;padding: {padding};">'
+        ret += f'<td width="{COLUMN_WIDTH}" style="border-right: solid 1px #000;border-left: solid 1px #000;padding: {padding};">'
         ret += '<a href="/jukeoroni/{1}/play_next" target="_self">{0}</a>'.format(jukeoroni.mode['buttons']['0X00'], str(box.box_type))
         ret += '</td>'
 
-        ret += f'<td style="border-right: solid 1px #000;border-left: solid 1px #000;padding: {padding};">'
+        ret += f'<td width="{COLUMN_WIDTH}" style="border-right: solid 1px #000;border-left: solid 1px #000;padding: {padding};">'
         ret += '<a> </a>'
         ret += '</td>'
 
-        ret += f'<td style="border-right: solid 1px #000;border-left: solid 1px #000;padding: {padding};">'
+        ret += f'<td width="{COLUMN_WIDTH}" style="border-right: solid 1px #000;border-left: solid 1px #000;padding: {padding};">'
         ret += '<a href="/jukeoroni/{1}/switch_mode" target="_self">Mode: {0}</a>'.format(str(box.loader_mode).capitalize(), str(box.box_type))
         ret += '</td>'
 
@@ -732,7 +733,7 @@ class JukeOroniView(View):
         ret += '<table border="0" cellspacing="0" style="text-align:center;margin-left:auto;margin-right:auto;border-collapse: collapse;">'
         ret += '<tr style="border: none;">'
 
-        ret += f'<td style="border-right: solid 1px #000;border-left: solid 1px #000;padding: {padding};">'
+        ret += f'<td width="{COLUMN_WIDTH}" style="border-right: solid 1px #000;border-left: solid 1px #000;padding: {padding};">'
         # if jukeoroni.mode == Settings.MODES[box.box_type]['on_air'][box.loader_mode]:
         if jukeoroni.radio.is_on_air:
             ret += '<a href="stop" target="_self">Stop</a>'
@@ -740,7 +741,7 @@ class JukeOroniView(View):
             ret += '<a href="/jukeoroni/set_standby" target="_self">Back</a>'
         ret += '</td>'
 
-        ret += f'<td style="border-right: solid 1px #000;border-left: solid 1px #000;padding: {padding};">'
+        ret += f'<td width="{COLUMN_WIDTH}" style="border-right: solid 1px #000;border-left: solid 1px #000;padding: {padding};">'
         last_played = jukeoroni.radio.last_played
         if last_played is None or jukeoroni.radio.is_on_air:
             ret += '<a href="random/play" target="_self">Random/Next</a>'
@@ -748,11 +749,11 @@ class JukeOroniView(View):
             ret += '<a href="{0}/play" target="_self">Last played ({1})</a>'.format(last_played.display_name_short, last_played.display_name)
         ret += '</td>'
 
-        ret += f'<td style="border-right: solid 1px #000;border-left: solid 1px #000;padding: {padding};">'
+        ret += f'<td width="{COLUMN_WIDTH}" style="border-right: solid 1px #000;border-left: solid 1px #000;padding: {padding};">'
         ret += '<a> </a>'
         ret += '</td>'
 
-        ret += f'<td style="border-right: solid 1px #000;border-left: solid 1px #000;padding: {padding};">'
+        ret += f'<td width="{COLUMN_WIDTH}" style="border-right: solid 1px #000;border-left: solid 1px #000;padding: {padding};">'
         ret += '<a> </a>'
         ret += '</td>'
 
