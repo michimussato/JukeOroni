@@ -13,7 +13,7 @@ from player.jukeoroni.juke_box import JukeBox
 from player.jukeoroni.meditation_box import MeditationBox
 from player.jukeoroni.audiobook_box import AudiobookBox
 from player.jukeoroni.podcast_box import PodcastBox
-from player.jukeoroni.displays import Off as OffLayout
+# from player.jukeoroni.displays import Off as OffLayout
 from player.jukeoroni.displays import Standby as StandbyLayout
 from player.models import Channel
 from player.jukeoroni.box_track import JukeboxTrack
@@ -118,7 +118,7 @@ j.turn_off()
         self._current_time = None
 
         # display layouts
-        self.layout_off = OffLayout()
+        # self.layout_off = OffLayout()
         self.layout_standby = StandbyLayout()
         self.layout_radio = self.radio.layout
         self._loading_display_activated = False
@@ -174,23 +174,23 @@ j.turn_off()
         else:
             LOG.info(f'Not setting TURN_ON image. Test mode.')
 
-    def set_display_turn_off(self):
-        """
-        j.set_display_turn_off()
-        """
-        assert not self.on, 'JukeOroni needs to be turned off first.'
-        if not self.test:
-            LOG.info(f'Setting OFF Layout...')
-
-            bg = self.layout_off.get_layout(labels=self.LABELS, cover=Resource().OFF_IMAGE_SQUARE)
-
-            self.pimoroni.set_image(bg, saturation=Settings.PIMORONI_SATURATION)
-            # self.pimoroni.set_image(bg)
-            self.pimoroni.show(busy_wait=True)
-            LOG.info(f'Setting OFF Layout: Done.')
-        else:
-            LOG.info(f'Not setting OFF_IMAGE. Test mode.')
-        GPIO.cleanup()
+    # def set_display_turn_off(self):
+    #     """
+    #     j.set_display_turn_off()
+    #     """
+    #     assert not self.on, 'JukeOroni needs to be turned off first.'
+    #     if not self.test:
+    #         LOG.info(f'Setting OFF Layout...')
+    #
+    #         bg = self.layout_off.get_layout(labels=self.LABELS, cover=Resource().OFF_IMAGE_SQUARE)
+    #
+    #         self.pimoroni.set_image(bg, saturation=Settings.PIMORONI_SATURATION)
+    #         # self.pimoroni.set_image(bg)
+    #         self.pimoroni.show(busy_wait=True)
+    #         LOG.info(f'Setting OFF Layout: Done.')
+    #     else:
+    #         LOG.info(f'Not setting OFF_IMAGE. Test mode.')
+    #     GPIO.cleanup()
 
     def set_display_radio(self):
         """
@@ -995,10 +995,10 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
         self._stop_jukeoroni()
         self._stop_modules()
 
-        # TODO: will be replaced with
-        #  layout (self.task_pimoroni_set_image)
-        #  as soon as we have a layout for this
-        self.set_display_turn_off()
+        # # TODO: will be replaced with
+        # #  layout (self.task_pimoroni_set_image)
+        # #  as soon as we have a layout for this
+        # self.set_display_turn_off()
 
     def _stop_jukeoroni(self):
         self.on = False
