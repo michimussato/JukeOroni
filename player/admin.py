@@ -28,10 +28,88 @@ admin.site.register(Tutorial,TutorialAdmin)
 """
 
 
-admin.site.register(Artist)
-admin.site.register(Album)
-admin.site.register(Track)
-admin.site.register(Station)
-admin.site.register(Channel)
+class AlbumAdmin(admin.ModelAdmin):
+    list_display = ('album_title', 'artist_name', 'year', 'album_type')
+    search_fields = ['album_title', 'artist__name']
+    ordering = ('artist__name', 'year', 'album_title')
+
+    def artist_name(self, obj):
+        return None if obj.artist is None else obj.artist.name
+
+    artist_name.short_description = 'Artist'
+
+
+class StationAdmin(admin.ModelAdmin):
+    list_display = ('display_name', 'channel_count')
+    search_fields = ['display_name']
+
+    def channel_count(self, obj):
+        channels = Channel.objects.filter(station_id=obj.id)
+        return len(channels)
+
+    channel_count.short_description = 'Channels'
+
+
+class ChannelAdmin(admin.ModelAdmin):
+    fieldsets = [('Name', {'fields': ['display_name', 'display_name_short', 'station']}),
+                 ('URL\'s', {'fields': ['url', 'url_logo']}),
+                 ('Options', {'fields': ['is_enabled', 'show_rds']}),
+                 ('Auto Playback', {'fields': ['last_played']})]
+    list_display = ('display_name', 'station_display_name', 'show_rds', 'is_enabled')
+    search_fields = ['display_name', 'station__display_name']
+    # autocomplete_fields = ['display_name']
+
+    def station_display_name(self, obj):
+        return None if obj.station is None else obj.station.display_name
+
+    station_display_name.short_description = 'Station'
+
+
+class AristAdmin(admin.ModelAdmin):
+    list_display = ('name', 'album_count', 'track_count')
+    search_fields = ['name']
+    ordering = ('name',)
+
+    def album_count(self, obj):
+        albums = Album.objects.filter(artist_id=obj.id)
+        return len(albums)
+
+    album_count.short_description = 'Albums'
+
+    def track_count(self, obj):
+        tracks = Track.objects.filter(album__artist_id=obj.id)
+        return len(tracks)
+
+    track_count.short_description = 'Tracks'
+
+
+class TrackAdmin(admin.ModelAdmin):
+    list_display = ('artist_name', 'album_year', 'album_album_title', 'track_title')
+    search_fields = ['track_title', 'album__album_title', 'album__artist__name']
+    ordering = ('album__artist__name', 'album__year', 'album__album_title')
+
+    def album_year(self, obj):
+        return None if obj.album is None else obj.album.year
+
+    album_year.short_description = 'Year'
+
+    def album_album_title(self, obj):
+        return None if obj.album is None else obj.album.album_title
+
+    album_album_title.short_description = 'Album'
+
+    def artist_name(self, obj):
+        if obj.album is None:
+            return None
+        return None if obj.album.artist is None else obj.album.artist.name
+
+    artist_name.short_description = 'Artist'
+
+
+admin.site.register(Artist, AristAdmin)
+admin.site.register(Album, AlbumAdmin)
+admin.site.register(Track, TrackAdmin)
+admin.site.register(Station, StationAdmin)
+admin.site.register(Channel, ChannelAdmin)
 admin.site.register(Podcast)
 admin.site.register(Episode)

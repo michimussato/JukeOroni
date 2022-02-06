@@ -58,6 +58,7 @@ class Station(models.Model):
 
 class Channel(models.Model):
     station = models.ForeignKey(Station, on_delete=models.PROTECT, null=True, blank=True)
+    # station_display_name = None if station is None else station.display_name
     display_name = models.CharField(max_length=200, unique=True, null=False, blank=False)
     display_name_short = models.CharField(max_length=200, unique=True, null=False, blank=False)
     url = models.URLField(max_length=200, unique=True, null=False, blank=False)
@@ -65,6 +66,10 @@ class Channel(models.Model):
     is_enabled = models.BooleanField(default=True)
     last_played = models.BooleanField(default=False)
     show_rds = models.BooleanField(default=True)
+
+    # @property
+    # def station_display_name(self):
+    #     return None if self.station is None else self.station.display_name
 
     def __str__(self):
         return self.display_name_short
