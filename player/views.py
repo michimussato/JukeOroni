@@ -18,6 +18,9 @@ STANDARD_COVER = '/data/django/jukeoroni/player/static/cover_std.png'
 PIMORONI_FONT = '/data/django/jukeoroni/player/static/gotham-black.ttf'
 
 
+padding = '2px 5px'
+
+
 jukeoroni = JukeOroni(test=False)
 jukeoroni.turn_on(disable_track_loader=False)
 jukeoroni.jukebox.set_auto_update_tracklist_on()
@@ -77,7 +80,7 @@ def get_active_box(_jukeoroni):
     return box
 
 
-def get_header(bg_color, back=None):
+def get_header(bg_color):
     # bg_color = get_bg_color(jukeoroni.layout_standby.bg_color)
 
     ret = '<html>\n'
@@ -90,10 +93,10 @@ def get_header(bg_color, back=None):
     ret += '<table border="0" cellspacing="0" style="text-align:center;margin-left:auto;margin-right:auto;border-collapse: collapse;">'
     ret += '<tr style="border: none;">'
 
-    if back is not None:
-        ret += '<td style="border-right: solid 1px #000;border-left: solid 1px #000;padding: 5px 10px;">'
-        ret += f'<a href="{back}" target="_self">Back</a>'
-        ret += '</td>'
+    # if back is not None:
+    #     ret += '<td style="border-right: solid 1px #000;border-left: solid 1px #000;padding: 5px 10px;">'
+    #     ret += f'<a href="{back}" target="_self">Back</a>'
+    #     ret += '</td>'
 
     ret += '<td style="border-right: solid 1px #000;border-left: solid 1px #000;padding: 5px 10px;">'
     ret += '<a href="/admin" target="_blank">Admin</a>'
@@ -197,7 +200,7 @@ class JukeOroniView(View):
                 ret += '<table border="0" cellspacing="0" style="text-align:center;margin-left:auto;margin-right:auto;border-collapse: collapse;">'
                 ret += '<tr style="border: none;">'
 
-                padding = '2px 5px'
+                # padding = '2px 5px'
 
                 if Settings.ENABLE_JUKEBOX:
                     ret += f'<td style="border-right: solid 1px #000;border-left: solid 1px #000;padding: {padding};">'
@@ -229,7 +232,7 @@ class JukeOroniView(View):
                 ret += '</table>'
                 ret += '</center>'
 
-                ret += '<hr>\n'
+                # ret += '<hr>\n'
 
             img = jukeoroni.layout_standby.get_layout(labels=jukeoroni.LABELS)
             encoded_img_data = encoded_screen(img)
@@ -309,15 +312,33 @@ class JukeOroniView(View):
 
         bg_color = get_bg_color(box.layout.bg_color)
 
-        ret = get_header(bg_color, back='/jukeoroni/set_standby')
+        ret = get_header(bg_color)  #, back='/jukeoroni/set_standby')
 
-        # ret = '<html>\n'
-        # ret += '<head>\n'
-        # ret += '<meta http-equiv="refresh" content="10" >\n'
-        # ret += '<link rel="icon" type="image/x-icon" href="/jukeoroni/favicon.ico">\n'
-        # ret += '</head>\n'
-        # ret += '<body style="background-color:#{0};">\n'.format(bg_color)
-        # ret += f'<button style=\"width:100%; \" onclick=\"window.location.href = \'/jukeoroni/set_standby\';\">Back to Menu</button>\n'
+        ret += '<table border="0" cellspacing="0" style="text-align:center;margin-left:auto;margin-right:auto;border-collapse: collapse;">'
+        ret += '<tr style="border: none;">'
+
+        ret += f'<td style="border-right: solid 1px #000;border-left: solid 1px #000;padding: {padding};">'
+        if jukeoroni.mode == Settings.MODES[box.box_type]['on_air'][box.loader_mode]:
+            ret += '<a href="/jukeoroni/{0}/stop" target="_self">Stop</a>'.format(str(box.box_type))
+        else:
+            ret += '<a href="/jukeoroni/set_standby" target="_self">Back</a>'
+        ret += '</td>'
+
+        ret += f'<td style="border-right: solid 1px #000;border-left: solid 1px #000;padding: {padding};">'
+        ret += '<a href="/jukeoroni/{1}/play_next" target="_self">{0}</a>'.format(jukeoroni.mode['buttons']['0X00'], str(box.box_type))
+        ret += '</td>'
+
+        ret += f'<td style="border-right: solid 1px #000;border-left: solid 1px #000;padding: {padding};">'
+        ret += '<a> </a>'
+        ret += '</td>'
+
+        ret += f'<td style="border-right: solid 1px #000;border-left: solid 1px #000;padding: {padding};">'
+        ret += '<a href="/jukeoroni/{1}/switch_mode" target="_self">Mode: {0}</a>'.format(str(box.loader_mode).capitalize(), str(box.box_type))
+        ret += '</td>'
+
+        ret += '</table>'
+        ret += '</center>'
+
         # ret += '<hr>\n'
 
         _success = False
@@ -384,9 +405,6 @@ class JukeOroniView(View):
         else:
             ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/{0}/update_track_list\';\">Update Track List</button>\n'.format(str(box.box_type))
 
-        ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/{1}/switch_mode\';\">Mode: {0}</button>\n'.format(str(box.loader_mode).capitalize(), str(box.box_type))
-        ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/{1}/play_next\';\">{0}</button>\n'.format(jukeoroni.mode['buttons']['0X00'], str(box.box_type))
-
         if jukeoroni.paused:
             ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/resume\';\">Resume</button>\n'
         else:
@@ -394,10 +412,6 @@ class JukeOroniView(View):
                 ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/pause\';\">Pause</button>\n'
             else:
                 ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/pause\';\" disabled>Pause</button>\n'
-        if jukeoroni.mode == Settings.MODES[box.box_type]['on_air'][box.loader_mode]:
-            ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/{0}/stop\';\">Stop</button>\n'.format(str(box.box_type))
-        else:
-            ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/{0}/stop\';\" disabled>Stop</button>\n'.format(str(box.box_type))
 
         ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/{0}/albums\';\">Albums</button>\n'.format(str(box.box_type))
         # ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/{0}/tracks\';\">Tracks</button>\n'.format(str(box.box_type))
@@ -638,12 +652,6 @@ class JukeOroniView(View):
 
         ret = get_header(bg_color)
 
-        # ret = '<html>\n'
-        # ret += '<head>\n'
-        # # ret += '    <meta http-equiv="refresh" content="10" >\n'
-        # ret += '<link rel="icon" type="image/x-icon" href="/jukeoroni/favicon.ico">\n'
-        # ret += '</head>\n'
-        # ret += '<body style="background-color:#{0};">\n'.format(bg_color)
         ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni\';\">Back</button>\n'
         # random_albums = random.sample(list(Album.objects.all()), RANDOM_ALBUMS)
         random_albums = random.sample(list(Album.objects.filter(album_type=box.album_type)), Settings.RANDOM_ALBUMS)
@@ -715,35 +723,43 @@ class JukeOroniView(View):
 
         stations = Station.objects.all().order_by('display_name')
 
+        # box = get_active_box(jukeoroni)
+
         bg_color = get_bg_color(jukeoroni.layout_radio.bg_color)
 
-        ret = get_header(bg_color, back='/jukeoroni/set_standby')
+        ret = get_header(bg_color)  #, back='/jukeoroni/set_standby')
 
-        # ret = '<html>\n'
-        # ret += '<head>\n'
-        # ret += '<meta http-equiv="refresh" content="10" >\n'
-        # ret += '<link rel="icon" type="image/x-icon" href="/jukeoroni/favicon.ico">\n'
-        # ret += '</head>\n'
-        # ret += '<body style="background-color:#{0};">\n'.format(bg_color)
-        # ret += f'<button style=\"width:100%; \" onclick=\"window.location.href = \'/jukeoroni/set_standby\';\">Back to Menu</button>\n'
-        # ret += '<hr>\n'
+        ret += '<table border="0" cellspacing="0" style="text-align:center;margin-left:auto;margin-right:auto;border-collapse: collapse;">'
+        ret += '<tr style="border: none;">'
+
+        ret += f'<td style="border-right: solid 1px #000;border-left: solid 1px #000;padding: {padding};">'
+        # if jukeoroni.mode == Settings.MODES[box.box_type]['on_air'][box.loader_mode]:
+        if jukeoroni.radio.is_on_air:
+            ret += '<a href="stop" target="_self">Stop</a>'
+        else:
+            ret += '<a href="/jukeoroni/set_standby" target="_self">Back</a>'
+        ret += '</td>'
+
+        ret += f'<td style="border-right: solid 1px #000;border-left: solid 1px #000;padding: {padding};">'
         last_played = jukeoroni.radio.last_played
-        # ret += f'{last_played}'
-        # ret += f'{str(type(last_played))}'
-        # ret += f'{last_played}'
         if last_played is None or jukeoroni.radio.is_on_air:
-            ret += f'<button style=\"width:100%\" disabled>Last played</button>\n'
+            ret += '<a href="random/play" target="_self">Random/Next</a>'
         else:
-            ret += f'<button style=\"width:100%\" onclick=\"window.location.href = \'{last_played.display_name_short}/play\';\">Last played ({last_played.display_name})</button>\n'
-        ret += f'<button style=\"width:100%\" onclick=\"window.location.href = \'random/play\';\">Random</button>\n'
-        if jukeoroni.paused:
-           ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/resume\';\">Resume</button>\n'
-        else:
-            if jukeoroni.mode == Settings.MODES['radio']['on_air']:
-                ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/pause\';\">Pause</button>\n'
-            else:
-                ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/pause\';\" disabled>Pause</button>\n'
-        ret += '<hr>\n'
+            ret += '<a href="{0}/play" target="_self">Last played ({1})</a>'.format(last_played.display_name_short, last_played.display_name)
+        ret += '</td>'
+
+        ret += f'<td style="border-right: solid 1px #000;border-left: solid 1px #000;padding: {padding};">'
+        ret += '<a> </a>'
+        ret += '</td>'
+
+        ret += f'<td style="border-right: solid 1px #000;border-left: solid 1px #000;padding: {padding};">'
+        ret += '<a> </a>'
+        ret += '</td>'
+
+        ret += '</table>'
+        ret += '</center>'
+
+        # ret += '<hr>\n'
 
         # data = io.BytesIO()
         # try:
