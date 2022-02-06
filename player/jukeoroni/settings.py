@@ -43,6 +43,30 @@ class Settings:
     SMALL_WIDGET_SIZE = 160
     FFPLAY_CMD = 'ffplay -hide_banner -autoexit -vn -nodisp -loglevel error'.split(' ')
 
+    BUTTONS_HEIGHT = 32
+    BORDER = 4
+    BUTTONS_ICONS = {
+        'Radio': '/data/django/jukeoroni/player/static/buttons_overlay/icon_radio.png',
+        'Player': '/data/django/jukeoroni/player/static/buttons_overlay/icon_player.png',
+        'Meditation': '/data/django/jukeoroni/player/static/buttons_overlay/icon_meditation.png',
+        # 'Audiobook': '/data/django/jukeoroni/player/static/buttons_overlay/icon_audiobook.png',
+        'Podcast': '/data/django/jukeoroni/player/static/buttons_overlay/icon_podcast.png',
+        'Random -> Album': '/data/django/jukeoroni/player/static/buttons_overlay/icon_random.png',
+        'Album -> Random': '/data/django/jukeoroni/player/static/buttons_overlay/icon_album.png',
+        # 'N//A': '/data/django/jukeoroni/player/static/buttons_overlay/icon_na.png',
+        'N//A': '',
+        'Stop': '/data/django/jukeoroni/player/static/buttons_overlay/icon_stop.png',
+        'Play': '/data/django/jukeoroni/player/static/buttons_overlay/icon_play.png',
+        'Next': '/data/django/jukeoroni/player/static/buttons_overlay/icon_next.png',
+        'Menu': '/data/django/jukeoroni/player/static/buttons_overlay/icon_menu.png'
+    }
+
+    INVERT_BUTTONS = True
+    GRADIENT_BUTTONS = True
+    GRADIENT_BG = True
+    GRADIENT_BG_OPACITY = 0.4
+    GRADIENT_BG_BLACK_SIZE = BUTTONS_HEIGHT
+
     # Sync Rclone folder over to local usb hdd (make an exact copy)
     # rsync -rltv8DW --delete-before --progress --info=progress2 --dry-run --exclude "*DS_Store" --delete-excluded "/data/googledrive/media/audio/music/new/" "/data/usb_hdd/media/audio/music/new" > /data/usb_hdd/rsync_music.txt &
     RSYNC_CMD = f'rsync -rltv8DW --delete-before --progress --info=progress2 --exclude "*DS_Store" --delete-excluded "{MEDIA_ROOT_RCLONE}/{ALBUM_TYPE_MUSIC}/" "/{MEDIA_ROOT}/{ALBUM_TYPE_MUSIC}"'.split(' ')

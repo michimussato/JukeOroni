@@ -65,32 +65,6 @@ https://pillow.readthedocs.io/en/stable/reference/Image.html?highlight=composite
 """
 
 
-BUTTONS_HEIGHT = 32
-BORDER = 4
-BUTTONS_ICONS = {
-    'Radio': '/data/django/jukeoroni/player/static/buttons_overlay/icon_radio.png',
-    'Player': '/data/django/jukeoroni/player/static/buttons_overlay/icon_player.png',
-    'Meditation': '/data/django/jukeoroni/player/static/buttons_overlay/icon_meditation.png',
-    # 'Audiobook': '/data/django/jukeoroni/player/static/buttons_overlay/icon_audiobook.png',
-    'Podcast': '/data/django/jukeoroni/player/static/buttons_overlay/icon_podcast.png',
-    'Random -> Album': '/data/django/jukeoroni/player/static/buttons_overlay/icon_random.png',
-    'Album -> Random': '/data/django/jukeoroni/player/static/buttons_overlay/icon_album.png',
-    # 'N//A': '/data/django/jukeoroni/player/static/buttons_overlay/icon_na.png',
-    'N//A': '',
-    'Stop': '/data/django/jukeoroni/player/static/buttons_overlay/icon_stop.png',
-    'Play': '/data/django/jukeoroni/player/static/buttons_overlay/icon_play.png',
-    'Next': '/data/django/jukeoroni/player/static/buttons_overlay/icon_next.png',
-    'Menu': '/data/django/jukeoroni/player/static/buttons_overlay/icon_menu.png'
-}
-
-
-INVERT_BUTTONS = True
-GRADIENT_BUTTONS = True
-GRADIENT_BG = True
-GRADIENT_BG_OPACITY = 0.4
-GRADIENT_BG_BLACK_SIZE = BUTTONS_HEIGHT
-
-
 def mean_color(img):
     NUM_CLUSTERS = 5  # the higher the name the more accurate is the dominant color
 
@@ -128,26 +102,26 @@ def buttons_img_overlay(labels, gradient_color):
     n = 0
     for _label in labels[::-1]:
         n += 1
-        if not bool(BUTTONS_ICONS[_label]):
+        if not bool(Settings.BUTTONS_ICONS[_label]):
             continue
-        label = Image.open(BUTTONS_ICONS[_label])
-        if INVERT_BUTTONS:
+        label = Image.open(Settings.BUTTONS_ICONS[_label])
+        if Settings.INVERT_BUTTONS:
             r, g, b, a = label.split()
             rgb_image = Image.merge('RGB', (r, g, b))
             inverted_image = ImageOps.invert(rgb_image)
             r2, g2, b2 = inverted_image.split()
             label = Image.merge('RGBA', (r2, g2, b2, a))
 
-        label = label.resize((BUTTONS_HEIGHT, BUTTONS_HEIGHT))
+        label = label.resize((Settings.BUTTONS_HEIGHT, Settings.BUTTONS_HEIGHT))
         label_bg = Image.new(mode='RGBA', size=widget_buttons.size, color=(0, 0, 0, 0))
 
-        label_bg.paste(im=label, box=(int(round(n*448/4 - 448/4/2 - BUTTONS_HEIGHT/2)), BORDER))
+        label_bg.paste(im=label, box=(int(round(n*448/4 - 448/4/2 - Settings.BUTTONS_HEIGHT/2)), Settings.BORDER))
 
         widget_buttons = Image.alpha_composite(widget_buttons, label_bg)
 
     comp_buttons = Image.new(mode='RGBA', size=widget_buttons.size)
 
-    if GRADIENT_BUTTONS:
+    if Settings.GRADIENT_BUTTONS:
         # create gradient
         # https://stackoverflow.com/questions/39976028/python-pillow-make-gradient-for-transparency
         # Change the bg color of the gradient background here
@@ -156,7 +130,7 @@ def buttons_img_overlay(labels, gradient_color):
 
         height = comp_buttons.size[1]
         # gradient = 12.0
-        gradient = height / (BUTTONS_HEIGHT + BORDER*2)
+        gradient = height / (Settings.BUTTONS_HEIGHT + Settings.BORDER*2)
         alpha_gradient = Image.new('L', (1, height), color=255)
         for x in range(height):
             a = int((initial_opacity * 255.0) * (1.0 - gradient * float(x) / height))
@@ -172,7 +146,7 @@ def buttons_img_overlay(labels, gradient_color):
 
     comp_buttons = Image.alpha_composite(comp_buttons, widget_buttons)
     comp_buttons = comp_buttons.rotate(90, expand=False)
-    comp_buttons = comp_buttons.crop((0, 0, BUTTONS_HEIGHT + BORDER*2, widget_buttons.size[0]))
+    comp_buttons = comp_buttons.crop((0, 0, Settings.BUTTONS_HEIGHT + Settings.BORDER*2, widget_buttons.size[0]))
 
     return comp_buttons
 
@@ -198,8 +172,8 @@ def host_info():
 class Layout:
     _clock = Clock()
     radar = Radar()
-    border = BORDER
-    main_size = 420 - 2*BORDER - BUTTONS_HEIGHT
+    border = Settings.BORDER
+    main_size = 420 - 2*Settings.BORDER - Settings.BUTTONS_HEIGHT
     bg_color = (0, 0, 0, 255)
 
 
@@ -212,7 +186,7 @@ class Standby(Layout):
         buttons_overlay = buttons_img_overlay(labels=labels, gradient_color=mc)
         bg = Image.new(mode='RGBA', size=(600, 448), color=self.bg_color)
 
-        if GRADIENT_BG:
+        if Settings.GRADIENT_BG:
             # create gradient
             # https://stackoverflow.com/questions/39976028/python-pillow-make-gradient-for-transparency
             # Change the bg color of the gradient background here
@@ -223,10 +197,10 @@ class Standby(Layout):
             width = bg_gradient.size[0]
             alpha_gradient = Image.new('L', (width, 1), color=255)
             for x in range(width):  # [0, 1,2,...599]
-                if x < GRADIENT_BG_BLACK_SIZE:
+                if x < Settings.GRADIENT_BG_BLACK_SIZE:
                     a = 0.0
                 else:
-                    a = (x - GRADIENT_BG_BLACK_SIZE) / (width - GRADIENT_BG_BLACK_SIZE) * 255 * GRADIENT_BG_OPACITY
+                    a = (x - Settings.GRADIENT_BG_BLACK_SIZE) / (width - Settings.GRADIENT_BG_BLACK_SIZE) * 255 * Settings.GRADIENT_BG_OPACITY
                 alpha_gradient.putpixel((x, 0), int(a))
 
             alpha = alpha_gradient.resize(bg_gradient.size)
@@ -279,7 +253,7 @@ class Standby(Layout):
             widget_ip_overlay = Image.new(mode='RGBA', size=bg.size, color=(0, 0, 0, 0))
             draw_ip = ImageDraw.Draw(widget_ip_overlay, mode='RGBA')
 
-            draw_ip.text((round(widget_ip_overlay.size[0] - length - BORDER), 0), _host_info, fill=(255, 255, 255, 255),
+            draw_ip.text((round(widget_ip_overlay.size[0] - length - Settings.BORDER), 0), _host_info, fill=(255, 255, 255, 255),
                          font=font)
 
             bg = Image.alpha_composite(bg, widget_ip_overlay)
@@ -316,7 +290,7 @@ class Jukebox(Layout):
         buttons_overlay = buttons_img_overlay(labels, gradient_color=mc)
         bg = Image.new(mode='RGBA', size=(600, 448), color=self.bg_color)
 
-        if GRADIENT_BG:
+        if Settings.GRADIENT_BG:
             # create gradient
             # https://stackoverflow.com/questions/39976028/python-pillow-make-gradient-for-transparency
             # Change the bg color of the gradient background here
@@ -327,10 +301,10 @@ class Jukebox(Layout):
             width = bg_gradient.size[0]
             alpha_gradient = Image.new('L', (width, 1), color=255)
             for x in range(width):  # [0, 1,2,...599]
-                if x < GRADIENT_BG_BLACK_SIZE:
+                if x < Settings.GRADIENT_BG_BLACK_SIZE:
                     a = 0.0
                 else:
-                    a = (x - GRADIENT_BG_BLACK_SIZE) / (width - GRADIENT_BG_BLACK_SIZE) * 255 * GRADIENT_BG_OPACITY
+                    a = (x - Settings.GRADIENT_BG_BLACK_SIZE) / (width - Settings.GRADIENT_BG_BLACK_SIZE) * 255 * Settings.GRADIENT_BG_OPACITY
                 alpha_gradient.putpixel((x, 0), int(a))
 
             alpha = alpha_gradient.resize(bg_gradient.size)
@@ -399,7 +373,7 @@ class Jukebox(Layout):
             widget_ip_overlay = Image.new(mode='RGBA', size=bg.size, color=(0, 0, 0, 0))
             draw_ip = ImageDraw.Draw(widget_ip_overlay, mode='RGBA')
 
-            draw_ip.text((round(widget_ip_overlay.size[0] - length - BORDER), 0), _host_info, fill=(255, 255, 255, 255), font=font)
+            draw_ip.text((round(widget_ip_overlay.size[0] - length - Settings.BORDER), 0), _host_info, fill=(255, 255, 255, 255), font=font)
 
             bg = Image.alpha_composite(bg, widget_ip_overlay)
 
@@ -417,7 +391,7 @@ class Radio(Layout):
         buttons_overlay = buttons_img_overlay(labels, gradient_color=mc)
         bg = Image.new(mode='RGBA', size=(600, 448), color=self.bg_color)
 
-        if GRADIENT_BG:
+        if Settings.GRADIENT_BG:
             # create gradient
             # https://stackoverflow.com/questions/39976028/python-pillow-make-gradient-for-transparency
             # Change the bg color of the gradient background here
@@ -428,10 +402,10 @@ class Radio(Layout):
             width = bg_gradient.size[0]
             alpha_gradient = Image.new('L', (width, 1), color=255)
             for x in range(width):  # [0, 1,2,...599]
-                if x < GRADIENT_BG_BLACK_SIZE:
+                if x < Settings.GRADIENT_BG_BLACK_SIZE:
                     a = 0.0
                 else:
-                    a = (x - GRADIENT_BG_BLACK_SIZE) / (width - GRADIENT_BG_BLACK_SIZE) * 255 * GRADIENT_BG_OPACITY
+                    a = (x - Settings.GRADIENT_BG_BLACK_SIZE) / (width - Settings.GRADIENT_BG_BLACK_SIZE) * 255 * Settings.GRADIENT_BG_OPACITY
                 alpha_gradient.putpixel((x, 0), int(a))
 
             alpha = alpha_gradient.resize(bg_gradient.size)
@@ -505,7 +479,7 @@ class Radio(Layout):
             widget_ip_overlay = Image.new(mode='RGBA', size=bg.size, color=(0, 0, 0, 0))
             draw_ip = ImageDraw.Draw(widget_ip_overlay, mode='RGBA')
 
-            draw_ip.text((round(widget_ip_overlay.size[0] - length - BORDER), 0), _host_info, fill=(255, 255, 255, 255),
+            draw_ip.text((round(widget_ip_overlay.size[0] - length - Settings.BORDER), 0), _host_info, fill=(255, 255, 255, 255),
                          font=font)
 
             bg = Image.alpha_composite(bg, widget_ip_overlay)
@@ -513,34 +487,34 @@ class Radio(Layout):
         return bg
 
 
-class Off(Layout):
-    # bg_color = (0, 0, 0, 255)
-
-    # _clock = None
-    # radar = None
-
-    def get_layout(self, labels, cover):
-
-        assert isinstance(cover, Image.Image), f'Radio Channel cover type must be PIL.Image.Image() (not rotated). Got: {cover}'
-
-        buttons_overlay = buttons_img_overlay(labels)
-        bg = Image.new(mode='RGBA', size=(600, 448), color=self.bg_color)
-
-        # cover_size = 448 - 2 * self.border
-        cover_size = self.main_size
-
-        cover = cover.resize((cover_size, cover_size), Image.ANTIALIAS)
-
-        cover = cover.rotate(90, expand=True)
-
-        cover = Resource().round_resize(image=cover, corner=40, factor=1.0)
-
-        _cover_center = round(bg.size[1] / 2 - cover_size / 2)
-        bg.paste(cover, box=(buttons_overlay.size[0] + self.border, _cover_center), mask=cover)
-
-        bg.paste(buttons_overlay, box=(0, 0), mask=buttons_overlay)
-
-        return bg
+# class Off(Layout):
+#     # bg_color = (0, 0, 0, 255)
+#
+#     # _clock = None
+#     # radar = None
+#
+#     def get_layout(self, labels, cover):
+#
+#         assert isinstance(cover, Image.Image), f'Radio Channel cover type must be PIL.Image.Image() (not rotated). Got: {cover}'
+#
+#         buttons_overlay = buttons_img_overlay(labels)
+#         bg = Image.new(mode='RGBA', size=(600, 448), color=self.bg_color)
+#
+#         # cover_size = 448 - 2 * self.border
+#         cover_size = self.main_size
+#
+#         cover = cover.resize((cover_size, cover_size), Image.ANTIALIAS)
+#
+#         cover = cover.rotate(90, expand=True)
+#
+#         cover = Resource().round_resize(image=cover, corner=40, factor=1.0)
+#
+#         _cover_center = round(bg.size[1] / 2 - cover_size / 2)
+#         bg.paste(cover, box=(buttons_overlay.size[0] + self.border, _cover_center), mask=cover)
+#
+#         bg.paste(buttons_overlay, box=(0, 0), mask=buttons_overlay)
+#
+#         return bg
 
 
 class Meditationbox(Layout):
@@ -579,7 +553,7 @@ class Meditationbox(Layout):
         buttons_overlay = buttons_img_overlay(labels, gradient_color=mc)
         bg = Image.new(mode='RGBA', size=(600, 448), color=self.bg_color)
 
-        if GRADIENT_BG:
+        if Settings.GRADIENT_BG:
             # create gradient
             # https://stackoverflow.com/questions/39976028/python-pillow-make-gradient-for-transparency
             # Change the bg color of the gradient background here
@@ -590,10 +564,10 @@ class Meditationbox(Layout):
             width = bg_gradient.size[0]
             alpha_gradient = Image.new('L', (width, 1), color=255)
             for x in range(width):  # [0, 1,2,...599]
-                if x < GRADIENT_BG_BLACK_SIZE:
+                if x < Settings.GRADIENT_BG_BLACK_SIZE:
                     a = 0.0
                 else:
-                    a = (x - GRADIENT_BG_BLACK_SIZE) / (width - GRADIENT_BG_BLACK_SIZE) * 255 * GRADIENT_BG_OPACITY
+                    a = (x - Settings.GRADIENT_BG_BLACK_SIZE) / (width - Settings.GRADIENT_BG_BLACK_SIZE) * 255 * Settings.GRADIENT_BG_OPACITY
                 alpha_gradient.putpixel((x, 0), int(a))
 
             alpha = alpha_gradient.resize(bg_gradient.size)
@@ -740,7 +714,7 @@ Exception Value: broken PNG file (chunk b"Em\xd5'")
             widget_ip_overlay = Image.new(mode='RGBA', size=bg.size, color=(0, 0, 0, 0))
             draw_ip = ImageDraw.Draw(widget_ip_overlay, mode='RGBA')
 
-            draw_ip.text((round(widget_ip_overlay.size[0] - length - BORDER), 0), _host_info,
+            draw_ip.text((round(widget_ip_overlay.size[0] - length - Settings.BORDER), 0), _host_info,
                          fill=(255, 255, 255, 255), font=font)
 
             bg = Image.alpha_composite(bg, widget_ip_overlay)
@@ -785,7 +759,7 @@ class Audiobookbox(Layout):
         buttons_overlay = buttons_img_overlay(labels, gradient_color=mc)
         bg = Image.new(mode='RGBA', size=(600, 448), color=self.bg_color)
 
-        if GRADIENT_BG:
+        if Settings.GRADIENT_BG:
             # create gradient
             # https://stackoverflow.com/questions/39976028/python-pillow-make-gradient-for-transparency
             # Change the bg color of the gradient background here
@@ -796,10 +770,10 @@ class Audiobookbox(Layout):
             width = bg_gradient.size[0]
             alpha_gradient = Image.new('L', (width, 1), color=255)
             for x in range(width):  # [0, 1,2,...599]
-                if x < GRADIENT_BG_BLACK_SIZE:
+                if x < Settings.GRADIENT_BG_BLACK_SIZE:
                     a = 0.0
                 else:
-                    a = (x - GRADIENT_BG_BLACK_SIZE) / (width - GRADIENT_BG_BLACK_SIZE) * 255 * GRADIENT_BG_OPACITY
+                    a = (x - Settings.GRADIENT_BG_BLACK_SIZE) / (width - Settings.GRADIENT_BG_BLACK_SIZE) * 255 * Settings.GRADIENT_BG_OPACITY
                 alpha_gradient.putpixel((x, 0), int(a))
 
             alpha = alpha_gradient.resize(bg_gradient.size)
@@ -946,7 +920,7 @@ Exception Value: broken PNG file (chunk b"Em\xd5'")
             widget_ip_overlay = Image.new(mode='RGBA', size=bg.size, color=(0, 0, 0, 0))
             draw_ip = ImageDraw.Draw(widget_ip_overlay, mode='RGBA')
 
-            draw_ip.text((round(widget_ip_overlay.size[0] - length - BORDER), 0), _host_info,
+            draw_ip.text((round(widget_ip_overlay.size[0] - length - Settings.BORDER), 0), _host_info,
                          fill=(255, 255, 255, 255), font=font)
 
             bg = Image.alpha_composite(bg, widget_ip_overlay)
@@ -990,7 +964,7 @@ class Podcastbox(Layout):
         buttons_overlay = buttons_img_overlay(labels, gradient_color=mc)
         bg = Image.new(mode='RGBA', size=(600, 448), color=self.bg_color)
 
-        if GRADIENT_BG:
+        if Settings.GRADIENT_BG:
             # create gradient
             # https://stackoverflow.com/questions/39976028/python-pillow-make-gradient-for-transparency
             # Change the bg color of the gradient background here
@@ -1001,10 +975,10 @@ class Podcastbox(Layout):
             width = bg_gradient.size[0]
             alpha_gradient = Image.new('L', (width, 1), color=255)
             for x in range(width):  # [0, 1,2,...599]
-                if x < GRADIENT_BG_BLACK_SIZE:
+                if x < Settings.GRADIENT_BG_BLACK_SIZE:
                     a = 0.0
                 else:
-                    a = (x - GRADIENT_BG_BLACK_SIZE) / (width - GRADIENT_BG_BLACK_SIZE) * 255 * GRADIENT_BG_OPACITY
+                    a = (x - Settings.GRADIENT_BG_BLACK_SIZE) / (width - Settings.GRADIENT_BG_BLACK_SIZE) * 255 * Settings.GRADIENT_BG_OPACITY
                 alpha_gradient.putpixel((x, 0), int(a))
 
             alpha = alpha_gradient.resize(bg_gradient.size)
@@ -1077,7 +1051,7 @@ class Podcastbox(Layout):
             widget_ip_overlay = Image.new(mode='RGBA', size=bg.size, color=(0, 0, 0, 0))
             draw_ip = ImageDraw.Draw(widget_ip_overlay, mode='RGBA')
 
-            draw_ip.text((round(widget_ip_overlay.size[0] - length - BORDER), 0), _host_info,
+            draw_ip.text((round(widget_ip_overlay.size[0] - length - Settings.BORDER), 0), _host_info,
                          fill=(255, 255, 255, 255), font=font)
 
             bg = Image.alpha_composite(bg, widget_ip_overlay)
