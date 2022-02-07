@@ -49,7 +49,7 @@ class Settings:
         'Radio': '/data/django/jukeoroni/player/static/buttons_overlay/icon_radio.png',
         'Player': '/data/django/jukeoroni/player/static/buttons_overlay/icon_player.png',
         'Meditation': '/data/django/jukeoroni/player/static/buttons_overlay/icon_meditation.png',
-        # 'Audiobook': '/data/django/jukeoroni/player/static/buttons_overlay/icon_audiobook.png',
+        'Audiobook': '/data/django/jukeoroni/player/static/buttons_overlay/icon_audiobook.png',
         'Podcast': '/data/django/jukeoroni/player/static/buttons_overlay/icon_podcast.png',
         'Random -> Album': '/data/django/jukeoroni/player/static/buttons_overlay/icon_random.png',
         'Album -> Random': '/data/django/jukeoroni/player/static/buttons_overlay/icon_album.png',
