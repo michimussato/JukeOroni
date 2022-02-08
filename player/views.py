@@ -21,11 +21,12 @@ PIMORONI_FONT = '/data/django/jukeoroni/player/static/gotham-black.ttf'
 
 padding = '2px 5px'
 BUTTON_HEIGHT = '100px'
+BUTTON_ICON_SIZE_FACTOR = 2.0
 COLUMN_WIDTH = 101
 
 
 # TODO:
-#  <img width="{Settings.BUTTONS_HEIGHT}" height="{Settings.BUTTONS_HEIGHT}" src="{Settings.BUTTON_ICONS[n]}" />
+#  <img width="{int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR)}" height="{int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR)}" src="{Settings.BUTTON_ICONS[n]}" />
 
 
 jukeoroni = JukeOroni(test=False)
@@ -211,28 +212,28 @@ class JukeOroniView(View):
 
                 if Settings.ENABLE_JUKEBOX:
                     ret += f'<td width="{COLUMN_WIDTH}" style="border-right: solid 1px #000;border-left: solid 1px #000;padding: {padding};">'
-                    # ret += f'<button style=\"width:100%; height:{BUTTON_HEIGHT}; \" onclick=\"window.location.href = \'/jukeoroni/set_jukebox\';\">JukeBox<br><img width="{Settings.BUTTONS_HEIGHT}" height="{Settings.BUTTONS_HEIGHT}" src="/jukeoroni{Settings.BUTTONS_ICONS["Player"].lstrip("/data/django/jukeoroni/player/static")}" /></button>\n'
-                    ret += f'<button style=\"width:100%; height:{BUTTON_HEIGHT}; \" onclick=\"window.location.href = \'/jukeoroni/set_jukebox\';\">JukeBox<br><img width="{Settings.BUTTONS_HEIGHT}" height="{Settings.BUTTONS_HEIGHT}" src="/jukeoroni/buttons_overlay/{os.path.basename(Settings.BUTTONS_ICONS["Player"])}" /></button>\n'
+                    # ret += f'<button style=\"width:100%; height:{BUTTON_HEIGHT}; \" onclick=\"window.location.href = \'/jukeoroni/set_jukebox\';\">JukeBox<br><img width="{int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR)}" height="{int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR)}" src="/jukeoroni{Settings.BUTTONS_ICONS["Player"].lstrip("/data/django/jukeoroni/player/static")}" /></button>\n'
+                    ret += f'<button title="JukeBox" style=\"width:100%; height:{BUTTON_HEIGHT}; \" onclick=\"window.location.href = \'/jukeoroni/set_jukebox\';\"><img width="{int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR)}" height="{int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR)}" src="/jukeoroni/buttons_overlay/{os.path.basename(Settings.BUTTONS_ICONS["Player"])}" /></button>\n'
                     ret += '</td>'
                     # ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/set_jukebox\';\">JukeBox</button>\n'
                 if Settings.ENABLE_RADIO:
                     ret += f'<td width="{COLUMN_WIDTH}" style="border-right: solid 1px #000;border-left: solid 1px #000;padding: {padding};">'
-                    ret += f'<button style=\"width:100%; height:{BUTTON_HEIGHT}; \" onclick=\"window.location.href = \'/jukeoroni/set_radio\';\">Radio<br><img width="{Settings.BUTTONS_HEIGHT}" height="{Settings.BUTTONS_HEIGHT}" src="/jukeoroni/buttons_overlay/{os.path.basename(Settings.BUTTONS_ICONS["Radio"])}" /></button>\n'
+                    ret += f'<button title="Radio" style=\"width:100%; height:{BUTTON_HEIGHT}; \" onclick=\"window.location.href = \'/jukeoroni/set_radio\';\"><img width="{int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR)}" height="{int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR)}" src="/jukeoroni/buttons_overlay/{os.path.basename(Settings.BUTTONS_ICONS["Radio"])}" /></button>\n'
                     ret += '</td>'
                     # ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/set_radio\';\">Radio</button>\n'
                 if Settings.ENABLE_MEDITATION:
                     ret += f'<td width="{COLUMN_WIDTH}" style="border-right: solid 1px #000;border-left: solid 1px #000;padding: {padding};">'
-                    ret += f'<button style=\"width:100%; height:{BUTTON_HEIGHT}; \" onclick=\"window.location.href = \'/jukeoroni/set_meditationbox\';\">MeditationBox<br><img width="{Settings.BUTTONS_HEIGHT}" height="{Settings.BUTTONS_HEIGHT}" src="/jukeoroni/buttons_overlay/{os.path.basename(Settings.BUTTONS_ICONS["Meditation"])}" /></button>\n'
+                    ret += f'<button title="MeditationBox" style=\"width:100%; height:{BUTTON_HEIGHT}; \" onclick=\"window.location.href = \'/jukeoroni/set_meditationbox\';\"><img width="{int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR)}" height="{int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR)}" src="/jukeoroni/buttons_overlay/{os.path.basename(Settings.BUTTONS_ICONS["Meditation"])}" /></button>\n'
                     ret += '</td>'
                     # ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/set_meditationbox\';\">MeditationBox</button>\n'
                 if Settings.ENABLE_AUDIOBOOK:
                     ret += f'<td width="{COLUMN_WIDTH}" style="border-right: solid 1px #000;border-left: solid 1px #000;padding: {padding};">'
-                    ret += f'<button style=\"width:100%; height:{BUTTON_HEIGHT}; \" onclick=\"window.location.href = \'/jukeoroni/set_audiobookbox\';\">AudiobookBox<br><img width="{Settings.BUTTONS_HEIGHT}" height="{Settings.BUTTONS_HEIGHT}" src="/jukeoroni/buttons_overlay/{os.path.basename(Settings.BUTTONS_ICONS["Audiobook"])}" /></button>\n'
+                    ret += f'<button title="AudiobookBox" style=\"width:100%; height:{BUTTON_HEIGHT}; \" onclick=\"window.location.href = \'/jukeoroni/set_audiobookbox\';\"><img width="{int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR)}" height="{int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR)}" src="/jukeoroni/buttons_overlay/{os.path.basename(Settings.BUTTONS_ICONS["Audiobook"])}" /></button>\n'
                     ret += '</td>'
                     # ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/set_audiobookbox\';\">AudiobookBox</button>\n'
                 if Settings.ENABLE_PODCAST:
                     ret += f'<td width="{COLUMN_WIDTH}" style="border-right: solid 1px #000;border-left: solid 1px #000;padding: {padding};">'
-                    ret += f'<button style=\"width:100%; height:{BUTTON_HEIGHT}; \" onclick=\"window.location.href = \'/jukeoroni/set_podcastbox\';\">PodcastBox<br><img width="{Settings.BUTTONS_HEIGHT}" height="{Settings.BUTTONS_HEIGHT}" src="/jukeoroni/buttons_overlay/{os.path.basename(Settings.BUTTONS_ICONS["Podcast"])}" /></button>\n'
+                    ret += f'<button title="PodcastBox" style=\"width:100%; height:{BUTTON_HEIGHT}; \" onclick=\"window.location.href = \'/jukeoroni/set_podcastbox\';\"><img width="{int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR)}" height="{int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR)}" src="/jukeoroni/buttons_overlay/{os.path.basename(Settings.BUTTONS_ICONS["Podcast"])}" /></button>\n'
                     ret += '</td>'
                     # ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/set_podcastbox\';\">PodcastBox</button>\n'
 
@@ -327,16 +328,16 @@ class JukeOroniView(View):
 
         ret += f'<td width="{COLUMN_WIDTH}" style="border-right: solid 1px #000;border-left: solid 1px #000;padding: {padding};">'
         if jukeoroni.mode == Settings.MODES[box.box_type]['on_air'][box.loader_mode]:
-            ret += '<button style=\"width:100%; height:{1}; \" onclick=\"window.location.href = \'/jukeoroni/{0}/stop\';\">Stop<br><img width="{2}" height="{2}" src="/jukeoroni/buttons_overlay/{3}" /></button>\n'.format(str(box.box_type), BUTTON_HEIGHT, Settings.BUTTONS_HEIGHT, os.path.basename(Settings.BUTTONS_ICONS["Stop"]))
+            ret += '<button title="Stop" style=\"width:100%; height:{1}; \" onclick=\"window.location.href = \'/jukeoroni/{0}/stop\';\"><img width="{2}" height="{2}" src="/jukeoroni/buttons_overlay/{3}" /></button>\n'.format(str(box.box_type), BUTTON_HEIGHT, int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR), os.path.basename(Settings.BUTTONS_ICONS["Stop"]))
         else:
-            ret += f'<button style=\"width:100%; height:{BUTTON_HEIGHT}; \" onclick=\"window.location.href = \'/jukeoroni/set_standby\';\">Back<br><img width="{Settings.BUTTONS_HEIGHT}" height="{Settings.BUTTONS_HEIGHT}" src="/jukeoroni/buttons_overlay/{os.path.basename(Settings.BUTTONS_ICONS["Menu"])}" /></button>\n'
+            ret += f'<button title="Back" style=\"width:100%; height:{BUTTON_HEIGHT}; \" onclick=\"window.location.href = \'/jukeoroni/set_standby\';\"><img width="{int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR)}" height="{int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR)}" src="/jukeoroni/buttons_overlay/{os.path.basename(Settings.BUTTONS_ICONS["Menu"])}" /></button>\n'
         ret += '</td>'
 
         ret += f'<td width="{COLUMN_WIDTH}" style="border-right: solid 1px #000;border-left: solid 1px #000;padding: {padding};">'
 
-        # <br><img width="{Settings.BUTTONS_HEIGHT}" height="{Settings.BUTTONS_HEIGHT}" src="/jukeoroni/buttons_overlay/{os.path.basename(Settings.BUTTONS_ICONS["Player"])}" />
+        # <br><img width="{int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR)}" height="{int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR)}" src="/jukeoroni/buttons_overlay/{os.path.basename(Settings.BUTTONS_ICONS["Player"])}" />
 
-        ret += '<button style=\"width:100%; height:{2}; \" onclick=\"window.location.href = \'/jukeoroni/{1}/play_next\';\">{0}<br><img width="{3}" height="{3}" src="/jukeoroni/buttons_overlay/{4}" /></button>\n'.format(jukeoroni.mode['buttons']['0X00'], str(box.box_type), BUTTON_HEIGHT, Settings.BUTTONS_HEIGHT, os.path.basename(Settings.BUTTONS_ICONS["Next"]) if jukeoroni.mode == Settings.MODES[box.box_type]['on_air'][box.loader_mode] else os.path.basename(Settings.BUTTONS_ICONS["Play"]))
+        ret += '<button title="{0}" style=\"width:100%; height:{2}; \" onclick=\"window.location.href = \'/jukeoroni/{1}/play_next\';\"><img width="{3}" height="{3}" src="/jukeoroni/buttons_overlay/{4}" /></button>\n'.format(jukeoroni.mode['buttons']['0X00'], str(box.box_type), BUTTON_HEIGHT, int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR), os.path.basename(Settings.BUTTONS_ICONS["Next"]) if jukeoroni.mode == Settings.MODES[box.box_type]['on_air'][box.loader_mode] else os.path.basename(Settings.BUTTONS_ICONS["Play"]))
         ret += '</td>'
 
         ret += f'<td width="{COLUMN_WIDTH}" style="border-right: solid 1px #000;border-left: solid 1px #000;padding: {padding};">'
@@ -344,7 +345,7 @@ class JukeOroniView(View):
         ret += '</td>'
 
         ret += f'<td width="{COLUMN_WIDTH}" style="border-right: solid 1px #000;border-left: solid 1px #000;padding: {padding};">'
-        ret += '<button style=\"width:100%; height:{2}; \" onclick=\"window.location.href = \'/jukeoroni/{1}/switch_mode\';\">{0}<br><img width="{3}" height="{3}" src="/jukeoroni/buttons_overlay/{4}" /></button>\n'.format(str(box.loader_mode).capitalize(), str(box.box_type), BUTTON_HEIGHT, Settings.BUTTONS_HEIGHT, os.path.basename(Settings.BUTTONS_ICONS["Random -> Album"]) if str(box.loader_mode) == 'random' else os.path.basename(Settings.BUTTONS_ICONS["Album -> Random"]))
+        ret += '<button title="{0}" style=\"width:100%; height:{2}; \" onclick=\"window.location.href = \'/jukeoroni/{1}/switch_mode\';\"><img width="{3}" height="{3}" src="/jukeoroni/buttons_overlay/{4}" /></button>\n'.format(str(box.loader_mode).capitalize(), str(box.box_type), BUTTON_HEIGHT, int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR), os.path.basename(Settings.BUTTONS_ICONS["Random -> Album"]) if str(box.loader_mode) == 'random' else os.path.basename(Settings.BUTTONS_ICONS["Album -> Random"]))
         ret += '</td>'
 
         ret += '</table>'
@@ -746,17 +747,17 @@ class JukeOroniView(View):
         ret += f'<td width="{COLUMN_WIDTH}" style="border-right: solid 1px #000;border-left: solid 1px #000;padding: {padding};">'
         # if jukeoroni.mode == Settings.MODES[box.box_type]['on_air'][box.loader_mode]:
         if jukeoroni.radio.is_on_air:
-            ret += f'<button style=\"width:100%; height:{BUTTON_HEIGHT}; \" onclick=\"window.location.href = \'stop\';\">Stop<br><img width="{Settings.BUTTONS_HEIGHT}" height="{Settings.BUTTONS_HEIGHT}" src="/jukeoroni/buttons_overlay/{os.path.basename(Settings.BUTTONS_ICONS["Stop"])}" /></button>\n'
+            ret += f'<button title="Stop" style=\"width:100%; height:{BUTTON_HEIGHT}; \" onclick=\"window.location.href = \'stop\';\"><img width="{int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR)}" height="{int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR)}" src="/jukeoroni/buttons_overlay/{os.path.basename(Settings.BUTTONS_ICONS["Stop"])}" /></button>\n'
         else:
-            ret += f'<button style=\"width:100%; height:{BUTTON_HEIGHT}; \" onclick=\"window.location.href = \'/jukeoroni/set_standby\';\">Back<br><img width="{Settings.BUTTONS_HEIGHT}" height="{Settings.BUTTONS_HEIGHT}" src="/jukeoroni/buttons_overlay/{os.path.basename(Settings.BUTTONS_ICONS["Menu"])}" /></button>\n'
+            ret += f'<button title="Back" style=\"width:100%; height:{BUTTON_HEIGHT}; \" onclick=\"window.location.href = \'/jukeoroni/set_standby\';\"><img width="{int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR)}" height="{int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR)}" src="/jukeoroni/buttons_overlay/{os.path.basename(Settings.BUTTONS_ICONS["Menu"])}" /></button>\n'
         ret += '</td>'
 
         ret += f'<td width="{COLUMN_WIDTH}" style="border-right: solid 1px #000;border-left: solid 1px #000;padding: {padding};">'
         last_played = jukeoroni.radio.last_played
         if last_played is None or jukeoroni.radio.is_on_air:
-            ret += f'<button style=\"width:100%; height:{BUTTON_HEIGHT}; \" onclick=\"window.location.href = \'random/play\';\">Next (Random)<br><img width="{Settings.BUTTONS_HEIGHT}" height="{Settings.BUTTONS_HEIGHT}" src="/jukeoroni/buttons_overlay/{os.path.basename(Settings.BUTTONS_ICONS["Next"])}" /></button>\n'
+            ret += f'<button title="Next (Random)" style=\"width:100%; height:{BUTTON_HEIGHT}; \" onclick=\"window.location.href = \'random/play\';\"><img width="{int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR)}" height="{int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR)}" src="/jukeoroni/buttons_overlay/{os.path.basename(Settings.BUTTONS_ICONS["Next"])}" /></button>\n'
         else:
-            ret += '<button style=\"width:100%; height:{2}; \" onclick=\"window.location.href = \'{0}/play\';\">Last played ({1})<br><img width="{3}" height="{3}" src="/jukeoroni/buttons_overlay/{4}" /></button>\n'.format(last_played.display_name_short, last_played.display_name, BUTTON_HEIGHT, Settings.BUTTONS_HEIGHT, os.path.basename(Settings.BUTTONS_ICONS["Play"]))
+            ret += '<button title="Last played ({1})" style=\"width:100%; height:{2}; \" onclick=\"window.location.href = \'{0}/play\';\"><img width="{3}" height="{3}" src="/jukeoroni/buttons_overlay/{4}" /></button>\n'.format(last_played.display_name_short, last_played.display_name, BUTTON_HEIGHT, int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR), os.path.basename(Settings.BUTTONS_ICONS["Play"]))
         ret += '</td>'
 
         ret += f'<td width="{COLUMN_WIDTH}" style="border-right: solid 1px #000;border-left: solid 1px #000;padding: {padding};">'
