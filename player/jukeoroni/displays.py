@@ -180,7 +180,7 @@ class Layout:
 class Standby(Layout):
     # bg_color = (255, 0, 0, 255)
 
-    def get_layout(self, labels):
+    def get_layout(self, labels, buttons=True):
 
         mc = (255, 255, 255)
         buttons_overlay = buttons_img_overlay(labels=labels, gradient_color=mc)
@@ -241,7 +241,8 @@ class Standby(Layout):
             # _radar_bottom_right = (int(600-w-self.border), self.border)
             bg.paste(_radar_image, _radar_bottom_centered, mask=_radar_image)
 
-        bg.paste(buttons_overlay, box=(0, 0), mask=buttons_overlay)
+        if buttons:
+            bg.paste(buttons_overlay, box=(0, 0), mask=buttons_overlay)
 
         if Settings.DRAW_HOST_INFO:
             _host_info = host_info()
@@ -267,7 +268,7 @@ class Jukebox(Layout):
     # TODO!!!
     #  If the default image gets currupted, playback won't work anymore!!
 
-    def get_layout(self, labels, loading=False, cover=None, artist=None):
+    def get_layout(self, labels, loading=False, cover=None, artist=None, buttons=True):
 
         if loading:
             # TODO:
@@ -360,7 +361,8 @@ class Jukebox(Layout):
                                             int(0 + 224 / 2 + round(self.border / 2) - round(Settings.SMALL_WIDGET_SIZE / 2)))
             bg.paste(_radar_image, box=_radar_bottom_right_centered, mask=_radar_image)
 
-        bg.paste(buttons_overlay, box=(0, 0), mask=buttons_overlay)
+        if buttons:
+            bg.paste(buttons_overlay, box=(0, 0), mask=buttons_overlay)
 
         if Settings.DRAW_HOST_INFO:
 
@@ -382,7 +384,7 @@ class Jukebox(Layout):
 
 class Radio(Layout):
 
-    def get_layout(self, labels, cover, title):
+    def get_layout(self, labels, cover, title, buttons=True):
 
         assert isinstance(cover, Image.Image), f'Radio Channel cover type must be PIL.Image.Image() (not rotated). Got: {cover}'
 
@@ -467,7 +469,8 @@ class Radio(Layout):
             # _radar_bottom_right = (int(600 - w - self.border), self.border)
             bg.paste(_radar_image, box=_radar_bottom_right_centered, mask=_radar_image)
 
-        bg.paste(buttons_overlay, box=(0, 0), mask=buttons_overlay)
+        if buttons:
+            bg.paste(buttons_overlay, box=(0, 0), mask=buttons_overlay)
 
         if Settings.DRAW_HOST_INFO:
             _host_info = host_info()
@@ -529,7 +532,7 @@ class Meditationbox(Layout):
     # TODO!!!
     #  If the default image gets currupted, playback won't work anymore!!
 
-    def get_layout(self, labels, loading=False, cover=None, artist=None):
+    def get_layout(self, labels, loading=False, cover=None, artist=None, buttons=True):
 
         if loading:
             # TODO:
@@ -702,7 +705,8 @@ Exception Value: broken PNG file (chunk b"Em\xd5'")
                                                 Settings.SMALL_WIDGET_SIZE / 2)))
             bg.paste(_radar_image, box=_radar_bottom_right_centered, mask=_radar_image)
 
-        bg.paste(buttons_overlay, box=(0, 0), mask=buttons_overlay)
+        if buttons:
+            bg.paste(buttons_overlay, box=(0, 0), mask=buttons_overlay)
 
         if Settings.DRAW_HOST_INFO:
             _host_info = host_info()
@@ -734,7 +738,7 @@ class Audiobookbox(Layout):
     # TODO!!!
     #  If the default image gets currupted, playback won't work anymore!!
 
-    def get_layout(self, labels, loading=False, cover=None, artist=None):
+    def get_layout(self, labels, loading=False, cover=None, artist=None, buttons=True):
 
         # if loading:
         #     # TODO:
@@ -908,7 +912,8 @@ Exception Value: broken PNG file (chunk b"Em\xd5'")
                                                 Settings.SMALL_WIDGET_SIZE / 2)))
             bg.paste(_radar_image, box=_radar_bottom_right_centered, mask=_radar_image)
 
-        bg.paste(buttons_overlay, box=(0, 0), mask=buttons_overlay)
+        if buttons:
+            bg.paste(buttons_overlay, box=(0, 0), mask=buttons_overlay)
 
         if Settings.DRAW_HOST_INFO:
             _host_info = host_info()
@@ -940,7 +945,7 @@ class Podcastbox(Layout):
     # TODO!!!
     #  If the default image gets currupted, playback won't work anymore!!
 
-    def get_layout(self, labels, loading=False, cover=None, artist=None):
+    def get_layout(self, labels, loading=False, cover=None, artist=None, buttons=True):
 
         if loading:
             # TODO:
@@ -1039,7 +1044,8 @@ class Podcastbox(Layout):
                                                 Settings.SMALL_WIDGET_SIZE / 2)))
             bg.paste(_radar_image, box=_radar_bottom_right_centered, mask=_radar_image)
 
-        bg.paste(buttons_overlay, box=(0, 0), mask=buttons_overlay)
+        if buttons:
+            bg.paste(buttons_overlay, box=(0, 0), mask=buttons_overlay)
 
         if Settings.DRAW_HOST_INFO:
             _host_info = host_info()

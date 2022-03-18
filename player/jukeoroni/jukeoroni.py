@@ -1,3 +1,4 @@
+import datetime
 import time
 import threading
 import subprocess
@@ -323,6 +324,7 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
 
         previous_mode = None
         update_mode = True
+        last_mode_change = None
         # display_loading = False
 
         while True:
@@ -334,11 +336,13 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
 
             if previous_mode == self.mode and previous_mode is not None:
                 update_mode = False
+                # last_mode_change = None
             else:
                 update_mode = True
                 LOG.info('Mode changed')
                 previous_mode = self.mode
                 LOG.debug(self.mode)
+                # last_mode_change = localtime(now())
 
             new_time = localtime(now())
 
@@ -363,10 +367,14 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
                 if update_mode:
                     update_mode = False
 
+                    if Settings.STATE_WATCHER_IDLE_TIMER:
+                        last_mode_change = localtime(now())
+
                     if self.mode == Settings.MODES['radio']['standby']:
                         self.stop()
                         self.eject()
                         self.set_display_radio()
+                        # last_mode_change = localtime(now())
 
                     elif self.mode == Settings.MODES['radio']['on_air']:
                         if self._next is not None:
@@ -379,8 +387,19 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
                                 self.insert(media=self.radio.last_played)
                         self.play()
                         self.set_display_radio()
+                        # last_mode_change = None
                 else:
-                    if self._current_time != new_time.strftime('%H:%M'):  # in stopped state
+                    if self.mode == Settings.MODES['radio']['standby']:
+                        # LOG.info(f'last_mode_change: {last_mode_change}')
+                        if last_mode_change is not None:
+                            # LOG.info(f'{last_mode_change + datetime.timedelta(minutes=Settings.STATE_WATCHER_IDLE_TIMER) < new_time}')
+
+                            if last_mode_change + datetime.timedelta(minutes=Settings.STATE_WATCHER_IDLE_TIMER) < new_time:
+                                LOG.info('Setting mode to jukeoroni standby due to idle...')
+                                last_mode_change = None
+                                self.mode = Settings.MODES['jukeoroni']['standby']
+                                self.set_display_standby()
+                    elif self._current_time != new_time.strftime('%H:%M'):  # in stopped state
                         if self._current_time is None \
                                 or (int(new_time.strftime('%H:%M')[-2:])) % Settings.CLOCK_UPDATE_INTERVAL == 0 \
                                 or radio_media_info_title_previous != self.radio.stream_title:
@@ -400,6 +419,9 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
                 if update_mode:
                     update_mode = False
 
+                    if Settings.STATE_WATCHER_IDLE_TIMER:
+                        last_mode_change = localtime(now())
+
                     if self.mode == Settings.MODES['jukebox']['standby']['random']:
                         self.stop()
                         self.eject()
@@ -416,7 +438,18 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
                     self.set_display_jukebox()
 
                 else:
-                    if self._current_time != new_time.strftime('%H:%M'):
+                    # if self.mode == Settings.MODES['radio']['standby']:
+                    # LOG.info(f'last_mode_change: {last_mode_change}')
+                    if last_mode_change is not None:
+                        # LOG.info(f'{last_mode_change + datetime.timedelta(minutes=Settings.STATE_WATCHER_IDLE_TIMER) < new_time}')
+
+                        if last_mode_change + datetime.timedelta(minutes=Settings.STATE_WATCHER_IDLE_TIMER) < new_time:
+                            LOG.info('Setting mode to jukeoroni standby due to idle...')
+                            last_mode_change = None
+                            self.mode = Settings.MODES['jukeoroni']['standby']
+                            self.set_display_standby()
+
+                    elif self._current_time != new_time.strftime('%H:%M'):
                         if self._current_time is None or (int(new_time.strftime('%H:%M')[-2:])) % Settings.CLOCK_UPDATE_INTERVAL == 0:
                             LOG.info('Display/Clock update.')
                             self.set_display_jukebox()
@@ -460,6 +493,9 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
                 if update_mode:
                     update_mode = False
 
+                    if Settings.STATE_WATCHER_IDLE_TIMER:
+                        last_mode_change = localtime(now())
+
                     if self.mode == Settings.MODES['meditationbox']['standby']['random']:
                         self.stop()
                         self.eject()
@@ -476,7 +512,17 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
                     self.set_display_meditation()
 
                 else:
-                    if self._current_time != new_time.strftime('%H:%M'):
+                    # LOG.info(f'last_mode_change: {last_mode_change}')
+                    if last_mode_change is not None:
+                        # LOG.info(f'{last_mode_change + datetime.timedelta(minutes=Settings.STATE_WATCHER_IDLE_TIMER) < new_time}')
+
+                        if last_mode_change + datetime.timedelta(minutes=Settings.STATE_WATCHER_IDLE_TIMER) < new_time:
+                            LOG.info('Setting mode to jukeoroni standby due to idle...')
+                            last_mode_change = None
+                            self.mode = Settings.MODES['jukeoroni']['standby']
+                            self.set_display_standby()
+
+                    elif self._current_time != new_time.strftime('%H:%M'):
                         if self._current_time is None or (int(new_time.strftime('%H:%M')[-2:])) % Settings.CLOCK_UPDATE_INTERVAL == 0:
                             LOG.info('Display/Clock update.')
                             self.set_display_meditation()
@@ -520,6 +566,9 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
                 if update_mode:
                     update_mode = False
 
+                    if Settings.STATE_WATCHER_IDLE_TIMER:
+                        last_mode_change = localtime(now())
+
                     if self.mode == Settings.MODES['audiobookbox']['standby']['random']:
                         self.stop()
                         self.eject()
@@ -536,7 +585,17 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
                     self.set_display_audiobook()
 
                 else:
-                    if self._current_time != new_time.strftime('%H:%M'):
+                    # LOG.info(f'last_mode_change: {last_mode_change}')
+                    if last_mode_change is not None:
+                        # LOG.info(f'{last_mode_change + datetime.timedelta(minutes=Settings.STATE_WATCHER_IDLE_TIMER) < new_time}')
+
+                        if last_mode_change + datetime.timedelta(minutes=Settings.STATE_WATCHER_IDLE_TIMER) < new_time:
+                            LOG.info('Setting mode to jukeoroni standby due to idle...')
+                            last_mode_change = None
+                            self.mode = Settings.MODES['jukeoroni']['standby']
+                            self.set_display_standby()
+
+                    elif self._current_time != new_time.strftime('%H:%M'):
                         if self._current_time is None or (int(new_time.strftime('%H:%M')[-2:])) % Settings.CLOCK_UPDATE_INTERVAL == 0:
                             LOG.info('Display/Clock update.')
                             self.set_display_audiobook()
@@ -764,6 +823,7 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
                 self.stop()
                 self.eject()
                 bad_channel.last_played = False
+                bad_channel.is_enabled = False
                 bad_channel.save()
                 self.mode = Settings.MODES['radio']['standby']
                 self.set_display_radio()

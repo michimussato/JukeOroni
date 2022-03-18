@@ -74,11 +74,12 @@ class Settings:
     ENABLE_JUKEBOX = True
     ENABLE_RADIO = True
     ENABLE_MEDITATION = True
-    ENABLE_PODCAST = True
+    ENABLE_PODCAST = False
     ENABLE_AUDIOBOOK = False
     ENABLE_EPISODIC = False
 
-    STATE_WATCHER_CADENCE = 0.5
+    STATE_WATCHER_CADENCE = 0.1  # Seconds
+    STATE_WATCHER_IDLE_TIMER = 1.0  # Minutes (0.0 = off)
 
     _BUTTON_MAPPINGS = ['000X', '00X0', '0X00', 'X000']
 

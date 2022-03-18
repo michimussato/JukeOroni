@@ -47,7 +47,9 @@ class Radio(object):
     @property
     def stream_title(self):
         if bool(self.tag) and self.is_on_air is not None:
-            if self.is_on_air.show_rds:
+            # get the settings of a channel from the db to reflect up-to-date data
+            on_air_channel = self.get_channels_by_kwargs(display_name_short=self.is_on_air.display_name_short)[0]
+            if on_air_channel.show_rds:
                 return self.tag.get('StreamTitle', None)
             else:
                 return None
