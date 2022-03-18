@@ -79,7 +79,7 @@ class Settings:
     ENABLE_EPISODIC = False
 
     STATE_WATCHER_CADENCE = 0.1  # Seconds
-    STATE_WATCHER_IDLE_TIMER = 1.0  # Minutes (0.0 = off)
+    STATE_WATCHER_IDLE_TIMER = 15.0  # Minutes (0.0 = off)
 
     _BUTTON_MAPPINGS = ['000X', '00X0', '0X00', 'X000']
 
