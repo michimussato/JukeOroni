@@ -25,7 +25,7 @@ except ImportError:
 class Clock(object):
 
     @staticmethod
-    def get_clock(draw_logo, draw_date, size=448, hours=12, draw_sun=False, draw_moon=False, draw_moon_tex=True, draw_moon_phase=False, square=False, square_opacity=128):
+    def get_clock(draw_logo, draw_date, size=448, hours=12, draw_sun=False, draw_moon=False, draw_moon_tex=True, draw_moon_phase=False, square=False):
 
         _size = size * Settings.ANTIALIAS
 
