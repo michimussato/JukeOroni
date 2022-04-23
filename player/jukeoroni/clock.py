@@ -25,7 +25,7 @@ except ImportError:
 class Clock(object):
 
     @staticmethod
-    def get_clock(draw_logo, draw_date, size=448, hours=12, draw_sun=False, draw_moon=False, draw_moon_tex=True, draw_moon_phase=False, square=False):
+    def get_clock(draw_logo, draw_date, size=448, hours=12, draw_sun=False, draw_moon=False, draw_moon_tex=True, draw_moon_phase=False, square=False, square_opacity=128):
 
         _size = size * Settings.ANTIALIAS
 
@@ -36,9 +36,9 @@ class Clock(object):
         edge_compensation = 1  # top and left edge to make sure, AA takes place in pixels adjacent to edges
         _edge_comp_2 = 1  # bottom and right edge in addition to edge_compensation
         if square:
-            draw_bg.rectangle((0+edge_compensation, 0+edge_compensation, _size-edge_compensation-_edge_comp_2, _size-edge_compensation-_edge_comp_2), fill=(0, 0, 0, 255))
-        else:
-            draw_bg.ellipse((0+edge_compensation, 0+edge_compensation, _size-edge_compensation-_edge_comp_2, _size-edge_compensation-_edge_comp_2), fill=(0, 0, 0, 255))
+            draw_bg.rectangle((0+edge_compensation, 0+edge_compensation, _size-edge_compensation-_edge_comp_2, _size-edge_compensation-_edge_comp_2), fill=(0, 0, 0, Settings.CLOCK_SQUARE_OPACITY))
+        # else:
+        draw_bg.ellipse((0+edge_compensation, 0+edge_compensation, _size-edge_compensation-_edge_comp_2, _size-edge_compensation-_edge_comp_2), fill=(0, 0, 0, 255))
 
         _clock = Image.new(mode='RGBA', size=(_size, _size), color=(0, 0, 0, 0))
 

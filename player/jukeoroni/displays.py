@@ -233,10 +233,11 @@ class Standby(Layout):
             LOG.info(f'_radar_image.size is {str(_radar_image.size)}')
 
             _radar_bottom_centered = (int(600 - Settings.SMALL_WIDGET_SIZE - self.border),
-                                      int(448 / 2 + round(self.border / 2) - round(Settings.SMALL_WIDGET_SIZE / 2)))
+                                      # int(448 / 2 + round(self.border / 2) - round(Settings.SMALL_WIDGET_SIZE / 2)))
+                                      int(448 / 2 - round(Settings.SMALL_WIDGET_SIZE / 2)))
 
-            _radar_bottom_right_centered = (int(600 - Settings.SMALL_WIDGET_SIZE - self.border),
-                                            int(0 + 224 / 2 + round(self.border / 2) - round(Settings.SMALL_WIDGET_SIZE / 2)))
+            # _radar_bottom_right_centered = (int(600 - Settings.SMALL_WIDGET_SIZE - self.border),
+            #                                 int(0 + 224 / 2 + round(self.border / 2) - round(Settings.SMALL_WIDGET_SIZE / 2)))
 
             # _radar_bottom_right = (int(600-w-self.border), self.border)
             bg.paste(_radar_image, _radar_bottom_centered, mask=_radar_image)
@@ -345,11 +346,16 @@ class Jukebox(Layout):
         _clock = self._clock.get_clock(size=Settings.SMALL_WIDGET_SIZE, draw_logo=False, draw_moon_phase=True, draw_moon=True, draw_date=False, hours=24, draw_sun=True, square=True)
         _clock = Resource().round_resize(image=_clock, corner=40, fixed=Settings.SMALL_WIDGET_SIZE)
         _clock_bottom_left_centered = (int(600 - Settings.SMALL_WIDGET_SIZE - self.border),
-                                       int(224 + 224/2 + round(self.border/2) - round(Settings.SMALL_WIDGET_SIZE/2)))
-        _clock_bottom_left = (int(600 - Settings.SMALL_WIDGET_SIZE - self.border),
-                              int(448 - Settings.SMALL_WIDGET_SIZE - self.border))
+                                       int(448/2 + round(self.border/2)))
+                                       # int(224 + 224/2 + round(self.border/2) - round(Settings.SMALL_WIDGET_SIZE/2)))
+        # _clock_bottom_left = (int(600 - Settings.SMALL_WIDGET_SIZE - self.border),
+        #                       int(448 - Settings.SMALL_WIDGET_SIZE - self.border))
 
-        bg.paste(_clock, box=_clock_bottom_left_centered, mask=_clock)
+        clock_bg = Image.new(mode='RGBA', size=(600, 448), color=(0, 0, 0, 0))
+        clock_bg.paste(_clock, box=_clock_bottom_left_centered, mask=_clock)
+
+        # bg.paste(_clock, box=_clock_bottom_left_centered, mask=_clock)
+        bg = Image.alpha_composite(bg, clock_bg)
 
         _radar_image = self.radar.radar_image
 
@@ -358,7 +364,7 @@ class Jukebox(Layout):
             LOG.info(f'_radar_image.size is {str(_radar_image.size)}')
             # _radar_bottom_right = (int(600 - w - self.border), self.border)
             _radar_bottom_right_centered = (int(600 - Settings.SMALL_WIDGET_SIZE - self.border),
-                                            int(0 + 224 / 2 + round(self.border / 2) - round(Settings.SMALL_WIDGET_SIZE / 2)))
+                                            int(448 / 2 - round(Settings.SMALL_WIDGET_SIZE) - round(self.border / 2)))
             bg.paste(_radar_image, box=_radar_bottom_right_centered, mask=_radar_image)
 
         if buttons:
@@ -451,11 +457,16 @@ class Radio(Layout):
         _clock = self._clock.get_clock(size=Settings.SMALL_WIDGET_SIZE, draw_logo=False, draw_moon=True, draw_moon_phase=True, draw_date=False, hours=24, draw_sun=True, square=True)
         _clock = Resource().round_resize(image=_clock, corner=40, fixed=Settings.SMALL_WIDGET_SIZE)
         _clock_bottom_left_centered = (int(600 - Settings.SMALL_WIDGET_SIZE - self.border),
-                                       int(224 + 224/2 + round(self.border/2) - round(Settings.SMALL_WIDGET_SIZE/2)))
+                                       int(448/2 + round(self.border/2)))
+                                       # int(224 + 224/2 + round(self.border/2) - round(Settings.SMALL_WIDGET_SIZE/2)))
         _clock_bottom_left = (int(600 - Settings.SMALL_WIDGET_SIZE - self.border),
                               int(448 - Settings.SMALL_WIDGET_SIZE - self.border))
 
-        bg.paste(_clock, box=_clock_bottom_left_centered, mask=_clock)
+        clock_bg = Image.new(mode='RGBA', size=(600, 448), color=(0, 0, 0, 0))
+        clock_bg.paste(_clock, box=_clock_bottom_left_centered, mask=_clock)
+
+        # bg.paste(_clock, box=_clock_bottom_left_centered, mask=_clock)
+        bg = Image.alpha_composite(bg, clock_bg)
 
         _radar_image = self.radar.radar_image
 
@@ -464,7 +475,8 @@ class Radio(Layout):
             LOG.info(f'_radar_image.size is {str(_radar_image.size)}')
 
             _radar_bottom_right_centered = (int(600 - Settings.SMALL_WIDGET_SIZE - self.border),
-                                            int(0 + 224 / 2 + round(self.border / 2) - round(Settings.SMALL_WIDGET_SIZE / 2)))
+                                            int(448 / 2 - round(Settings.SMALL_WIDGET_SIZE) - round(self.border / 2)))
+                                            # int(0 + 224 / 2 + round(self.border / 2) - round(Settings.SMALL_WIDGET_SIZE / 2)))
 
             # _radar_bottom_right = (int(600 - w - self.border), self.border)
             bg.paste(_radar_image, box=_radar_bottom_right_centered, mask=_radar_image)
@@ -688,11 +700,14 @@ Exception Value: broken PNG file (chunk b"Em\xd5'")
                                        draw_moon=True, draw_date=False, hours=24, draw_sun=True, square=True)
         _clock = Resource().round_resize(image=_clock, corner=40, fixed=Settings.SMALL_WIDGET_SIZE)
         _clock_bottom_left_centered = (int(600 - Settings.SMALL_WIDGET_SIZE - self.border),
-                                       int(224 + 224 / 2 + round(self.border / 2) - round(Settings.SMALL_WIDGET_SIZE / 2)))
-        _clock_bottom_left = (int(600 - Settings.SMALL_WIDGET_SIZE - self.border),
-                              int(448 - Settings.SMALL_WIDGET_SIZE - self.border))
+                                       int(448/2 + round(self.border/2)))
+        # _clock_bottom_left = (int(600 - Settings.SMALL_WIDGET_SIZE - self.border),
+        #                       int(448 - Settings.SMALL_WIDGET_SIZE - self.border))
 
-        bg.paste(_clock, box=_clock_bottom_left_centered, mask=_clock)
+        clock_bg = Image.new(mode='RGBA', size=(600, 448), color=(0, 0, 0, 0))
+        clock_bg.paste(_clock, box=_clock_bottom_left_centered, mask=_clock)
+
+        bg = Image.alpha_composite(bg, clock_bg)
 
         _radar_image = self.radar.radar_image
 
@@ -701,8 +716,8 @@ Exception Value: broken PNG file (chunk b"Em\xd5'")
             LOG.info(f'_radar_image.size is {str(_radar_image.size)}')
             # _radar_bottom_right = (int(600 - w - self.border), self.border)
             _radar_bottom_right_centered = (int(600 - Settings.SMALL_WIDGET_SIZE - self.border),
-                                            int(0 + 224 / 2 + round(self.border / 2) - round(
-                                                Settings.SMALL_WIDGET_SIZE / 2)))
+                                            int(448 / 2 - round(Settings.SMALL_WIDGET_SIZE) - round(self.border / 2)))
+                                            # int(0 + 224 / 2 + round(self.border / 2) - round(Settings.SMALL_WIDGET_SIZE / 2)))
             bg.paste(_radar_image, box=_radar_bottom_right_centered, mask=_radar_image)
 
         if buttons:
@@ -895,11 +910,15 @@ Exception Value: broken PNG file (chunk b"Em\xd5'")
                                        draw_moon=True, draw_date=False, hours=24, draw_sun=True, square=True)
         _clock = Resource().round_resize(image=_clock, corner=40, fixed=Settings.SMALL_WIDGET_SIZE)
         _clock_bottom_left_centered = (int(600 - Settings.SMALL_WIDGET_SIZE - self.border),
-                                       int(224 + 224 / 2 + round(self.border / 2) - round(Settings.SMALL_WIDGET_SIZE / 2)))
-        _clock_bottom_left = (int(600 - Settings.SMALL_WIDGET_SIZE - self.border),
-                              int(448 - Settings.SMALL_WIDGET_SIZE - self.border))
+                                       int(448/2 + round(self.border/2)))
+        # _clock_bottom_left = (int(600 - Settings.SMALL_WIDGET_SIZE - self.border),
+        #                       int(448 - Settings.SMALL_WIDGET_SIZE - self.border))
 
-        bg.paste(_clock, box=_clock_bottom_left_centered, mask=_clock)
+        clock_bg = Image.new(mode='RGBA', size=(600, 448), color=(0, 0, 0, 0))
+        clock_bg.paste(_clock, box=_clock_bottom_left_centered, mask=_clock)
+
+        # bg.paste(_clock, box=_clock_bottom_left_centered, mask=_clock)
+        bg = Image.alpha_composite(bg, clock_bg)
 
         _radar_image = self.radar.radar_image
 
@@ -908,8 +927,7 @@ Exception Value: broken PNG file (chunk b"Em\xd5'")
             LOG.info(f'_radar_image.size is {str(_radar_image.size)}')
             # _radar_bottom_right = (int(600 - w - self.border), self.border)
             _radar_bottom_right_centered = (int(600 - Settings.SMALL_WIDGET_SIZE - self.border),
-                                            int(0 + 224 / 2 + round(self.border / 2) - round(
-                                                Settings.SMALL_WIDGET_SIZE / 2)))
+                                            int(448 / 2 - round(Settings.SMALL_WIDGET_SIZE) - round(self.border / 2)))
             bg.paste(_radar_image, box=_radar_bottom_right_centered, mask=_radar_image)
 
         if buttons:
@@ -1027,11 +1045,15 @@ class Podcastbox(Layout):
                                        draw_moon=True, draw_date=False, hours=24, draw_sun=True, square=True)
         _clock = Resource().round_resize(image=_clock, corner=40, fixed=Settings.SMALL_WIDGET_SIZE)
         _clock_bottom_left_centered = (int(600 - Settings.SMALL_WIDGET_SIZE - self.border),
-                                       int(224 + 224 / 2 + round(self.border / 2) - round(Settings.SMALL_WIDGET_SIZE / 2)))
-        _clock_bottom_left = (int(600 - Settings.SMALL_WIDGET_SIZE - self.border),
-                              int(448 - Settings.SMALL_WIDGET_SIZE - self.border))
+                                       int(448/2 + round(self.border/2)))
+        # _clock_bottom_left = (int(600 - Settings.SMALL_WIDGET_SIZE - self.border),
+        #                       int(448 - Settings.SMALL_WIDGET_SIZE - self.border))
 
-        bg.paste(_clock, box=_clock_bottom_left_centered, mask=_clock)
+        clock_bg = Image.new(mode='RGBA', size=(600, 448), color=(0, 0, 0, 0))
+        clock_bg.paste(_clock, box=_clock_bottom_left_centered, mask=_clock)
+
+        # bg.paste(_clock, box=_clock_bottom_left_centered, mask=_clock)
+        bg = Image.alpha_composite(bg, clock_bg)
 
         _radar_image = self.radar.radar_image
 
@@ -1040,8 +1062,8 @@ class Podcastbox(Layout):
             LOG.info(f'_radar_image.size is {str(_radar_image.size)}')
             # _radar_bottom_right = (int(600 - w - self.border), self.border)
             _radar_bottom_right_centered = (int(600 - Settings.SMALL_WIDGET_SIZE - self.border),
-                                            int(0 + 224 / 2 + round(self.border / 2) - round(
-                                                Settings.SMALL_WIDGET_SIZE / 2)))
+                                            int(448 / 2 - round(Settings.SMALL_WIDGET_SIZE) - round(self.border / 2)))
+                                            # int(0 + 224 / 2 + round(self.border / 2) - round(Settings.SMALL_WIDGET_SIZE / 2)))
             bg.paste(_radar_image, box=_radar_bottom_right_centered, mask=_radar_image)
 
         if buttons:

@@ -1,0 +1,16 @@
+//https://www.youtube.com/watch?v=qDwdMDQ8oX4&ab_channel=CoreySchafer
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="refresh" content="10">
+    <link rel="icon" type="image/x-icon" href="/jukeoroni/favicon.ico">
+    <title>Home</title>
+</head>
+<body style="background-color:#{{ context.bg_color }};">
+    <img id="picture" style="display:block;margin-left:auto;margin-right:auto;" src="data:image/jpeg;base64,{{ context.encoded_img_data }}">
+    {% for key in keys %}
+        <h1>{{ key.attr }}</h1>
+    {% endfor %}
+</body>
+</html>

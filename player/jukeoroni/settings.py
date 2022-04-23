@@ -44,7 +44,7 @@ class Settings:
     FFPLAY_CMD = 'ffplay -hide_banner -autoexit -vn -nodisp -loglevel error'.split(' ')
 
     BUTTONS_HEIGHT = 32
-    BORDER = 4
+    BORDER = 6
     BUTTONS_ICONS = {
         'Radio': '/data/django/jukeoroni/player/static/buttons_overlay/icon_radio.png',
         'Player': '/data/django/jukeoroni/player/static/buttons_overlay/icon_player.png',
@@ -494,6 +494,7 @@ class Settings:
     ARIAL = r'/data/django/jukeoroni/player/static/arial_narrow.ttf'
     CALLIGRAPHIC = r'/data/django/jukeoroni/player/static/calligraphia-one.ttf'
     CLOCK_UPDATE_INTERVAL = 10  # in minutes
+    CLOCK_SQUARE_OPACITY = 160
     _MOON_TEXUTRE = '/data/django/jukeoroni/player/static/moon_texture_small.png'
 
     # radar

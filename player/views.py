@@ -3,6 +3,7 @@ import os
 import random
 import time
 import io
+# from django.shortcuts import render
 from django.db.models.functions import Lower
 from django.http import HttpResponseRedirect, HttpResponse
 from django.views import View
@@ -139,6 +140,8 @@ class JukeOroniView(View):
     def get(self, request):
         global jukeoroni
 
+        context = dict()
+
         if jukeoroni.mode == Settings.MODES['radio']['standby'] \
                 or jukeoroni.mode == Settings.MODES['radio']['on_air']:
 
@@ -176,6 +179,7 @@ class JukeOroniView(View):
                 or jukeoroni.mode == Settings.MODES['jukeoroni']['off']:
 
             bg_color = get_bg_color(jukeoroni.layout_standby.bg_color)
+            context['bg_color'] = bg_color
 
             ret = get_header(bg_color)
 
@@ -262,6 +266,7 @@ class JukeOroniView(View):
 
             img = jukeoroni.layout_standby.get_layout(labels=jukeoroni.LABELS, buttons=False)
             encoded_img_data = encoded_screen(img)
+            context['encoded_img_data'] = encoded_img_data
 
             ret += '<img id="picture" style="display:block;margin-left:auto;margin-right:auto;" src="data:image/jpeg;base64,{0}">\n'.format(str(encoded_img_data).lstrip('b\'').rstrip('\''))
 
@@ -271,6 +276,8 @@ class JukeOroniView(View):
             ret += '</html>\n'
 
             return HttpResponse(ret)
+
+            return render(request=request, template_name='/player/home.html', context=context)
 
     def set_jukebox(self):
         global jukeoroni
