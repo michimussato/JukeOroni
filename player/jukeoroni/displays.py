@@ -222,10 +222,8 @@ class Standby(Layout):
         comp_clock = Image.alpha_composite(comp_clock, _clock)
 
         _clock_center = round(bg.size[1]/2 - clock_size/2)
-        # _clock_right = 0_radar_image.size is
-        # _clock_left = bg.size[1] - clock_size
 
-        bg.paste(comp_clock, box=(buttons_overlay.size[0] + self.border, _clock_center), mask=comp_clock)
+        bg.paste(comp_clock, box=(buttons_overlay.size[0], _clock_center), mask=comp_clock)
 
         _radar_image = self.radar.radar_image
 
@@ -234,13 +232,8 @@ class Standby(Layout):
             LOG.info(f'_radar_image.size is {str(_radar_image.size)}')
 
             _radar_bottom_centered = (int(600 - Settings.SMALL_WIDGET_SIZE - self.border),
-                                      # int(448 / 2 + round(self.border / 2) - round(Settings.SMALL_WIDGET_SIZE / 2)))
                                       int(448 / 2 - round(Settings.SMALL_WIDGET_SIZE / 2)))
 
-            # _radar_bottom_right_centered = (int(600 - Settings.SMALL_WIDGET_SIZE - self.border),
-            #                                 int(0 + 224 / 2 + round(self.border / 2) - round(Settings.SMALL_WIDGET_SIZE / 2)))
-
-            # _radar_bottom_right = (int(600-w-self.border), self.border)
             bg.paste(_radar_image, _radar_bottom_centered, mask=_radar_image)
 
         if buttons:
@@ -341,21 +334,17 @@ class Jukebox(Layout):
             cover = Image.alpha_composite(cover_copy, cover)  # this is necessary to prevent alpha AA artifacts (background shining through)
 
         _cover_center = round(bg.size[1] / 2 - cover_size / 2)
-        bg.paste(cover, box=(buttons_overlay.size[0] + self.border, _cover_center), mask=cover)
+        bg.paste(cover, box=(buttons_overlay.size[0], _cover_center), mask=cover)
 
         # SMALL_WIDGET_SIZE = 151
         _clock = self._clock.get_clock(size=Settings.SMALL_WIDGET_SIZE, draw_logo=False, draw_moon_phase=True, draw_moon=True, draw_date=False, hours=24, draw_sun=True, square=True)
         _clock = Resource().round_resize(image=_clock, corner=40, fixed=Settings.SMALL_WIDGET_SIZE)
         _clock_bottom_left_centered = (int(600 - Settings.SMALL_WIDGET_SIZE - self.border),
                                        int(448/2 + round(self.border/2)))
-                                       # int(224 + 224/2 + round(self.border/2) - round(Settings.SMALL_WIDGET_SIZE/2)))
-        # _clock_bottom_left = (int(600 - Settings.SMALL_WIDGET_SIZE - self.border),
-        #                       int(448 - Settings.SMALL_WIDGET_SIZE - self.border))
 
         clock_bg = Image.new(mode='RGBA', size=(600, 448), color=(0, 0, 0, 0))
         clock_bg.paste(_clock, box=_clock_bottom_left_centered, mask=_clock)
 
-        # bg.paste(_clock, box=_clock_bottom_left_centered, mask=_clock)
         bg = Image.alpha_composite(bg, clock_bg)
 
         _radar_image = self.radar.radar_image
@@ -452,7 +441,7 @@ class Radio(Layout):
         cover = Resource().round_resize(image=cover, corner=40, factor=1.0)
 
         _cover_center = round(bg.size[1] / 2 - cover_size / 2)
-        bg.paste(cover, box=(buttons_overlay.size[0] + self.border, _cover_center), mask=cover)
+        bg.paste(cover, box=(buttons_overlay.size[0], _cover_center), mask=cover)
 
         # SMALL_WIDGET_SIZE = 151
         _clock = self._clock.get_clock(size=Settings.SMALL_WIDGET_SIZE, draw_logo=False, draw_moon=True, draw_moon_phase=True, draw_date=False, hours=24, draw_sun=True, square=True)
@@ -466,7 +455,6 @@ class Radio(Layout):
         clock_bg = Image.new(mode='RGBA', size=(600, 448), color=(0, 0, 0, 0))
         clock_bg.paste(_clock, box=_clock_bottom_left_centered, mask=_clock)
 
-        # bg.paste(_clock, box=_clock_bottom_left_centered, mask=_clock)
         bg = Image.alpha_composite(bg, clock_bg)
 
         _radar_image = self.radar.radar_image
@@ -694,7 +682,7 @@ Exception Value: broken PNG file (chunk b"Em\xd5'")
                                           cover)  # this is necessary to prevent alpha AA artifacts (background shining through)
 
         _cover_center = round(bg.size[1] / 2 - cover_size / 2)
-        bg.paste(cover, box=(buttons_overlay.size[0] + self.border, _cover_center), mask=cover)
+        bg.paste(cover, box=(buttons_overlay.size[0], _cover_center), mask=cover)
 
         # SMALL_WIDGET_SIZE = 151
         _clock = self._clock.get_clock(size=Settings.SMALL_WIDGET_SIZE, draw_logo=False, draw_moon_phase=True,
@@ -702,8 +690,6 @@ Exception Value: broken PNG file (chunk b"Em\xd5'")
         _clock = Resource().round_resize(image=_clock, corner=40, fixed=Settings.SMALL_WIDGET_SIZE)
         _clock_bottom_left_centered = (int(600 - Settings.SMALL_WIDGET_SIZE - self.border),
                                        int(448/2 + round(self.border/2)))
-        # _clock_bottom_left = (int(600 - Settings.SMALL_WIDGET_SIZE - self.border),
-        #                       int(448 - Settings.SMALL_WIDGET_SIZE - self.border))
 
         clock_bg = Image.new(mode='RGBA', size=(600, 448), color=(0, 0, 0, 0))
         clock_bg.paste(_clock, box=_clock_bottom_left_centered, mask=_clock)
@@ -904,7 +890,7 @@ Exception Value: broken PNG file (chunk b"Em\xd5'")
                                           cover)  # this is necessary to prevent alpha AA artifacts (background shining through)
 
         _cover_center = round(bg.size[1] / 2 - cover_size / 2)
-        bg.paste(cover, box=(buttons_overlay.size[0] + self.border, _cover_center), mask=cover)
+        bg.paste(cover, box=(buttons_overlay.size[0], _cover_center), mask=cover)
 
         # SMALL_WIDGET_SIZE = 151
         _clock = self._clock.get_clock(size=Settings.SMALL_WIDGET_SIZE, draw_logo=False, draw_moon_phase=True,
@@ -912,13 +898,10 @@ Exception Value: broken PNG file (chunk b"Em\xd5'")
         _clock = Resource().round_resize(image=_clock, corner=40, fixed=Settings.SMALL_WIDGET_SIZE)
         _clock_bottom_left_centered = (int(600 - Settings.SMALL_WIDGET_SIZE - self.border),
                                        int(448/2 + round(self.border/2)))
-        # _clock_bottom_left = (int(600 - Settings.SMALL_WIDGET_SIZE - self.border),
-        #                       int(448 - Settings.SMALL_WIDGET_SIZE - self.border))
 
         clock_bg = Image.new(mode='RGBA', size=(600, 448), color=(0, 0, 0, 0))
         clock_bg.paste(_clock, box=_clock_bottom_left_centered, mask=_clock)
 
-        # bg.paste(_clock, box=_clock_bottom_left_centered, mask=_clock)
         bg = Image.alpha_composite(bg, clock_bg)
 
         _radar_image = self.radar.radar_image
@@ -1039,7 +1022,7 @@ class Podcastbox(Layout):
         #                                   cover)  # this is necessary to prevent alpha AA artifacts (background shining through)
 
         _cover_center = round(bg.size[1] / 2 - cover_size / 2)
-        bg.paste(cover, box=(buttons_overlay.size[0] + self.border, _cover_center), mask=cover)
+        bg.paste(cover, box=(buttons_overlay.size[0], _cover_center), mask=cover)
 
         # SMALL_WIDGET_SIZE = 151
         _clock = self._clock.get_clock(size=Settings.SMALL_WIDGET_SIZE, draw_logo=False, draw_moon_phase=True,
@@ -1047,13 +1030,10 @@ class Podcastbox(Layout):
         _clock = Resource().round_resize(image=_clock, corner=40, fixed=Settings.SMALL_WIDGET_SIZE)
         _clock_bottom_left_centered = (int(600 - Settings.SMALL_WIDGET_SIZE - self.border),
                                        int(448/2 + round(self.border/2)))
-        # _clock_bottom_left = (int(600 - Settings.SMALL_WIDGET_SIZE - self.border),
-        #                       int(448 - Settings.SMALL_WIDGET_SIZE - self.border))
 
         clock_bg = Image.new(mode='RGBA', size=(600, 448), color=(0, 0, 0, 0))
         clock_bg.paste(_clock, box=_clock_bottom_left_centered, mask=_clock)
 
-        # bg.paste(_clock, box=_clock_bottom_left_centered, mask=_clock)
         bg = Image.alpha_composite(bg, clock_bg)
 
         _radar_image = self.radar.radar_image

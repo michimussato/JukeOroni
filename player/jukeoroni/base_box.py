@@ -314,6 +314,25 @@ box.turn_off()
                     # This can happen after a mode change if the queue gets filled with
                     # content very quickly after it was emptied
 
+                    # TODO:
+                    #  Apr 24 09:54:45 jukeoroni gunicorn[2736]: [04-24-2022 09:54:45] [DEBUG] [Track Loader Thread|2939155552] [player.jukeoroni.juke_box]: 1 of 3 tracks cached. Queue: [Brothers of Metal - Prophecy of Ragnarok [FLAC][16][44.1] - 01 Death of the God of Light.flac]
+                    #  Apr 24 09:54:45 jukeoroni gunicorn[2736]: [04-24-2022 09:54:45] [INFO] [Track Loader Thread|2939155552] [player.jukeoroni.juke_box]: Getting next track in album mode...
+                    #  Apr 24 09:54:45 jukeoroni gunicorn[2736]: [04-24-2022 09:54:45] [INFO] [State Watcher Thread|2970612832] [player.jukeoroni.jukeoroni]: Media inserted: Brothers of Metal - Prophecy of Ragnarok [FLAC][16][44.1] - 01 Death of the God of Light.flac (type <class 'player.jukeoroni.box_track.JukeboxTrack'>)
+                    #  Apr 24 09:54:45 jukeoroni gunicorn[2736]: [04-24-2022 09:54:45] [INFO] [Track Loader Thread|2939155552] [player.jukeoroni.juke_box]: Getting next track based on queue list...
+                    #  Apr 24 09:54:45 jukeoroni gunicorn[2736]: Exception in thread Track Loader Thread:
+                    #  Apr 24 09:54:45 jukeoroni gunicorn[2736]: Traceback (most recent call last):
+                    #  Apr 24 09:54:45 jukeoroni gunicorn[2736]:   File "/usr/lib/python3.7/threading.py", line 917, in _bootstrap_inner
+                    #  Apr 24 09:54:45 jukeoroni gunicorn[2736]:     self.run()
+                    #  Apr 24 09:54:45 jukeoroni gunicorn[2736]:   File "/usr/lib/python3.7/threading.py", line 865, in run
+                    #  Apr 24 09:54:45 jukeoroni gunicorn[2736]:     self._target(*self._args, **self._kwargs)
+                    #  Apr 24 09:54:45 jukeoroni gunicorn[2736]:   File "/data/django/jukeoroni/player/jukeoroni/base_box.py", line 216, in _track_loader_task
+                    #  Apr 24 09:54:45 jukeoroni gunicorn[2736]:     loading_track = self.get_next_track()
+                    #  Apr 24 09:54:45 jukeoroni gunicorn[2736]:   File "/data/django/jukeoroni/player/jukeoroni/base_box.py", line 318, in get_next_track
+                    #  Apr 24 09:54:45 jukeoroni gunicorn[2736]:     next_album_track = self.tracks[-1].next_album_track
+                    #  Apr 24 09:54:45 jukeoroni gunicorn[2736]: IndexError: list index out of range
+                    #  Apr 24 09:54:45 jukeoroni gunicorn[2736]: [04-24-2022 09:54:45] [DEBUG] [State Watcher Thread|2970612832] [player.jukeoroni.jukeoroni]: Starting new playback thread
+                    #  Apr 24 09:54:45 jukeoroni gunicorn[2736]: [04-24-2022 09:54:45] [INFO] [JukeOroni Playback Thread|2939155552] [player.jukeoroni.jukeoroni]: starting playback thread: for /data/usb_hdd/media/audio/music/on_device/Brothers of Metal - 2017 - Prophecy of Ragnarok [FLAC][16][44.1]/01 Death of the God of Light.flac from /data/usb_hdd/media/audio/music/on_device/Brothers of Metal - 2017 - Prophecy of Ragnarok [FLAC][16][44.1]/01 Death of the God of Light.flac
+
                     self.LOG.info(f'Getting next track based on queue list...')
                     next_album_track = self.tracks[-1].next_album_track
                     if next_album_track is None:
