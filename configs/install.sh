@@ -227,5 +227,11 @@ printf "hello"
 #sudo systemctl enable transmission-daemon
 
 
-
+# # omxplayer
+# sudo apt-get install omxplayer
+# https://python-omxplayer-wrapper.readthedocs.io/en/latest/
+# sudo apt-get update && sudo apt-get install -y libdbus-1{,-dev}
+# sudo apt-get update && sudo apt-get install -y libdbus-1-3
+# sudo apt-get update && sudo apt-get install -y libdbus-1-dev
+# pip install omxplayer-wrapper
 

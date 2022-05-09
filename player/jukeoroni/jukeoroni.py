@@ -14,6 +14,7 @@ from player.jukeoroni.juke_box import JukeBox
 from player.jukeoroni.meditation_box import MeditationBox
 from player.jukeoroni.audiobook_box import AudiobookBox
 from player.jukeoroni.podcast_box import PodcastBox
+from player.jukeoroni.video_box import VideoBox
 # from player.jukeoroni.displays import Off as OffLayout
 from player.jukeoroni.displays import Standby as StandbyLayout
 from player.models import Channel
@@ -107,6 +108,7 @@ j.turn_off()
         self.meditationbox = MeditationBox(jukeoroni=self)
         self.audiobookbox = AudiobookBox(jukeoroni=self)
         self.podcastbox = PodcastBox(jukeoroni=self)
+        self.videobox = VideoBox(jukeoroni=self)
 
         self.playback_proc = None
         self.inserted_media = None
@@ -263,6 +265,28 @@ j.turn_off()
                 except AttributeError:
                     bg = self.audiobookbox.layout.get_layout(labels=self.LABELS, loading=True)
                     LOG.exception('inserted_media problem: ')
+            self.set_image(image=bg)
+
+    def set_display_video(self):
+        """
+        j.set_display_video()
+        """
+        # return
+        if not self.test:
+
+            # need to add None too, otherwise we might end up with
+            # NoneType Error for self.inserted_media.cover_album
+            if self.mode == Settings.MODES['videobox']['standby']['random']:
+                bg = self.videobox.layout.get_layout(labels=self.LABELS)
+            elif self.mode == Settings.MODES['videobox']['on_air']['random']:
+                bg = self.videobox.layout.get_layout(labels=self.LABELS)
+            elif self.mode == Settings.MODES['videobox']['on_air']['pause']:
+                bg = self.videobox.layout.get_layout(labels=self.LABELS)
+                # try:
+                #     bg = self.videobox.layout.get_layout(labels=self.LABELS)
+                # except AttributeError:
+                #     bg = self.videobox.layout.get_layout(labels=self.LABELS, loading=True)
+                #     LOG.exception('inserted_media problem: ')
             self.set_image(image=bg)
     ############################################
 
@@ -632,6 +656,131 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
                             self.set_display_audiobook()
                             self._current_time = new_time.strftime('%H:%M')
 
+            # VIDEOBOX STANDBY
+            elif self.mode == Settings.MODES['videobox']['standby']['random']:
+
+                if update_mode:
+                    update_mode = False
+
+                    if not self.videobox.omxplayer.is_playing():
+                        self.videobox.omxplayer.play()
+
+                    self.videobox.omxplayer.set_position(0.0)
+                    time.sleep(0.5)
+                    self.videobox.omxplayer.pause()
+                    self.videobox.omxplayer.set_position(0.0)
+
+                    if Settings.STATE_WATCHER_IDLE_TIMER:
+                        last_mode_change = localtime(now())
+
+                    if self.mode == Settings.MODES['videobox']['standby']['random']:
+                        # self.stop()
+                        # self.eject()
+                        if self.videobox.loader_mode != 'random':
+                            self.videobox.set_loader_mode_random()
+                        # self.set_display_jukebox()
+
+                    # elif self.mode == Settings.MODES['videobox']['standby']['album']:
+                    #     self.stop()
+                    #     self.eject()
+                    #     if self.audiobookbox.loader_mode != 'album':
+                    #         self.audiobookbox.set_loader_mode_album()
+
+                    self.set_display_video()
+
+                else:
+                    # LOG.info(f'last_mode_change: {last_mode_change}')
+                    if last_mode_change is not None:
+                        # LOG.info(f'{last_mode_change + datetime.timedelta(minutes=Settings.STATE_WATCHER_IDLE_TIMER) < new_time}')
+
+                        if last_mode_change + datetime.timedelta(minutes=Settings.STATE_WATCHER_IDLE_TIMER) < new_time:
+                            LOG.info('Setting mode to jukeoroni standby due to idle...')
+                            last_mode_change = None
+                            self.mode = Settings.MODES['jukeoroni']['standby']
+                            self.set_display_standby()
+
+                    elif self._current_time != new_time.strftime('%H:%M'):
+                        if self._current_time is None or (int(new_time.strftime('%H:%M')[-2:])) % Settings.CLOCK_UPDATE_INTERVAL == 0:
+                            LOG.info('Display/Clock update.')
+                            self.set_display_video()
+                            self._current_time = new_time.strftime('%H:%M')
+
+            # VIDEOBOX PAUSE
+            elif self.mode == Settings.MODES['videobox']['on_air']['pause']:
+
+                if update_mode:
+                    update_mode = False
+
+                    self.videobox.omxplayer.pause()
+
+                    if Settings.STATE_WATCHER_IDLE_TIMER:
+                        last_mode_change = localtime(now())
+
+                    if self.mode == Settings.MODES['videobox']['on_air']['pause']:
+                        # self.stop()
+                        # self.eject()
+                        if self.videobox.loader_mode != 'random':
+                            self.videobox.set_loader_mode_random()
+                        # self.set_display_jukebox()
+
+                    # elif self.mode == Settings.MODES['videobox']['standby']['album']:
+                    #     self.stop()
+                    #     self.eject()
+                    #     if self.audiobookbox.loader_mode != 'album':
+                    #         self.audiobookbox.set_loader_mode_album()
+
+                    self.set_display_video()
+
+                else:
+                    # LOG.info(f'last_mode_change: {last_mode_change}')
+                    if last_mode_change is not None:
+                        # LOG.info(f'{last_mode_change + datetime.timedelta(minutes=Settings.STATE_WATCHER_IDLE_TIMER) < new_time}')
+
+                        if last_mode_change + datetime.timedelta(minutes=Settings.STATE_WATCHER_IDLE_TIMER) < new_time:
+                            LOG.info('Setting mode to jukeoroni standby due to idle...')
+                            last_mode_change = None
+                            self.mode = Settings.MODES['jukeoroni']['standby']
+                            self.set_display_standby()
+
+                    elif self._current_time != new_time.strftime('%H:%M'):
+                        if self._current_time is None or (int(new_time.strftime('%H:%M')[-2:])) % Settings.CLOCK_UPDATE_INTERVAL == 0:
+                            LOG.info('Display/Clock update.')
+                            self.set_display_video()
+                            self._current_time = new_time.strftime('%H:%M')
+
+            # VIDEO ON_AIR
+            elif self.mode == Settings.MODES['videobox']['on_air']['random']:
+
+                # Make sure, meditation keeps playing if in mode without
+                # considering the update_mode flag
+
+                if self.mode == Settings.MODES['videobox']['on_air']['random']:
+                    if self.videobox.loader_mode != 'random':
+                        self.videobox.set_loader_mode_random()
+                    # self.play_jukebox()
+                    # LOG.info(f'Playing: {self.jukebox.playing_track}')
+
+                # elif self.mode == Settings.MODES['audiobookbox']['on_air']['album']:
+                #     if self.videobox.loader_mode != 'album':
+                #         self.videobox.set_loader_mode_album()
+
+                # self.videobox.omxplayer.set_position(0.0)
+                # self.videobox.omxplayer.play()
+                # LOG.info(f'Playing: {self.jukebox.playing_track}')
+
+                if update_mode:
+                    update_mode = False
+                    # self.videobox.omxplayer.set_position(0.0)
+                    self.videobox.omxplayer.play()
+                    self.set_display_video()
+
+                else:
+                    if self._current_time != new_time.strftime('%H:%M'):
+                        if self._current_time is None or (int(new_time.strftime('%H:%M')[-2:])) % Settings.CLOCK_UPDATE_INTERVAL == 0:
+                            LOG.info('Display/Clock update.')
+                            self.set_display_video()
+                            self._current_time = new_time.strftime('%H:%M')
+
             time.sleep(Settings.STATE_WATCHER_CADENCE)
 
     # def play_box(self):
@@ -752,8 +901,30 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
 
             time.sleep(1.0)
 
+    # def play_video(self):
+    #     self.videobox.omxplayer.play()
+    #     # pass
+
     def jukeoroni_playback_thread(self):
         assert isinstance(self.inserted_media, JukeboxTrack)
+
+        """
+May  5 15:06:28 jukeoroni gunicorn[812]: [05-05-2022 15:06:28] [INFO] [JukeOroni Playback Thread|2837697632] [player.jukeoroni.jukeoroni]: playback finished
+May  5 15:06:28 jukeoroni gunicorn[812]: [05-05-2022 15:06:28] [DEBUG] [State Watcher Thread|2971661408] [player.jukeoroni.jukeoroni]: Starting new playback thread
+May  5 15:06:28 jukeoroni gunicorn[812]: Exception in thread State Watcher Thread:
+May  5 15:06:28 jukeoroni gunicorn[812]: Traceback (most recent call last):
+May  5 15:06:28 jukeoroni gunicorn[812]:   File "/usr/lib/python3.7/threading.py", line 917, in _bootstrap_inner
+May  5 15:06:28 jukeoroni gunicorn[812]:     self.run()
+May  5 15:06:28 jukeoroni gunicorn[812]:   File "/usr/lib/python3.7/threading.py", line 865, in run
+May  5 15:06:28 jukeoroni gunicorn[812]:     self._target(*self._args, **self._kwargs)
+May  5 15:06:28 jukeoroni gunicorn[812]:   File "/data/django/jukeoroni/player/jukeoroni/jukeoroni.py", line 475, in state_watcher_task
+May  5 15:06:28 jukeoroni gunicorn[812]:     self.play_jukebox()
+May  5 15:06:28 jukeoroni gunicorn[812]:   File "/data/django/jukeoroni/player/jukeoroni/jukeoroni.py", line 694, in play_jukebox
+May  5 15:06:28 jukeoroni gunicorn[812]:     self.jukeoroni_playback_thread()
+May  5 15:06:28 jukeoroni gunicorn[812]:   File "/data/django/jukeoroni/player/jukeoroni/jukeoroni.py", line 756, in jukeoroni_playback_thread
+May  5 15:06:28 jukeoroni gunicorn[812]:     assert isinstance(self.inserted_media, JukeboxTrack)
+May  5 15:06:28 jukeoroni gunicorn[812]: AssertionError
+        """
 
         self._playback_thread = threading.Thread(target=self._playback_task)
         self._playback_thread.name = 'JukeOroni Playback Thread'
@@ -1155,6 +1326,7 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
         button = _BUTTON_PINS.index(pin)
         button_mapped = _BUTTON_MAPPINGS[button]
         LOG.info(f'Button press detected on pin: {pin} button: {button_mapped} ({button}), label: {self.LABELS[_BUTTON_PINS.index(pin)]}')
+        LOG.debug(f'Current mode: {self.mode}')
 
         # JukeOroni
         if self.mode == Settings.MODES['jukeoroni']['off']:
@@ -1178,6 +1350,7 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
                 self.mode = Settings.MODES['meditationbox']['standby'][self.meditationbox.loader_mode]
                 return
             elif button_mapped == '000X':
+                self.mode = Settings.MODES['videobox']['standby'][self.videobox.loader_mode]
                 return
             return
 
@@ -1429,6 +1602,47 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
                 return
             elif button_mapped == '000X':
                 self.mode = Settings.MODES['podcastbox']['on_air']['random']
+                return
+            return
+
+        # VideoBox
+        # TODO: pause/resume
+        elif self.mode == Settings.MODES['videobox']['standby']['random']:
+            if button_mapped == 'X000':
+                self.mode = Settings.MODES['jukeoroni']['standby']
+                return
+            elif button_mapped == '0X00':
+                self.mode = Settings.MODES['videobox']['on_air']['random']
+                return
+            elif button_mapped == '00X0':
+                return
+            elif button_mapped == '000X':
+                return
+            return
+
+        elif self.mode == Settings.MODES['videobox']['on_air']['random']:
+            if button_mapped == 'X000':
+                self.mode = Settings.MODES['videobox']['standby']['random']
+                return
+            elif button_mapped == '0X00':
+                self.mode = Settings.MODES['videobox']['on_air']['pause']
+                return
+            elif button_mapped == '00X0':
+                return
+            elif button_mapped == '000X':
+                return
+            return
+
+        elif self.mode == Settings.MODES['videobox']['on_air']['pause']:
+            if button_mapped == 'X000':
+                self.mode = Settings.MODES['videobox']['standby']['random']
+                return
+            elif button_mapped == '0X00':
+                self.mode = Settings.MODES['videobox']['on_air']['random']
+                return
+            elif button_mapped == '00X0':
+                return
+            elif button_mapped == '000X':
                 return
             return
 

@@ -53,7 +53,7 @@ LOGGING = {
             'when': 'midnight',
             'interval': 1,
             'backupCount': 7,
-            'filename': os.path.join(Settings.MEDIA_ROOT, 'jukeoroni_logs', 'django_error.log'),
+            'filename': os.path.join(Settings.LOG_ROOT, 'django_error.log'),
             'formatter': 'simple',
         },
         'file_juke_box': {
@@ -63,7 +63,7 @@ LOGGING = {
             'when': 'midnight',
             'interval': 1,
             'backupCount': 7,
-            'filename': os.path.join(Settings.MEDIA_ROOT, 'jukeoroni_logs', 'jukebox_error.log'),
+            'filename': os.path.join(Settings.LOG_ROOT, 'jukebox_error.log'),
             'formatter': 'simple',
         },
         'file_meditation_box': {
@@ -73,7 +73,7 @@ LOGGING = {
             'when': 'midnight',
             'interval': 1,
             'backupCount': 7,
-            'filename': os.path.join(Settings.MEDIA_ROOT, 'jukeoroni_logs', 'meditationbox_error.log'),
+            'filename': os.path.join(Settings.LOG_ROOT, 'meditationbox_error.log'),
             'formatter': 'simple',
         },
         'file_create_update_track_list': {
@@ -83,7 +83,7 @@ LOGGING = {
             'when': 'midnight',
             'interval': 1,
             'backupCount': 7,
-            'filename': os.path.join(Settings.MEDIA_ROOT, 'jukeoroni_logs', 'create_update_track_list_error.log'),
+            'filename': os.path.join(Settings.LOG_ROOT, 'create_update_track_list_error.log'),
             'formatter': 'simple',
         },
     },

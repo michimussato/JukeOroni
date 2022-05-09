@@ -14,6 +14,10 @@ LOG.setLevel(Settings.GLOBAL_LOGGING_LEVEL)
 DELIMITER = ' - '
 
 
+# TODO: use metadata in the future
+#  https://stackoverflow.com/questions/51303424/pytaglib-taglib-dsd-dsf-format
+
+
 def create_update_track_list(box, directory, album_type, file_filter):
     """
 

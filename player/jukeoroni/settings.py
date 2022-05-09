@@ -1,8 +1,14 @@
 import logging
+from pathlib import Path
 import os
 
 
+# BASE_DIR = Path(__file__).resolve().parent.parent.parent
+
+
 class Settings:
+    BASE_DIR = Path(__file__).resolve().parent.parent.parent
+
     GLOBAL_LOGGING_LEVEL = logging.DEBUG
     DJANGO_LOGGING_LEVEL = GLOBAL_LOGGING_LEVEL
 
@@ -10,9 +16,15 @@ class Settings:
     _ONE_HOUR = 3600
     DEFAULT_TRACKLIST_REGEN_INTERVAL = _ONE_HOUR * 6  # in hours
     DATA_SOURCES = ['usb_hdd', 'googledrive']
+    # rsync
+    #  rsync --dry-run -rltv8DW --delete-before --progress --info=progress2 --exclude "*DS_Store" --delete-excluded "/data/googledrive/media/audio/music/" "/data/usb_hdd/media/audio/music" > /data/usb_hdd/rsync_music.txt &
+    #  rsync --dry-run -rltv8DW --delete-before --progress --info=progress2 --exclude "*DS_Store" --delete-excluded "/data/googledrive/media/audio/meditation/" "/data/usb_hdd/media/audio/meditation" > /data/usb_hdd/rsync_meditation.txt &
+    # Icon?
+    #  find . -name 'Icon?' -exec rm {} \;
     DATA_SOURCE = DATA_SOURCES[0]  # https://raspberrytips.com/mount-usb-drive-raspberry-pi/
     DATA_SOURCE_RCLONE = DATA_SOURCES[1]
     MEDIA_ROOT = f'/data/{DATA_SOURCE}/media/audio/'
+    LOG_ROOT = f'/data/jukeoroni_logs/'
     MEDIA_ROOT_RCLONE = f'/data/{DATA_SOURCE_RCLONE}/media/audio/'
     # LOG_ROOT = os.path.join(MEDIA_ROOT, 'jukeoroni_logs')
     # if not os.path.exists(MEDIA_ROOT):
@@ -25,11 +37,13 @@ class Settings:
     ALBUM_TYPE_PODCAST = ALBUM_TYPES[3]  # 'episodic'
     MUSIC_DIR = os.path.join(MEDIA_ROOT, ALBUM_TYPE_MUSIC)
     MEDITATION_DIR = os.path.join(MEDIA_ROOT, ALBUM_TYPE_MEDITATION)
+    VIDEO_DIR = r'/data/usb_hdd/media/torrents/'
     EPISODIC_DIR = os.path.join(MEDIA_ROOT, ALBUM_TYPE_EPISODIC)
     FAULTY_ALBUMS = os.path.join(MEDIA_ROOT, 'faulty_albums_test.txt')
     MISSING_COVERS_FILE = os.path.join(MEDIA_ROOT, 'missing_covers_test.txt')
     AUDIO_FILES = ['.dsf', '.flac', '.wav', '.dff']
     MEDITATION_FILTER = ['.dsf', '.flac', '.wav', '.dff']
+    VIDEO_FILTER = ['.avi', '.mp4']
     EPISODIC_FILES = ['.dsf', '.flac', '.wav', '.dff', '.mp3']
 
     # inky
@@ -37,7 +51,7 @@ class Settings:
     BUTTONS = [5, 6, 16, 24]
 
     # jukeoroni
-    _OFF_IMAGE = '/data/django/jukeoroni/player/static/zzz.jpg'
+    _OFF_IMAGE = os.path.join(BASE_DIR, 'player', 'static', 'zzz.jpg')
     DRAW_HOST_INFO = True
     PIMORONI_WATCHER_UPDATE_INTERVAL = 1
     SMALL_WIDGET_SIZE = 160
@@ -45,20 +59,22 @@ class Settings:
 
     BUTTONS_HEIGHT = 32
     BORDER = 10
+    BUTTONS_OVERLAY = os.path.join(BASE_DIR, 'player', 'static', 'buttons_overlay')
     BUTTONS_ICONS = {
-        'Radio': '/data/django/jukeoroni/player/static/buttons_overlay/icon_radio.png',
-        'Player': '/data/django/jukeoroni/player/static/buttons_overlay/icon_player.png',
-        'Meditation': '/data/django/jukeoroni/player/static/buttons_overlay/icon_meditation.png',
-        'Audiobook': '/data/django/jukeoroni/player/static/buttons_overlay/icon_audiobook.png',
-        'Podcast': '/data/django/jukeoroni/player/static/buttons_overlay/icon_podcast.png',
-        'Random -> Album': '/data/django/jukeoroni/player/static/buttons_overlay/icon_random.png',
-        'Album -> Random': '/data/django/jukeoroni/player/static/buttons_overlay/icon_album.png',
-        # 'N//A': '/data/django/jukeoroni/player/static/buttons_overlay/icon_na.png',
-        'N//A': '',
-        'Stop': '/data/django/jukeoroni/player/static/buttons_overlay/icon_stop.png',
-        'Play': '/data/django/jukeoroni/player/static/buttons_overlay/icon_play.png',
-        'Next': '/data/django/jukeoroni/player/static/buttons_overlay/icon_next.png',
-        'Menu': '/data/django/jukeoroni/player/static/buttons_overlay/icon_menu.png'
+        'Radio': os.path.join(BUTTONS_OVERLAY, 'icon_radio.png'),
+        'Player': os.path.join(BUTTONS_OVERLAY, 'icon_player.png'),
+        'Meditation': os.path.join(BUTTONS_OVERLAY, 'icon_meditation.png'),
+        'Audiobook': os.path.join(BUTTONS_OVERLAY, 'icon_audiobook.png'),
+        'Podcast': os.path.join(BUTTONS_OVERLAY, 'icon_podcast.png'),
+        'Video': os.path.join(BUTTONS_OVERLAY, 'icon_video.png'),
+        'Random -> Album': os.path.join(BUTTONS_OVERLAY, 'icon_random.png'),
+        'Album -> Random': os.path.join(BUTTONS_OVERLAY, 'icon_album.png'),
+        'N//A': '',  # use os.path.join(BUTTONS_OVERLAY, 'icon_na.png'), for debug purposes
+        'Stop': os.path.join(BUTTONS_OVERLAY, 'icon_stop.png'),
+        'Play': os.path.join(BUTTONS_OVERLAY, 'icon_play.png'),
+        'Pause': os.path.join(BUTTONS_OVERLAY, 'icon_pause.png'),
+        'Next': os.path.join(BUTTONS_OVERLAY, 'icon_next.png'),
+        'Menu': os.path.join(BUTTONS_OVERLAY, 'icon_menu.png'),
     }
 
     INVERT_BUTTONS = True
@@ -77,6 +93,7 @@ class Settings:
     ENABLE_PODCAST = False
     ENABLE_AUDIOBOOK = False
     ENABLE_EPISODIC = False
+    ENABLE_VIDEO = True
 
     STATE_WATCHER_CADENCE = 0.1  # Seconds
     STATE_WATCHER_IDLE_TIMER = 15.0  # Minutes (0.0 = off)
@@ -104,7 +121,8 @@ class Settings:
                     '0X00': ['N//A', 'Radio'][int(ENABLE_RADIO)],
                     '00X0': ['N//A', 'Meditation'][int(ENABLE_MEDITATION)],
                     # '000X': ['N//A', 'Audiobook'][int(ENABLE_AUDIOBOOK)],
-                    '000X': ['N//A', 'Podcast'][int(ENABLE_PODCAST)],
+                    # '000X': ['N//A', 'Podcast'][int(ENABLE_PODCAST)],
+                    '000X': ['N//A', 'Video'][int(ENABLE_VIDEO)],
                     # '000X': ['N//A', 'Episodic'][int(ENABLE_EPISODIC)],
                 },
             },
@@ -461,6 +479,94 @@ class Settings:
                     # },
                 },
             },
+        'videobox': {
+                'standby': {
+                    'random': {
+                        'numeric': 7.0,
+                        'name': 'videobox standby',
+                        'buttons': {
+                            'X000': 'Menu',
+                            '0X00': 'Play',
+                            '00X0': 'N//A',
+                            '000X': 'N//A',
+                        },
+                    },
+                    # 'pause': {
+                    #     'numeric': 7.4,
+                    #     'name': 'videobox pause',
+                    #     'buttons': {
+                    #         'X000': 'Stop',
+                    #         '0X00': 'Play',
+                    #         '00X0': 'N//A',
+                    #         '000X': 'N//A',
+                    #     },
+                    # },
+                    # Not used as the video box only knows "random"
+                    'album': {
+                        'numeric': 7.1,
+                        'name': 'videobox standby album',
+                        'buttons': {
+                            'X000': 'Menu',
+                            '0X00': 'Play',
+                            '00X0': 'N//A',
+                            '000X': 'N//A',
+                        },
+                    },
+                    # 'track': {
+                    #     'numeric': 6.5,
+                    #     'name': 'audiobookbox standby track',
+                    #     'buttons': {
+                    #         'X000': 'Stop',
+                    #         '0X00': 'Next',
+                    #         '00X0': 'N//A',
+                    #         '000X': 'Album -> Random',
+                    #     },
+                    # },
+                },
+                'on_air': {
+                    'random': {
+                        'numeric': 7.2,
+                        'name': 'videobox on_air',
+                        'buttons': {
+                            'X000': 'Stop',
+                            '0X00': 'Pause',
+                            '00X0': 'N//A',
+                            '000X': 'N//A',
+                        },
+                    },
+                    'pause': {
+                        'numeric': 7.5,
+                        'name': 'videobox pause',
+                        'buttons': {
+                            'X000': 'Stop',
+                            '0X00': 'Play',
+                            '00X0': 'N//A',
+                            '000X': 'N//A',
+                        },
+                    },
+                    # Not used as the video box only knows "random"
+                    'album': {
+                        'numeric': 7.3,
+                        'name': 'videobox on_air album',
+                        'buttons': {
+                            'X000': 'Stop',
+                            '0X00': 'Pause',
+                            '00X0': 'N//A',
+                            '000X': 'N//A',
+                        },
+                    },
+                    # 'track': {
+                    #     'numeric': 6.4,
+                    #     'name': 'videobox on_air album track',
+                    #     'buttons': {
+                    #         'X000': 'Stop',
+                    #         '0X00': 'Next',
+                    #         '00X0': 'N//A',
+                    #         '000X': 'Album -> Random',
+                    #     },
+                    # },
+                },
+            },
     }
 
     # box
@@ -468,34 +574,37 @@ class Settings:
     CACHE_COVERS = [True, False][0]
     MAX_CACHED_FILES = 3
     COVER_ONLINE_PREFERENCE = [True, False][1]
-    _JUKEBOX_ICON_IMAGE = '/data/django/jukeoroni/player/static/jukebox.png'
-    _JUKEBOX_LOADING_IMAGE = '/data/django/jukeoroni/player/static/loading.jpg'
-    _JUKEBOX_ON_AIR_DEFAULT_IMAGE = '/data/django/jukeoroni/player/static/jukebox_on_air_default.jpg'
-    # AUDIO_FILES = ['.dsf', '.flac', '.wav', '.dff']
-    # DEFAULT_TRACKLIST_REGEN_INTERVAL = 12  # in hours
+    _JUKEBOX_ICON_IMAGE = os.path.join(BASE_DIR, 'player', 'static', 'jukebox.png')
+    _JUKEBOX_LOADING_IMAGE = os.path.join(BASE_DIR, 'player', 'static', 'loading.jpg')
+    _JUKEBOX_ON_AIR_DEFAULT_IMAGE = os.path.join(BASE_DIR, 'player', 'static', 'jukebox_on_air_default.jpg')
 
     # meditation
-    _MEDITATION_ICON_IMAGE = '/data/django/jukeoroni/player/static/meditation_box.jpg'
+    _MEDITATION_ICON_IMAGE = os.path.join(BASE_DIR, 'player', 'static', 'meditation_box.jpg')
 
-    # # episodic
-    # _EPISODIC_ICON_IMAGE = '/data/django/jukeoroni/player/static/episodic_box.jpg'
+    # episodic
+    _EPISODIC_ICON_IMAGE = os.path.join(BASE_DIR, 'player', 'static', 'episodic_box.jpg')
 
     # Podcast
-    _PODCAST_ICON_IMAGE = '/data/django/jukeoroni/player/static/podcast_box.jpg'
+    _PODCAST_ICON_IMAGE = os.path.join(BASE_DIR, 'player', 'static', 'podcast_box.jpg')
 
     # radio
-    _RADIO_ICON_IMAGE = '/data/django/jukeoroni/player/static/radio.png'
-    _RADIO_ON_AIR_DEFAULT_IMAGE = '/data/django/jukeoroni/player/static/radio_on_air_default.jpg'
+    _RADIO_ICON_IMAGE = os.path.join(BASE_DIR, 'player', 'static', 'radio.png')
+    _RADIO_ON_AIR_DEFAULT_IMAGE = os.path.join(BASE_DIR, 'player', 'static', 'radio_on_air_default.jpg')
+
+    # video
+    AUDIO_OUT = ['local', 'hdmi', 'both', 'alsa:hw:0,0'][3]
+    _VIDEO_ICON_IMAGE = os.path.join(BASE_DIR, 'player', 'static', 'movie.jpg')
+    _VIDEO_ON_AIR_DEFAULT_IMAGE = os.path.join(BASE_DIR, 'player', 'static', 'movie_on_air_default.jpg')
 
     # clock
     LAT, LONG = 47.39134, 8.85971
     TZ = "Europe/Zurich"
     ANTIALIAS = 4  # Warning: can slow down calculation drastically
-    ARIAL = r'/data/django/jukeoroni/player/static/arial_narrow.ttf'
-    CALLIGRAPHIC = r'/data/django/jukeoroni/player/static/calligraphia-one.ttf'
+    ARIAL = os.path.join(BASE_DIR, 'player', 'static', 'arial_narrow.ttf')
+    CALLIGRAPHIC = os.path.join(BASE_DIR, 'player', 'static', 'calligraphia-one.ttf')
     CLOCK_UPDATE_INTERVAL = 10  # in minutes
     CLOCK_SQUARE_OPACITY = 160
-    _MOON_TEXUTRE = '/data/django/jukeoroni/player/static/moon_texture_small.png'
+    _MOON_TEXUTRE = os.path.join(BASE_DIR, 'player', 'static', 'moon_texture_small.png')
 
     # radar
     RADAR_UPDATE_INTERVAL = 5  # in minutes

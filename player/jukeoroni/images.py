@@ -53,6 +53,15 @@ class Resource(object):
     def PODCAST_ICON_IMAGE(self):
         return Image.open(Settings._PODCAST_ICON_IMAGE)
 
+
+    @property
+    def VIDEO_ICON_IMAGE(self):
+        return Image.open(Settings._VIDEO_ICON_IMAGE)
+
+    @property
+    def VIDEO_ON_AIR_DEFAULT_IMAGE(self):
+        return Image.open(Settings._VIDEO_ON_AIR_DEFAULT_IMAGE)
+
     # @property
     # def AUDIOBOOK_ICON_IMAGE(self):
     #     return Image.open(Settings._EPISODIC_ICON_IMAGE)
