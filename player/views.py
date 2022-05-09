@@ -29,12 +29,17 @@ COLUMN_WIDTH = 101
 #  <img width="{int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR)}" height="{int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR)}" src="{Settings.BUTTON_ICONS[n]}" />
 
 
+######################################
+# Comment all this to do DB migrations
+#  as well as:
+#  sudo systemctl stop nginx.service
 jukeoroni = JukeOroni(test=False)
 jukeoroni.turn_on(disable_track_loader=False)
 jukeoroni.jukebox.set_auto_update_tracklist_on()
 jukeoroni.meditationbox.set_auto_update_tracklist_on()
 # jukeoroni.episodicbox.set_auto_update_tracklist_on()
 # jukeoroni.jukebox.track_list_generator_thread()
+######################################
 
 
 # def index_redirect(request):
@@ -104,6 +109,7 @@ def get_header(bg_color, refresh=True):
     ret += '<body style="background-color:#{0};">\n'.format(bg_color)
 
     return ret
+
 
 def get_footer(ret):
     ret += '<hr>\n'

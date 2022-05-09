@@ -124,3 +124,8 @@ class Episode(models.Model):
 #     data_type = models.CharField()
 #     values = models.
 #     index = models.Index
+
+
+class Video(models.Model):
+    video_source = models.CharField(max_length=200, unique=True, blank=False, null=False)
+    video_title = models.CharField(max_length=200, unique=True, blank=False, null=False)

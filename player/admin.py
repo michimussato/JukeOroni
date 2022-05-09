@@ -2,7 +2,7 @@ from django.contrib import admin
 
 
 # Register your models here.
-from .models import Artist, Album, Track, Channel, Station, Podcast, Episode
+from .models import Artist, Album, Track, Channel, Station, Podcast, Episode, Video
 
 
 """
@@ -106,10 +106,16 @@ class TrackAdmin(admin.ModelAdmin):
     artist_name.short_description = 'Artist'
 
 
+class VideoAdmin(admin.ModelAdmin):
+    list_display = ('video_title', 'video_source')
+    search_fields = ['video_title', 'video_source']
+
+
 admin.site.register(Artist, AristAdmin)
 admin.site.register(Album, AlbumAdmin)
 admin.site.register(Track, TrackAdmin)
 admin.site.register(Station, StationAdmin)
 admin.site.register(Channel, ChannelAdmin)
+admin.site.register(Video, VideoAdmin)
 admin.site.register(Podcast)
 admin.site.register(Episode)

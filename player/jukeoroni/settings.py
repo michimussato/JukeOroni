@@ -37,13 +37,13 @@ class Settings:
     ALBUM_TYPE_PODCAST = ALBUM_TYPES[3]  # 'episodic'
     MUSIC_DIR = os.path.join(MEDIA_ROOT, ALBUM_TYPE_MUSIC)
     MEDITATION_DIR = os.path.join(MEDIA_ROOT, ALBUM_TYPE_MEDITATION)
-    VIDEO_DIR = r'/data/usb_hdd/media/torrents/'
+    VIDEO_DIR = r'/data/usb_hdd/media/'
     EPISODIC_DIR = os.path.join(MEDIA_ROOT, ALBUM_TYPE_EPISODIC)
     FAULTY_ALBUMS = os.path.join(MEDIA_ROOT, 'faulty_albums_test.txt')
     MISSING_COVERS_FILE = os.path.join(MEDIA_ROOT, 'missing_covers_test.txt')
     AUDIO_FILES = ['.dsf', '.flac', '.wav', '.dff']
     MEDITATION_FILTER = ['.dsf', '.flac', '.wav', '.dff']
-    VIDEO_FILTER = ['.avi', '.mp4']
+    VIDEO_FILTER = ['.mp4']
     EPISODIC_FILES = ['.dsf', '.flac', '.wav', '.dff', '.mp3']
 
     # inky

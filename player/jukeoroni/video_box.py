@@ -1,5 +1,6 @@
 import logging
 import os.path
+import random
 
 from omxplayer.player import OMXPlayer
 from pathlib import Path
@@ -7,6 +8,7 @@ from pathlib import Path
 from player.jukeoroni.base_box import BaseBox
 from player.jukeoroni.displays import Videobox as VideoboxLayout
 from player.jukeoroni.settings import Settings
+from player.models import Video
 
 
 # class MeditationTrack(JukeboxTrack):
@@ -61,8 +63,29 @@ class VideoBox(BaseBox):
         return Settings.VIDEO_DIR
 
     @property
+    def video_list(self):
+        # import fnmatch
+        # import os
+        # return Video.objects.filter(album__album_type=self.album_type)
+        return Video.objects.all()
+
+        # results = []
+        # for root, dirs, files in os.walk(os.path.join(Settings.VIDEO_DIR, 'torrents')):
+        #     for _file in files:
+        #         for video_filter in Settings.VIDEO_FILTER:
+        #             if video_filter in os.path.splitext(_file)[1]:
+        #         # if any([i for i in Settings.VIDEO_FILTER if i in os.path.splitext(_file)]):
+        #         # # if fnmatch.fnmatch(_file, Settings.VIDEO_FILTER):
+        #                 results.append(os.path.join(root, _file))
+        # return results
+
+    @property
     def video_file(self):
-        return os.path.join(self.video_dir, 'Guardians of the Galaxy (2014)', 'Guardians.of.the.Galaxy.2014.720p.BluRay.x264.YIFY.mp4')
+        # raise Exception(self.videos)
+        # import pdb; pdb.set_trace()
+        video = self.video_list[random.randint(0, len(self.video_list))-1]
+        return os.path.join(Settings.VIDEO_DIR, video.video_source)
+        # return os.path.join(self.video_dir, 'Guardians of the Galaxy (2014)', 'Guardians.of.the.Galaxy.2014.720p.BluRay.x264.YIFY.mp4')
 
     # # We could set a default Meditation Album like so:
     # @property
@@ -112,6 +135,7 @@ class VideoBox(BaseBox):
         return NotImplementedError
 
     def track_list(self):
+        # return
         return NotImplementedError
 
     def get_next_track(self):
