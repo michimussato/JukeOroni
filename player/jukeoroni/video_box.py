@@ -1,9 +1,11 @@
 import logging
 import os.path
 import random
+import threading
+import time
 
 from omxplayer.player import OMXPlayer
-from pathlib import Path
+# from pathlib import Path
 
 from player.jukeoroni.base_box import BaseBox
 from player.jukeoroni.displays import Videobox as VideoboxLayout
@@ -32,15 +34,98 @@ class VideoBox(BaseBox):
 
         self.layout = VideoboxLayout()
 
-        self.omxplayer = OMXPlayer(self.video_file,
-                                   args=['--no-keys', '--adev', Settings.AUDIO_OUT],
-                                   # dbus_name='org.mpris.MediaPlayer2.omxplayer1',
-                                   pause=True,
-                                   )
-        self.omxplayer.playEvent += lambda _: self.LOG.info("Play")
-        self.omxplayer.pauseEvent += lambda _: self.LOG.info("Pause")
-        self.omxplayer.stopEvent += lambda _: self.LOG.info("Stop")
-        # self.omxplayer.pause()
+        self.omxplayer = None
+        self._omx_player_watcher_thread = None
+        self._omxplayer_thread = None
+
+        self.omx_player_watcher_thread()
+
+    def omx_player_watcher_thread(self):
+        self._omx_player_watcher_thread = threading.Thread(target=self._omx_player_watcher_task)
+        self._omx_player_watcher_thread.name = 'OMXPlayer Watcher Thread'
+        self._omx_player_watcher_thread.daemon = False
+        self._omx_player_watcher_thread.start()
+
+    def _omx_player_watcher_task(self):
+
+        while True:
+
+            if self.omxplayer is None:
+                self.LOG.info('OMXPlayer not playing yet...')
+                time.sleep(1.0)
+                continue
+
+            status = self.omxplayer.playback_status()
+
+            if status == 'Playing':
+                self.LOG.debug('OMXPlayer is currently playing...')
+                time.sleep(1.0)
+                continue
+            elif status == 'Paused':
+                self.LOG.debug('OMXPlayer is currently paused...')
+                time.sleep(1.0)
+                continue
+
+            # Todo?
+            #  status == 'Stopped'?
+
+            # self.LOG.info('OMXPlayer finished playing.')
+            #
+            # self.omxplayer.quit()
+            # self._omxplayer_thread.join()
+            # self.omxplayer = None
+            #
+            # self.LOG.info('O')
+
+            time.sleep(1.0)
+
+    def omx_player_thread(self, video_file):
+        self._omxplayer_thread = threading.Thread(target=self._omxplayer_task, args=(video_file,))
+        self._omxplayer_thread.name = 'OMXPlayer Playback Thread'
+        self._omxplayer_thread.daemon = False
+        self._omxplayer_thread.start()
+
+        # while self.omxplayer is None:
+        #     self.LOG.info('OMXPlayer not playing yet...')
+        #     time.sleep(0.5)
+        #
+        # while self.omxplayer.playback_status() in ['Playing', 'Paused']:
+        #     time.sleep(1.0)
+        #     self.LOG.debug('OMXPlayer is still playing...')
+        # self.LOG.info('OMXPlayer finished playing.')
+        #
+        # self.omxplayer.quit()
+        # self._omxplayer_thread.join()
+        # self.omxplayer = None
+
+    def _omxplayer_task(self, video_file):
+
+        if self.omxplayer is None:
+            # self.omxplayer = None
+
+
+
+            self.omxplayer = OMXPlayer(video_file,
+                                       args=['--no-keys', '--adev', Settings.AUDIO_OUT],
+                                       # dbus_name='org.mpris.MediaPlayer2.omxplayer1',
+                                       pause=True,
+                                       )
+            self.omxplayer.playEvent += lambda _: self.LOG.info("Play")
+            self.omxplayer.pauseEvent += lambda _: self.LOG.info("Pause")
+            self.omxplayer.stopEvent += lambda _: self.LOG.info("Stop")
+
+        else:
+            self.omxplayer.load(video_file, pause=True)
+
+
+        # while self.omxplayer.is_playing():
+        #     time.sleep(1.0)
+        #     self.LOG('OMXPlayer is still playing...')
+        #
+        # self.omxplayer.quit()
+        # self.
+
+
 
     @property
     def file_filter(self):
@@ -83,7 +168,7 @@ class VideoBox(BaseBox):
     def video_file(self):
         # raise Exception(self.videos)
         # import pdb; pdb.set_trace()
-        video = self.video_list[random.randint(0, len(self.video_list))-1]
+        video = self.video_list[random.randint(1, len(self.video_list))-1]
         return os.path.join(Settings.VIDEO_DIR, video.video_source)
         # return os.path.join(self.video_dir, 'Guardians of the Galaxy (2014)', 'Guardians.of.the.Galaxy.2014.720p.BluRay.x264.YIFY.mp4')
 

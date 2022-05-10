@@ -7,8 +7,9 @@ from django.db.models.functions import Lower
 from django.http import HttpResponseRedirect, HttpResponse
 from django.views import View
 from player.jukeoroni.jukeoroni import JukeOroni
-from player.models import Album, Channel, Station, Artist, Track
+from player.models import Album, Channel, Station, Artist, Track, Video
 from player.jukeoroni.settings import Settings
+from player.jukeoroni.images import Resource
 
 
 PIMORONI_SATURATION = 1.0
@@ -34,11 +35,11 @@ COLUMN_WIDTH = 101
 #  as well as:
 #  sudo systemctl stop nginx.service
 jukeoroni = JukeOroni(test=False)
-jukeoroni.turn_on(disable_track_loader=False)
-jukeoroni.jukebox.set_auto_update_tracklist_on()
-jukeoroni.meditationbox.set_auto_update_tracklist_on()
-# jukeoroni.episodicbox.set_auto_update_tracklist_on()
-# jukeoroni.jukebox.track_list_generator_thread()
+jukeoroni.turn_on(disable_track_loader=True)
+# jukeoroni.jukebox.set_auto_update_tracklist_on()
+# jukeoroni.meditationbox.set_auto_update_tracklist_on()
+# # jukeoroni.episodicbox.set_auto_update_tracklist_on()
+# # jukeoroni.jukebox.track_list_generator_thread()
 ######################################
 
 
@@ -369,10 +370,16 @@ class JukeOroniView(View):
 
         if jukeoroni.mode == Settings.MODES['videobox']['standby']['random']:
 
-            ret += '<button title="{0}" style=\"width:100%; height:{2}; \" onclick=\"window.location.href = \'/jukeoroni/videobox/play\';\"><img width="{3}" height="{3}" src="/jukeoroni/buttons_overlay/{4}" /></button>\n'.format(
-                jukeoroni.mode['buttons']['0X00'], str(box.box_type), BUTTON_HEIGHT,
-                int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR),
-                os.path.basename(Settings.BUTTONS_ICONS["Play"]))
+            if jukeoroni.videobox.omxplayer is None:
+                ret += '<button title="{0}" style=\"width:100%; height:{2}; \" onclick=\"window.location.href = \'/jukeoroni/videobox/play\';\" disabled><img width="{3}" height="{3}" src="/jukeoroni/buttons_overlay/{4}" /></button>\n'.format(
+                    jukeoroni.mode['buttons']['0X00'], str(box.box_type), BUTTON_HEIGHT,
+                    int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR),
+                    os.path.basename(Settings.BUTTONS_ICONS["Play"]))
+            else:
+                ret += '<button title="{0}" style=\"width:100%; height:{2}; \" onclick=\"window.location.href = \'/jukeoroni/videobox/play\';\"><img width="{3}" height="{3}" src="/jukeoroni/buttons_overlay/{4}" /></button>\n'.format(
+                    jukeoroni.mode['buttons']['0X00'], str(box.box_type), BUTTON_HEIGHT,
+                    int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR),
+                    os.path.basename(Settings.BUTTONS_ICONS["Play"]))
             ret += '</td>'
 
         elif jukeoroni.mode == Settings.MODES['videobox']['on_air']['pause']:
@@ -417,10 +424,12 @@ class JukeOroniView(View):
 
         img = None
 
-        if jukeoroni.mode == Settings.MODES['videobox']['standby']['random'] \
-                or jukeoroni.mode == Settings.MODES['videobox']['on_air']['pause'] \
-                or jukeoroni.mode == Settings.MODES['videobox']['on_air']['random']:
-            img = box.layout.get_layout(labels=jukeoroni.LABELS)
+        if box == jukeoroni.videobox:
+            if jukeoroni.mode == Settings.MODES['videobox']['standby']['random']:
+                img = box.layout.get_layout(labels=jukeoroni.LABELS)
+            elif jukeoroni.mode == Settings.MODES['videobox']['on_air']['pause'] \
+                    or jukeoroni.mode == Settings.MODES['videobox']['on_air']['random']:
+                img = box.layout.get_layout(labels=jukeoroni.LABELS, cover=Resource().VIDEO_ON_AIR_DEFAULT_IMAGE)
 
         elif jukeoroni.mode == Settings.MODES[box.box_type]['standby']['album'] \
                 or jukeoroni.mode == Settings.MODES[box.box_type]['standby']['random']:
@@ -612,6 +621,8 @@ class JukeOroniView(View):
         box = get_active_box(jukeoroni)
 
         if box == jukeoroni.videobox:
+            # if jukeoroni.videobox.omxplayer is None:
+            #     return HttpResponseRedirect('/jukeoroni')
             if jukeoroni.mode == Settings.MODES[box.box_type]['standby'][box.loader_mode]:
                 jukeoroni.mode = Settings.MODES[box.box_type]['on_air'][box.loader_mode]
             elif jukeoroni.mode == Settings.MODES[box.box_type]['on_air']['pause']:
@@ -625,6 +636,32 @@ class JukeOroniView(View):
             jukeoroni.mode = Settings.MODES[box.box_type]['on_air'][box.loader_mode]
 
         return HttpResponseRedirect('/jukeoroni')
+
+    def load_movie_by_title(self, video_title):
+        global jukeoroni
+
+        box = get_active_box(jukeoroni)
+
+        try:
+            video = Video.objects.get(video_title=video_title)
+        except Exception:
+            box.LOG.exception('Could not get video by video_title: ')
+            return HttpResponseRedirect('/jukeoroni')
+
+        if box == jukeoroni.videobox:
+            if jukeoroni.mode != Settings.MODES[box.box_type]['standby']['random']:
+                jukeoroni.mode = Settings.MODES[box.box_type]['standby']['random']
+                time.sleep(1.0)
+            # video = Video.objects.get(video_title=video_title)
+            jukeoroni.videobox.omx_player_thread(video_file=os.path.join(Settings.VIDEO_DIR, video.video_source))
+            # jukeoroni.videobox.omxplayer.load(source=os.path.join(Settings.VIDEO_DIR, video.video_source), pause=True)
+
+        while jukeoroni.videobox.omxplayer is None:
+            time.sleep(0.1)
+
+        return HttpResponseRedirect('/jukeoroni')
+
+
 
     # def pause(self):
     #     global jukeoroni
@@ -664,7 +701,7 @@ class JukeOroniView(View):
         box = get_active_box(jukeoroni)
 
         if box == jukeoroni.videobox:
-            jukeoroni.mode = Settings.MODES[box.box_type]['standby'][box.loader_mode]
+            jukeoroni.mode = Settings.MODES[box.box_type]['standby']['random']
 
             return HttpResponseRedirect('/jukeoroni')
 

@@ -29,6 +29,7 @@ urlpatterns = [
     path('meditationbox/play_next/', JukeOroniView.play_next, name='player_play_next'),
     path('podcastbox/play_next/', JukeOroniView.play_next, name='player_play_next'),
     path('videobox/play/', JukeOroniView.play, name='video_play'),
+    path('videobox/<str:video_title>/load/', JukeOroniView.load_movie_by_title, name='video_play'),
     # path('videobox/pause/', JukeOroniView.pause, name='video_pause'),
     # path('videobox/resume/', JukeOroniView.resume_video, name='video_resume'),
     # path('audiobookbox/play_next/', JukeOroniView.play_next, name='player_play_next'),

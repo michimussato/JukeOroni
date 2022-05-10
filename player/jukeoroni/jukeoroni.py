@@ -17,6 +17,7 @@ from player.jukeoroni.podcast_box import PodcastBox
 from player.jukeoroni.video_box import VideoBox
 # from player.jukeoroni.displays import Off as OffLayout
 from player.jukeoroni.displays import Standby as StandbyLayout
+from player.jukeoroni.displays import set_tv_screen
 from player.models import Channel
 from player.jukeoroni.box_track import JukeboxTrack
 from player.jukeoroni.settings import Settings
@@ -132,6 +133,8 @@ j.turn_off()
         self._pimoroni_watcher_thread = None
         self._buttons_watcher_thread = None
         self._state_watcher_thread = None
+
+        self._tv_screen_updater_thread = None
 
         # self._jukebox_playback_thread = None
         self._playback_thread = None
@@ -278,10 +281,9 @@ j.turn_off()
             # NoneType Error for self.inserted_media.cover_album
             if self.mode == Settings.MODES['videobox']['standby']['random']:
                 bg = self.videobox.layout.get_layout(labels=self.LABELS)
-            elif self.mode == Settings.MODES['videobox']['on_air']['random']:
-                bg = self.videobox.layout.get_layout(labels=self.LABELS)
-            elif self.mode == Settings.MODES['videobox']['on_air']['pause']:
-                bg = self.videobox.layout.get_layout(labels=self.LABELS)
+            elif self.mode == Settings.MODES['videobox']['on_air']['random'] \
+                    or self.mode == Settings.MODES['videobox']['on_air']['pause']:
+                bg = self.videobox.layout.get_layout(labels=self.LABELS, cover=Resource().VIDEO_ON_AIR_DEFAULT_IMAGE)
                 # try:
                 #     bg = self.videobox.layout.get_layout(labels=self.LABELS)
                 # except AttributeError:
@@ -336,6 +338,28 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]:   File "/usr/lib/python3.7/urllib/requ
 Nov  1 19:46:25 jukeoroni gunicorn[1374]:     raise URLError(err)
 Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error [Errno -3] Temporary failure in name resolution>
     """
+
+    def tv_screen_updater_thread(self):
+        self._tv_screen_updater_thread = threading.Thread(target=self.tv_screen_updater_task)
+        self._tv_screen_updater_thread.name = 'TV Screen Updater Thread'
+        self._tv_screen_updater_thread.daemon = False
+        self._tv_screen_updater_thread.start()
+
+    def tv_screen_updater_task(self):
+        initialized = False
+        while True:
+            new_time = localtime(now())
+            if self._current_time != new_time.strftime('%H:%M') \
+                    or not initialized:
+                if self._current_time is None \
+                        or (int(new_time.strftime('%H:%M')[-2:])) % Settings.CLOCK_UPDATE_INTERVAL == 0 \
+                        or not initialized:
+                    set_tv_screen()
+                    self._current_time = new_time.strftime('%H:%M')
+                    initialized = True
+
+            time.sleep(Settings.TV_SCREEN_UPDATER_CADENCE)
+
     def state_watcher_thread(self):
         self._state_watcher_thread = threading.Thread(target=self.state_watcher_task)
         self._state_watcher_thread.name = 'State Watcher Thread'
@@ -662,22 +686,27 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
                 if update_mode:
                     update_mode = False
 
-                    if not self.videobox.omxplayer.is_playing():
-                        self.videobox.omxplayer.play()
+                    if self.videobox.omxplayer is not None:
 
-                    self.videobox.omxplayer.set_position(0.0)
-                    time.sleep(0.5)
-                    self.videobox.omxplayer.pause()
-                    self.videobox.omxplayer.set_position(0.0)
+                        if self.videobox.omxplayer.playback_status() in ['Playing', 'Paused']:
+                            # self.videobox.omxplayer.stop()
+                            self.videobox.omxplayer.quit()
+                            self.videobox._omxplayer_thread.join()
+                            self.videobox.omxplayer = None
+                    #
+                    # self.videobox.omxplayer.set_position(0.0)
+                    # time.sleep(0.5)
+                    # self.videobox.omxplayer.pause()
+                    # self.videobox.omxplayer.set_position(0.0)
 
                     if Settings.STATE_WATCHER_IDLE_TIMER:
                         last_mode_change = localtime(now())
 
-                    if self.mode == Settings.MODES['videobox']['standby']['random']:
-                        # self.stop()
-                        # self.eject()
-                        if self.videobox.loader_mode != 'random':
-                            self.videobox.set_loader_mode_random()
+                    # if self.mode == Settings.MODES['videobox']['standby']['random']:
+                    #     # self.stop()
+                    #     # self.eject()
+                    #     if self.videobox.loader_mode != 'random':
+                    #         self.videobox.set_loader_mode_random()
                         # self.set_display_jukebox()
 
                     # elif self.mode == Settings.MODES['videobox']['standby']['album']:
@@ -711,16 +740,20 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
                 if update_mode:
                     update_mode = False
 
-                    self.videobox.omxplayer.pause()
+                    while self.videobox.omxplayer is None:
+                        time.sleep(0.5)
+
+                    if self.videobox.omxplayer.is_playing():
+                        self.videobox.omxplayer.pause()
 
                     if Settings.STATE_WATCHER_IDLE_TIMER:
                         last_mode_change = localtime(now())
 
-                    if self.mode == Settings.MODES['videobox']['on_air']['pause']:
+                    # if self.mode == Settings.MODES['videobox']['on_air']['pause']:
                         # self.stop()
                         # self.eject()
-                        if self.videobox.loader_mode != 'random':
-                            self.videobox.set_loader_mode_random()
+                        # if self.videobox.loader_mode != 'random':
+                        #     self.videobox.set_loader_mode_random()
                         # self.set_display_jukebox()
 
                     # elif self.mode == Settings.MODES['videobox']['standby']['album']:
@@ -754,9 +787,9 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
                 # Make sure, meditation keeps playing if in mode without
                 # considering the update_mode flag
 
-                if self.mode == Settings.MODES['videobox']['on_air']['random']:
-                    if self.videobox.loader_mode != 'random':
-                        self.videobox.set_loader_mode_random()
+                # if self.mode == Settings.MODES['videobox']['on_air']['random']:
+                # if self.videobox.loader_mode != 'random':
+                #     self.videobox.set_loader_mode_random()
                     # self.play_jukebox()
                     # LOG.info(f'Playing: {self.jukebox.playing_track}')
 
@@ -771,7 +804,11 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
                 if update_mode:
                     update_mode = False
                     # self.videobox.omxplayer.set_position(0.0)
-                    self.videobox.omxplayer.play()
+                    while self.videobox.omxplayer is None:
+                        time.sleep(0.5)
+
+                    if not self.videobox.omxplayer.is_playing():
+                        self.videobox.omxplayer.play()
                     self.set_display_video()
 
                 else:
@@ -1196,6 +1233,8 @@ May  5 15:06:28 jukeoroni gunicorn[812]: AssertionError
         self.buttons_watcher_thread()
         self.pimoroni_watcher_thread()
         self.state_watcher_thread()
+        if Settings.ENABLE_TV_SCREEN_UPDATER:
+            self.tv_screen_updater_thread()
 
         self.set_display_turn_on()
 

@@ -95,6 +95,8 @@ class Settings:
     ENABLE_EPISODIC = False
     ENABLE_VIDEO = True
 
+    ENABLE_TV_SCREEN_UPDATER = True
+    TV_SCREEN_UPDATER_CADENCE = 5.0  # Seconds
     STATE_WATCHER_CADENCE = 0.1  # Seconds
     STATE_WATCHER_IDLE_TIMER = 15.0  # Minutes (0.0 = off)
 
