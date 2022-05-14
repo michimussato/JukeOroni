@@ -235,3 +235,5 @@ printf "hello"
 # sudo apt-get update && sudo apt-get install -y libdbus-1-dev
 # pip install omxplayer-wrapper
 
+# sudo apt-get install imagemagick
+

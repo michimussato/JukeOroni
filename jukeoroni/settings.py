@@ -76,6 +76,16 @@ LOGGING = {
             'filename': os.path.join(Settings.LOG_ROOT, 'meditationbox_error.log'),
             'formatter': 'simple',
         },
+        'file_video_box': {
+            'level': 'DEBUG',
+            # 'class': 'logging.FileHandler',
+            'class': 'logging.handlers.TimedRotatingFileHandler',
+            'when': 'midnight',
+            'interval': 1,
+            'backupCount': 7,
+            'filename': os.path.join(Settings.LOG_ROOT, 'videobox_error.log'),
+            'formatter': 'simple',
+        },
         'file_create_update_track_list': {
             'level': 'DEBUG',
             # 'class': 'logging.FileHandler',
@@ -105,6 +115,11 @@ LOGGING = {
         },
         'player.jukeoroni.meditation_box': {
             'handlers': ['file_meditation_box'],
+            # 'propagate': True,
+            'level': 'DEBUG',
+        },
+        'player.jukeoroni.video_box': {
+            'handlers': ['file_video_box'],
             # 'propagate': True,
             'level': 'DEBUG',
         },

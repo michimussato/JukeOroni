@@ -110,9 +110,9 @@ class VideoBox(BaseBox):
                                        # dbus_name='org.mpris.MediaPlayer2.omxplayer1',
                                        pause=True,
                                        )
-            self.omxplayer.playEvent += lambda _: self.LOG.info("Play")
-            self.omxplayer.pauseEvent += lambda _: self.LOG.info("Pause")
-            self.omxplayer.stopEvent += lambda _: self.LOG.info("Stop")
+            # self.omxplayer.playEvent += lambda _: self.LOG.info("Play")
+            # self.omxplayer.pauseEvent += lambda _: self.LOG.info("Pause")
+            # self.omxplayer.stopEvent += lambda _: self.LOG.info("Stop")
 
         else:
             self.omxplayer.load(video_file, pause=True)
