@@ -1,38 +1,48 @@
 {# Load Django Bootstrap #}
 {% load django_bootstrap5 %}
 
-{# Load CSS and JavaScript #}
-{% bootstrap_css %}
-{% bootstrap_javascript %}
-
+{% block html_head %}
 <!DOCTYPE html>
 <html lang="en">
+{% endblock html_head %}
 
-{% block head %}
-    <meta charset="UTF-8">
-    <meta http-equiv="refresh" content="10">
-    <link rel="icon" type="image/x-icon" href="/jukeoroni/favicon.ico">
-    <title>Home</title>
-{% endblock head %}
+    <head>
+    {% block head %}
+        {# Load CSS and JavaScript #}
+        {% bootstrap_css %}
+        {% bootstrap_javascript %}
+        <meta charset="UTF-8">
+        <meta http-equiv="refresh" content="10">
+        <link rel="icon" type="image/x-icon" href="/jukeoroni/favicon.ico">
+        <title>Home</title>
+    {% endblock head %}
+    </head>
 
-{% block body %}
-{% endblock body %}
+    <body style="background-color:#{{ bg_color }};">
+    {% block header %}
+    {% endblock header %}
 
-{% block footer %}
-    <hr>
-    <table style="text-align:center;margin-left:auto;margin-right:auto;border-collapse: collapse;">
-        <tr style="border: none;">
-            <td style="border-right: solid 1px #000;border-left: solid 1px #000;padding: 5px 10px;">
-                <a href="/admin" target="_blank">Admin</a>
-            </td>
-            <td style="border-right: solid 1px #000;border-left: solid 1px #000;padding: 5px 10px;">
-                <a href="/transmission" target="_blank">Transmission</a>
-            </td>
-            <td style="border-right: solid 1px #000;border-left: solid 1px #000;padding: 5px 10px;">
-                <a href="/webmin" target="_blank">Webmin</a>
-            </td>
-        </tr>
-    </table>
-{% endblock footer %}
+    {% block body %}
+    {% endblock body %}
 
+    {% block footer %}
+        <hr>
+        <table style="text-align:center;margin-left:auto;margin-right:auto;border-collapse: collapse;">
+            <tr style="border: none;">
+                <td style="border-right: solid 1px #000;border-left: solid 1px #000;padding: 5px 10px;">
+                    <a href="/admin" target="_blank">Admin</a>
+                </td>
+                <td style="border-right: solid 1px #000;border-left: solid 1px #000;padding: 5px 10px;">
+                    <a href="/transmission" target="_blank">Transmission</a>
+                </td>
+                <td style="border-right: solid 1px #000;border-left: solid 1px #000;padding: 5px 10px;">
+                    <a href="/webmin" target="_blank">Webmin</a>
+                </td>
+            </tr>
+        </table>
+    {% endblock footer %}
+    </body>
+
+{% block html_foot %}
 </html>
+{% endblock html_foot %}
