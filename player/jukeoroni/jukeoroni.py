@@ -24,6 +24,10 @@ from player.jukeoroni.settings import Settings
 from player.jukeoroni.images import Resource
 
 
+# TODO:
+#  Thread that restarts other threads in case they died
+
+
 LOG = logging.getLogger(__name__)
 LOG.setLevel(Settings.GLOBAL_LOGGING_LEVEL)
 

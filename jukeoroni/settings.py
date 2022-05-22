@@ -36,7 +36,8 @@ LOGGING = {
     'disable_existing_loggers': False,
     'formatters': {
         'simple': {
-            'format': '[%(asctime)s] [%(levelname)s] [%(threadName)s|%(thread)d] [%(name)s]: %(message)s',
+            'format': '[{asctime}] [{levelname:<8}] [{threadName}|{thread}], File "{pathname}", line {lineno}, in {funcName}:    {message}',
+            'style': '{',
             'datefmt': '%m-%d-%Y %H:%M:%S',
         },
     },
@@ -103,11 +104,41 @@ LOGGING = {
             # 'propagate': False,
             'level': 'DEBUG',
         },
+        'PIL': {
+            'handlers': ['console', 'file'],
+            # 'propagate': True,
+            'level': 'WARNING',
+        },
+        'urllib': {
+            'handlers': ['console', 'file'],
+            # 'propagate': True,
+            'level': 'WARNING',
+        },
+        'urllib3': {
+            'handlers': ['console', 'file'],
+            # 'propagate': True,
+            'level': 'WARNING',
+        },
+        'selenium': {
+            'handlers': ['console', 'file'],
+            # 'propagate': True,
+            'level': 'WARNING',
+        },
         'asyncio': {
             'handlers': ['console', 'file'],
             # 'propagate': True,
             'level': 'WARNING',
         },
+        # 'player.jukeoroni.clock': {
+        #     'handlers': ['console', 'file'],
+        #     # 'propagate': True,
+        #     'level': 'INFO',
+        # },
+        # 'player.jukeoroni.discogs': {
+        #     'handlers': ['file_juke_box'],
+        #     # 'propagate': True,
+        #     'level': 'INFO',
+        # },
         'player.jukeoroni.juke_box': {
             'handlers': ['file_juke_box'],
             # 'propagate': True,
@@ -153,6 +184,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_bootstrap5',
 ]
 
 MIDDLEWARE = [
@@ -170,7 +202,7 @@ ROOT_URLCONF = 'jukeoroni.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [(os.path.join(BASE_DIR, 'templates')), ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

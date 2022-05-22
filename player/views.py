@@ -3,6 +3,7 @@ import os
 import random
 import time
 import io
+from django.shortcuts import render
 from django.db.models.functions import Lower
 from django.http import HttpResponseRedirect, HttpResponse
 from django.views import View
@@ -31,15 +32,15 @@ COLUMN_WIDTH = 101
 
 
 ######################################
-# Comment all this to do DB migrations
+# Comment this block to do DB migrations
 #  as well as:
 #  sudo systemctl stop nginx.service
 jukeoroni = JukeOroni(test=False)
-jukeoroni.turn_on(disable_track_loader=True)
-# jukeoroni.jukebox.set_auto_update_tracklist_on()
-# jukeoroni.meditationbox.set_auto_update_tracklist_on()
-# # jukeoroni.episodicbox.set_auto_update_tracklist_on()
-# # jukeoroni.jukebox.track_list_generator_thread()
+jukeoroni.turn_on(disable_track_loader=Settings.DISABLE_TRACK_LOADER)
+jukeoroni.jukebox.set_auto_update_tracklist_on()
+jukeoroni.meditationbox.set_auto_update_tracklist_on()
+# jukeoroni.episodicbox.set_auto_update_tracklist_on()
+# jukeoroni.jukebox.track_list_generator_thread()
 ######################################
 
 
@@ -196,9 +197,9 @@ class JukeOroniView(View):
             bg_color = get_bg_color(jukeoroni.layout_standby.bg_color)
             context['bg_color'] = bg_color
 
-            ret = get_header(bg_color)
-
             _items_enabled = 0
+
+            context['buttons'] = list()
 
             if any([
                         Settings.ENABLE_JUKEBOX,
@@ -207,71 +208,138 @@ class JukeOroniView(View):
                         Settings.ENABLE_EPISODIC,
                         Settings.ENABLE_VIDEO,
                     ]):
-                ret += '<center>'
-                ret += '<table border="0" cellspacing="0" style="text-align:center;margin-left:auto;margin-right:auto;border-collapse: collapse;">'
-                ret += '<tr style="border: none;">'
-
-                # padding = '2px 5px'
 
                 if Settings.ENABLE_JUKEBOX:
-                    ret += f'<td width="{COLUMN_WIDTH}" style="border-right: solid 1px #000;border-left: solid 1px #000;padding: {padding};">'
-                    ret += f'<button title="JukeBox" style=\"width:100%; height:{BUTTON_HEIGHT}; \" onclick=\"window.location.href = \'/jukeoroni/set_jukebox\';\"><img width="{int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR)}" height="{int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR)}" src="/jukeoroni/buttons_overlay/{os.path.basename(Settings.BUTTONS_ICONS["Player"])}" /></button>\n'
-                    ret += '</td>'
+                    context['buttons'].append(
+                        {
+                            'column_width': COLUMN_WIDTH,
+                            'padding': padding,
+
+                            'button_title': 'JukeBox',
+                            'onclick': 'window.location.href = \'/jukeoroni/set_jukebox\'',
+                            'img_width': int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR),
+                            'img_height': int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR),
+                            'img_src': f'/jukeoroni/buttons_overlay/{os.path.basename(Settings.BUTTONS_ICONS["Player"])}',
+
+                            'button_height': BUTTON_HEIGHT,
+
+                        }
+                    )
                     _items_enabled += 1
 
                 if Settings.ENABLE_RADIO:
-                    ret += f'<td width="{COLUMN_WIDTH}" style="border-right: solid 1px #000;border-left: solid 1px #000;padding: {padding};">'
-                    ret += f'<button title="Radio" style=\"width:100%; height:{BUTTON_HEIGHT}; \" onclick=\"window.location.href = \'/jukeoroni/set_radio\';\"><img width="{int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR)}" height="{int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR)}" src="/jukeoroni/buttons_overlay/{os.path.basename(Settings.BUTTONS_ICONS["Radio"])}" /></button>\n'
-                    ret += '</td>'
+                    context['buttons'].append(
+                        {
+                            'column_width': COLUMN_WIDTH,
+                            'padding': padding,
+
+                            'button_title': 'Radio',
+                            'onclick': 'window.location.href = \'/jukeoroni/set_radio\'',
+                            'img_width': int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR),
+                            'img_height': int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR),
+                            'img_src': f'/jukeoroni/buttons_overlay/{os.path.basename(Settings.BUTTONS_ICONS["Radio"])}',
+
+                            'button_height': BUTTON_HEIGHT,
+
+                        }
+                    )
                     _items_enabled += 1
 
                 if Settings.ENABLE_MEDITATION:
-                    ret += f'<td width="{COLUMN_WIDTH}" style="border-right: solid 1px #000;border-left: solid 1px #000;padding: {padding};">'
-                    ret += f'<button title="MeditationBox" style=\"width:100%; height:{BUTTON_HEIGHT}; \" onclick=\"window.location.href = \'/jukeoroni/set_meditationbox\';\"><img width="{int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR)}" height="{int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR)}" src="/jukeoroni/buttons_overlay/{os.path.basename(Settings.BUTTONS_ICONS["Meditation"])}" /></button>\n'
-                    ret += '</td>'
+                    context['buttons'].append(
+                        {
+                            'column_width': COLUMN_WIDTH,
+                            'padding': padding,
+
+                            'button_title': 'Meditation',
+                            'onclick': 'window.location.href = \'/jukeoroni/set_meditationbox\'',
+                            'img_width': int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR),
+                            'img_height': int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR),
+                            'img_src': f'/jukeoroni/buttons_overlay/{os.path.basename(Settings.BUTTONS_ICONS["Meditation"])}',
+
+                            'button_height': BUTTON_HEIGHT,
+
+                        }
+                    )
                     _items_enabled += 1
 
                 if Settings.ENABLE_AUDIOBOOK:
-                    ret += f'<td width="{COLUMN_WIDTH}" style="border-right: solid 1px #000;border-left: solid 1px #000;padding: {padding};">'
-                    ret += f'<button title="AudiobookBox" style=\"width:100%; height:{BUTTON_HEIGHT}; \" onclick=\"window.location.href = \'/jukeoroni/set_audiobookbox\';\"><img width="{int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR)}" height="{int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR)}" src="/jukeoroni/buttons_overlay/{os.path.basename(Settings.BUTTONS_ICONS["Audiobook"])}" /></button>\n'
-                    ret += '</td>'
+                    context['buttons'].append(
+                        {
+                            'column_width': COLUMN_WIDTH,
+                            'padding': padding,
+
+                            'button_title': 'Audiobook',
+                            'onclick': 'window.location.href = \'/jukeoroni/set_audiobookbox\'',
+                            'img_width': int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR),
+                            'img_height': int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR),
+                            'img_src': f'/jukeoroni/buttons_overlay/{os.path.basename(Settings.BUTTONS_ICONS["Audiobook"])}',
+
+                            'button_height': BUTTON_HEIGHT,
+
+                        }
+                    )
                     _items_enabled += 1
 
                 if Settings.ENABLE_PODCAST:
-                    ret += f'<td width="{COLUMN_WIDTH}" style="border-right: solid 1px #000;border-left: solid 1px #000;padding: {padding};">'
-                    ret += f'<button title="PodcastBox" style=\"width:100%; height:{BUTTON_HEIGHT}; \" onclick=\"window.location.href = \'/jukeoroni/set_podcastbox\';\"><img width="{int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR)}" height="{int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR)}" src="/jukeoroni/buttons_overlay/{os.path.basename(Settings.BUTTONS_ICONS["Podcast"])}" /></button>\n'
-                    ret += '</td>'
+                    context['buttons'].append(
+                        {
+                            'column_width': COLUMN_WIDTH,
+                            'padding': padding,
+
+                            'button_title': 'Podcast',
+                            'onclick': 'window.location.href = \'/jukeoroni/set_podcastbox\'',
+                            'img_width': int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR),
+                            'img_height': int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR),
+                            'img_src': f'/jukeoroni/buttons_overlay/{os.path.basename(Settings.BUTTONS_ICONS["Podcast"])}',
+
+                            'button_height': BUTTON_HEIGHT,
+
+                        }
+                    )
                     _items_enabled += 1
-                    # ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/set_podcastbox\';\">PodcastBox</button>\n'
 
                 if Settings.ENABLE_VIDEO:
-                    ret += f'<td width="{COLUMN_WIDTH}" style="border-right: solid 1px #000;border-left: solid 1px #000;padding: {padding};">'
-                    ret += f'<button title="VideoBox" style=\"width:100%; height:{BUTTON_HEIGHT}; \" onclick=\"window.location.href = \'/jukeoroni/set_videobox\';\"><img width="{int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR)}" height="{int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR)}" src="/jukeoroni/buttons_overlay/{os.path.basename(Settings.BUTTONS_ICONS["Video"])}" /></button>\n'
-                    ret += '</td>'
+                    context['buttons'].append(
+                        {
+                            'column_width': COLUMN_WIDTH,
+                            'padding': padding,
+
+                            'button_title': 'Video',
+                            'onclick': 'window.location.href = \'/jukeoroni/set_videobox\'',
+                            'img_width': int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR),
+                            'img_height': int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR),
+                            'img_src': f'/jukeoroni/buttons_overlay/{os.path.basename(Settings.BUTTONS_ICONS["Video"])}',
+
+                            'button_height': BUTTON_HEIGHT,
+
+                        }
+                    )
                     _items_enabled += 1
 
                 while _items_enabled < 4:
-                    ret += f'<td width="{COLUMN_WIDTH}" style="border-right: solid 1px #000;border-left: solid 1px #000;padding: {padding};">'
-                    _items_enabled += 1
+                    context['buttons'].append(
+                        {
+                            'column_width': COLUMN_WIDTH,
+                            'padding': padding,
 
-                ret += '</tr>'
-                ret += '</table>'
-                ret += '</center>'
+                            'button_title': '',
+                            'onclick': '',
+                            'img_width': None,
+                            'img_height': None,
+                            'img_src': f'',
+
+                            'button_height': BUTTON_HEIGHT,
+
+                        }
+                    )
+                    _items_enabled += 1
 
             img = jukeoroni.layout_standby.get_layout(labels=jukeoroni.LABELS, buttons=False)
             encoded_img_data = encoded_screen(img)
             context['encoded_img_data'] = encoded_img_data
 
-            ret += '<img id="picture" style="display:block;margin-left:auto;margin-right:auto;" src="data:image/jpeg;base64,{0}">\n'.format(str(encoded_img_data).lstrip('b\'').rstrip('\''))
-
-            ret = get_footer(ret)
-
-            ret += '</body>\n'
-            ret += '</html>\n'
-
-            return HttpResponse(ret)
-
-            return render(request=request, template_name='/player/home.html', context=context)
+            return render(request=request, template_name='player/base_player.html', context=context)
 
     def set_jukebox(self):
         global jukeoroni
@@ -660,8 +728,6 @@ class JukeOroniView(View):
             time.sleep(0.1)
 
         return HttpResponseRedirect('/jukeoroni')
-
-
 
     # def pause(self):
     #     global jukeoroni

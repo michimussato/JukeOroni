@@ -1,0 +1,35 @@
+{% extends 'jukeoroni/base.html' %}
+
+{#//https://www.youtube.com/watch?v=qDwdMDQ8oX4&ab_channel=CoreySchafer#}
+<!DOCTYPE html>
+<html lang="en">
+{% block head %}
+    <meta charset="UTF-8">
+    <meta http-equiv="refresh" content="10">
+    <link rel="icon" type="image/x-icon" href="/jukeoroni/favicon.ico">
+    <title>Home</title>
+{% endblock head %}
+
+{% block body %}
+<body style="background-color:#{{ bg_color }};">
+    <table border="0" cellspacing="0" style="text-align:center;margin-left:auto;margin-right:auto;border-collapse: collapse;">
+    <tr style="border: none;">
+    {% for button in buttons %}
+
+        <td width="{{ button.column_width }}" style="border-right: solid 1px #000;border-left: solid 1px #000;padding: {{ button.padding }};">
+            {% if button.button_title != '' %}
+                <button title="{{ button.button_title }}" style="width:100%; height:{{ button.button_height}};" onclick="{{ button.onclick|safe }};">
+                    <img width="{{ button.img_width }}" height="{{ button.img_height }}" src="{{ button.img_src }}">
+                </button>
+            {% endif %}
+        </td>
+
+    {% endfor %}
+    </tr>
+    </table>
+
+    <img id="picture" style="display:block;margin-left:auto;margin-right:auto;" src="data:image/jpeg;base64,{{ encoded_img_data|safe|slice:"2:-1" }}">
+
+{% endblock body %}
+</body>
+</html>

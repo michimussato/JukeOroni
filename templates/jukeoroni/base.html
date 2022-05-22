@@ -1,0 +1,38 @@
+{# Load Django Bootstrap #}
+{% load django_bootstrap5 %}
+
+{# Load CSS and JavaScript #}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+{% block head %}
+    <meta charset="UTF-8">
+    <meta http-equiv="refresh" content="10">
+    <link rel="icon" type="image/x-icon" href="/jukeoroni/favicon.ico">
+    <title>Home</title>
+{% endblock head %}
+
+{% block body %}
+{% endblock body %}
+
+{% block footer %}
+    <hr>
+    <table style="text-align:center;margin-left:auto;margin-right:auto;border-collapse: collapse;">
+        <tr style="border: none;">
+            <td style="border-right: solid 1px #000;border-left: solid 1px #000;padding: 5px 10px;">
+                <a href="/admin" target="_blank">Admin</a>
+            </td>
+            <td style="border-right: solid 1px #000;border-left: solid 1px #000;padding: 5px 10px;">
+                <a href="/transmission" target="_blank">Transmission</a>
+            </td>
+            <td style="border-right: solid 1px #000;border-left: solid 1px #000;padding: 5px 10px;">
+                <a href="/webmin" target="_blank">Webmin</a>
+            </td>
+        </tr>
+    </table>
+{% endblock footer %}
+
+</html>

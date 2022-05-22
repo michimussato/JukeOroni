@@ -165,7 +165,7 @@ box.turn_off()
         assert self.on, f'Turn {self.box_type} on first'
         assert self._track_list_generator_thread is None, '_track_list_generator_thread already running.'
         self._track_list_generator_thread = threading.Thread(target=self.track_list_generator_task)
-        self._track_list_generator_thread.name = f'Track List Generator Process ({self.box_type})'
+        self._track_list_generator_thread.name = f'Track List Generator Thread ({self.box_type})'
         self._track_list_generator_thread.daemon = False
         self._track_list_generator_thread.start()
 

@@ -22,10 +22,8 @@ LOG.setLevel(Settings.GLOBAL_LOGGING_LEVEL)
 class JukeboxTrack(object):
     def __init__(self, django_track, cached=True):
         self.django_track = django_track
-        # self.path = self.django_track.audio_source
         self.path = os.path.join(Settings.MEDIA_ROOT, self.django_track.album.album_type, self.django_track.audio_source)
         LOG.info(self.path)
-        # self.path = u'{0}'.format(str(os.path.join(MUSIC_DIR, self.django_track.audio_source)))
         self.cached = cached
         self.cache_tmp = None
         self.playing_proc = None
@@ -37,6 +35,7 @@ class JukeboxTrack(object):
         self._size = None
         self.cache_tmp = None
         self._cache_task_thread = None
+        self._cache_online_covers_task_thread = None
 
     def __hash__(self):
         # we need this to remove duplicate tracks from track list (self.tracks)
@@ -237,19 +236,12 @@ class JukeboxTrack(object):
     def __del__(self):
         if self.cached:
 
-            """
-            Exception ignored in: <function JukeboxTrack.__del__ at 0xb237aed0>
-            Traceback (most recent call last):
-              File "/data/django/jukeoroni/player/jukeoroni/box_track.py", line 240, in __del__
-                os.remove(self.cache_tmp)
-            TypeError: remove: path should be string, bytes or os.PathLike, not NoneType
-            """
-
-            try:
-                os.remove(self.cache_tmp)
-                LOG.info(f'removed from local filesystem: \"{self.cache_tmp}\"')
-            except (OSError, TypeError):
-                LOG.exception('Cached track could not be deleted:')
+            if self.cache_tmp is not None:
+                try:
+                    os.remove(self.cache_tmp)
+                    LOG.info(f'removed from local filesystem: \"{self.cache_tmp}\"')
+                except (OSError, TypeError):
+                    LOG.exception('Cached track could not be deleted:')
 
     def play(self, jukeoroni):
         try:
@@ -264,7 +256,7 @@ class JukeboxTrack(object):
             LOG.info(f'playback finished: \"{self.path}\"')
             # self.django_track.played += 1
         except Exception:
-            LOG.exception('playback failed: \"{0}\"'.format(self.path))
+            LOG.exception(f'Playback failed: \"{self.path}\"')
         finally:
             # if self.cached:
             #     # TODO add to self.__delete__()
