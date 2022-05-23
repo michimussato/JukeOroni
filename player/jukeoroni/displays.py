@@ -262,6 +262,8 @@ class Standby(Layout):
         #     set_tv_screen()
 
         mc = (255, 255, 255)
+        if not buttons:
+            labels = []
         buttons_overlay = buttons_img_overlay(labels=labels, gradient_color=mc)
         bg = Image.new(mode='RGBA', size=(600, 448), color=self.bg_color)
 
@@ -315,14 +317,13 @@ class Standby(Layout):
 
             bg.paste(_radar_image, _radar_bottom_centered, mask=_radar_image)
 
-        if buttons:
-            bg.paste(buttons_overlay, box=(0, 0), mask=buttons_overlay)
+        bg.paste(buttons_overlay, box=(0, 0), mask=buttons_overlay)
 
         if Settings.DRAW_HOST_INFO:
             _host_info = host_info()
 
             font_size = 16
-            font = ImageFont.truetype(r'/data/django/jukeoroni/player/static/arial_narrow.ttf', size=font_size)
+            font = ImageFont.truetype(Settings.ARIAL, size=font_size)
             length = font.getlength(_host_info)
 
             widget_ip_overlay = Image.new(mode='RGBA', size=bg.size, color=(0, 0, 0, 0))
@@ -362,6 +363,8 @@ class Jukebox(Layout):
 
         mc = mean_color(cover)
 
+        if not buttons:
+            labels = []
         buttons_overlay = buttons_img_overlay(labels, gradient_color=mc)
         bg = Image.new(mode='RGBA', size=(600, 448), color=self.bg_color)
 
@@ -436,15 +439,15 @@ class Jukebox(Layout):
                                             int(448 / 2 - round(Settings.SMALL_WIDGET_SIZE) - round(self.border / 2)))
             bg.paste(_radar_image, box=_radar_bottom_right_centered, mask=_radar_image)
 
-        if buttons:
-            bg.paste(buttons_overlay, box=(0, 0), mask=buttons_overlay)
+        # if buttons:
+        bg.paste(buttons_overlay, box=(0, 0), mask=buttons_overlay)
 
         if Settings.DRAW_HOST_INFO:
 
             _host_info = host_info()
 
             font_size = 16
-            font = ImageFont.truetype(r'/data/django/jukeoroni/player/static/arial_narrow.ttf', size=font_size)
+            font = ImageFont.truetype(Settings.ARIAL, size=font_size)
             length = font.getlength(_host_info)
 
             widget_ip_overlay = Image.new(mode='RGBA', size=bg.size, color=(0, 0, 0, 0))
@@ -465,6 +468,8 @@ class Radio(Layout):
 
         mc = mean_color(cover)
 
+        if not buttons:
+            labels = []
         buttons_overlay = buttons_img_overlay(labels, gradient_color=mc)
         bg = Image.new(mode='RGBA', size=(600, 448), color=self.bg_color)
 
@@ -549,14 +554,13 @@ class Radio(Layout):
             # _radar_bottom_right = (int(600 - w - self.border), self.border)
             bg.paste(_radar_image, box=_radar_bottom_right_centered, mask=_radar_image)
 
-        if buttons:
-            bg.paste(buttons_overlay, box=(0, 0), mask=buttons_overlay)
+        bg.paste(buttons_overlay, box=(0, 0), mask=buttons_overlay)
 
         if Settings.DRAW_HOST_INFO:
             _host_info = host_info()
 
             font_size = 16
-            font = ImageFont.truetype(r'/data/django/jukeoroni/player/static/arial_narrow.ttf', size=font_size)
+            font = ImageFont.truetype(Settings.ARIAL, size=font_size)
             length = font.getlength(_host_info)
 
             widget_ip_overlay = Image.new(mode='RGBA', size=bg.size, color=(0, 0, 0, 0))
@@ -632,7 +636,8 @@ class Meditationbox(Layout):
                 assert isinstance(artist, Image.Image), 'artist cover type must be PIL.Image.Image() (not rotated)'
 
         mc = mean_color(cover)
-
+        if not buttons:
+            labels = []
         buttons_overlay = buttons_img_overlay(labels, gradient_color=mc)
         bg = Image.new(mode='RGBA', size=(600, 448), color=self.bg_color)
 
@@ -786,14 +791,13 @@ Exception Value: broken PNG file (chunk b"Em\xd5'")
                                             # int(0 + 224 / 2 + round(self.border / 2) - round(Settings.SMALL_WIDGET_SIZE / 2)))
             bg.paste(_radar_image, box=_radar_bottom_right_centered, mask=_radar_image)
 
-        if buttons:
-            bg.paste(buttons_overlay, box=(0, 0), mask=buttons_overlay)
+        bg.paste(buttons_overlay, box=(0, 0), mask=buttons_overlay)
 
         if Settings.DRAW_HOST_INFO:
             _host_info = host_info()
 
             font_size = 16
-            font = ImageFont.truetype(r'/data/django/jukeoroni/player/static/arial_narrow.ttf', size=font_size)
+            font = ImageFont.truetype(Settings.ARIAL, size=font_size)
             length = font.getlength(_host_info)
 
             widget_ip_overlay = Image.new(mode='RGBA', size=bg.size, color=(0, 0, 0, 0))
@@ -840,7 +844,8 @@ class Audiobookbox(Layout):
         #
 
         mc = mean_color(cover)
-
+        if not buttons:
+            labels = [0]
         buttons_overlay = buttons_img_overlay(labels, gradient_color=mc)
         bg = Image.new(mode='RGBA', size=(600, 448), color=self.bg_color)
 
@@ -993,14 +998,13 @@ Exception Value: broken PNG file (chunk b"Em\xd5'")
                                             int(448 / 2 - round(Settings.SMALL_WIDGET_SIZE) - round(self.border / 2)))
             bg.paste(_radar_image, box=_radar_bottom_right_centered, mask=_radar_image)
 
-        if buttons:
-            bg.paste(buttons_overlay, box=(0, 0), mask=buttons_overlay)
+        bg.paste(buttons_overlay, box=(0, 0), mask=buttons_overlay)
 
         if Settings.DRAW_HOST_INFO:
             _host_info = host_info()
 
             font_size = 16
-            font = ImageFont.truetype(r'/data/django/jukeoroni/player/static/arial_narrow.ttf', size=font_size)
+            font = ImageFont.truetype(Settings.ARIAL, size=font_size)
             length = font.getlength(_host_info)
 
             widget_ip_overlay = Image.new(mode='RGBA', size=bg.size, color=(0, 0, 0, 0))
@@ -1046,7 +1050,8 @@ class Podcastbox(Layout):
                 assert isinstance(artist, Image.Image), 'artist cover type must be PIL.Image.Image() (not rotated)'
 
         mc = mean_color(cover)
-
+        if not buttons:
+            labels = []
         buttons_overlay = buttons_img_overlay(labels, gradient_color=mc)
         bg = Image.new(mode='RGBA', size=(600, 448), color=self.bg_color)
 
@@ -1126,14 +1131,13 @@ class Podcastbox(Layout):
                                             # int(0 + 224 / 2 + round(self.border / 2) - round(Settings.SMALL_WIDGET_SIZE / 2)))
             bg.paste(_radar_image, box=_radar_bottom_right_centered, mask=_radar_image)
 
-        if buttons:
-            bg.paste(buttons_overlay, box=(0, 0), mask=buttons_overlay)
+        bg.paste(buttons_overlay, box=(0, 0), mask=buttons_overlay)
 
         if Settings.DRAW_HOST_INFO:
             _host_info = host_info()
 
             font_size = 16
-            font = ImageFont.truetype(r'/data/django/jukeoroni/player/static/arial_narrow.ttf', size=font_size)
+            font = ImageFont.truetype(Settings.ARIAL, size=font_size)
             length = font.getlength(_host_info)
 
             widget_ip_overlay = Image.new(mode='RGBA', size=bg.size, color=(0, 0, 0, 0))
@@ -1171,7 +1175,8 @@ class Videobox(Layout):
             #     assert isinstance(artist, Image.Image), 'artist cover type must be PIL.Image.Image() (not rotated)'
 
         mc = mean_color(cover)
-
+        if not buttons:
+            labels = []
         buttons_overlay = buttons_img_overlay(labels, gradient_color=mc)
         bg = Image.new(mode='RGBA', size=(600, 448), color=self.bg_color)
 
@@ -1254,14 +1259,13 @@ class Videobox(Layout):
                                             # int(0 + 224 / 2 + round(self.border / 2) - round(Settings.SMALL_WIDGET_SIZE / 2)))
             bg.paste(_radar_image, box=_radar_bottom_right_centered, mask=_radar_image)
 
-        if buttons:
-            bg.paste(buttons_overlay, box=(0, 0), mask=buttons_overlay)
+        bg.paste(buttons_overlay, box=(0, 0), mask=buttons_overlay)
 
         if Settings.DRAW_HOST_INFO:
             _host_info = host_info()
 
             font_size = 16
-            font = ImageFont.truetype(r'/data/django/jukeoroni/player/static/arial_narrow.ttf', size=font_size)
+            font = ImageFont.truetype(Settings.ARIAL, size=font_size)
             length = font.getlength(_host_info)
 
             widget_ip_overlay = Image.new(mode='RGBA', size=bg.size, color=(0, 0, 0, 0))
