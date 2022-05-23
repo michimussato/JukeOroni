@@ -132,23 +132,49 @@ class Settings:
         },
         'radio': {
             'standby': {
-                'numeric': 1.0,
-                'name': 'radio standby',
-                'buttons': {
-                    'X000': 'Menu',
-                    '0X00': 'Play',
-                    '00X0': 'N//A',
-                    '000X': 'N//A',
+                'random': {
+                    'numeric': 1.0,
+                    'name': 'radio standby random',
+                    'buttons': {
+                        'X000': 'Menu',
+                        '0X00': 'Play',
+                        '00X0': 'N//A',
+                        '000X': 'N//A',
+                    },
+                },
+                # Not used as the radio box only knows "random"
+                'album': {
+                    'numeric': 1.1,
+                    'name': 'radio standby album',
+                    'buttons': {
+                        'X000': 'Menu',
+                        '0X00': 'Play',
+                        '00X0': 'N//A',
+                        '000X': 'N//A',
+                    },
                 },
             },
             'on_air': {
-                'numeric': 1.1,
-                'name': 'radio on_air',
-                'buttons': {
-                    'X000': 'Stop',
-                    '0X00': 'Next',
-                    '00X0': 'N//A',
-                    '000X': 'N//A',
+                'random': {
+                    'numeric': 1.2,
+                    'name': 'radio on_air random',
+                    'buttons': {
+                        'X000': 'Stop',
+                        '0X00': 'Next',
+                        '00X0': 'N//A',
+                        '000X': 'N//A',
+                    },
+                },
+                # Not used as the radio box only knows "random"
+                'album': {
+                    'numeric': 1.3,
+                    'name': 'radio on_air album',
+                    'buttons': {
+                        'X000': 'Stop',
+                        '0X00': 'Next',
+                        '00X0': 'N//A',
+                        '000X': 'N//A',
+                    },
                 },
             },
         },

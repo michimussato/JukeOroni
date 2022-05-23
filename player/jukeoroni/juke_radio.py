@@ -27,6 +27,11 @@ class Radio(object):
         self._media_info = {}
         self._media_info_previous = {}
         self._media_info_thread = None
+        self.loader_mode = 'random'
+
+    @property
+    def box_type(self):
+        return 'radio'
 
     @property
     def media_info(self):
@@ -55,6 +60,10 @@ class Radio(object):
                 return None
         else:
             return None
+
+    # @property
+    # def title(self):
+    #     return self.stream_title
 
     def media_info_updater_thread(self, channel):
         self._media_info_thread = threading.Thread(target=self.media_info_updater_task, kwargs={'Channel': channel})

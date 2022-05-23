@@ -413,8 +413,8 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
                             self._current_time = new_time.strftime('%H:%M')
 
             # RADIO
-            elif self.mode == Settings.MODES['radio']['standby'] \
-                    or self.mode == Settings.MODES['radio']['on_air']:
+            elif self.mode == Settings.MODES['radio']['standby']['random'] \
+                    or self.mode == Settings.MODES['radio']['on_air']['random']:
 
                 if update_mode:
                     update_mode = False
@@ -422,13 +422,13 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
                     if Settings.STATE_WATCHER_IDLE_TIMER:
                         last_mode_change = localtime(now())
 
-                    if self.mode == Settings.MODES['radio']['standby']:
+                    if self.mode == Settings.MODES['radio']['standby']['random']:
                         self.stop()
                         self.eject()
                         self.set_display_radio()
                         # last_mode_change = localtime(now())
 
-                    elif self.mode == Settings.MODES['radio']['on_air']:
+                    elif self.mode == Settings.MODES['radio']['on_air']['random']:
                         if self._next is not None:
                             self.insert(media=self._next)
                             self._next = None
@@ -441,7 +441,7 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
                         self.set_display_radio()
                         # last_mode_change = None
                 else:
-                    if self.mode == Settings.MODES['radio']['standby']:
+                    if self.mode == Settings.MODES['radio']['standby']['random']:
                         # LOG.info(f'last_mode_change: {last_mode_change}')
                         if last_mode_change is not None:
                             # LOG.info(f'{last_mode_change + datetime.timedelta(minutes=Settings.STATE_WATCHER_IDLE_TIMER) < new_time}')
@@ -1022,7 +1022,7 @@ May  5 15:06:28 jukeoroni gunicorn[812]: AssertionError
     def play(self):
         assert self.playback_proc is None, 'there is an active playback. stop() first.'
 
-        if self.mode == Settings.MODES['radio']['on_air']:
+        if self.mode == Settings.MODES['radio']['on_air']['random']:
             assert self.inserted_media is not None, 'no media inserted. insert media first.'
             hdr = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64)'}
             req = urllib.request.Request(self.inserted_media.url, headers=hdr)
@@ -1037,7 +1037,7 @@ May  5 15:06:28 jukeoroni gunicorn[812]: AssertionError
                 bad_channel.last_played = False
                 bad_channel.is_enabled = False
                 bad_channel.save()
-                self.mode = Settings.MODES['radio']['standby']
+                self.mode = Settings.MODES['radio']['standby']['random']
                 self.set_display_radio()
                 return
 
@@ -1387,7 +1387,7 @@ May  5 15:06:28 jukeoroni gunicorn[812]: AssertionError
                 self.mode = Settings.MODES['jukebox']['standby'][self.jukebox.loader_mode]
                 return
             elif button_mapped == '0X00':
-                self.mode = Settings.MODES['radio']['standby']
+                self.mode = Settings.MODES['radio']['standby']['random']
                 return
             elif button_mapped == '00X0':
                 self.mode = Settings.MODES['meditationbox']['standby'][self.meditationbox.loader_mode]
@@ -1399,21 +1399,21 @@ May  5 15:06:28 jukeoroni gunicorn[812]: AssertionError
 
         # Radio
         # TODO: pause/resume
-        elif self.mode == Settings.MODES['radio']['standby']:
+        elif self.mode == Settings.MODES['radio']['standby']['random']:
             if button_mapped == 'X000':
-                self.mode = Settings.MODES['jukeoroni']['standby']
+                self.mode = Settings.MODES['jukeoroni']['standby'][self.radio.loader_mode]
                 return
             elif button_mapped == '0X00':
-                self.mode = Settings.MODES['radio']['on_air']
+                self.mode = Settings.MODES['radio']['on_air']['random']
                 return
             elif button_mapped == '00X0':
                 return
             elif button_mapped == '000X':
                 return
             return
-        elif self.mode == Settings.MODES['radio']['on_air']:
+        elif self.mode == Settings.MODES['radio']['on_air']['random']:
             if button_mapped == 'X000':
-                self.mode = Settings.MODES['radio']['standby']
+                self.mode = Settings.MODES['radio']['standby']['random']
                 return
             elif button_mapped == '0X00':
                 self._flag_next = True

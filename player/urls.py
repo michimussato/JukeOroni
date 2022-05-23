@@ -1,14 +1,15 @@
 from django.urls import path
-from player.views import JukeOroniView
+from player.views import JukeOroniView, BoxView
 
 
 urlpatterns = [
     # Jukebox
     path('', JukeOroniView.as_view(), name='jukeoroni_index'),
-    path('jukebox/', JukeOroniView.box_index, name='jukebox'),
-    path('meditationbox/', JukeOroniView.box_index, name='meditationbox'),
-    path('podcastbox/', JukeOroniView.box_index, name='podcastbox'),
-    path('videobox/', JukeOroniView.box_index, name='videobox'),
+    path('jukebox/', BoxView.as_view(), name='jukebox'),
+    path('radio/', BoxView.as_view(), name='radio'),
+    path('meditationbox/', BoxView.as_view(), name='meditationbox'),
+    path('podcastbox/', BoxView.as_view(), name='podcastbox'),
+    path('videobox/', BoxView.as_view(), name='videobox'),
     # path('audiobookbox/', JukeOroniView.box_index, name='audiobookbox'),
     path('jukebox/<int:queue_index>/pop/', JukeOroniView.pop_track_from_queue, name='jukebox pop track'),
     path('meditationbox/<int:queue_index>/pop/', JukeOroniView.pop_track_from_queue, name='meditationbox pop track'),
@@ -64,7 +65,6 @@ urlpatterns = [
     # path('meditationbox/tracks/', JukeOroniView.tracks, name='player_tracks'),
 
     # Radio
-    path('radio/', JukeOroniView.radio_index, name='radio'),
     path('radio/<str:display_name_short>/play/', JukeOroniView.radio_play, name='radio_play'),
     path('radio/stop/', JukeOroniView.radio_stop, name='radio_stop'),
 
