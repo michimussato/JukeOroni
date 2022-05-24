@@ -129,6 +129,11 @@ LOGGING = {
             # 'propagate': True,
             'level': 'WARNING',
         },
+        'omxplayer': {
+            'handlers': ['console', 'file'],
+            # 'propagate': True,
+            'level': 'WARNING',
+        },
         # 'player.jukeoroni.clock': {
         #     'handlers': ['console', 'file'],
         #     # 'propagate': True,

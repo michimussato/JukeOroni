@@ -9,6 +9,8 @@ import urllib.error
 import RPi.GPIO as GPIO
 from django.utils.timezone import localtime, now
 from inky.inky_uc8159 import Inky  # , BLACK
+
+import player.models
 from player.jukeoroni.juke_radio import Radio
 from player.jukeoroni.juke_box import JukeBox
 from player.jukeoroni.meditation_box import MeditationBox
@@ -996,13 +998,17 @@ May  5 15:06:28 jukeoroni gunicorn[812]: AssertionError
         assert self.on, 'JukeOroni is OFF. turn_on() first.'
         assert self.inserted_media is None, f'There is a medium inserted already: {self.inserted_media}'
         # TODO: add types to tuple
-        assert isinstance(media, (Channel, JukeboxTrack)), 'can only insert Channel model or JukeboxTrack object'
+        assert isinstance(media, (Channel, JukeboxTrack, player.models.Video)), 'can only insert Channel model or JukeboxTrack object'
 
         self.inserted_media = media
         LOG.info(f'Media inserted: {str(media)} (type {str(type(media))})')
 
         if isinstance(media, Channel):
             pass
+
+        elif isinstance(media, player.models.Video):
+            assert Settings.ENABLE_VIDEO is True, 'VideoBox is disabled'
+            self.inserted_media = media
 
         elif isinstance(media, JukeboxTrack):
             if self._playback_thread is not None:
@@ -1021,6 +1027,9 @@ May  5 15:06:28 jukeoroni gunicorn[812]: AssertionError
 
     def play(self):
         assert self.playback_proc is None, 'there is an active playback. stop() first.'
+
+        if isinstance(self.inserted_media, player.models.Video):
+            self.inserted_media.play()
 
         if self.mode == Settings.MODES['radio']['on_air']['random']:
             assert self.inserted_media is not None, 'no media inserted. insert media first.'
@@ -1114,6 +1123,9 @@ May  5 15:06:28 jukeoroni gunicorn[812]: AssertionError
                 or self.mode == Settings.MODES['audiobookbox']['on_air'][self.audiobookbox.loader_mode]:
 
             self.playback_proc = None
+
+        elif isinstance(self.inserted_media, player.models.Video):
+            self.inserted_media.stop()
 
     def next(self, media=None):
         assert self.inserted_media is not None, 'Can only go to next if media is inserted.'

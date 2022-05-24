@@ -861,11 +861,14 @@ class JukeOroniView(View):
             if jukeoroni.mode != Settings.MODES[box.box_type]['standby']['random']:
                 jukeoroni.mode = Settings.MODES[box.box_type]['standby']['random']
                 time.sleep(1.0)
-            # video = Video.objects.get(video_title=video_title)
-            jukeoroni.videobox.omx_player_thread(video_file=os.path.join(Settings.VIDEO_DIR, video.video_source))
-            # jukeoroni.videobox.omxplayer.load(source=os.path.join(Settings.VIDEO_DIR, video.video_source), pause=True)
 
-        while jukeoroni.videobox.omxplayer is None:
+            jukeoroni.insert(video)
+            # video = Video.objects.get(video_title=video_title)
+            # jukeoroni.videobox.omx_player_thread(video_file=os.path.join(Settings.VIDEO_DIR, video.video_source))
+            # jukeoroni.videobox.omxplayer.load(source=os.path.join(Settings.VIDEO_DIR, video.video_source), pause=True)
+            jukeoroni.play()
+
+        while video.omxplayer is None:
             time.sleep(0.1)
 
         return HttpResponseRedirect('/jukeoroni')

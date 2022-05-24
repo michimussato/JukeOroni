@@ -1,9 +1,29 @@
 from django.db import models
+from pathlib import Path
+import threading
+from omxplayer.player import OMXPlayer
+
+from jukeoroni.settings import Settings
+
+
+# Abstract classes here
+class JukeOroniMediumAbstract(models.Model):
+
+    class Meta:
+        abstract = True
+
+    def play(self):
+        raise NotImplementedError()
+
+    def stop(self):
+        raise NotImplementedError()
+
+    @property
+    def source_file(self):
+        raise NotImplementedError()
 
 
 # Create your models here.
-
-
 class Artist(models.Model):
     name = models.CharField(max_length=200, unique=True, blank=False, null=False)
     cover_online = models.CharField(max_length=200, unique=False, blank=True, null=True)
@@ -43,9 +63,6 @@ class Track(models.Model):
 
     def __repr__(self):
         return self.audio_source
-
-    # def album_title(self):
-    #     return self.album.album_title
 
 
 class Station(models.Model):
@@ -126,6 +143,46 @@ class Episode(models.Model):
 #     index = models.Index
 
 
-class Video(models.Model):
+class Video(JukeOroniMediumAbstract):
     video_source = models.CharField(max_length=200, unique=True, blank=False, null=False)
     video_title = models.CharField(max_length=200, unique=True, blank=False, null=False)
+
+    """
+    Custom methods and attributes
+    Could be solved with inheritance too, but this
+    seems more elegant
+    """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.omxplayer = None
+        self._start_paused = True
+
+    def play(self):
+        self._omxplayer_thread = threading.Thread(target=self._play)
+        self._omxplayer_thread.name = f'OMXPlayer Playback Thread ({self.video_title})'
+        self._omxplayer_thread.daemon = False
+        self._omxplayer_thread.start()
+
+    def _play(self):
+        self.omxplayer = OMXPlayer(
+            self.source_file.as_posix(),
+            args=['--no-keys', '--adev', Settings.AUDIO_OUT],
+            # dbus_name='org.mpris.MediaPlayer2.omxplayer1',
+            pause=self._start_paused,
+        )
+
+    def stop(self):
+        """Stop the playback; will quit the Player"""
+        if isinstance(self.omxplayer, OMXPlayer):
+            if self.omxplayer.is_playing():
+                self.omxplayer.stop()
+                self.omxplayer = None
+
+    def play_pause(self):
+        if isinstance(self.omxplayer, OMXPlayer):
+            self.omxplayer.play_pause()
+
+    @property
+    def source_file(self):
+        return Path(Settings.VIDEO_DIR) / self.video_source
