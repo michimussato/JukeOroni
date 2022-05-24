@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django_object_actions import DjangoObjectActions
 
 
 # Register your models here.
@@ -106,9 +107,37 @@ class TrackAdmin(admin.ModelAdmin):
     artist_name.short_description = 'Artist'
 
 
-class VideoAdmin(admin.ModelAdmin):
+class VideoAdmin(DjangoObjectActions, admin.ModelAdmin):
+    video = None
+
+    def play_pause(self, request, obj):
+        if isinstance(self.video, Video) and self.video is not obj:
+            self._stop()
+            self.video = None
+
+        if self.video is None:
+            self.video = obj
+            self.video.play()
+        else:
+            self.video.play_pause()
+
+    def _stop(self):
+        self.video.stop()
+        self.video = None
+
+    def stop(self, request, obj):
+        if self.video is not None:
+            self.video.stop()
+            self.video = None
+
+    play_pause.label = 'Play/Pause'
+    # play_pause.short_description = 'Desc'
+
+    stop.label = 'Stop'
+
     list_display = ('video_title', 'video_source')
     search_fields = ['video_title', 'video_source']
+    change_actions = ('play_pause', 'stop')
 
 
 admin.site.register(Artist, AristAdmin)

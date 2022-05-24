@@ -16,7 +16,7 @@ from player.jukeoroni.juke_box import JukeBox
 from player.jukeoroni.meditation_box import MeditationBox
 from player.jukeoroni.audiobook_box import AudiobookBox
 from player.jukeoroni.podcast_box import PodcastBox
-from player.jukeoroni.video_box import VideoBox
+# from player.jukeoroni.video_box import VideoBox
 # from player.jukeoroni.displays import Off as OffLayout
 from player.jukeoroni.displays import Standby as StandbyLayout
 from player.jukeoroni.displays import set_tv_screen
@@ -115,7 +115,7 @@ j.turn_off()
         self.meditationbox = MeditationBox(jukeoroni=self)
         self.audiobookbox = AudiobookBox(jukeoroni=self)
         self.podcastbox = PodcastBox(jukeoroni=self)
-        self.videobox = VideoBox(jukeoroni=self)
+        # self.videobox = VideoBox(jukeoroni=self)
 
         self.playback_proc = None
         self.inserted_media = None
@@ -276,26 +276,26 @@ j.turn_off()
                     LOG.exception('inserted_media problem: ')
             self.set_image(image=bg)
 
-    def set_display_video(self):
-        """
-        j.set_display_video()
-        """
-        # return
-        if not self.test:
-
-            # need to add None too, otherwise we might end up with
-            # NoneType Error for self.inserted_media.cover_album
-            if self.mode == Settings.MODES['videobox']['standby']['random']:
-                bg = self.videobox.layout.get_layout(labels=self.LABELS)
-            elif self.mode == Settings.MODES['videobox']['on_air']['random'] \
-                    or self.mode == Settings.MODES['videobox']['on_air']['pause']:
-                bg = self.videobox.layout.get_layout(labels=self.LABELS, cover=Resource().VIDEO_ON_AIR_DEFAULT_IMAGE)
-                # try:
-                #     bg = self.videobox.layout.get_layout(labels=self.LABELS)
-                # except AttributeError:
-                #     bg = self.videobox.layout.get_layout(labels=self.LABELS, loading=True)
-                #     LOG.exception('inserted_media problem: ')
-            self.set_image(image=bg)
+    # def set_display_video(self):
+    #     """
+    #     j.set_display_video()
+    #     """
+    #     # return
+    #     if not self.test:
+    #
+    #         # need to add None too, otherwise we might end up with
+    #         # NoneType Error for self.inserted_media.cover_album
+    #         if self.mode == Settings.MODES['videobox']['standby']['random']:
+    #             bg = self.videobox.layout.get_layout(labels=self.LABELS)
+    #         elif self.mode == Settings.MODES['videobox']['on_air']['random'] \
+    #                 or self.mode == Settings.MODES['videobox']['on_air']['pause']:
+    #             bg = self.videobox.layout.get_layout(labels=self.LABELS, cover=Resource().VIDEO_ON_AIR_DEFAULT_IMAGE)
+    #             # try:
+    #             #     bg = self.videobox.layout.get_layout(labels=self.LABELS)
+    #             # except AttributeError:
+    #             #     bg = self.videobox.layout.get_layout(labels=self.LABELS, loading=True)
+    #             #     LOG.exception('inserted_media problem: ')
+    #         self.set_image(image=bg)
     ############################################
 
     """
@@ -686,143 +686,143 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
                             self.set_display_audiobook()
                             self._current_time = new_time.strftime('%H:%M')
 
-            # VIDEOBOX STANDBY
-            elif self.mode == Settings.MODES['videobox']['standby']['random']:
-
-                if update_mode:
-                    update_mode = False
-
-                    if self.videobox.omxplayer is not None:
-
-                        if self.videobox.omxplayer.playback_status() in ['Playing', 'Paused']:
-                            # self.videobox.omxplayer.stop()
-                            self.videobox.omxplayer.quit()
-                            self.videobox._omxplayer_thread.join()
-                            self.videobox.omxplayer = None
-                    #
-                    # self.videobox.omxplayer.set_position(0.0)
-                    # time.sleep(0.5)
-                    # self.videobox.omxplayer.pause()
-                    # self.videobox.omxplayer.set_position(0.0)
-
-                    if Settings.STATE_WATCHER_IDLE_TIMER:
-                        last_mode_change = localtime(now())
-
-                    # if self.mode == Settings.MODES['videobox']['standby']['random']:
-                    #     # self.stop()
-                    #     # self.eject()
-                    #     if self.videobox.loader_mode != 'random':
-                    #         self.videobox.set_loader_mode_random()
-                        # self.set_display_jukebox()
-
-                    # elif self.mode == Settings.MODES['videobox']['standby']['album']:
-                    #     self.stop()
-                    #     self.eject()
-                    #     if self.audiobookbox.loader_mode != 'album':
-                    #         self.audiobookbox.set_loader_mode_album()
-
-                    self.set_display_video()
-
-                else:
-                    # LOG.info(f'last_mode_change: {last_mode_change}')
-                    if last_mode_change is not None:
-                        # LOG.info(f'{last_mode_change + datetime.timedelta(minutes=Settings.STATE_WATCHER_IDLE_TIMER) < new_time}')
-
-                        if last_mode_change + datetime.timedelta(minutes=Settings.STATE_WATCHER_IDLE_TIMER) < new_time:
-                            LOG.info('Setting mode to jukeoroni standby due to idle...')
-                            last_mode_change = None
-                            self.mode = Settings.MODES['jukeoroni']['standby']
-                            self.set_display_standby()
-
-                    elif self._current_time != new_time.strftime('%H:%M'):
-                        if self._current_time is None or (int(new_time.strftime('%H:%M')[-2:])) % Settings.CLOCK_UPDATE_INTERVAL == 0:
-                            LOG.info('Display/Clock update.')
-                            self.set_display_video()
-                            self._current_time = new_time.strftime('%H:%M')
-
-            # VIDEOBOX PAUSE
-            elif self.mode == Settings.MODES['videobox']['on_air']['pause']:
-
-                if update_mode:
-                    update_mode = False
-
-                    while self.videobox.omxplayer is None:
-                        time.sleep(0.5)
-
-                    if self.videobox.omxplayer.is_playing():
-                        self.videobox.omxplayer.pause()
-
-                    if Settings.STATE_WATCHER_IDLE_TIMER:
-                        last_mode_change = localtime(now())
-
-                    # if self.mode == Settings.MODES['videobox']['on_air']['pause']:
-                        # self.stop()
-                        # self.eject()
-                        # if self.videobox.loader_mode != 'random':
-                        #     self.videobox.set_loader_mode_random()
-                        # self.set_display_jukebox()
-
-                    # elif self.mode == Settings.MODES['videobox']['standby']['album']:
-                    #     self.stop()
-                    #     self.eject()
-                    #     if self.audiobookbox.loader_mode != 'album':
-                    #         self.audiobookbox.set_loader_mode_album()
-
-                    self.set_display_video()
-
-                else:
-                    # LOG.info(f'last_mode_change: {last_mode_change}')
-                    if last_mode_change is not None:
-                        # LOG.info(f'{last_mode_change + datetime.timedelta(minutes=Settings.STATE_WATCHER_IDLE_TIMER) < new_time}')
-
-                        if last_mode_change + datetime.timedelta(minutes=Settings.STATE_WATCHER_IDLE_TIMER) < new_time:
-                            LOG.info('Setting mode to jukeoroni standby due to idle...')
-                            last_mode_change = None
-                            self.mode = Settings.MODES['jukeoroni']['standby']
-                            self.set_display_standby()
-
-                    elif self._current_time != new_time.strftime('%H:%M'):
-                        if self._current_time is None or (int(new_time.strftime('%H:%M')[-2:])) % Settings.CLOCK_UPDATE_INTERVAL == 0:
-                            LOG.info('Display/Clock update.')
-                            self.set_display_video()
-                            self._current_time = new_time.strftime('%H:%M')
-
-            # VIDEO ON_AIR
-            elif self.mode == Settings.MODES['videobox']['on_air']['random']:
-
-                # Make sure, meditation keeps playing if in mode without
-                # considering the update_mode flag
-
-                # if self.mode == Settings.MODES['videobox']['on_air']['random']:
-                # if self.videobox.loader_mode != 'random':
-                #     self.videobox.set_loader_mode_random()
-                    # self.play_jukebox()
-                    # LOG.info(f'Playing: {self.jukebox.playing_track}')
-
-                # elif self.mode == Settings.MODES['audiobookbox']['on_air']['album']:
-                #     if self.videobox.loader_mode != 'album':
-                #         self.videobox.set_loader_mode_album()
-
-                # self.videobox.omxplayer.set_position(0.0)
-                # self.videobox.omxplayer.play()
-                # LOG.info(f'Playing: {self.jukebox.playing_track}')
-
-                if update_mode:
-                    update_mode = False
-                    # self.videobox.omxplayer.set_position(0.0)
-                    while self.videobox.omxplayer is None:
-                        time.sleep(0.5)
-
-                    if not self.videobox.omxplayer.is_playing():
-                        self.videobox.omxplayer.play()
-                    self.set_display_video()
-
-                else:
-                    if self._current_time != new_time.strftime('%H:%M'):
-                        if self._current_time is None or (int(new_time.strftime('%H:%M')[-2:])) % Settings.CLOCK_UPDATE_INTERVAL == 0:
-                            LOG.info('Display/Clock update.')
-                            self.set_display_video()
-                            self._current_time = new_time.strftime('%H:%M')
+            # # VIDEOBOX STANDBY
+            # elif self.mode == Settings.MODES['videobox']['standby']['random']:
+            #
+            #     if update_mode:
+            #         update_mode = False
+            #
+            #         if self.videobox.omxplayer is not None:
+            #
+            #             if self.videobox.omxplayer.playback_status() in ['Playing', 'Paused']:
+            #                 # self.videobox.omxplayer.stop()
+            #                 self.videobox.omxplayer.quit()
+            #                 self.videobox._omxplayer_thread.join()
+            #                 self.videobox.omxplayer = None
+            #         #
+            #         # self.videobox.omxplayer.set_position(0.0)
+            #         # time.sleep(0.5)
+            #         # self.videobox.omxplayer.pause()
+            #         # self.videobox.omxplayer.set_position(0.0)
+            #
+            #         if Settings.STATE_WATCHER_IDLE_TIMER:
+            #             last_mode_change = localtime(now())
+            #
+            #         # if self.mode == Settings.MODES['videobox']['standby']['random']:
+            #         #     # self.stop()
+            #         #     # self.eject()
+            #         #     if self.videobox.loader_mode != 'random':
+            #         #         self.videobox.set_loader_mode_random()
+            #             # self.set_display_jukebox()
+            #
+            #         # elif self.mode == Settings.MODES['videobox']['standby']['album']:
+            #         #     self.stop()
+            #         #     self.eject()
+            #         #     if self.audiobookbox.loader_mode != 'album':
+            #         #         self.audiobookbox.set_loader_mode_album()
+            #
+            #         self.set_display_video()
+            #
+            #     else:
+            #         # LOG.info(f'last_mode_change: {last_mode_change}')
+            #         if last_mode_change is not None:
+            #             # LOG.info(f'{last_mode_change + datetime.timedelta(minutes=Settings.STATE_WATCHER_IDLE_TIMER) < new_time}')
+            #
+            #             if last_mode_change + datetime.timedelta(minutes=Settings.STATE_WATCHER_IDLE_TIMER) < new_time:
+            #                 LOG.info('Setting mode to jukeoroni standby due to idle...')
+            #                 last_mode_change = None
+            #                 self.mode = Settings.MODES['jukeoroni']['standby']
+            #                 self.set_display_standby()
+            #
+            #         elif self._current_time != new_time.strftime('%H:%M'):
+            #             if self._current_time is None or (int(new_time.strftime('%H:%M')[-2:])) % Settings.CLOCK_UPDATE_INTERVAL == 0:
+            #                 LOG.info('Display/Clock update.')
+            #                 self.set_display_video()
+            #                 self._current_time = new_time.strftime('%H:%M')
+            #
+            # # VIDEOBOX PAUSE
+            # elif self.mode == Settings.MODES['videobox']['on_air']['pause']:
+            #
+            #     if update_mode:
+            #         update_mode = False
+            #
+            #         while self.videobox.omxplayer is None:
+            #             time.sleep(0.5)
+            #
+            #         if self.videobox.omxplayer.is_playing():
+            #             self.videobox.omxplayer.pause()
+            #
+            #         if Settings.STATE_WATCHER_IDLE_TIMER:
+            #             last_mode_change = localtime(now())
+            #
+            #         # if self.mode == Settings.MODES['videobox']['on_air']['pause']:
+            #             # self.stop()
+            #             # self.eject()
+            #             # if self.videobox.loader_mode != 'random':
+            #             #     self.videobox.set_loader_mode_random()
+            #             # self.set_display_jukebox()
+            #
+            #         # elif self.mode == Settings.MODES['videobox']['standby']['album']:
+            #         #     self.stop()
+            #         #     self.eject()
+            #         #     if self.audiobookbox.loader_mode != 'album':
+            #         #         self.audiobookbox.set_loader_mode_album()
+            #
+            #         self.set_display_video()
+            #
+            #     else:
+            #         # LOG.info(f'last_mode_change: {last_mode_change}')
+            #         if last_mode_change is not None:
+            #             # LOG.info(f'{last_mode_change + datetime.timedelta(minutes=Settings.STATE_WATCHER_IDLE_TIMER) < new_time}')
+            #
+            #             if last_mode_change + datetime.timedelta(minutes=Settings.STATE_WATCHER_IDLE_TIMER) < new_time:
+            #                 LOG.info('Setting mode to jukeoroni standby due to idle...')
+            #                 last_mode_change = None
+            #                 self.mode = Settings.MODES['jukeoroni']['standby']
+            #                 self.set_display_standby()
+            #
+            #         elif self._current_time != new_time.strftime('%H:%M'):
+            #             if self._current_time is None or (int(new_time.strftime('%H:%M')[-2:])) % Settings.CLOCK_UPDATE_INTERVAL == 0:
+            #                 LOG.info('Display/Clock update.')
+            #                 self.set_display_video()
+            #                 self._current_time = new_time.strftime('%H:%M')
+            #
+            # # VIDEO ON_AIR
+            # elif self.mode == Settings.MODES['videobox']['on_air']['random']:
+            #
+            #     # Make sure, meditation keeps playing if in mode without
+            #     # considering the update_mode flag
+            #
+            #     # if self.mode == Settings.MODES['videobox']['on_air']['random']:
+            #     # if self.videobox.loader_mode != 'random':
+            #     #     self.videobox.set_loader_mode_random()
+            #         # self.play_jukebox()
+            #         # LOG.info(f'Playing: {self.jukebox.playing_track}')
+            #
+            #     # elif self.mode == Settings.MODES['audiobookbox']['on_air']['album']:
+            #     #     if self.videobox.loader_mode != 'album':
+            #     #         self.videobox.set_loader_mode_album()
+            #
+            #     # self.videobox.omxplayer.set_position(0.0)
+            #     # self.videobox.omxplayer.play()
+            #     # LOG.info(f'Playing: {self.jukebox.playing_track}')
+            #
+            #     if update_mode:
+            #         update_mode = False
+            #         # self.videobox.omxplayer.set_position(0.0)
+            #         while self.videobox.omxplayer is None:
+            #             time.sleep(0.5)
+            #
+            #         if not self.videobox.omxplayer.is_playing():
+            #             self.videobox.omxplayer.play()
+            #         self.set_display_video()
+            #
+            #     else:
+            #         if self._current_time != new_time.strftime('%H:%M'):
+            #             if self._current_time is None or (int(new_time.strftime('%H:%M')[-2:])) % Settings.CLOCK_UPDATE_INTERVAL == 0:
+            #                 LOG.info('Display/Clock update.')
+            #                 self.set_display_video()
+            #                 self._current_time = new_time.strftime('%H:%M')
 
             time.sleep(Settings.STATE_WATCHER_CADENCE)
 

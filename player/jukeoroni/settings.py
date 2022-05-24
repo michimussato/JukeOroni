@@ -94,7 +94,7 @@ class Settings:
     ENABLE_PODCAST = False
     ENABLE_AUDIOBOOK = False
     ENABLE_EPISODIC = False
-    ENABLE_VIDEO = True
+    ENABLE_VIDEO = False
 
     ENABLE_TV_SCREEN_UPDATER = False
     TV_SCREEN_UPDATER_CADENCE = 5.0  # Seconds

@@ -6,6 +6,18 @@ from omxplayer.player import OMXPlayer
 from jukeoroni.settings import Settings
 
 
+# # Create singleton OMXPlayer
+# class JukeOroniOMX(OMXPlayer):
+#     _instance = None
+#
+#     def __new__(cls, *args, **kwargs):
+#         if cls._instance is None:
+#             cls._instance = super(JukeOroniOMX, cls).__new__(cls, *args, **kwargs)
+#             return cls._instance
+#         else:
+#             raise Exception('A OMXPlayer instance already exists.')
+
+
 # Abstract classes here
 class JukeOroniMediumAbstract(models.Model):
 
@@ -156,7 +168,7 @@ class Video(JukeOroniMediumAbstract):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.omxplayer = None
-        self._start_paused = True
+        self._start_paused = False
 
     def play(self):
         self._omxplayer_thread = threading.Thread(target=self._play)
