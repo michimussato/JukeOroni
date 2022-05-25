@@ -37,8 +37,8 @@ COLUMN_WIDTH = 101
 #  sudo systemctl stop nginx.service
 jukeoroni = JukeOroni(test=False)
 jukeoroni.turn_on(disable_track_loader=Settings.DISABLE_TRACK_LOADER)
-# jukeoroni.jukebox.set_auto_update_tracklist_on()
-# jukeoroni.meditationbox.set_auto_update_tracklist_on()
+jukeoroni.jukebox.set_auto_update_tracklist_on()
+jukeoroni.meditationbox.set_auto_update_tracklist_on()
 # jukeoroni.episodicbox.set_auto_update_tracklist_on()
 # jukeoroni.jukebox.track_list_generator_thread()
 ######################################
@@ -154,6 +154,11 @@ class JukeOroniView(View):
         global jukeoroni
 
         context = dict()
+
+        try:
+            jukeoroni.mode
+        except (NameError,):
+            return HttpResponse('JukeOroni web interface is not available.')
 
         if jukeoroni.mode == Settings.MODES['radio']['standby']['random'] \
                 or jukeoroni.mode == Settings.MODES['radio']['on_air']['random']:
@@ -1255,6 +1260,11 @@ class BoxView(View):
         global jukeoroni
 
         context = dict()
+
+        try:
+            jukeoroni.mode
+        except (NameError, ):
+            return HttpResponse('JukeOroni web interface is not available.')
 
         if not jukeoroni.mode == Settings.MODES['jukebox']['standby']['random'] \
                 and not jukeoroni.mode == Settings.MODES['jukebox']['standby']['album'] \

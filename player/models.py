@@ -1,9 +1,19 @@
+import time
+
 from django.db import models
 from pathlib import Path
 import threading
+import logging
 from omxplayer.player import OMXPlayer
 
+from player.models_mixins import JukeOroniMediumAbstract
 from jukeoroni.settings import Settings
+# from jukeoroni.settings
+# from player.jukeoroni.settings import LOG
+
+
+LOG = logging.getLogger(__name__)
+LOG.setLevel(Settings.GLOBAL_LOGGING_LEVEL)
 
 
 # # Create singleton OMXPlayer
@@ -158,6 +168,7 @@ class Episode(models.Model):
 class Video(JukeOroniMediumAbstract):
     video_source = models.CharField(max_length=200, unique=True, blank=False, null=False)
     video_title = models.CharField(max_length=200, unique=True, blank=False, null=False)
+    is_playing = models.BooleanField(default=False)
 
     """
     Custom methods and attributes

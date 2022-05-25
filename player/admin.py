@@ -1,9 +1,15 @@
+import logging
 from django.contrib import admin
 from django_object_actions import DjangoObjectActions
+from jukeoroni.settings import Settings
 
 
 # Register your models here.
 from .models import Artist, Album, Track, Channel, Station, Podcast, Episode, Video
+
+
+LOG = logging.getLogger(__name__)
+LOG.setLevel(Settings.DJANGO_LOGGING_LEVEL)
 
 
 """
@@ -111,24 +117,116 @@ class VideoAdmin(DjangoObjectActions, admin.ModelAdmin):
     video = None
 
     def play_pause(self, request, obj):
-        if isinstance(self.video, Video) and self.video is not obj:
-            self._stop()
-            self.video = None
+        if isinstance(self.video, Video) and self.video != obj:
+            LOG.warning(f'Looks like a different video {self.video.video_title} is still playing...')
+            self.stop(request, obj)
+            # self.video = None
 
         if self.video is None:
+            LOG.warning(f'Starting playback of {obj.video_title} now...')
             self.video = obj
             self.video.play()
         else:
-            self.video.play_pause()
+            LOG.warning(f'{obj.video_title} is currently playing.')
+
+        LOG.warning('done')
+        # else:
+        #     self.video.play_pause()
 
     def _stop(self):
         self.video.stop()
         self.video = None
 
     def stop(self, request, obj):
+        LOG.warning(f'Trying to stop {self.video.video_title}...')
         if self.video is not None:
-            self.video.stop()
+            LOG.warning(f'Stopping {self.video.video_title}...')
+            obj.stop()
+            try:
+                # This is not working in case we want
+                # we play matrix, go to guardians and play it,
+                # and go back to matrix to play it again
+
+                # play/pause matrix
+                # go to guardians
+                # play/pause guardians
+                # go to matrix
+                # play/pause matrix
+                # error
+
+                # maybe too fast? sleep?
+
+                # it does work in case we start a movie and stop it
+                # properly
+                """
+May 25 12:00:13 jukeoroni gunicorn[7649]: [05-25-2022 12:00:13] [WARNING ] [MainThread|3069315792], File "/data/django/jukeoroni/player/admin.py", line 126, in play_pause:    Starting playback of The Matrix now...
+May 25 12:00:13 jukeoroni gunicorn[7649]: [05-25-2022 12:00:13] [WARNING ] [MainThread|3069315792], File "/data/django/jukeoroni/player/admin.py", line 132, in play_pause:    done
+May 25 12:00:14 jukeoroni kernel: [78628.611462] pcm512x 1-004c: No SCLK, using BCLK: -2
+
+
+
+May 25 12:00:31 jukeoroni gunicorn[7649]: [05-25-2022 12:00:31] [WARNING ] [MainThread|3069315792], File "/data/django/jukeoroni/player/admin.py", line 121, in play_pause:    Looks like a different video The Matrix is still playing...
+May 25 12:00:31 jukeoroni gunicorn[7649]: [05-25-2022 12:00:31] [WARNING ] [MainThread|3069315792], File "/data/django/jukeoroni/player/admin.py", line 141, in stop:    Trying to stop The Matrix...
+May 25 12:00:31 jukeoroni gunicorn[7649]: [05-25-2022 12:00:31] [WARNING ] [MainThread|3069315792], File "/data/django/jukeoroni/player/admin.py", line 143, in stop:    Stopping The Matrix...
+May 25 12:00:31 jukeoroni gunicorn[7649]: [05-25-2022 12:00:31] [WARNING ] [MainThread|3069315792], File "/data/django/jukeoroni/player/admin.py", line 155, in stop:    The Matrix stopped.
+May 25 12:00:31 jukeoroni gunicorn[7649]: [05-25-2022 12:00:31] [WARNING ] [MainThread|3069315792], File "/data/django/jukeoroni/player/admin.py", line 126, in play_pause:    Starting playback of Guardians of the Galaxy now...
+May 25 12:00:31 jukeoroni gunicorn[7649]: [05-25-2022 12:00:31] [WARNING ] [MainThread|3069315792], File "/data/django/jukeoroni/player/admin.py", line 132, in play_pause:    done
+May 25 12:00:31 jukeoroni kernel: [78646.281915] pcm512x 1-004c: No SCLK, using BCLK: -2
+
+
+
+May 25 12:00:44 jukeoroni gunicorn[7649]: [05-25-2022 12:00:44] [WARNING ] [MainThread|3069315792], File "/data/django/jukeoroni/player/admin.py", line 121, in play_pause:    Looks like a different video Guardians of the Galaxy is still playing...
+May 25 12:00:44 jukeoroni gunicorn[7649]: [05-25-2022 12:00:44] [WARNING ] [MainThread|3069315792], File "/data/django/jukeoroni/player/admin.py", line 141, in stop:    Trying to stop Guardians of the Galaxy...
+May 25 12:00:44 jukeoroni gunicorn[7649]: [05-25-2022 12:00:44] [WARNING ] [MainThread|3069315792], File "/data/django/jukeoroni/player/admin.py", line 143, in stop:    Stopping Guardians of the Galaxy...
+May 25 12:00:44 jukeoroni gunicorn[7649]: [05-25-2022 12:00:44] [ERROR   ] [MainThread|3069315792], File "/data/django/jukeoroni/player/admin.py", line 153, in stop:    Bullshit Error
+May 25 12:00:44 jukeoroni gunicorn[7649]: Traceback (most recent call last):
+May 25 12:00:44 jukeoroni gunicorn[7649]:   File "/data/django/jukeoroni/player/admin.py", line 151, in stop
+May 25 12:00:44 jukeoroni gunicorn[7649]:     self.video.stop()
+May 25 12:00:44 jukeoroni gunicorn[7649]:   File "/data/django/jukeoroni/player/models.py", line 201, in stop
+May 25 12:00:44 jukeoroni gunicorn[7649]:     if self.omxplayer.is_playing():
+May 25 12:00:44 jukeoroni gunicorn[7649]:   File "/data/venv/lib/python3.7/site-packages/decorator.py", line 232, in fun
+May 25 12:00:44 jukeoroni gunicorn[7649]:     return caller(func, *(extras + args), **kw)
+May 25 12:00:44 jukeoroni gunicorn[7649]:   File "/data/venv/lib/python3.7/site-packages/omxplayer/player.py", line 48, in wrapped
+May 25 12:00:44 jukeoroni gunicorn[7649]:     return fn(self, *args, **kwargs)
+May 25 12:00:44 jukeoroni gunicorn[7649]:   File "/data/venv/lib/python3.7/site-packages/decorator.py", line 232, in fun
+May 25 12:00:44 jukeoroni gunicorn[7649]:     return caller(func, *(extras + args), **kw)
+May 25 12:00:44 jukeoroni gunicorn[7649]:   File "/data/venv/lib/python3.7/site-packages/omxplayer/player.py", line 85, in wrapped
+May 25 12:00:44 jukeoroni gunicorn[7649]:     return from_dbus_type(fn(self, *args, **kwargs))
+May 25 12:00:44 jukeoroni gunicorn[7649]:   File "/data/venv/lib/python3.7/site-packages/omxplayer/player.py", line 783, in is_playing
+May 25 12:00:44 jukeoroni gunicorn[7649]:     self._is_playing = (self.playback_status() == "Playing")
+May 25 12:00:44 jukeoroni gunicorn[7649]:   File "/data/venv/lib/python3.7/site-packages/decorator.py", line 232, in fun
+May 25 12:00:44 jukeoroni gunicorn[7649]:     return caller(func, *(extras + args), **kw)
+May 25 12:00:44 jukeoroni gunicorn[7649]:   File "/data/venv/lib/python3.7/site-packages/omxplayer/player.py", line 48, in wrapped
+May 25 12:00:44 jukeoroni gunicorn[7649]:     return fn(self, *args, **kwargs)
+May 25 12:00:44 jukeoroni gunicorn[7649]:   File "/data/venv/lib/python3.7/site-packages/decorator.py", line 232, in fun
+May 25 12:00:44 jukeoroni gunicorn[7649]:     return caller(func, *(extras + args), **kw)
+May 25 12:00:44 jukeoroni gunicorn[7649]:   File "/data/venv/lib/python3.7/site-packages/omxplayer/player.py", line 85, in wrapped
+May 25 12:00:44 jukeoroni gunicorn[7649]:     return from_dbus_type(fn(self, *args, **kwargs))
+May 25 12:00:44 jukeoroni gunicorn[7649]:   File "/data/venv/lib/python3.7/site-packages/omxplayer/player.py", line 387, in playback_status
+May 25 12:00:44 jukeoroni gunicorn[7649]:     return self._player_interface_property('PlaybackStatus')
+May 25 12:00:44 jukeoroni gunicorn[7649]:   File "/data/venv/lib/python3.7/site-packages/omxplayer/player.py", line 860, in _player_interface_property
+May 25 12:00:44 jukeoroni gunicorn[7649]:     return self._interface_property(self._player_interface.dbus_interface, prop, val)
+May 25 12:00:44 jukeoroni gunicorn[7649]:   File "/data/venv/lib/python3.7/site-packages/omxplayer/player.py", line 854, in _interface_property
+May 25 12:00:44 jukeoroni gunicorn[7649]:     return self._properties_interface.Get(interface, prop)
+May 25 12:00:44 jukeoroni gunicorn[7649]:   File "/data/venv/lib/python3.7/site-packages/dbus/proxies.py", line 147, in __call__
+May 25 12:00:44 jukeoroni gunicorn[7649]:     **keywords)
+May 25 12:00:44 jukeoroni gunicorn[7649]:   File "/data/venv/lib/python3.7/site-packages/dbus/connection.py", line 653, in call_blocking
+May 25 12:00:44 jukeoroni gunicorn[7649]:     message, timeout)
+May 25 12:00:44 jukeoroni gunicorn[7649]: dbus.exceptions.DBusException: org.freedesktop.DBus.Error.ServiceUnknown: The name :1.2 was not provided by any .service files
+May 25 12:00:44 jukeoroni gunicorn[7649]: [05-25-2022 12:00:44] [WARNING ] [MainThread|3069315792], File "/data/django/jukeoroni/player/admin.py", line 155, in stop:    Guardians of the Galaxy stopped.
+May 25 12:00:44 jukeoroni gunicorn[7649]: [05-25-2022 12:00:44] [WARNING ] [MainThread|3069315792], File "/data/django/jukeoroni/player/admin.py", line 126, in play_pause:    Starting playback of The Matrix now...
+May 25 12:00:44 jukeoroni gunicorn[7649]: [05-25-2022 12:00:44] [WARNING ] [MainThread|3069315792], File "/data/django/jukeoroni/player/admin.py", line 132, in play_pause:    done
+                """
+                self.video.stop()
+            except Exception:
+                LOG.exception('Bullshit Error')
+            finally:
+                LOG.warning(f'{self.video.video_title} stopped.')
+            # LOG.warning(f'{obj.video_title} stopped.')
+            # LOG.warning(f'{self.video.video_title} stopped.')
             self.video = None
+        else:
+            LOG.warning('Nothing is currently playing.')
 
     play_pause.label = 'Play/Pause'
     # play_pause.short_description = 'Desc'
