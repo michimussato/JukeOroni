@@ -23,15 +23,15 @@ from player.jukeoroni.displays import set_tv_screen
 from player.models import Channel
 from player.jukeoroni.box_track import JukeboxTrack
 from player.jukeoroni.settings import Settings
-from player.jukeoroni.images import Resource
+# from player.jukeoroni.images import Resource
 
 
 # TODO:
 #  Thread that restarts other threads in case they died
 
 
-LOG = logging.getLogger(__name__)
-LOG.setLevel(Settings.GLOBAL_LOGGING_LEVEL)
+# LOG = logging.getLogger(__name__)
+# LOG.setLevel(Settings.GLOBAL_LOGGING_LEVEL)
 
 
 # buttons setup
@@ -100,7 +100,12 @@ j.turn_off()
 
     def __init__(self, test=False):
 
-        LOG.info(f'Initializing JukeOroni...')
+        # self.LOG = LOG
+
+        self.LOG = logging.getLogger(__name__)
+        self.LOG.setLevel(Settings.GLOBAL_LOGGING_LEVEL)
+
+        self.LOG.info(f'Initializing JukeOroni...')
         # TODO rename to headless
         self.test = test
 
@@ -126,6 +131,7 @@ j.turn_off()
         self.pimoroni = Inky()
 
         self._current_time = None
+        self._current_time_tv = None
 
         # display layouts
         # self.layout_off = OffLayout()
@@ -184,7 +190,7 @@ j.turn_off()
         if not self.test:
             self.set_image()
         else:
-            LOG.info(f'Not setting TURN_ON image. Test mode.')
+            self.LOG.info(f'Not setting TURN_ON image. Test mode.')
 
     # def set_display_turn_off(self):
     #     """
@@ -192,16 +198,16 @@ j.turn_off()
     #     """
     #     assert not self.on, 'JukeOroni needs to be turned off first.'
     #     if not self.test:
-    #         LOG.info(f'Setting OFF Layout...')
+    #         self.LOG.info(f'Setting OFF Layout...')
     #
     #         bg = self.layout_off.get_layout(labels=self.LABELS, cover=Resource().OFF_IMAGE_SQUARE)
     #
     #         self.pimoroni.set_image(bg, saturation=Settings.PIMORONI_SATURATION)
     #         # self.pimoroni.set_image(bg)
     #         self.pimoroni.show(busy_wait=True)
-    #         LOG.info(f'Setting OFF Layout: Done.')
+    #         self.LOG.info(f'Setting OFF Layout: Done.')
     #     else:
-    #         LOG.info(f'Not setting OFF_IMAGE. Test mode.')
+    #         self.LOG.info(f'Not setting OFF_IMAGE. Test mode.')
     #     GPIO.cleanup()
 
     def set_display_radio(self):
@@ -231,7 +237,7 @@ j.turn_off()
                                                         artist=self.inserted_media.cover_artist)
                 except AttributeError:
                     bg = self.jukebox.layout.get_layout(labels=self.LABELS, loading=True)
-                    LOG.exception('inserted_media problem: ')
+                    self.LOG.exception('inserted_media problem: ')
             self.set_image(image=bg)
 
     def set_display_meditation(self):
@@ -252,7 +258,7 @@ j.turn_off()
                                                               artist=self.inserted_media.cover_artist)
                 except AttributeError:
                     bg = self.meditationbox.layout.get_layout(labels=self.LABELS, loading=True)
-                    LOG.exception('inserted_media problem: ')
+                    self.LOG.exception('inserted_media problem: ')
             self.set_image(image=bg)
 
     def set_display_audiobook(self):
@@ -273,7 +279,7 @@ j.turn_off()
                                                              artist=self.inserted_media.cover_artist)
                 except AttributeError:
                     bg = self.audiobookbox.layout.get_layout(labels=self.LABELS, loading=True)
-                    LOG.exception('inserted_media problem: ')
+                    self.LOG.exception('inserted_media problem: ')
             self.set_image(image=bg)
 
     # def set_display_video(self):
@@ -294,7 +300,7 @@ j.turn_off()
     #             #     bg = self.videobox.layout.get_layout(labels=self.LABELS)
     #             # except AttributeError:
     #             #     bg = self.videobox.layout.get_layout(labels=self.LABELS, loading=True)
-    #             #     LOG.exception('inserted_media problem: ')
+    #             #     self.LOG.exception('inserted_media problem: ')
     #         self.set_image(image=bg)
     ############################################
 
@@ -354,14 +360,16 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
     def tv_screen_updater_task(self):
         initialized = False
         while True:
+            self.LOG.debug('Checking whether TV screen update is necessary...')
             new_time = localtime(now())
-            if self._current_time != new_time.strftime('%H:%M') \
+            if self._current_time_tv != new_time.strftime('%H:%M') \
                     or not initialized:
-                if self._current_time is None \
-                        or (int(new_time.strftime('%H:%M')[-2:])) % Settings.CLOCK_UPDATE_INTERVAL == 0 \
+                # self.LOG.debug(f'')
+                if self._current_time_tv is None \
+                        or (int(new_time.strftime('%H:%M')[-2:])) % Settings.CLOCK_UPDATE_INTERVAL_TV == 0 \
                         or not initialized:
                     set_tv_screen()
-                    self._current_time = new_time.strftime('%H:%M')
+                    self._current_time_tv = new_time.strftime('%H:%M')
                     initialized = True
 
             time.sleep(Settings.TV_SCREEN_UPDATER_CADENCE)
@@ -393,9 +401,9 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
                 # last_mode_change = None
             else:
                 update_mode = True
-                LOG.info('Mode changed')
+                self.LOG.info('Mode changed')
                 previous_mode = self.mode
-                LOG.debug(self.mode)
+                self.LOG.debug(self.mode)
                 # last_mode_change = localtime(now())
 
             new_time = localtime(now())
@@ -410,7 +418,7 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
                 else:
                     if self._current_time != new_time.strftime('%H:%M'):  # in stopped state
                         if self._current_time is None or (int(new_time.strftime('%H:%M')[-2:])) % Settings.CLOCK_UPDATE_INTERVAL == 0:
-                            LOG.info('Display/Clock update.')
+                            self.LOG.info('Display/Clock update.')
                             self.set_display_standby()
                             self._current_time = new_time.strftime('%H:%M')
 
@@ -444,12 +452,12 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
                         # last_mode_change = None
                 else:
                     if self.mode == Settings.MODES['radio']['standby']['random']:
-                        # LOG.info(f'last_mode_change: {last_mode_change}')
+                        # self.LOG.info(f'last_mode_change: {last_mode_change}')
                         if last_mode_change is not None:
-                            # LOG.info(f'{last_mode_change + datetime.timedelta(minutes=Settings.STATE_WATCHER_IDLE_TIMER) < new_time}')
+                            # self.LOG.info(f'{last_mode_change + datetime.timedelta(minutes=Settings.STATE_WATCHER_IDLE_TIMER) < new_time}')
 
                             if last_mode_change + datetime.timedelta(minutes=Settings.STATE_WATCHER_IDLE_TIMER) < new_time:
-                                LOG.info('Setting mode to jukeoroni standby due to idle...')
+                                self.LOG.info('Setting mode to jukeoroni standby due to idle...')
                                 last_mode_change = None
                                 self.mode = Settings.MODES['jukeoroni']['standby']
                                 self.set_display_standby()
@@ -458,10 +466,10 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
                                 or (int(new_time.strftime('%H:%M')[-2:])) % Settings.CLOCK_UPDATE_INTERVAL == 0 \
                                 or radio_media_info_title_previous != self.radio.stream_title:
                             if radio_media_info_title_previous != self.radio.stream_title:
-                                LOG.info('Stream info changed...')
-                                LOG.info(f'Before: {radio_media_info_title_previous}')
-                                LOG.info(f'New: {self.radio.stream_title}')
-                            LOG.info('Display/Clock/Stream-Title update.')
+                                self.LOG.info('Stream info changed...')
+                                self.LOG.info(f'Before: {radio_media_info_title_previous}')
+                                self.LOG.info(f'New: {self.radio.stream_title}')
+                            self.LOG.info('Display/Clock/Stream-Title update.')
                             self.set_display_radio()
                             radio_media_info_title_previous = self.radio.stream_title
                             self._current_time = new_time.strftime('%H:%M')
@@ -493,19 +501,19 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
 
                 else:
                     # if self.mode == Settings.MODES['radio']['standby']:
-                    # LOG.info(f'last_mode_change: {last_mode_change}')
+                    # self.LOG.info(f'last_mode_change: {last_mode_change}')
                     if last_mode_change is not None:
-                        # LOG.info(f'{last_mode_change + datetime.timedelta(minutes=Settings.STATE_WATCHER_IDLE_TIMER) < new_time}')
+                        # self.LOG.info(f'{last_mode_change + datetime.timedelta(minutes=Settings.STATE_WATCHER_IDLE_TIMER) < new_time}')
 
                         if last_mode_change + datetime.timedelta(minutes=Settings.STATE_WATCHER_IDLE_TIMER) < new_time:
-                            LOG.info('Setting mode to jukeoroni standby due to idle...')
+                            self.LOG.info('Setting mode to jukeoroni standby due to idle...')
                             last_mode_change = None
                             self.mode = Settings.MODES['jukeoroni']['standby']
                             self.set_display_standby()
 
                     elif self._current_time != new_time.strftime('%H:%M'):
                         if self._current_time is None or (int(new_time.strftime('%H:%M')[-2:])) % Settings.CLOCK_UPDATE_INTERVAL == 0:
-                            LOG.info('Display/Clock update.')
+                            self.LOG.info('Display/Clock update.')
                             self.set_display_jukebox()
                             self._current_time = new_time.strftime('%H:%M')
 
@@ -520,14 +528,14 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
                     if self.jukebox.loader_mode != 'random':
                         self.jukebox.set_loader_mode_random()
                     # self.play_jukebox()
-                    # LOG.info(f'Playing: {self.jukebox.playing_track}')
+                    # self.LOG.info(f'Playing: {self.jukebox.playing_track}')
 
                 elif self.mode == Settings.MODES['jukebox']['on_air']['album']:
                     if self.jukebox.loader_mode != 'album':
                         self.jukebox.set_loader_mode_album()
 
                 self.play_jukebox()
-                # LOG.info(f'Playing: {self.jukebox.playing_track}')
+                # self.LOG.info(f'Playing: {self.jukebox.playing_track}')
 
                 if update_mode:
                     update_mode = False
@@ -536,7 +544,7 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
                 else:
                     if self._current_time != new_time.strftime('%H:%M'):
                         if self._current_time is None or (int(new_time.strftime('%H:%M')[-2:])) % Settings.CLOCK_UPDATE_INTERVAL == 0:
-                            LOG.info('Display/Clock update.')
+                            self.LOG.info('Display/Clock update.')
                             self.set_display_jukebox()
                             self._current_time = new_time.strftime('%H:%M')
 
@@ -566,19 +574,19 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
                     self.set_display_meditation()
 
                 else:
-                    # LOG.info(f'last_mode_change: {last_mode_change}')
+                    # self.LOG.info(f'last_mode_change: {last_mode_change}')
                     if last_mode_change is not None:
-                        # LOG.info(f'{last_mode_change + datetime.timedelta(minutes=Settings.STATE_WATCHER_IDLE_TIMER) < new_time}')
+                        # self.LOG.info(f'{last_mode_change + datetime.timedelta(minutes=Settings.STATE_WATCHER_IDLE_TIMER) < new_time}')
 
                         if last_mode_change + datetime.timedelta(minutes=Settings.STATE_WATCHER_IDLE_TIMER) < new_time:
-                            LOG.info('Setting mode to jukeoroni standby due to idle...')
+                            self.LOG.info('Setting mode to jukeoroni standby due to idle...')
                             last_mode_change = None
                             self.mode = Settings.MODES['jukeoroni']['standby']
                             self.set_display_standby()
 
                     elif self._current_time != new_time.strftime('%H:%M'):
                         if self._current_time is None or (int(new_time.strftime('%H:%M')[-2:])) % Settings.CLOCK_UPDATE_INTERVAL == 0:
-                            LOG.info('Display/Clock update.')
+                            self.LOG.info('Display/Clock update.')
                             self.set_display_meditation()
                             self._current_time = new_time.strftime('%H:%M')
 
@@ -593,14 +601,14 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
                     if self.meditationbox.loader_mode != 'random':
                         self.meditationbox.set_loader_mode_random()
                     # self.play_jukebox()
-                    # LOG.info(f'Playing: {self.jukebox.playing_track}')
+                    # self.LOG.info(f'Playing: {self.jukebox.playing_track}')
 
                 elif self.mode == Settings.MODES['meditationbox']['on_air']['album']:
                     if self.meditationbox.loader_mode != 'album':
                         self.meditationbox.set_loader_mode_album()
 
                 self.play_meditationbox()
-                # LOG.info(f'Playing: {self.jukebox.playing_track}')
+                # self.LOG.info(f'Playing: {self.jukebox.playing_track}')
 
                 if update_mode:
                     update_mode = False
@@ -609,7 +617,7 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
                 else:
                     if self._current_time != new_time.strftime('%H:%M'):
                         if self._current_time is None or (int(new_time.strftime('%H:%M')[-2:])) % Settings.CLOCK_UPDATE_INTERVAL == 0:
-                            LOG.info('Display/Clock update.')
+                            self.LOG.info('Display/Clock update.')
                             self.set_display_meditation()
                             self._current_time = new_time.strftime('%H:%M')
 
@@ -639,19 +647,19 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
                     self.set_display_audiobook()
 
                 else:
-                    # LOG.info(f'last_mode_change: {last_mode_change}')
+                    # self.LOG.info(f'last_mode_change: {last_mode_change}')
                     if last_mode_change is not None:
-                        # LOG.info(f'{last_mode_change + datetime.timedelta(minutes=Settings.STATE_WATCHER_IDLE_TIMER) < new_time}')
+                        # self.LOG.info(f'{last_mode_change + datetime.timedelta(minutes=Settings.STATE_WATCHER_IDLE_TIMER) < new_time}')
 
                         if last_mode_change + datetime.timedelta(minutes=Settings.STATE_WATCHER_IDLE_TIMER) < new_time:
-                            LOG.info('Setting mode to jukeoroni standby due to idle...')
+                            self.LOG.info('Setting mode to jukeoroni standby due to idle...')
                             last_mode_change = None
                             self.mode = Settings.MODES['jukeoroni']['standby']
                             self.set_display_standby()
 
                     elif self._current_time != new_time.strftime('%H:%M'):
                         if self._current_time is None or (int(new_time.strftime('%H:%M')[-2:])) % Settings.CLOCK_UPDATE_INTERVAL == 0:
-                            LOG.info('Display/Clock update.')
+                            self.LOG.info('Display/Clock update.')
                             self.set_display_audiobook()
                             self._current_time = new_time.strftime('%H:%M')
 
@@ -666,14 +674,14 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
                     if self.audiobookbox.loader_mode != 'random':
                         self.audiobookbox.set_loader_mode_random()
                     # self.play_jukebox()
-                    # LOG.info(f'Playing: {self.jukebox.playing_track}')
+                    # self.LOG.info(f'Playing: {self.jukebox.playing_track}')
 
                 elif self.mode == Settings.MODES['audiobookbox']['on_air']['album']:
                     if self.audiobookbox.loader_mode != 'album':
                         self.audiobookbox.set_loader_mode_album()
 
                 self.play_audiobookbox()
-                # LOG.info(f'Playing: {self.jukebox.playing_track}')
+                # self.LOG.info(f'Playing: {self.jukebox.playing_track}')
 
                 if update_mode:
                     update_mode = False
@@ -682,7 +690,7 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
                 else:
                     if self._current_time != new_time.strftime('%H:%M'):
                         if self._current_time is None or (int(new_time.strftime('%H:%M')[-2:])) % Settings.CLOCK_UPDATE_INTERVAL == 0:
-                            LOG.info('Display/Clock update.')
+                            self.LOG.info('Display/Clock update.')
                             self.set_display_audiobook()
                             self._current_time = new_time.strftime('%H:%M')
 
@@ -724,19 +732,19 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
             #         self.set_display_video()
             #
             #     else:
-            #         # LOG.info(f'last_mode_change: {last_mode_change}')
+            #         # self.LOG.info(f'last_mode_change: {last_mode_change}')
             #         if last_mode_change is not None:
-            #             # LOG.info(f'{last_mode_change + datetime.timedelta(minutes=Settings.STATE_WATCHER_IDLE_TIMER) < new_time}')
+            #             # self.LOG.info(f'{last_mode_change + datetime.timedelta(minutes=Settings.STATE_WATCHER_IDLE_TIMER) < new_time}')
             #
             #             if last_mode_change + datetime.timedelta(minutes=Settings.STATE_WATCHER_IDLE_TIMER) < new_time:
-            #                 LOG.info('Setting mode to jukeoroni standby due to idle...')
+            #                 self.LOG.info('Setting mode to jukeoroni standby due to idle...')
             #                 last_mode_change = None
             #                 self.mode = Settings.MODES['jukeoroni']['standby']
             #                 self.set_display_standby()
             #
             #         elif self._current_time != new_time.strftime('%H:%M'):
             #             if self._current_time is None or (int(new_time.strftime('%H:%M')[-2:])) % Settings.CLOCK_UPDATE_INTERVAL == 0:
-            #                 LOG.info('Display/Clock update.')
+            #                 self.LOG.info('Display/Clock update.')
             #                 self.set_display_video()
             #                 self._current_time = new_time.strftime('%H:%M')
             #
@@ -771,19 +779,19 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
             #         self.set_display_video()
             #
             #     else:
-            #         # LOG.info(f'last_mode_change: {last_mode_change}')
+            #         # self.LOG.info(f'last_mode_change: {last_mode_change}')
             #         if last_mode_change is not None:
-            #             # LOG.info(f'{last_mode_change + datetime.timedelta(minutes=Settings.STATE_WATCHER_IDLE_TIMER) < new_time}')
+            #             # self.LOG.info(f'{last_mode_change + datetime.timedelta(minutes=Settings.STATE_WATCHER_IDLE_TIMER) < new_time}')
             #
             #             if last_mode_change + datetime.timedelta(minutes=Settings.STATE_WATCHER_IDLE_TIMER) < new_time:
-            #                 LOG.info('Setting mode to jukeoroni standby due to idle...')
+            #                 self.LOG.info('Setting mode to jukeoroni standby due to idle...')
             #                 last_mode_change = None
             #                 self.mode = Settings.MODES['jukeoroni']['standby']
             #                 self.set_display_standby()
             #
             #         elif self._current_time != new_time.strftime('%H:%M'):
             #             if self._current_time is None or (int(new_time.strftime('%H:%M')[-2:])) % Settings.CLOCK_UPDATE_INTERVAL == 0:
-            #                 LOG.info('Display/Clock update.')
+            #                 self.LOG.info('Display/Clock update.')
             #                 self.set_display_video()
             #                 self._current_time = new_time.strftime('%H:%M')
             #
@@ -797,7 +805,7 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
             #     # if self.videobox.loader_mode != 'random':
             #     #     self.videobox.set_loader_mode_random()
             #         # self.play_jukebox()
-            #         # LOG.info(f'Playing: {self.jukebox.playing_track}')
+            #         # self.LOG.info(f'Playing: {self.jukebox.playing_track}')
             #
             #     # elif self.mode == Settings.MODES['audiobookbox']['on_air']['album']:
             #     #     if self.videobox.loader_mode != 'album':
@@ -805,7 +813,7 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
             #
             #     # self.videobox.omxplayer.set_position(0.0)
             #     # self.videobox.omxplayer.play()
-            #     # LOG.info(f'Playing: {self.jukebox.playing_track}')
+            #     # self.LOG.info(f'Playing: {self.jukebox.playing_track}')
             #
             #     if update_mode:
             #         update_mode = False
@@ -820,7 +828,7 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
             #     else:
             #         if self._current_time != new_time.strftime('%H:%M'):
             #             if self._current_time is None or (int(new_time.strftime('%H:%M')[-2:])) % Settings.CLOCK_UPDATE_INTERVAL == 0:
-            #                 LOG.info('Display/Clock update.')
+            #                 self.LOG.info('Display/Clock update.')
             #                 self.set_display_video()
             #                 self._current_time = new_time.strftime('%H:%M')
 
@@ -836,14 +844,14 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
     #     if box.playing_track is not None:
     #         return
     #     elif not bool(box.tracks):  # and self.playback_proc is None:
-    #         LOG.info('No tracks ready')
+    #         self.LOG.info('No tracks ready')
     #         if box.loading_track is not None:
-    #             LOG.info('Loading 1st track...')
+    #             self.LOG.info('Loading 1st track...')
     #             if not self._loading_display_activated:
     #                 self.set_display_jukebox()
     #                 self._loading_display_activated = True
     #         else:
-    #             LOG.warning('Not loading!!!')
+    #             self.LOG.warning('Not loading!!!')
     #         # print('no tracks ready')
     #         return
     #
@@ -854,7 +862,7 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
     #
     #     # TODO implement Play/Next combo
     #     if isinstance(self.inserted_media, JukeboxTrack):
-    #         LOG.debug('Starting new playback thread')
+    #         self.LOG.debug('Starting new playback thread')
     #         self.jukeoroni_playback_thread()
     #         self.set_display_jukebox()
     #
@@ -864,14 +872,14 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
         if self.jukebox.playing_track is not None:
             return
         elif not bool(self.jukebox.tracks):  # and self.playback_proc is None:
-            LOG.info('No tracks ready')
+            self.LOG.info('No tracks ready')
             if self.jukebox.loading_track is not None:
-                LOG.info('Loading 1st track...')
+                self.LOG.info('Loading 1st track...')
                 if not self._loading_display_activated:
                     self.set_display_jukebox()
                     self._loading_display_activated = True
             else:
-                LOG.warning('Not loading!!!')
+                self.LOG.warning('Not loading!!!')
             # print('no tracks ready')
             return
 
@@ -882,7 +890,7 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
 
         # TODO implement Play/Next combo
         if isinstance(self.inserted_media, JukeboxTrack):
-            LOG.debug('Starting new playback thread')
+            self.LOG.debug('Starting new playback thread')
             self.jukeoroni_playback_thread()
             self.set_display_jukebox()
 
@@ -892,14 +900,14 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
         if self.meditationbox.playing_track is not None:
             return
         elif not bool(self.meditationbox.tracks):  # and self.playback_proc is None:
-            LOG.info('No tracks ready')
+            self.LOG.info('No tracks ready')
             if self.meditationbox.loading_track is not None:
-                LOG.info('Loading 1st track...')
+                self.LOG.info('Loading 1st track...')
                 if not self._loading_display_activated:
                     self.set_display_meditation()
                     self._loading_display_activated = True
             else:
-                LOG.warning('Not loading!!!')
+                self.LOG.warning('Not loading!!!')
             # print('no tracks ready')
             return
 
@@ -910,7 +918,7 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
 
         # TODO implement Play/Next combo
         if isinstance(self.inserted_media, JukeboxTrack):
-            LOG.debug('Starting new playback thread')
+            self.LOG.debug('Starting new playback thread')
             self.jukeoroni_playback_thread()
             self.set_display_meditation()
 
@@ -920,14 +928,14 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
         if self.audiobookbox.playing_track is not None:
             return
         elif not bool(self.audiobookbox.tracks):  # and self.playback_proc is None:
-            LOG.info('No tracks ready')
+            self.LOG.info('No tracks ready')
             if self.audiobookbox.loading_track is not None:
-                LOG.info('Loading 1st track...')
+                self.LOG.info('Loading 1st track...')
                 if not self._loading_display_activated:
                     self.set_display_audiobook()
                     self._loading_display_activated = True
             else:
-                LOG.warning('Not loading!!!')
+                self.LOG.warning('Not loading!!!')
             # print('no tracks ready')
             return
 
@@ -938,7 +946,7 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
 
         # TODO implement Play/Next combo
         if isinstance(self.inserted_media, JukeboxTrack):
-            LOG.debug('Starting new playback thread')
+            self.LOG.debug('Starting new playback thread')
             self.jukeoroni_playback_thread()
             self.set_display_audiobook()
 
@@ -975,7 +983,7 @@ May  5 15:06:28 jukeoroni gunicorn[812]: AssertionError
         self._playback_thread.start()
 
     def _playback_task(self):
-        LOG.info(f'starting playback thread: for {self.inserted_media.path} from {self.inserted_media.playing_from}')  # TODO add info
+        self.LOG.info(f'starting playback thread: for {self.inserted_media.path} from {self.inserted_media.playing_from}')  # TODO add info
         if self.mode == Settings.MODES['jukebox']['on_air'][self.jukebox.loader_mode]:
             box = self.jukebox
         elif self.mode == Settings.MODES['meditationbox']['on_air'][self.meditationbox.loader_mode]:
@@ -985,7 +993,7 @@ May  5 15:06:28 jukeoroni gunicorn[812]: AssertionError
         box.playing_track = self.inserted_media
         self.inserted_media.play(jukeoroni=self)
         box.playing_track = None
-        LOG.info('playback finished')
+        self.LOG.info('playback finished')
         self.eject()
         self._playback_thread = None
         # self._jukebox_playback_thread = None
@@ -1001,7 +1009,7 @@ May  5 15:06:28 jukeoroni gunicorn[812]: AssertionError
         assert isinstance(media, (Channel, JukeboxTrack, player.models.Video)), 'can only insert Channel model or JukeboxTrack object'
 
         self.inserted_media = media
-        LOG.info(f'Media inserted: {str(media)} (type {str(type(media))})')
+        self.LOG.info(f'Media inserted: {str(media)} (type {str(type(media))})')
 
         if isinstance(media, Channel):
             pass
@@ -1040,7 +1048,7 @@ May  5 15:06:28 jukeoroni gunicorn[812]: AssertionError
                 response = urllib.request.urlopen(req)
             except urllib.error.HTTPError as err:
                 bad_channel = self.inserted_media
-                LOG.exception(f'Could not open URL: {str(bad_channel)}')
+                self.LOG.exception(f'Could not open URL: {str(bad_channel)}')
                 self.stop()
                 self.eject()
                 bad_channel.last_played = False
@@ -1065,7 +1073,7 @@ May  5 15:06:28 jukeoroni gunicorn[812]: AssertionError
                     self.playback_proc.communicate(timeout=2.0)
                 except subprocess.TimeoutExpired:
                     # this is the expected behaviour!!
-                    LOG.info(f'ffplay started successfully. playing {str(self.inserted_media.display_name)}')
+                    self.LOG.info(f'ffplay started successfully. playing {str(self.inserted_media.display_name)}')
 
                     self.inserted_media.last_played = True
                     self.inserted_media.save()
@@ -1074,10 +1082,10 @@ May  5 15:06:28 jukeoroni gunicorn[812]: AssertionError
                     bad_channel = self.inserted_media
                     self.stop()
                     self.eject()
-                    LOG.error(f'ffplay aborted inexpectedly, media ejected. Channel is not functional: {str(bad_channel)}')
+                    self.LOG.error(f'ffplay aborted inexpectedly, media ejected. Channel is not functional: {str(bad_channel)}')
                     raise Exception(f'ffplay aborted inexpectedly, media ejected. Channels is not functional: {str(bad_channel)}')
             else:
-                LOG.error(f'Channel stream return code is not 200: {str(response.status)}')
+                self.LOG.error(f'Channel stream return code is not 200: {str(response.status)}')
                 raise Exception(f'Channel stream return code is not 200: {str(response.status)}')
 
     def pause(self):
@@ -1105,11 +1113,11 @@ May  5 15:06:28 jukeoroni gunicorn[812]: AssertionError
                 while self.playback_proc.poll() is None:
                     time.sleep(0.1)
             except AttributeError:
-                LOG.exception('playback_proc already terminated:')
+                self.LOG.exception('playback_proc already terminated:')
             finally:
                 self.playback_proc = None
 
-        LOG.info(f'inserted_media is: {self.inserted_media}')
+        self.LOG.info(f'inserted_media is: {self.inserted_media}')
 
         if isinstance(self.inserted_media, Channel):
             self.radio.is_on_air = None
@@ -1147,7 +1155,7 @@ May  5 15:06:28 jukeoroni gunicorn[812]: AssertionError
                     self.play()
                     success = True
                 except urllib.error.HTTPError:
-                    LOG.exception(f'getting random channel. previous try with {str(media)} failed:')
+                    self.LOG.exception(f'getting random channel. previous try with {str(media)} failed:')
                     media = self.radio.random_channel
 
             self.set_display_radio()
@@ -1292,27 +1300,27 @@ May  5 15:06:28 jukeoroni gunicorn[812]: AssertionError
 
         # cannot join() the threads from
         # within the threads themselves
-        LOG.info(f'Terminating self._pimoroni_watcher_thread...')
+        self.LOG.info(f'Terminating self._pimoroni_watcher_thread...')
         self._pimoroni_watcher_thread.join()
         self._pimoroni_watcher_thread = None
-        LOG.info(f'self._pimoroni_watcher_thread terminated')
+        self.LOG.info(f'self._pimoroni_watcher_thread terminated')
 
         try:
-            LOG.info(f'Terminating self._buttons_watcher_thread...')
+            self.LOG.info(f'Terminating self._buttons_watcher_thread...')
             if self._buttons_watcher_thread.is_alive():
                 thread_id = self._buttons_watcher_thread.ident
                 signal.pthread_kill(thread_id, signal.SIGINT.value)
                 self._buttons_watcher_thread.join()
         except KeyboardInterrupt:
-            LOG.info(f'_buttons_watcher_thread killed by signal.SIGINT:')
+            self.LOG.info(f'_buttons_watcher_thread killed by signal.SIGINT:')
         finally:
             self._buttons_watcher_thread = None
-            LOG.info(f'self._buttons_watcher_thread terminated')
+            self.LOG.info(f'self._buttons_watcher_thread terminated')
 
     def _stop_modules(self):
-        LOG.info(f'Terminating self.layout_standby.radar...')
+        self.LOG.info(f'Terminating self.layout_standby.radar...')
         self.layout_standby.radar.stop()
-        LOG.info(f'self.layout_standby.radar terminated')
+        self.LOG.info(f'self.layout_standby.radar terminated')
     ############################################
 
     ############################################
@@ -1332,7 +1340,7 @@ May  5 15:06:28 jukeoroni gunicorn[812]: AssertionError
             if _waited is None or _waited % Settings.PIMORONI_WATCHER_UPDATE_INTERVAL == 0:
                 _waited = 0
                 if self._pimoroni_thread_queue is not None:
-                    LOG.info('New job in _pimoroni_thread_queue...')
+                    self.LOG.info('New job in _pimoroni_thread_queue...')
                     thread = self._pimoroni_thread_queue
                     self._pimoroni_thread_queue = None
                     thread.start()
@@ -1353,9 +1361,9 @@ May  5 15:06:28 jukeoroni gunicorn[812]: AssertionError
 
     def task_pimoroni_set_image(self, **kwargs):
         if self.test:
-            LOG.info(f'No Pimoroni update in test mode')
+            self.LOG.info(f'No Pimoroni update in test mode')
         else:
-            LOG.info(f'Setting Pimoroni image...')
+            self.LOG.info(f'Setting Pimoroni image...')
 
             if 'image' in kwargs:
                 bg = kwargs['image']
@@ -1367,7 +1375,7 @@ May  5 15:06:28 jukeoroni gunicorn[812]: AssertionError
                 self.pimoroni.show(busy_wait=True)
             except RuntimeError:  # AttributeError?
                 pass
-            LOG.info(f'Setting Pimoroni image: Done.')
+            self.LOG.info(f'Setting Pimoroni image: Done.')
     ############################################
 
     ############################################
@@ -1380,8 +1388,8 @@ May  5 15:06:28 jukeoroni gunicorn[812]: AssertionError
     def _handle_button(self, pin):
         button = _BUTTON_PINS.index(pin)
         button_mapped = _BUTTON_MAPPINGS[button]
-        LOG.info(f'Button press detected on pin: {pin} button: {button_mapped} ({button}), label: {self.LABELS[_BUTTON_PINS.index(pin)]}')
-        LOG.debug(f'Current mode: {self.mode}')
+        self.LOG.info(f'Button press detected on pin: {pin} button: {button_mapped} ({button}), label: {self.LABELS[_BUTTON_PINS.index(pin)]}')
+        self.LOG.debug(f'Current mode: {self.mode}')
 
         # JukeOroni
         if self.mode == Settings.MODES['jukeoroni']['off']:

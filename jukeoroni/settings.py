@@ -134,11 +134,16 @@ LOGGING = {
             # 'propagate': True,
             'level': 'WARNING',
         },
-        # 'player.jukeoroni.clock': {
-        #     'handlers': ['console', 'file'],
-        #     # 'propagate': True,
-        #     'level': 'INFO',
-        # },
+        'player.jukeoroni': {
+            'handlers': ['console', 'file'],
+            # 'propagate': True,
+            'level': 'INFO',
+        },
+        'player.jukeoroni.clock': {
+            'handlers': ['console', 'file'],
+            # 'propagate': True,
+            'level': 'INFO',
+        },
         # 'player.jukeoroni.discogs': {
         #     'handlers': ['file_juke_box'],
         #     # 'propagate': True,

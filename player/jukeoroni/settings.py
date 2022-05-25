@@ -632,6 +632,7 @@ class Settings:
     ARIAL = os.path.join(BASE_DIR, 'player', 'static', 'arial_narrow.ttf')
     CALLIGRAPHIC = os.path.join(BASE_DIR, 'player', 'static', 'calligraphia-one.ttf')
     CLOCK_UPDATE_INTERVAL = 10  # in minutes
+    CLOCK_UPDATE_INTERVAL_TV = 5  # in minutes
     CLOCK_SQUARE_OPACITY = 160
     _MOON_TEXUTRE = os.path.join(BASE_DIR, 'player', 'static', 'moon_texture_small.png')
 
