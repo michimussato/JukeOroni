@@ -1,0 +1,15 @@
+[Unit]
+Description=Disable Blinking Cursor Service
+After=nginx.serivce
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+User=root
+ExecStartPre=/bin/sleep 15
+ExecStart=bash -c "echo '0' > /sys/class/graphics/fbcon/cursor_blink"
+
+[Install]
+WantedBy=multi-user.target
