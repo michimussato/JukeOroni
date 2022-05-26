@@ -37,10 +37,10 @@ COLUMN_WIDTH = 101
 #  sudo systemctl stop nginx.service
 jukeoroni = JukeOroni(test=False)
 jukeoroni.turn_on(disable_track_loader=Settings.DISABLE_TRACK_LOADER)
-jukeoroni.jukebox.set_auto_update_tracklist_on()
-jukeoroni.meditationbox.set_auto_update_tracklist_on()
-# jukeoroni.episodicbox.set_auto_update_tracklist_on()
-# jukeoroni.jukebox.track_list_generator_thread()
+# jukeoroni.jukebox.set_auto_update_tracklist_on()
+# jukeoroni.meditationbox.set_auto_update_tracklist_on()
+# # jukeoroni.episodicbox.set_auto_update_tracklist_on()
+# # jukeoroni.jukebox.track_list_generator_thread()
 ######################################
 
 
@@ -1518,14 +1518,16 @@ class BoxView(View):
 
         img = None
 
-        if box == jukeoroni.videobox:
-            if jukeoroni.mode == Settings.MODES['videobox']['standby']['random']:
-                img = box.layout.get_layout(labels=jukeoroni.LABELS)
-            elif jukeoroni.mode == Settings.MODES['videobox']['on_air']['pause'] \
-                    or jukeoroni.mode == Settings.MODES['videobox']['on_air']['random']:
-                img = box.layout.get_layout(labels=jukeoroni.LABELS, cover=Resource().VIDEO_ON_AIR_DEFAULT_IMAGE)
+        # if hasattr(jukeoroni, 'videobox'):
+        #
+        #     if box == jukeoroni.videobox:
+        #         if jukeoroni.mode == Settings.MODES['videobox']['standby']['random']:
+        #             img = box.layout.get_layout(labels=jukeoroni.LABELS)
+        #         elif jukeoroni.mode == Settings.MODES['videobox']['on_air']['pause'] \
+        #                 or jukeoroni.mode == Settings.MODES['videobox']['on_air']['random']:
+        #             img = box.layout.get_layout(labels=jukeoroni.LABELS, cover=Resource().VIDEO_ON_AIR_DEFAULT_IMAGE)
 
-        elif jukeoroni.mode == Settings.MODES['radio']['standby']['random']:
+        if jukeoroni.mode == Settings.MODES['radio']['standby']['random']:
             img = box.layout.get_layout(labels=jukeoroni.LABELS, cover=box.cover, title=box.stream_title, buttons=False)
 
         elif jukeoroni.mode == Settings.MODES[box.box_type]['standby']['album'] \

@@ -1,9 +1,5 @@
 import binascii
 import logging
-import os
-
-# import io
-import subprocess
 import socket
 
 import numpy as np
@@ -67,53 +63,6 @@ https://pillow.readthedocs.io/en/stable/reference/Image.html?highlight=composite
 >>> comp = Image.alpha_composite(comp, layer2)
 >>> comp.show()
 """
-
-
-def set_tv_screen():
-
-    LOG.info('Setting TV background...')
-
-    fbw = int(subprocess.check_output('fbset | grep \'geometry\' | xargs | cut -d \' \' -f2', shell=True))
-    fbh = int(subprocess.check_output('fbset | grep \'geometry\' | xargs | cut -d \' \' -f3', shell=True))
-    fbd = int(subprocess.check_output('fbset | grep \'geometry\' | xargs | cut -d \' \' -f6', shell=True))
-
-    bg_screen = Image.new(mode='RGBA', size=(fbw, fbh), color=(0, 0, 0, 0))
-    # bg.paste(comp_clock, box=(buttons_overlay.size[0], _clock_center), mask=comp_clock)
-
-    # widget_clock = Image.new(mode='RGBA', size=(fbw, fbh), color=(0, 0, 0, 0))
-    # comp_clock = Image.new(mode='RGBA', size=bg_screen.size)
-
-    clock_size = int(fbh / 2)
-    _clock = Clock().get_clock(size=clock_size, draw_logo=True, draw_moon=True, draw_moon_phase=True,
-                                   draw_date=True, hours=24, draw_sun=True, square=True)
-    _clock = _clock.rotate(270, expand=False)
-    # _clock = Resource().round_resize(image=_clock, corner=40, factor=1.0)
-
-    # comp_clock = Image.alpha_composite(comp_clock, widget_clock)
-    # comp_clock = Image.alpha_composite(comp_clock, _clock)
-
-    _clock_center = round(bg_screen.size[1] / 2 - clock_size / 2)
-
-    bg_screen.paste(_clock, box=(
-    int(bg_screen.size[0] / 2) - int(clock_size / 2), int(bg_screen.size[1] / 2) - int(clock_size / 2)))
-
-    # _clock_screen = self._clock.get_clock(size=min([fbw, fbh]), draw_logo=True, draw_moon_phase=True,
-    #                                draw_moon=True, draw_date=True, hours=24, draw_sun=True, square=True)
-    # _clock_screen = Resource().round_resize(image=_clock_screen, corner=40, fixed=Settings.SMALL_WIDGET_SIZE)
-    # _clock_bottom_left_centered = (int(fbw - Settings.SMALL_WIDGET_SIZE - self.border),
-    #                                int(fbh / 2 + round(self.border / 2)))
-
-    temp_jpg = r'/data/django/jukeoroni/player/static/temp.jpg'
-    bg_screen = bg_screen.convert(mode='RGB')
-    # bg_screen = bg_screen.resize(size=(fbw, fbh))
-    bg_screen.save(temp_jpg, format='JPEG')
-
-    os.system('fbw="$(fbset | grep \'geometry\' | xargs | cut -d \' \' -f2)"')
-
-    os.system(
-        f'convert {temp_jpg}\["${fbw}"x"${fbh}"^\] +flip -strip -define bmp:subtype=RGB565 bmp2:- | tail -c $(( {fbw} * {fbh} * {fbd} / 8 )) > /dev/fb0')
-
-    LOG.info('TV background set successfully.')
 
 
 def mean_color(img):

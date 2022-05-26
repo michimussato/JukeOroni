@@ -181,12 +181,15 @@ class Video(JukeOroniMediumAbstract):
         self.omxplayer = None
         self._start_paused = False
 
+    # def play(self, jukeoroni=None):
     def play(self):
+        # self._omxplayer_thread = threading.Thread(target=self._play, kwargs={'jukeoroni': jukeoroni})
         self._omxplayer_thread = threading.Thread(target=self._play)
         self._omxplayer_thread.name = f'OMXPlayer Playback Thread ({self.video_title})'
         self._omxplayer_thread.daemon = False
         self._omxplayer_thread.start()
 
+    # def _play(self, **kwargs):
     def _play(self):
         self.omxplayer = OMXPlayer(
             self.source_file.as_posix(),

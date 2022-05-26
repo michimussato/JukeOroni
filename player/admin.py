@@ -2,6 +2,7 @@ import logging
 from django.contrib import admin
 from django_object_actions import DjangoObjectActions
 from jukeoroni.settings import Settings
+from .views import jukeoroni
 
 
 # Register your models here.
@@ -115,6 +116,7 @@ class TrackAdmin(admin.ModelAdmin):
 
 class VideoAdmin(DjangoObjectActions, admin.ModelAdmin):
     video = None
+    # global jukeoroni
 
     def play_pause(self, request, obj):
         if isinstance(self.video, Video) and self.video != obj:
@@ -123,8 +125,11 @@ class VideoAdmin(DjangoObjectActions, admin.ModelAdmin):
             # self.video = None
 
         if self.video is None:
+            # modifiy the jukeoroni mode directly
+            jukeoroni.mode = Settings.MODES['videobox']['on_air']['random']
             LOG.warning(f'Starting playback of {obj.video_title} now...')
             self.video = obj
+            # self.video.play(jukeoroni)
             self.video.play()
         else:
             LOG.warning(f'{obj.video_title} is currently playing.')
@@ -222,6 +227,7 @@ May 25 12:00:44 jukeoroni gunicorn[7649]: [05-25-2022 12:00:44] [WARNING ] [Main
                 LOG.exception('Bullshit Error')
             finally:
                 LOG.warning(f'{self.video.video_title} stopped.')
+                jukeoroni.mode = Settings.MODES['jukeoroni']['standby']  # [jukeoroni.jukebox.loader_mode]
             # LOG.warning(f'{obj.video_title} stopped.')
             # LOG.warning(f'{self.video.video_title} stopped.')
             self.video = None
