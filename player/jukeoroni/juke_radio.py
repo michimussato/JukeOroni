@@ -4,7 +4,7 @@ import logging
 import threading
 import time
 import urllib.request
-from PIL import Image
+from PIL import ImageFile, Image
 from pydub.utils import mediainfo
 from player.jukeoroni.displays import Radio as RadioLayout
 from player.jukeoroni.is_string_url import is_string_url
@@ -16,6 +16,9 @@ from player.jukeoroni.settings import Settings
 
 LOG = logging.getLogger(__name__)
 LOG.setLevel(Settings.GLOBAL_LOGGING_LEVEL)
+
+
+ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 
 class Radio(object):

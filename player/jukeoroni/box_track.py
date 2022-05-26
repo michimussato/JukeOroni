@@ -6,17 +6,19 @@ import threading
 import multiprocessing
 import subprocess
 import logging
-from PIL import Image
+from PIL import ImageFile, Image
 from pydub.utils import mediainfo
 from player.jukeoroni.images import Resource
 from player.models import Track as DjangoTrack
-
 
 from player.jukeoroni.settings import Settings
 
 
 LOG = logging.getLogger(__name__)
 LOG.setLevel(Settings.GLOBAL_LOGGING_LEVEL)
+
+
+ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 
 class JukeboxTrack(object):

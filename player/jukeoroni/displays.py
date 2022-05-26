@@ -5,7 +5,7 @@ import socket
 import numpy as np
 import scipy
 import scipy.cluster
-from PIL import Image, ImageDraw, ImageFont, ImageOps
+from PIL import ImageFile, Image, ImageDraw, ImageFont, ImageOps
 from player.jukeoroni.clock import Clock
 from player.jukeoroni.radar import Radar
 from player.jukeoroni.settings import Settings
@@ -14,6 +14,9 @@ from player.jukeoroni.images import Resource
 
 LOG = logging.getLogger(__name__)
 LOG.setLevel(Settings.GLOBAL_LOGGING_LEVEL)
+
+
+ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 
 """

@@ -5,12 +5,15 @@ import math
 import player.jukeoroni.suncalc as suncalc
 from player.jukeoroni.images import Resource
 
-from PIL import Image, ImageDraw, ImageFont, ImageOps, ImageChops, ImageEnhance
+from PIL import ImageFile, Image, ImageDraw, ImageFont, ImageOps, ImageChops, ImageEnhance
 from player.jukeoroni.settings import Settings
 
 
 LOG = logging.getLogger(__name__)
 LOG.setLevel(Settings.GLOBAL_LOGGING_LEVEL)
+
+
+ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 
 try:

@@ -4,7 +4,7 @@ import threading
 import tempfile
 import logging
 from io import BytesIO
-from PIL import Image, ImageOps, ImageEnhance
+from PIL import ImageFile, Image, ImageOps, ImageEnhance
 import selenium.common
 import selenium.webdriver
 from selenium.webdriver.common.by import By
@@ -16,6 +16,9 @@ from player.jukeoroni.images import Resource
 
 LOG = logging.getLogger(__name__)
 LOG.setLevel(Settings.GLOBAL_LOGGING_LEVEL)
+
+
+ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 
 # class _RadarThread(threading.Thread):

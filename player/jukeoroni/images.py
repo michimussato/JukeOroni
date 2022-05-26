@@ -1,6 +1,6 @@
 from player.jukeoroni.settings import Settings
 from player.jukeoroni.is_string_url import is_string_url
-from PIL import Image, ImageDraw
+from PIL import ImageFile, Image, ImageDraw
 import urllib.request
 import io
 import logging
@@ -8,6 +8,9 @@ import logging
 
 LOG = logging.getLogger(__name__)
 LOG.setLevel(Settings.GLOBAL_LOGGING_LEVEL)
+
+
+ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 
 class Resource(object):
@@ -173,6 +176,34 @@ class Resource(object):
             bottom = large_side - crop_other_side
 
         image = image.crop((left, top, right, bottom))
+
+        """
+May 26 11:30:10 jukeoroni gunicorn[14587]: [05-26-2022 11:30:10] [INFO    ] [JukeOroni Playback Thread|2704450656], File "/data/django/jukeoroni/player/jukeoroni/jukeoroni.py", line 988, in _playback_task:    starting playback thread: for /data/usb_hdd/media/audio/music/on_device/System Of A Down - 2001 - Toxicity (Japanese Edition) [FLAC][16][44.1]/06 Chop Suey!.flac from /data/usb_hdd/media/audio/music/on_device/System Of A Down - 2001 - Toxicity (Japanese Edition) [FLAC][16][44.1]/06 Chop Suey!.flac
+May 26 11:30:10 jukeoroni gunicorn[14587]: [05-26-2022 11:30:10] [INFO    ] [JukeOroni Playback Thread|2704450656], File "/data/django/jukeoroni/player/jukeoroni/jukeoroni.py", line 988, in _playback_task:    starting playback thread: for /data/usb_hdd/media/audio/music/on_device/System Of A Down - 2001 - Toxicity (Japanese Edition) [FLAC][16][44.1]/06 Chop Suey!.flac from /data/usb_hdd/media/audio/music/on_device/System Of A Down - 2001 - Toxicity (Japanese Edition) [FLAC][16][44.1]/06 Chop Suey!.flac
+May 26 11:30:10 jukeoroni gunicorn[14587]: [05-26-2022 11:30:10] [INFO    ] [JukeOroni Playback Thread|2704450656], File "/data/django/jukeoroni/player/jukeoroni/box_track.py", line 248, in play:    starting playback: "/data/usb_hdd/media/audio/music/on_device/System Of A Down - 2001 - Toxicity (Japanese Edition) [FLAC][16][44.1]/06 Chop Suey!.flac" from: "/data/usb_hdd/media/audio/music/on_device/System Of A Down - 2001 - Toxicity (Japanese Edition) [FLAC][16][44.1]/06 Chop Suey!.flac"
+May 26 11:30:10 jukeoroni gunicorn[14587]: [05-26-2022 11:30:10] [INFO    ] [JukeOroni Playback Thread|2704450656], File "/data/django/jukeoroni/player/jukeoroni/box_track.py", line 248, in play:    starting playback: "/data/usb_hdd/media/audio/music/on_device/System Of A Down - 2001 - Toxicity (Japanese Edition) [FLAC][16][44.1]/06 Chop Suey!.flac" from: "/data/usb_hdd/media/audio/music/on_device/System Of A Down - 2001 - Toxicity (Japanese Edition) [FLAC][16][44.1]/06 Chop Suey!.flac"
+May 26 11:30:10 jukeoroni gunicorn[14587]: Exception in thread State Watcher Thread:
+May 26 11:30:10 jukeoroni gunicorn[14587]: Traceback (most recent call last):
+May 26 11:30:10 jukeoroni gunicorn[14587]:   File "/usr/lib/python3.7/threading.py", line 917, in _bootstrap_inner
+May 26 11:30:10 jukeoroni gunicorn[14587]:     self.run()
+May 26 11:30:10 jukeoroni gunicorn[14587]:   File "/usr/lib/python3.7/threading.py", line 865, in run
+May 26 11:30:10 jukeoroni gunicorn[14587]:     self._target(*self._args, **self._kwargs)
+May 26 11:30:10 jukeoroni gunicorn[14587]:   File "/data/django/jukeoroni/player/jukeoroni/jukeoroni.py", line 539, in state_watcher_task
+May 26 11:30:10 jukeoroni gunicorn[14587]:     self.play_jukebox()
+May 26 11:30:10 jukeoroni gunicorn[14587]:   File "/data/django/jukeoroni/player/jukeoroni/jukeoroni.py", line 897, in play_jukebox
+May 26 11:30:10 jukeoroni gunicorn[14587]:     self.set_display_jukebox()
+May 26 11:30:10 jukeoroni gunicorn[14587]:   File "/data/django/jukeoroni/player/jukeoroni/jukeoroni.py", line 236, in set_display_jukebox
+May 26 11:30:10 jukeoroni gunicorn[14587]:     bg = self.jukebox.layout.get_layout(labels=self.LABELS, cover=self.inserted_media.cover_album,
+May 26 11:30:10 jukeoroni gunicorn[14587]:   File "/data/django/jukeoroni/player/jukeoroni/box_track.py", line 151, in cover_album
+May 26 11:30:10 jukeoroni gunicorn[14587]:     return Resource().squareify(self._cover_album)
+May 26 11:30:10 jukeoroni gunicorn[14587]:   File "/data/django/jukeoroni/player/jukeoroni/images.py", line 175, in squareify
+May 26 11:30:10 jukeoroni gunicorn[14587]:     image = image.crop((left, top, right, bottom))
+May 26 11:30:10 jukeoroni gunicorn[14587]:   File "/data/venv/lib/python3.7/site-packages/PIL/Image.py", line 1171, in crop
+May 26 11:30:10 jukeoroni gunicorn[14587]:     self.load()
+May 26 11:30:10 jukeoroni gunicorn[14587]:   File "/data/venv/lib/python3.7/site-packages/PIL/ImageFile.py", line 250, in load
+May 26 11:30:10 jukeoroni gunicorn[14587]:     "image file is truncated "
+May 26 11:30:10 jukeoroni gunicorn[14587]: OSError: image file is truncated (64 bytes not processed)
+        """
 
         return image
 
