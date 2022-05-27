@@ -1,4 +1,4 @@
-{% extends 'jukeoroni/base.html' %}
+{% extends 'player/box_base.html' %}
 
     {% block header %}
         <table border="0" cellspacing="0" style="text-align:center;margin-left:auto;margin-right:auto;border-collapse: collapse;">
@@ -19,3 +19,27 @@
     {% block body %}
         <img id="picture" style="display:block;margin-left:auto;margin-right:auto;" src="data:image/jpeg;base64,{{ encoded_img_data|safe|slice:"2:-1" }}">
     {% endblock body %}
+
+    {% block channel_list %}
+        <center>
+            <h1>Channels</h1>
+        </center>
+        <center>
+            {% for channel in channels %}
+{#                <div>#}
+                    <button style="{{ channel.style }}" onclick="{{ channel.onclick }}">{{ channel.button_title }}</button>
+{#                </div>#}
+            {% endfor %}
+        </center>
+
+        <center>
+            <h1>Channels Unstationed</h1>
+        </center>
+        <center>
+            {% for channel_unstationed in channels_unstationed %}
+{#                <div>#}
+                    <button style="{{ channel_unstationed.style }}" onclick="{{ channel_unstationed.onclick }}">{{ channel_unstationed.button_title }}</button>
+{#                </div>#}
+            {% endfor %}
+        </center>
+    {% endblock channel_list %}

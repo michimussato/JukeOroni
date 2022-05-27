@@ -1,12 +1,12 @@
 from django.urls import path
-from player.views import JukeOroniView, BoxView
+from player.views import JukeOroniView, BoxView, BoxViewRadio
 
 
 urlpatterns = [
     # Jukebox
     path('', JukeOroniView.as_view(), name='jukeoroni_index'),
     path('jukebox/', BoxView.as_view(), name='jukebox'),
-    path('radio/', BoxView.as_view(), name='radio'),
+    path('radio/', BoxViewRadio.as_view(), name='radio'),
     path('meditationbox/', BoxView.as_view(), name='meditationbox'),
     path('podcastbox/', BoxView.as_view(), name='podcastbox'),
     path('videobox/', BoxView.as_view(), name='videobox'),
@@ -65,8 +65,8 @@ urlpatterns = [
     # path('meditationbox/tracks/', JukeOroniView.tracks, name='player_tracks'),
 
     # Radio
-    path('radio/<str:display_name_short>/play/', JukeOroniView.radio_play, name='radio_play'),
-    path('radio/stop/', JukeOroniView.radio_stop, name='radio_stop'),
+    path('radio/<str:display_name_short>/play/', BoxViewRadio.radio_play, name='radio_play'),
+    path('radio/stop/', BoxViewRadio.radio_stop, name='radio_stop'),
 
     # path('', index_redirect, name='index_redirect'),
 ]

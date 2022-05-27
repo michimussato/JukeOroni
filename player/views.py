@@ -10,7 +10,7 @@ from django.views import View
 from player.jukeoroni.jukeoroni import JukeOroni
 from player.models import Album, Channel, Station, Artist, Track, Video
 from player.jukeoroni.settings import Settings
-from player.jukeoroni.images import Resource
+# from player.jukeoroni.images import Resource
 
 
 PIMORONI_SATURATION = 1.0
@@ -37,15 +37,11 @@ COLUMN_WIDTH = 101
 #  sudo systemctl stop nginx.service
 jukeoroni = JukeOroni(test=False)
 jukeoroni.turn_on(disable_track_loader=Settings.DISABLE_TRACK_LOADER)
-# jukeoroni.jukebox.set_auto_update_tracklist_on()
-# jukeoroni.meditationbox.set_auto_update_tracklist_on()
-# # jukeoroni.episodicbox.set_auto_update_tracklist_on()
-# # jukeoroni.jukebox.track_list_generator_thread()
+jukeoroni.jukebox.set_auto_update_tracklist_on()
+jukeoroni.meditationbox.set_auto_update_tracklist_on()
+# jukeoroni.episodicbox.set_auto_update_tracklist_on()
+# jukeoroni.jukebox.track_list_generator_thread()
 ######################################
-
-
-# def index_redirect(request):
-#     return redirect('/jukeoroni')
 
 
 def get_bg_color(rgb):
@@ -347,7 +343,7 @@ class JukeOroniView(View):
             encoded_img_data = encoded_screen(img)
             context['encoded_img_data'] = encoded_img_data
 
-            return render(request=request, template_name='player/base_player.html', context=context)
+            return render(request=request, template_name='player/box_base.html', context=context)
 
     def set_jukebox(self):
         global jukeoroni
@@ -397,329 +393,6 @@ class JukeOroniView(View):
         jukeoroni.mode = Settings.MODES['jukeoroni']['standby']
 
         return HttpResponseRedirect('/jukeoroni')
-
-    # def box_index(self):
-    #     global jukeoroni
-    #
-    #     context = dict()
-    #
-    #     if not jukeoroni.mode == Settings.MODES['jukebox']['standby']['random'] \
-    #             and not jukeoroni.mode == Settings.MODES['jukebox']['standby']['album'] \
-    #             and not jukeoroni.mode == Settings.MODES['jukebox']['on_air']['random'] \
-    #             and not jukeoroni.mode == Settings.MODES['jukebox']['on_air']['album'] \
-    #             and not jukeoroni.mode == Settings.MODES['meditationbox']['standby']['random'] \
-    #             and not jukeoroni.mode == Settings.MODES['meditationbox']['standby']['album'] \
-    #             and not jukeoroni.mode == Settings.MODES['meditationbox']['on_air']['random'] \
-    #             and not jukeoroni.mode == Settings.MODES['meditationbox']['on_air']['album'] \
-    #             and not jukeoroni.mode == Settings.MODES['audiobookbox']['standby']['random'] \
-    #             and not jukeoroni.mode == Settings.MODES['audiobookbox']['standby']['album'] \
-    #             and not jukeoroni.mode == Settings.MODES['audiobookbox']['on_air']['random'] \
-    #             and not jukeoroni.mode == Settings.MODES['audiobookbox']['on_air']['album'] \
-    #             and not jukeoroni.mode == Settings.MODES['podcastbox']['standby']['random'] \
-    #             and not jukeoroni.mode == Settings.MODES['podcastbox']['standby']['album'] \
-    #             and not jukeoroni.mode == Settings.MODES['podcastbox']['on_air']['random'] \
-    #             and not jukeoroni.mode == Settings.MODES['podcastbox']['on_air']['album'] \
-    #             and not jukeoroni.mode == Settings.MODES['videobox']['standby']['random'] \
-    #             and not jukeoroni.mode == Settings.MODES['videobox']['on_air']['pause'] \
-    #             and not jukeoroni.mode == Settings.MODES['videobox']['on_air']['random']:
-    #
-    #         return HttpResponseRedirect('/jukeoroni')
-    #
-    #     box = get_active_box(jukeoroni)
-    #
-    #     bg_color = get_bg_color(box.layout.bg_color)
-    #
-    #     context['bg_color'] = bg_color
-    #
-    #     context['buttons'] = list()
-    #
-    #     ret = get_header(bg_color)
-    #
-    #     ret += '<table border="0" cellspacing="0" style="text-align:center;margin-left:auto;margin-right:auto;border-collapse: collapse;">'
-    #     ret += '<tr style="border: none;">'
-    #
-    #     ret += f'<td width="{COLUMN_WIDTH}" style="border-right: solid 1px #000;border-left: solid 1px #000;padding: {padding};">'
-    #
-    #     # if box == jukeoroni.videobox:
-    #     if jukeoroni.mode == Settings.MODES['videobox']['on_air']['pause']:
-    #         context['buttons'].append(
-    #             {
-    #                 'column_width': COLUMN_WIDTH,
-    #                 'padding': padding,
-    #
-    #                 'button_title': 'Back',
-    #                 'onclick': 'window.location.href = \'/jukeoroni/videobox/stop\'',
-    #                 'img_width': int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR),
-    #                 'img_height': int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR),
-    #                 'img_src': f'/jukeoroni/buttons_overlay/{os.path.basename(Settings.BUTTONS_ICONS["Stop"])}',
-    #
-    #                 'button_height': BUTTON_HEIGHT,
-    #
-    #             }
-    #         )
-    #
-    #         # ret += f'<button title="Back" style=\"width:100%; height:{BUTTON_HEIGHT}; \" onclick=\"window.location.href = \'/jukeoroni/videobox/stop\';\"><img width="{int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR)}" height="{int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR)}" src="/jukeoroni/buttons_overlay/{os.path.basename(Settings.BUTTONS_ICONS["Stop"])}" /></button>\n'
-    #
-    #     elif jukeoroni.mode == Settings.MODES[box.box_type]['on_air'][box.loader_mode]:
-    #
-    #         context['buttons'].append(
-    #             {
-    #                 'column_width': COLUMN_WIDTH,
-    #                 'padding': padding,
-    #
-    #                 'button_title': 'Stop',
-    #                 'onclick': 'window.location.href = \'/jukeoroni/{0}/stop\'',
-    #                 'img_width': int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR),
-    #                 'img_height': int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR),
-    #                 'img_src': f'/jukeoroni/buttons_overlay/{os.path.basename(Settings.BUTTONS_ICONS["Stop"])}',
-    #
-    #                 'button_height': BUTTON_HEIGHT,
-    #
-    #             }
-    #         )
-    #
-    #         # ret += '<button title="Stop" style=\"width:100%; height:{1}; \" onclick=\"window.location.href = \'/jukeoroni/{0}/stop\';\"><img width="{2}" height="{2}" src="/jukeoroni/buttons_overlay/{3}" /></button>\n'.format(str(box.box_type), BUTTON_HEIGHT, int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR), os.path.basename(Settings.BUTTONS_ICONS["Stop"]))
-    #     else:
-    #
-    #         context['buttons'].append(
-    #             {
-    #                 'column_width': COLUMN_WIDTH,
-    #                 'padding': padding,
-    #
-    #                 'button_title': 'Back',
-    #                 'onclick': 'window.location.href = \'/jukeoroni/set_standby\'',
-    #                 'img_width': int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR),
-    #                 'img_height': int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR),
-    #                 'img_src': f'/jukeoroni/buttons_overlay/{os.path.basename(Settings.BUTTONS_ICONS["Menu"])}',
-    #
-    #                 'button_height': BUTTON_HEIGHT,
-    #
-    #             }
-    #         )
-    #
-    #         # ret += f'<button title="Back" style=\"width:100%; height:{BUTTON_HEIGHT}; \" onclick=\"window.location.href = \'/jukeoroni/set_standby\';\"><img width="{int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR)}" height="{int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR)}" src="/jukeoroni/buttons_overlay/{os.path.basename(Settings.BUTTONS_ICONS["Menu"])}" /></button>\n'
-    #     # ret += '</td>'
-    #     #
-    #     # ret += f'<td width="{COLUMN_WIDTH}" style="border-right: solid 1px #000;border-left: solid 1px #000;padding: {padding};">'
-    #
-    #     if jukeoroni.mode == Settings.MODES['videobox']['standby']['random']:
-    #
-    #         if jukeoroni.videobox.omxplayer is None:
-    #
-    #             context['buttons'].append(
-    #                 {
-    #                     'column_width': COLUMN_WIDTH,
-    #                     'padding': padding,
-    #
-    #                     'button_title': jukeoroni.mode['buttons']['0X00'],
-    #                     'onclick': 'window.location.href = \'/jukeoroni/videobox/play\'',
-    #                     'img_width': int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR),
-    #                     'img_height': int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR),
-    #                     'img_src': f'/jukeoroni/buttons_overlay/{os.path.basename(Settings.BUTTONS_ICONS["Play"])}',
-    #
-    #                     'button_height': BUTTON_HEIGHT,
-    #
-    #                 }
-    #             )
-    #             # ret += '<button title="{0}" style=\"width:100%; height:{2}; \" onclick=\"window.location.href = \'/jukeoroni/videobox/play\';\" disabled><img width="{3}" height="{3}" src="/jukeoroni/buttons_overlay/{4}" /></button>\n'.format(
-    #             #     jukeoroni.mode['buttons']['0X00'], str(box.box_type), BUTTON_HEIGHT,
-    #             #     int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR),
-    #             #     os.path.basename(Settings.BUTTONS_ICONS["Play"]))
-    #         else:
-    #
-    #             context['buttons'].append(
-    #                 {
-    #                     'column_width': COLUMN_WIDTH,
-    #                     'padding': padding,
-    #
-    #                     'button_title': jukeoroni.mode['buttons']['0X00'],
-    #                     'onclick': 'window.location.href = \'/jukeoroni/videobox/play\'',
-    #                     'img_width': int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR),
-    #                     'img_height': int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR),
-    #                     'img_src': f'/jukeoroni/buttons_overlay/{os.path.basename(Settings.BUTTONS_ICONS["Play"])}',
-    #
-    #                     'button_height': BUTTON_HEIGHT,
-    #
-    #                 }
-    #             )
-    #         #     ret += '<button title="{0}" style=\"width:100%; height:{2}; \" onclick=\"window.location.href = \'/jukeoroni/videobox/play\';\"><img width="{3}" height="{3}" src="/jukeoroni/buttons_overlay/{4}" /></button>\n'.format(
-    #         #         jukeoroni.mode['buttons']['0X00'], str(box.box_type), BUTTON_HEIGHT,
-    #         #         int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR),
-    #         #         os.path.basename(Settings.BUTTONS_ICONS["Play"]))
-    #         # ret += '</td>'
-    #
-    #     elif jukeoroni.mode == Settings.MODES['videobox']['on_air']['pause']:
-    #         context['buttons'].append(
-    #             {
-    #                 'column_width': COLUMN_WIDTH,
-    #                 'padding': padding,
-    #
-    #                 'button_title': jukeoroni.mode['buttons']['0X00'],
-    #                 'onclick': 'window.location.href = \'/jukeoroni/videobox/play\'',
-    #                 'img_width': int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR),
-    #                 'img_height': int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR),
-    #                 'img_src': f'/jukeoroni/buttons_overlay/{os.path.basename(Settings.BUTTONS_ICONS["Play"])}',
-    #
-    #                 'button_height': BUTTON_HEIGHT,
-    #
-    #             }
-    #         )
-    #         # ret += '<button title="{0}" style=\"width:100%; height:{2}; \" onclick=\"window.location.href = \'/jukeoroni/videobox/play\';\"><img width="{3}" height="{3}" src="/jukeoroni/buttons_overlay/{4}" /></button>\n'.format(
-    #         #     jukeoroni.mode['buttons']['0X00'], str(box.box_type), BUTTON_HEIGHT,
-    #         #     int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR),
-    #         #     os.path.basename(Settings.BUTTONS_ICONS["Play"]))
-    #         # ret += '</td>'
-    #
-    #     elif jukeoroni.mode == Settings.MODES['videobox']['on_air']['random']:
-    #         context['buttons'].append(
-    #             {
-    #                 'column_width': COLUMN_WIDTH,
-    #                 'padding': padding,
-    #
-    #                 'button_title': jukeoroni.mode['buttons']['0X00'],
-    #                 'onclick': 'window.location.href = \'/jukeoroni/videobox/play\'',
-    #                 'img_width': int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR),
-    #                 'img_height': int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR),
-    #                 'img_src': f'/jukeoroni/buttons_overlay/{os.path.basename(Settings.BUTTONS_ICONS["Pause"])}',
-    #
-    #                 'button_height': BUTTON_HEIGHT,
-    #
-    #             }
-    #         )
-    #         # ret += '<button title="{0}" style=\"width:100%; height:{2}; \" onclick=\"window.location.href = \'/jukeoroni/videobox/play\';\"><img width="{3}" height="{3}" src="/jukeoroni/buttons_overlay/{4}" /></button>\n'.format(
-    #         #     jukeoroni.mode['buttons']['0X00'], str(box.box_type), BUTTON_HEIGHT,
-    #         #     int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR),
-    #         #     os.path.basename(Settings.BUTTONS_ICONS["Pause"]))
-    #         # ret += '</td>'
-    #
-    #     else:
-    #         context['buttons'].append(
-    #             {
-    #                 'column_width': COLUMN_WIDTH,
-    #                 'padding': padding,
-    #
-    #                 'button_title': jukeoroni.mode['buttons']['0X00'],
-    #                 'onclick': 'window.location.href = \'/jukeoroni/{1}/play_next\'',
-    #                 'img_width': int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR),
-    #                 'img_height': int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR),
-    #                 'img_src': f'/jukeoroni/buttons_overlay/{os.path.basename(Settings.BUTTONS_ICONS["Next"])}' if jukeoroni.mode == Settings.MODES[box.box_type]['on_air'][box.loader_mode] else f'/jukeoroni/buttons_overlay/{os.path.basename(Settings.BUTTONS_ICONS["Play"])}',
-    #
-    #                 'button_height': BUTTON_HEIGHT,
-    #
-    #             }
-    #         )
-    #
-    #         # ret += '<button title="{0}" style=\"width:100%; height:{2}; \" onclick=\"window.location.href = \'/jukeoroni/{1}/play_next\';\"><img width="{3}" height="{3}" src="/jukeoroni/buttons_overlay/{4}" /></button>\n'.format(jukeoroni.mode['buttons']['0X00'], str(box.box_type), BUTTON_HEIGHT, int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR), os.path.basename(Settings.BUTTONS_ICONS["Next"]) if jukeoroni.mode == Settings.MODES[box.box_type]['on_air'][box.loader_mode] else os.path.basename(Settings.BUTTONS_ICONS["Play"]))
-    #         # ret += '</td>'
-    #
-    #     ret += f'<td width="{COLUMN_WIDTH}" style="border-right: solid 1px #000;border-left: solid 1px #000;padding: {padding};">'
-    #     ret += '<a></a>'
-    #     ret += '</td>'
-    #
-    #     if jukeoroni.mode == Settings.MODES['videobox']['standby']['random'] \
-    #             or jukeoroni.mode == Settings.MODES['videobox']['on_air']['pause'] \
-    #             or jukeoroni.mode == Settings.MODES['videobox']['on_air']['random']:
-    #
-    #         ret += f'<td width="{COLUMN_WIDTH}" style="border-right: solid 1px #000;border-left: solid 1px #000;padding: {padding};">'
-    #
-    #     else:
-    #
-    #         ret += f'<td width="{COLUMN_WIDTH}" style="border-right: solid 1px #000;border-left: solid 1px #000;padding: {padding};">'
-    #         ret += '<button title="{0}" style=\"width:100%; height:{2}; \" onclick=\"window.location.href = \'/jukeoroni/{1}/switch_mode\';\"><img width="{3}" height="{3}" src="/jukeoroni/buttons_overlay/{4}" /></button>\n'.format(str(box.loader_mode).capitalize(), str(box.box_type), BUTTON_HEIGHT, int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR), os.path.basename(Settings.BUTTONS_ICONS["Random -> Album"]) if str(box.loader_mode) == 'random' else os.path.basename(Settings.BUTTONS_ICONS["Album -> Random"]))
-    #         ret += '</td>'
-    #
-    #     ret += '</table>'
-    #     ret += '</center>'
-    #
-    #     _success = False
-    #
-    #     img = None
-    #
-    #     if box == jukeoroni.videobox:
-    #         if jukeoroni.mode == Settings.MODES['videobox']['standby']['random']:
-    #             img = box.layout.get_layout(labels=jukeoroni.LABELS)
-    #         elif jukeoroni.mode == Settings.MODES['videobox']['on_air']['pause'] \
-    #                 or jukeoroni.mode == Settings.MODES['videobox']['on_air']['random']:
-    #             img = box.layout.get_layout(labels=jukeoroni.LABELS, cover=Resource().VIDEO_ON_AIR_DEFAULT_IMAGE)
-    #
-    #     elif jukeoroni.mode == Settings.MODES[box.box_type]['standby']['album'] \
-    #             or jukeoroni.mode == Settings.MODES[box.box_type]['standby']['random']:
-    #         img = box.layout.get_layout(labels=jukeoroni.LABELS, buttons=False)
-    #
-    #     elif jukeoroni.mode == Settings.MODES[box.box_type]['on_air']['album'] \
-    #             or jukeoroni.mode == Settings.MODES[box.box_type]['on_air']['random']:
-    #         try:
-    #             img = box.layout.get_layout(labels=jukeoroni.LABELS, cover=jukeoroni.inserted_media.cover_album,
-    #                                         artist=jukeoroni.inserted_media.cover_artist, buttons=False)
-    #         except AttributeError:
-    #             img = box.layout.get_layout(labels=jukeoroni.LABELS, loading=True, buttons=False)
-    #
-    #     if img is not None:
-    #         encoded_img_data = encoded_screen(img)
-    #         context['encoded_img_data'] = encoded_img_data
-    #
-    #         ret += '<img id="picture" style="display:block;margin-left:auto;margin-right:auto;" src="data:image/jpeg;base64,{0}">\n'.format(
-    #             str(encoded_img_data).lstrip('b\'').rstrip('\''))
-    #
-    #     ret += f'<hr>'
-    #
-    #     ret += '<center><div>Inserted/Playing</div></center>'
-    #     if jukeoroni.inserted_media is not None:
-    #         ret += f'<div style="text-align: center;">{str(jukeoroni.inserted_media.artist)}</div>'
-    #         ret += f'<div style="text-align: center;">{str(jukeoroni.inserted_media.album)}</div>'
-    #         ret += f'<div style="text-align: center;">{str(jukeoroni.inserted_media.track_title)}</div>'
-    #         ret += f'<div style="text-align: center;">(ID: {str(jukeoroni.inserted_media.django_track.id)})</div>'
-    #     else:
-    #         ret += '<div style="text-align: center;">None</div>'
-    #
-    #     if box.loading_track is not None:
-    #         ret += '<hr>'
-    #         ret += '<center><div>Loading</div></center>'
-    #         ret += '<center><div>{0}</div></center>'.format(f'{box.loading_track.artist} - {box.loading_track.album} ({box.loading_track.year}) - {box.loading_track.track_title} ({str(round(box.loading_track.size_cached / (1024.0 * 1024.0), 1))} of {str(round(box.loading_track.size / (1024.0 * 1024.0), 1))} MB)')
-    #     ret += '<hr>'
-    #     ret += '<center><div>Queue</div></center>'
-    #
-    #     ret += '<ol>'
-    #     ret += '<center><table border="0" cellspacing="0">'
-    #     for track in box.tracks:
-    #         ret += '<tr>'
-    #         ret += '<td>'
-    #         ret += '<li>&nbsp;</li>'
-    #         ret += '</td>'
-    #         ret += '<td>{0} (ID: {1})</td>'.format(track, track.django_track.id)
-    #         if box.tracks.index(track) == 0:
-    #             ret += '<td><button onclick=\"window.location.href = \'/jukeoroni/{1}/{0}/as_first\';\" disabled>Set 1st</button></td>'.format(str(box.tracks.index(track)), str(box.box_type))
-    #         else:
-    #             ret += '<td><button onclick=\"window.location.href = \'/jukeoroni/{1}/{0}/as_first\';\">Set 1st</button></td>'.format(str(box.tracks.index(track)), str(box.box_type))
-    #         ret += '<td><button onclick=\"window.location.href = \'/jukeoroni/{1}/{0}/pop\';\">Remove from Queue</button></td>'.format(str(box.tracks.index(track)), str(box.box_type))
-    #         ret += f'</tr>'
-    #     ret += f'</table></center>'
-    #     ret += f'</ol>'
-    #     ret += f'<hr>'
-    #
-    #     if box.track_list_updater_running:
-    #         ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/{0}/update_track_list\';\"  disabled>Update Track List</button>\n'.format(str(box.box_type))
-    #     else:
-    #         ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/{0}/update_track_list\';\">Update Track List</button>\n'.format(str(box.box_type))
-    #
-    #     if jukeoroni.paused:
-    #         ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/resume\';\">Resume</button>\n'
-    #     else:
-    #         if jukeoroni.mode == Settings.MODES[box.box_type]['on_air'][box.loader_mode]:
-    #             ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/pause\';\">Pause</button>\n'
-    #         else:
-    #             ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/pause\';\" disabled>Pause</button>\n'
-    #
-    #     ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/{0}/albums\';\">Albums</button>\n'.format(str(box.box_type))
-    #     # ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/{0}/tracks\';\">Tracks</button>\n'.format(str(box.box_type))
-    #
-    #     ret = get_footer(ret)
-    #
-    #     ret += '</body>\n'
-    #     ret += '</html>\n'
-    #     # return HttpResponse(ret)
-    #
-    #     return render(request=self.kwargs['request'], template_name='player/base_player.html', context=context)
 
     def update_track_list(self):
         global jukeoroni
@@ -1116,143 +789,6 @@ for(var x = 0; x < allSpan.length; x++)
 
         return HttpResponseRedirect('/jukeoroni')
 
-    def radio_index(self):
-        global jukeoroni
-
-        if not jukeoroni.mode == Settings.MODES['radio']['standby']['random'] \
-                and not jukeoroni.mode == Settings.MODES['radio']['on_air']['random']:
-
-            return HttpResponseRedirect('/jukeoroni')
-
-        stations = Station.objects.all().order_by('display_name')
-
-        # box = get_active_box(jukeoroni)
-
-        bg_color = get_bg_color(jukeoroni.layout_radio.bg_color)
-
-        ret = get_header(bg_color)
-
-        ret += '<table border="0" cellspacing="0" style="text-align:center;margin-left:auto;margin-right:auto;border-collapse: collapse;">'
-        ret += '<tr style="border: none;">'
-
-        ret += f'<td width="{COLUMN_WIDTH}" style="border-right: solid 1px #000;border-left: solid 1px #000;padding: {padding};">'
-        # if jukeoroni.mode == Settings.MODES[box.box_type]['on_air'][box.loader_mode]:
-        if jukeoroni.radio.is_on_air:
-            ret += f'<button title="Stop" style=\"width:100%; height:{BUTTON_HEIGHT}; \" onclick=\"window.location.href = \'stop\';\"><img width="{int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR)}" height="{int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR)}" src="/jukeoroni/buttons_overlay/{os.path.basename(Settings.BUTTONS_ICONS["Stop"])}" /></button>\n'
-        else:
-            ret += f'<button title="Back" style=\"width:100%; height:{BUTTON_HEIGHT}; \" onclick=\"window.location.href = \'/jukeoroni/set_standby\';\"><img width="{int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR)}" height="{int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR)}" src="/jukeoroni/buttons_overlay/{os.path.basename(Settings.BUTTONS_ICONS["Menu"])}" /></button>\n'
-        ret += '</td>'
-
-        ret += f'<td width="{COLUMN_WIDTH}" style="border-right: solid 1px #000;border-left: solid 1px #000;padding: {padding};">'
-        last_played = jukeoroni.radio.last_played
-        if last_played is None or jukeoroni.radio.is_on_air:
-            ret += f'<button title="Next (Random)" style=\"width:100%; height:{BUTTON_HEIGHT}; \" onclick=\"window.location.href = \'random/play\';\"><img width="{int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR)}" height="{int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR)}" src="/jukeoroni/buttons_overlay/{os.path.basename(Settings.BUTTONS_ICONS["Next"])}" /></button>\n'
-        else:
-            ret += '<button title="Last played ({1})" style=\"width:100%; height:{2}; \" onclick=\"window.location.href = \'{0}/play\';\"><img width="{3}" height="{3}" src="/jukeoroni/buttons_overlay/{4}" /></button>\n'.format(last_played.display_name_short, last_played.display_name, BUTTON_HEIGHT, int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR), os.path.basename(Settings.BUTTONS_ICONS["Play"]))
-        ret += '</td>'
-
-        ret += f'<td width="{COLUMN_WIDTH}" style="border-right: solid 1px #000;border-left: solid 1px #000;padding: {padding};">'
-        ret += '<a></a>'
-        ret += '</td>'
-
-        ret += f'<td width="{COLUMN_WIDTH}" style="border-right: solid 1px #000;border-left: solid 1px #000;padding: {padding};">'
-        ret += '<a></a>'
-        ret += '</td>'
-
-        ret += '</table>'
-        ret += '</center>'
-
-        # ret += '<hr>\n'
-
-        # data = io.BytesIO()
-        # try:
-        img = jukeoroni.layout_radio.get_layout(labels=jukeoroni.LABELS, cover=jukeoroni.radio.cover, title=jukeoroni.radio.stream_title, buttons=False)
-        encoded_img_data = encoded_screen(img)
-        # except:
-        #     img = None
-        # img = img.rotate(270, expand=True)
-        # img.save(data, "PNG")
-
-        # if img is not None:
-        ret += '<img id="picture" style="display:block;margin-left:auto;margin-right:auto;" src="data:image/jpeg;base64,{0}">\n'.format(
-            str(encoded_img_data).lstrip('b\'').rstrip('\''))
-        ret += '<hr>\n'
-        if bool(stations):
-            ret += '<center><h1>Channels</h1></center>\n'
-            # if bool(stations):
-            for station in stations:
-                channels = Channel.objects.filter(station=station).order_by('display_name')
-                if channels:
-                    ret += f'<center><h2>{station.display_name}</h2></center>\n'
-                for channel in channels:
-                    if channel.is_enabled:
-                        if channel == jukeoroni.radio.is_on_air:
-                            ret += f'<button style=\"width:100%; background-color:green; \" onclick=\"window.location.href = \'stop\';\">{channel.display_name}</button>\n'
-                        else:
-                            ret += f'<button style=\"width:100%\" onclick=\"window.location.href = \'{channel.display_name_short}/play\';\">{channel.display_name}</button>\n'
-
-        # in case the channel has no station assigned
-        channels_unstationed = Channel.objects.filter(station=None).order_by('display_name')
-        if channels_unstationed:
-            ret += f'<center><h2>Uncategorized</h2></center>\n'
-        for channel_unstationed in channels_unstationed:
-            if channel_unstationed.is_enabled:
-                if channel_unstationed == jukeoroni.radio.is_on_air:
-                    ret += f'<button style=\"width:100%; background-color:green; \" onclick=\"window.location.href = \'stop\';\">{channel_unstationed.display_name}</button>\n'
-                else:
-                    ret += f'<button style=\"width:100%\" onclick=\"window.location.href = \'{channel_unstationed.display_name_short}/play\';\">{channel_unstationed.display_name}</button>\n'
-
-        ret = get_footer(ret)
-
-        ret += '</body>\n'
-        ret += '</html>\n'
-        return HttpResponse(ret)
-
-    def radio_play(self, display_name_short):
-        global jukeoroni
-
-        if not jukeoroni.mode == Settings.MODES['radio']['standby']['random'] \
-                and not jukeoroni.mode == Settings.MODES['radio']['on_air']['random']:
-
-            return HttpResponseRedirect('/jukeoroni')
-
-        if display_name_short == 'random':
-            channel = jukeoroni.radio.random_channel
-        else:
-            channel = Channel.objects.get(display_name_short=display_name_short)
-
-        if jukeoroni.inserted_media is not None:
-            jukeoroni._next = channel
-            jukeoroni._flag_next = True
-        else:
-            jukeoroni._next = channel
-
-        jukeoroni.mode = Settings.MODES['radio']['on_air']['random']
-
-        # time_out = 10.0
-        while not jukeoroni.radio.is_on_air == channel:  # or time_out <= 0.0:
-            time.sleep(0.1)
-            # time_out -= 0.1
-
-        return HttpResponseRedirect('/jukeoroni')
-
-    def radio_stop(self):
-        global jukeoroni
-
-        if not jukeoroni.mode == Settings.MODES['radio']['standby']['random'] \
-                and not jukeoroni.mode == Settings.MODES['radio']['on_air']['random']:
-
-            return HttpResponseRedirect('/jukeoroni')
-
-        jukeoroni.mode = Settings.MODES['radio']['standby']['random']
-
-        # time_out = 10.0
-        while jukeoroni.radio.is_on_air is not None:  # or time_out <= 0.0:
-            time.sleep(0.1)
-            # time_out -= 0.1
-
-        return HttpResponseRedirect('/jukeoroni')
-
 
 class BoxView(View):
     def get(self, request):
@@ -1311,7 +847,6 @@ class BoxView(View):
                     'img_src': f'/jukeoroni/buttons_overlay/{os.path.basename(Settings.BUTTONS_ICONS["Stop"])}',
 
                     'button_height': BUTTON_HEIGHT,
-
                 }
             )
 
@@ -1329,7 +864,6 @@ class BoxView(View):
                     'img_src': f'/jukeoroni/buttons_overlay/{os.path.basename(Settings.BUTTONS_ICONS["Stop"])}',
 
                     'button_height': BUTTON_HEIGHT,
-
                 }
             )
 
@@ -1347,7 +881,6 @@ class BoxView(View):
                     'img_src': f'/jukeoroni/buttons_overlay/{os.path.basename(Settings.BUTTONS_ICONS["Menu"])}',
 
                     'button_height': BUTTON_HEIGHT,
-
                 }
             )
 
@@ -1367,7 +900,6 @@ class BoxView(View):
                         'img_src': f'/jukeoroni/buttons_overlay/{os.path.basename(Settings.BUTTONS_ICONS["Play"])}',
 
                         'button_height': BUTTON_HEIGHT,
-
                     }
                 )
 
@@ -1385,7 +917,6 @@ class BoxView(View):
                         'img_src': f'/jukeoroni/buttons_overlay/{os.path.basename(Settings.BUTTONS_ICONS["Play"])}',
 
                         'button_height': BUTTON_HEIGHT,
-
                     }
                 )
 
@@ -1402,7 +933,6 @@ class BoxView(View):
                     'img_src': f'/jukeoroni/buttons_overlay/{os.path.basename(Settings.BUTTONS_ICONS["Play"])}',
 
                     'button_height': BUTTON_HEIGHT,
-
                 }
             )
 
@@ -1419,7 +949,6 @@ class BoxView(View):
                     'img_src': f'/jukeoroni/buttons_overlay/{os.path.basename(Settings.BUTTONS_ICONS["Pause"])}',
 
                     'button_height': BUTTON_HEIGHT,
-
                 }
             )
 
@@ -1440,25 +969,8 @@ class BoxView(View):
                                                                                                                        box.loader_mode] else f'/jukeoroni/buttons_overlay/{os.path.basename(Settings.BUTTONS_ICONS["Play"])}',
 
                     'button_height': BUTTON_HEIGHT,
-
                 }
             )
-
-        # context['buttons'].append(
-        #     {
-        #         'column_width': COLUMN_WIDTH,
-        #         'padding': padding,
-        #
-        #         'button_title': '',
-        #         'onclick': '',
-        #         'img_width': None,
-        #         'img_height': None,
-        #         'img_src': f'',
-        #
-        #         'button_height': BUTTON_HEIGHT,
-        #
-        #     }
-        # )
 
         if jukeoroni.mode == Settings.MODES['videobox']['standby']['random'] \
                 or jukeoroni.mode == Settings.MODES['videobox']['on_air']['pause'] \
@@ -1476,7 +988,6 @@ class BoxView(View):
                     'img_src': f'',
 
                     'button_height': BUTTON_HEIGHT,
-
                 }
             )
 
@@ -1494,7 +1005,6 @@ class BoxView(View):
                     'img_src': f'',
 
                     'button_height': BUTTON_HEIGHT,
-
                 }
             )
 
@@ -1510,7 +1020,6 @@ class BoxView(View):
                     'img_src': f'/jukeoroni/buttons_overlay/{os.path.basename(Settings.BUTTONS_ICONS["Random -> Album"])}' if str(box.loader_mode) == 'random' else f'/jukeoroni/buttons_overlay/{os.path.basename(Settings.BUTTONS_ICONS["Album -> Random"])}',
 
                     'button_height': BUTTON_HEIGHT,
-
                 }
             )
 
@@ -1614,5 +1123,228 @@ class BoxView(View):
         # ret += '</html>\n'
         # # return HttpResponse(ret)
 
-        return render(request=request, template_name='player/base_player.html', context=context)
+        return render(request=request, template_name='player/box_base.html', context=context)
 
+
+class BoxViewRadio(View):
+    def get(self, request):
+
+        global jukeoroni
+
+        context = dict()
+
+        try:
+            jukeoroni.mode
+        except (NameError, ):
+            return HttpResponse('JukeOroni web interface is not available.')
+
+        if not jukeoroni.mode == Settings.MODES['radio']['standby']['random'] \
+                and not jukeoroni.mode == Settings.MODES['radio']['on_air']['random']:
+            return HttpResponseRedirect('/jukeoroni')
+
+        context['bg_color'] = get_bg_color(jukeoroni.layout_radio.bg_color)
+
+        context['buttons'] = list()
+
+        stations = Station.objects.all().order_by('display_name')
+        context['stations'] = list(stations)
+
+        if jukeoroni.radio.is_on_air:
+            context['buttons'].append(
+                {
+                    'column_width': COLUMN_WIDTH,
+                    'padding': padding,
+
+                    'button_title': 'Stop',
+                    'onclick': 'window.location.href = \'stop\'',
+                    'img_width': int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR),
+                    'img_height': int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR),
+                    'img_src': f'/jukeoroni/buttons_overlay/{os.path.basename(Settings.BUTTONS_ICONS["Stop"])}',
+
+                    'button_height': BUTTON_HEIGHT,
+                }
+            )
+
+        else:
+            context['buttons'].append(
+                {
+                    'column_width': COLUMN_WIDTH,
+                    'padding': padding,
+
+                    'button_title': 'Back',
+                    'onclick': 'window.location.href = \'/jukeoroni/set_standby\'',
+                    'img_width': int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR),
+                    'img_height': int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR),
+                    'img_src': f'/jukeoroni/buttons_overlay/{os.path.basename(Settings.BUTTONS_ICONS["Menu"])}',
+
+                    'button_height': BUTTON_HEIGHT,
+                }
+            )
+
+        last_played = jukeoroni.radio.last_played
+        if last_played is None or jukeoroni.radio.is_on_air:
+            context['buttons'].append(
+                {
+                    'column_width': COLUMN_WIDTH,
+                    'padding': padding,
+
+                    'button_title': 'Next (Random)',
+                    'onclick': 'window.location.href = \'random/play\'',
+                    'img_width': int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR),
+                    'img_height': int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR),
+                    'img_src': f'/jukeoroni/buttons_overlay/{os.path.basename(Settings.BUTTONS_ICONS["Next"])}',
+
+                    'button_height': BUTTON_HEIGHT,
+                }
+            )
+
+        else:
+            context['buttons'].append(
+                {
+                    'column_width': COLUMN_WIDTH,
+                    'padding': padding,
+
+                    'button_title': f'Last played ({last_played.display_name})',
+                    'onclick': f'window.location.href = \'{last_played.display_name_short}/play\'',
+                    'img_width': int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR),
+                    'img_height': int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR),
+                    'img_src': f'/jukeoroni/buttons_overlay/{os.path.basename(Settings.BUTTONS_ICONS["Play"])}',
+
+                    'button_height': BUTTON_HEIGHT,
+                }
+            )
+
+        context['buttons'].append(
+            {
+                'column_width': COLUMN_WIDTH,
+                'padding': padding,
+
+                'button_title': '',
+                'onclick': '',
+                'img_width': None,
+                'img_height': None,
+                'img_src': f'',
+
+                'button_height': BUTTON_HEIGHT,
+            }
+        )
+
+        context['buttons'].append(
+            {
+                'column_width': COLUMN_WIDTH,
+                'padding': padding,
+
+                'button_title': '',
+                'onclick': '',
+                'img_width': None,
+                'img_height': None,
+                'img_src': f'',
+
+                'button_height': BUTTON_HEIGHT,
+            }
+        )
+
+        img = jukeoroni.layout_radio.get_layout(labels=jukeoroni.LABELS, cover=jukeoroni.radio.cover,
+                                                title=jukeoroni.radio.stream_title, buttons=False)
+        context['encoded_img_data'] = encoded_screen(img)
+
+        context['channels'] = list()
+        if bool(stations):
+            # ret += '<center><h1>Channels</h1></center>\n'
+            # if bool(stations):
+            for station in stations:
+                channels = Channel.objects.filter(station=station).order_by('display_name')
+                # context['channels'] = channels
+                # if channels:
+                #     ret += f'<center><h2>{station.display_name}</h2></center>\n'
+                for channel in channels:
+                    if channel.is_enabled:
+                        if channel == jukeoroni.radio.is_on_air:
+                            context['channels'].append(
+                                {
+                                    'button_title': f'-->{channel.display_name}<--',
+                                    'onclick': f'window.location.href = \'stop\'',
+                                    'style': '\"width:100%; background-color:green; \"',
+                                }
+                            )
+
+                        else:
+                            context['channels'].append(
+                                {
+                                    'button_title': f'{channel.display_name}',
+                                    'onclick': f'window.location.href = \'{channel.display_name_short}/play\'',
+                                    'style': '\"width:100%\"',
+                                }
+                            )
+
+        # in case the channel has no station assigned
+        channels_unstationed = Channel.objects.filter(station=None).order_by('display_name')
+        context['channels_unstationed'] = list(channels_unstationed)
+        # if channels_unstationed:
+        #     ret += f'<center><h2>Uncategorized</h2></center>\n'
+        for channel_unstationed in channels_unstationed:
+            if channel_unstationed.is_enabled:
+                if channel_unstationed == jukeoroni.radio.is_on_air:
+
+                    context['channels_unstationed'].append(
+                        {
+                            'button_title': f'-->{channel_unstationed.display_name}<--',
+                            'onclick': f'window.location.href = \'stop\'',
+                            'style': '\"width:100%; background-color:green; \"',
+                        }
+                    )
+
+                else:
+
+                    context['channels_unstationed'].append(
+                        {
+                            'button_title': f'{channel_unstationed.display_name}',
+                            'onclick': f'window.location.href = \'{channel_unstationed.display_name_short}/play\'',
+                            'style': '\"width:100%\"',
+                        }
+                    )
+
+        return render(request=request, template_name='player/box_radio.html', context=context)
+
+    def radio_play(self, display_name_short):
+        global jukeoroni
+
+        if not jukeoroni.mode == Settings.MODES['radio']['standby']['random'] \
+                and not jukeoroni.mode == Settings.MODES['radio']['on_air']['random']:
+            return HttpResponseRedirect('/jukeoroni')
+
+        if display_name_short == 'random':
+            channel = jukeoroni.radio.random_channel
+        else:
+            channel = Channel.objects.get(display_name_short=display_name_short)
+
+        if jukeoroni.inserted_media is not None:
+            jukeoroni._next = channel
+            jukeoroni._flag_next = True
+        else:
+            jukeoroni._next = channel
+
+        jukeoroni.mode = Settings.MODES['radio']['on_air']['random']
+
+        # time_out = 10.0
+        while not jukeoroni.radio.is_on_air == channel:  # or time_out <= 0.0:
+            time.sleep(0.1)
+            # time_out -= 0.1
+
+        return HttpResponseRedirect('/jukeoroni')
+
+    def radio_stop(self):
+        global jukeoroni
+
+        if not jukeoroni.mode == Settings.MODES['radio']['standby']['random'] \
+                and not jukeoroni.mode == Settings.MODES['radio']['on_air']['random']:
+            return HttpResponseRedirect('/jukeoroni')
+
+        jukeoroni.mode = Settings.MODES['radio']['standby']['random']
+
+        # time_out = 10.0
+        while jukeoroni.radio.is_on_air is not None:  # or time_out <= 0.0:
+            time.sleep(0.1)
+            # time_out -= 0.1
+
+        return HttpResponseRedirect('/jukeoroni')
