@@ -219,6 +219,7 @@ class JukeOroniView(View):
                 if Settings.ENABLE_JUKEBOX:
                     context['buttons'].append(
                         {
+                            'class': 'btn_header',
                             'column_width': COLUMN_WIDTH,
                             'padding': padding,
 
@@ -237,6 +238,7 @@ class JukeOroniView(View):
                 if Settings.ENABLE_RADIO:
                     context['buttons'].append(
                         {
+                            'class': 'btn_header',
                             'column_width': COLUMN_WIDTH,
                             'padding': padding,
 
@@ -255,6 +257,7 @@ class JukeOroniView(View):
                 if Settings.ENABLE_MEDITATION:
                     context['buttons'].append(
                         {
+                            'class': 'btn_header',
                             'column_width': COLUMN_WIDTH,
                             'padding': padding,
 
@@ -273,6 +276,7 @@ class JukeOroniView(View):
                 if Settings.ENABLE_AUDIOBOOK:
                     context['buttons'].append(
                         {
+                            'class': 'btn_header',
                             'column_width': COLUMN_WIDTH,
                             'padding': padding,
 
@@ -291,6 +295,7 @@ class JukeOroniView(View):
                 if Settings.ENABLE_PODCAST:
                     context['buttons'].append(
                         {
+                            'class': 'btn_header',
                             'column_width': COLUMN_WIDTH,
                             'padding': padding,
 
@@ -309,6 +314,7 @@ class JukeOroniView(View):
                 if Settings.ENABLE_VIDEO:
                     context['buttons'].append(
                         {
+                            'class': 'btn_header',
                             'column_width': COLUMN_WIDTH,
                             'padding': padding,
 
@@ -327,6 +333,7 @@ class JukeOroniView(View):
                 while _items_enabled < 4:
                     context['buttons'].append(
                         {
+                            # 'class': 'btn_header',
                             'column_width': COLUMN_WIDTH,
                             'padding': padding,
 
@@ -345,6 +352,7 @@ class JukeOroniView(View):
             img = jukeoroni.layout_standby.get_layout(labels=jukeoroni.LABELS, buttons=False)
             encoded_img_data = encoded_screen(img)
             context['encoded_img_data'] = encoded_img_data
+            context['encoded_img_data_class'] = 'box_image'
 
             return render(request=request, template_name='player/box_base.html', context=context)
 
@@ -840,6 +848,7 @@ class BoxView(View):
         if jukeoroni.mode == Settings.MODES['videobox']['on_air']['pause']:
             context['buttons'].append(
                 {
+                    'class': 'btn_header',
                     'column_width': COLUMN_WIDTH,
                     'padding': padding,
 
@@ -857,6 +866,7 @@ class BoxView(View):
 
             context['buttons'].append(
                 {
+                    'class': 'btn_header',
                     'column_width': COLUMN_WIDTH,
                     'padding': padding,
 
@@ -874,6 +884,7 @@ class BoxView(View):
 
             context['buttons'].append(
                 {
+                    'class': 'btn_header',
                     'column_width': COLUMN_WIDTH,
                     'padding': padding,
 
@@ -893,6 +904,7 @@ class BoxView(View):
 
                 context['buttons'].append(
                     {
+                        'class': 'btn_header',
                         'column_width': COLUMN_WIDTH,
                         'padding': padding,
 
@@ -910,6 +922,7 @@ class BoxView(View):
 
                 context['buttons'].append(
                     {
+                        'class': 'btn_header',
                         'column_width': COLUMN_WIDTH,
                         'padding': padding,
 
@@ -926,6 +939,7 @@ class BoxView(View):
         elif jukeoroni.mode == Settings.MODES['videobox']['on_air']['pause']:
             context['buttons'].append(
                 {
+                    'class': 'btn_header',
                     'column_width': COLUMN_WIDTH,
                     'padding': padding,
 
@@ -942,6 +956,7 @@ class BoxView(View):
         elif jukeoroni.mode == Settings.MODES['videobox']['on_air']['random']:
             context['buttons'].append(
                 {
+                    'class': 'btn_header',
                     'column_width': COLUMN_WIDTH,
                     'padding': padding,
 
@@ -958,6 +973,7 @@ class BoxView(View):
         else:
             context['buttons'].append(
                 {
+                    'class': 'btn_header',
                     'column_width': COLUMN_WIDTH,
                     'padding': padding,
 
@@ -981,6 +997,7 @@ class BoxView(View):
 
             context['buttons'].append(
                 {
+                    # 'class': 'btn_header',
                     'column_width': COLUMN_WIDTH,
                     'padding': padding,
 
@@ -998,6 +1015,7 @@ class BoxView(View):
 
             context['buttons'].append(
                 {
+                    # 'class': 'btn_header',
                     'column_width': COLUMN_WIDTH,
                     'padding': padding,
 
@@ -1013,6 +1031,7 @@ class BoxView(View):
 
             context['buttons'].append(
                 {
+                    'class': 'btn_header',
                     'column_width': COLUMN_WIDTH,
                     'padding': padding,
 
@@ -1057,6 +1076,7 @@ class BoxView(View):
         if img is not None:
             encoded_img_data = encoded_screen(img)
             context['encoded_img_data'] = encoded_img_data
+            context['encoded_img_data_class'] = 'box_image'
 
             # ret += '<img id="picture" style="display:block;margin-left:auto;margin-right:auto;" src="data:image/jpeg;base64,{0}">\n'.format(
             #     str(encoded_img_data).lstrip('b\'').rstrip('\''))
@@ -1155,6 +1175,7 @@ class BoxViewRadio(View):
         if jukeoroni.radio.is_on_air:
             context['buttons'].append(
                 {
+                    'class': 'btn_header',
                     'column_width': COLUMN_WIDTH,
                     'padding': padding,
 
@@ -1171,6 +1192,7 @@ class BoxViewRadio(View):
         else:
             context['buttons'].append(
                 {
+                    'class': 'btn_header',
                     'column_width': COLUMN_WIDTH,
                     'padding': padding,
 
@@ -1188,6 +1210,7 @@ class BoxViewRadio(View):
         if last_played is None or jukeoroni.radio.is_on_air:
             context['buttons'].append(
                 {
+                    'class': 'btn_header',
                     'column_width': COLUMN_WIDTH,
                     'padding': padding,
 
@@ -1204,6 +1227,7 @@ class BoxViewRadio(View):
         else:
             context['buttons'].append(
                 {
+                    'class': 'btn_header',
                     'column_width': COLUMN_WIDTH,
                     'padding': padding,
 
@@ -1219,6 +1243,7 @@ class BoxViewRadio(View):
 
         context['buttons'].append(
             {
+                # 'class': 'btn_header',
                 'column_width': COLUMN_WIDTH,
                 'padding': padding,
 
@@ -1234,6 +1259,7 @@ class BoxViewRadio(View):
 
         context['buttons'].append(
             {
+                # 'class': 'btn_header',
                 'column_width': COLUMN_WIDTH,
                 'padding': padding,
 
@@ -1250,6 +1276,7 @@ class BoxViewRadio(View):
         img = jukeoroni.layout_radio.get_layout(labels=jukeoroni.LABELS, cover=jukeoroni.radio.cover,
                                                 title=jukeoroni.radio.stream_title, buttons=False)
         context['encoded_img_data'] = encoded_screen(img)
+        context['encoded_img_data_class'] = 'box_image'
 
         context['channels'] = list()
         if bool(stations):
