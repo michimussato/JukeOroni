@@ -1,7 +1,7 @@
 /*https://www.w3docs.com/snippets/css/how-to-style-buttons-with-css.html*/
 
 body {
-        background: linear-gradient(#303030 28px, #606060 160px) fixed;
+        background: linear-gradient(#202020 130px, #606060 800px);
         height: 100%;
 }
 
@@ -15,7 +15,7 @@ body {
 
 .btn_header {
         display: inline-block;
-        background-color: #737373;
+        background-color: #505050;
         border-radius: 20px;
         border: 4px double #cccccc;
         color: #eeeeee;
