@@ -40,11 +40,11 @@ COLUMN_WIDTH = 101
 #  sudo systemctl stop nginx.service
 jukeoroni = JukeOroni(test=False)
 jukeoroni.turn_on(disable_track_loader=Settings.DISABLE_TRACK_LOADER)
-# jukeoroni.jukebox.set_auto_update_tracklist_on()
-# jukeoroni.meditationbox.set_auto_update_tracklist_on()
-# # jukeoroni.episodicbox.set_auto_update_tracklist_on()
-# # jukeoroni.jukebox.track_list_generator_thread()
-# ######################################
+jukeoroni.jukebox.set_auto_update_tracklist_on()
+jukeoroni.meditationbox.set_auto_update_tracklist_on()
+# jukeoroni.episodicbox.set_auto_update_tracklist_on()
+# jukeoroni.jukebox.track_list_generator_thread()
+######################################
 
 
 def get_bg_color(rgb):
@@ -1265,18 +1265,20 @@ class BoxViewRadio(View):
                         if channel == jukeoroni.radio.is_on_air:
                             context['channels'].append(
                                 {
+                                    'class': 'btn_channel_on_air',
                                     'button_title': f'-->{channel.display_name}<--',
                                     'onclick': f'window.location.href = \'stop\'',
-                                    'style': '\"width:100%; background-color:green; \"',
+                                    # 'style': '\"width:100%; background-color:green; \"',
                                 }
                             )
 
                         else:
                             context['channels'].append(
                                 {
+                                    'class': 'btn_channel_default',
                                     'button_title': f'{channel.display_name}',
                                     'onclick': f'window.location.href = \'{channel.display_name_short}/play\'',
-                                    'style': '\"width:100%\"',
+                                    # 'style': '\"width:100%\"',
                                 }
                             )
 
@@ -1291,9 +1293,10 @@ class BoxViewRadio(View):
 
                     context['channels_unstationed'].append(
                         {
-                            'button_title': f'-->{channel_unstationed.display_name}<--',
+                            'class': 'btn_channel_on_air',
+                            'button_title': f'{channel_unstationed.display_name}',
                             'onclick': f'window.location.href = \'stop\'',
-                            'style': '\"width:100%; background-color:green; \"',
+                            # 'style': '\"width:100%; background-color:green; \"',
                         }
                     )
 
@@ -1301,9 +1304,10 @@ class BoxViewRadio(View):
 
                     context['channels_unstationed'].append(
                         {
+                            'class': 'btn_channel_default',
                             'button_title': f'{channel_unstationed.display_name}',
                             'onclick': f'window.location.href = \'{channel_unstationed.display_name_short}/play\'',
-                            'style': '\"width:100%\"',
+                            # 'style': '\"width:100%\"',
                         }
                     )
 
