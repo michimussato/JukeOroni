@@ -1,3 +1,5 @@
+/*https://www.w3docs.com/snippets/css/how-to-style-buttons-with-css.html*/
+
 .btn_channel_default {
         display: inline-block;
         background-color: #3a0b73;
@@ -32,4 +34,17 @@
         transition: all 0.5s;
         cursor: pointer;
         margin: 5px;
+      }
+
+.btn_channel_default:hover {
+        background-color: #7417e6;
+      }
+
+.btn_channel_default:after {
+        /*content: '\00bb';*/
+        position: absolute;
+        opacity: 0;
+        top: 0;
+        right: -20px;
+        transition: 0.5s;
       }
