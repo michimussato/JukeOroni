@@ -414,7 +414,7 @@ class Jukebox(Layout):
 
 class Radio(Layout):
 
-    def get_layout(self, labels, cover, title, buttons=True):
+    def get_layout(self, labels, cover, title, buttons=True, loading=None):
 
         assert isinstance(cover, Image.Image), f'Radio Channel cover type must be PIL.Image.Image() (not rotated). Got: {cover}'
 
