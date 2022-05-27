@@ -3,7 +3,7 @@
 .btn_channel_default {
         display: inline-block;
         background-color: #3a0b73;
-        border-radius: 10px;
+        border-radius: 20px;
         border: 4px double #cccccc;
         color: #eeeeee;
         text-align: center;
@@ -21,7 +21,7 @@
 .btn_channel_on_air {
         display: inline-block;
         background-color: #792323;
-        border-radius: 10px;
+        border-radius: 20px;
         border: 4px double #cccccc;
         color: #eeeeee;
         text-align: center;
@@ -40,11 +40,15 @@
         background-color: #7417e6;
       }
 
-.btn_channel_default:after {
-        /*content: '\00bb';*/
-        position: absolute;
-        opacity: 0;
-        top: 0;
-        right: -20px;
-        transition: 0.5s;
+.btn_channel_on_air:hover {
+        background-color: #e64343;
       }
+
+/*.btn_channel_default:after {*/
+/*        !*content: '\00bb';*!*/
+/*        position: absolute;*/
+/*        opacity: 0;*/
+/*        top: 0;*/
+/*        right: -20px;*/
+/*        transition: 0.5s;*/
+/*      }*/
