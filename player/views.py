@@ -13,6 +13,9 @@ from player.jukeoroni.settings import Settings
 # from player.jukeoroni.images import Resource
 
 
+jukeoronie  = None
+
+
 PIMORONI_SATURATION = 1.0
 FONT_SIZE = 24
 SLEEP_IMAGE = os.path.join(Settings.BASE_DIR, 'player', 'static', 'zzz.jpg')
@@ -37,11 +40,11 @@ COLUMN_WIDTH = 101
 #  sudo systemctl stop nginx.service
 jukeoroni = JukeOroni(test=False)
 jukeoroni.turn_on(disable_track_loader=Settings.DISABLE_TRACK_LOADER)
-jukeoroni.jukebox.set_auto_update_tracklist_on()
-jukeoroni.meditationbox.set_auto_update_tracklist_on()
-# jukeoroni.episodicbox.set_auto_update_tracklist_on()
-# jukeoroni.jukebox.track_list_generator_thread()
-######################################
+# jukeoroni.jukebox.set_auto_update_tracklist_on()
+# jukeoroni.meditationbox.set_auto_update_tracklist_on()
+# # jukeoroni.episodicbox.set_auto_update_tracklist_on()
+# # jukeoroni.jukebox.track_list_generator_thread()
+# ######################################
 
 
 def get_bg_color(rgb):
@@ -1279,7 +1282,7 @@ class BoxViewRadio(View):
 
         # in case the channel has no station assigned
         channels_unstationed = Channel.objects.filter(station=None).order_by('display_name')
-        context['channels_unstationed'] = list(channels_unstationed)
+        context['channels_unstationed'] = list()
         # if channels_unstationed:
         #     ret += f'<center><h2>Uncategorized</h2></center>\n'
         for channel_unstationed in channels_unstationed:

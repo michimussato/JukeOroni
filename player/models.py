@@ -28,21 +28,21 @@ LOG.setLevel(Settings.GLOBAL_LOGGING_LEVEL)
 #             raise Exception('A OMXPlayer instance already exists.')
 
 
-# Abstract classes here
-class JukeOroniMediumAbstract(models.Model):
-
-    class Meta:
-        abstract = True
-
-    def play(self):
-        raise NotImplementedError()
-
-    def stop(self):
-        raise NotImplementedError()
-
-    @property
-    def source_file(self):
-        raise NotImplementedError()
+# # Abstract classes here
+# class JukeOroniMediumAbstract(models.Model):
+#
+#     class Meta:
+#         abstract = True
+#
+#     def play(self):
+#         raise NotImplementedError()
+#
+#     def stop(self):
+#         raise NotImplementedError()
+#
+#     @property
+#     def source_file(self):
+#         raise NotImplementedError()
 
 
 # Create your models here.
@@ -165,7 +165,7 @@ class Episode(models.Model):
 #     index = models.Index
 
 
-class Video(JukeOroniMediumAbstract):
+class Video(models.Model):
     video_source = models.CharField(max_length=200, unique=True, blank=False, null=False)
     video_title = models.CharField(max_length=200, unique=True, blank=False, null=False)
     is_playing = models.BooleanField(default=False)

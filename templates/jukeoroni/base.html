@@ -1,3 +1,6 @@
+{% load static %}
+{#NEVER FORGET TO UPDATE NGINX CONFIG!!!#}
+
 {# Load Django Bootstrap #}
 {% load django_bootstrap5 %}
 
@@ -11,9 +14,10 @@
         {# Load CSS and JavaScript #}
         {% bootstrap_css %}
         {% bootstrap_javascript %}
+        <link rel="stylesheet" href="{% static 'custom.css' %}" type="text/css">
         <meta charset="UTF-8">
         <meta http-equiv="refresh" content="10">
-        <link rel="icon" type="image/x-icon" href="/jukeoroni/favicon.ico">
+        <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
         <title>Home</title>
     {% endblock head %}
     </head>
