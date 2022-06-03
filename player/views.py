@@ -1278,11 +1278,16 @@ class BoxViewRadio(View):
         context['encoded_img_data'] = encoded_screen(img)
         context['encoded_img_data_class'] = 'box_image'
 
-        context['channels'] = list()
+        # context['stations'] = dict()
+
+        context['channels_stationed'] = list()
         if bool(stations):
             # ret += '<center><h1>Channels</h1></center>\n'
             # if bool(stations):
             for station in stations:
+
+                station_dict = {str(station.display_name): list()}
+
                 channels = Channel.objects.filter(station=station).order_by('display_name')
                 # context['channels'] = channels
                 # if channels:
@@ -1290,17 +1295,19 @@ class BoxViewRadio(View):
                 for channel in channels:
                     if channel.is_enabled:
                         if channel == jukeoroni.radio.is_on_air:
-                            context['channels'].append(
+                            # context['channels'].append(
+                            station_dict[str(station.display_name)].append(
                                 {
                                     'class': 'btn_channel_on_air',
-                                    'button_title': f'-->{channel.display_name}<--',
+                                    'button_title': f'{channel.display_name}',
                                     'onclick': f'window.location.href = \'stop\'',
                                     # 'style': '\"width:100%; background-color:green; \"',
                                 }
                             )
 
                         else:
-                            context['channels'].append(
+                            # context['channels'].append(
+                            station_dict[str(station.display_name)].append(
                                 {
                                     'class': 'btn_channel_default',
                                     'button_title': f'{channel.display_name}',
@@ -1308,6 +1315,8 @@ class BoxViewRadio(View):
                                     # 'style': '\"width:100%\"',
                                 }
                             )
+
+                context['channels_stationed'].append(station_dict.copy())
 
         # in case the channel has no station assigned
         channels_unstationed = Channel.objects.filter(station=None).order_by('display_name')

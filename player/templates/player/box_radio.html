@@ -22,24 +22,24 @@
 
     {% block channel_list %}
         <center>
-            <h1>Channels</h1>
-        </center>
-        <center>
-            {% for channel in channels %}
-{#                <div>#}
-                    <button class="{{ channel.class }}" onclick="{{ channel.onclick }}">{{ channel.button_title }}</button>
-{#                </div>#}
+            {% for dict in channels_stationed %}
+                {% for station,channels in dict.items %}
+                    <div>
+                        <h1>{{ station }}</h1>
+                        {% for channel in channels %}
+                            <button class="{{ channel.class }}" onclick="{{ channel.onclick }}">{{ channel.button_title }}</button>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
             {% endfor %}
         </center>
 
         <center>
-            <h1>Channels Unstationed</h1>
+            <h1>No Category</h1>
         </center>
         <center>
             {% for channel_unstationed in channels_unstationed %}
-{#                <div>#}
-                    <button class="{{ channel_unstationed.class }}" onclick="{{ channel_unstationed.onclick }}">{{ channel_unstationed.button_title }}</button>
-{#                </div>#}
+                <button class="{{ channel_unstationed.class }}" onclick="{{ channel_unstationed.onclick }}">{{ channel_unstationed.button_title }}</button>
             {% endfor %}
         </center>
     {% endblock channel_list %}

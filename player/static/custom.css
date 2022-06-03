@@ -1,8 +1,27 @@
 /*https://www.w3docs.com/snippets/css/how-to-style-buttons-with-css.html*/
 
 body {
-        background: linear-gradient(#202020 130px, #606060 800px);
+        background: #606060;
         height: 100%;
+}
+
+
+.nav {
+  background:  linear-gradient(#000000AA 40px, #00000000 120px);
+  z-index: 1;
+  color: #ffffff;
+}
+
+
+footer {
+  background: #000000AA;
+  position: -webkit-sticky;
+  position: sticky;
+  bottom: 0;
+  height: 35px;
+  z-index: 1;
+  /*text-align: center;*/
+  color: #ffffff;
 }
 
 .box_image {
@@ -29,7 +48,7 @@ body {
         transition: all 0.5s;
         cursor: pointer;
         margin: 5px;
-        transform: translateY(30px);
+        /*transform: translateY(30px);*/
       }
 
 .btn_channel_default {
