@@ -3,10 +3,11 @@
     {% block header %}
         <nav class="navbar nav sticky-top navbar-default navbar-fixed-top">
         <div class="container">
-        <table border="0" cellspacing="0" style="text-align:center;margin-left:auto;margin-right:auto;border-collapse: collapse;">
+        <table class="table_header_buttons" border="0" cellspacing="0">
             <tr style="border: none;">
+{#            {% block buttons %}#}
             {% for button in buttons %}
-                <td width="{{ button.column_width }}" style="border-right: solid 0px #000;border-left: solid 0px #000;padding: {{ button.padding }};">
+                <td class="td_header_buttons" width="{{ button.column_width }}" style="padding: {{ button.padding }};">
                 {% if button.button_title != '' %}
                     <button class="{{ button.class }}" title="{{ button.button_title }}" onclick="{{ button.onclick|safe }};">
                         <img width="{{ button.img_width }}" height="{{ button.img_height }}" src="{{ button.img_src }}">
@@ -14,6 +15,7 @@
                 {% endif %}
                 </td>
             {% endfor %}
+{#            {% endblock buttons %}#}
             </tr>
         </table>
         </div>

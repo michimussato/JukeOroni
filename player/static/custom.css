@@ -36,10 +36,13 @@ body {
 footer {
   background: #000000AA;
   position: -webkit-sticky;
-  position: sticky;
+  /*position: sticky;*/
+  /*position: absolute;*/
+  position: fixed;
   bottom: 0;
   height: 35px;
   z-index: 1;
+  width: 100%;
   /*text-align: center;*/
   color: #ffffff;
 }
@@ -107,7 +110,7 @@ footer {
         margin: 5px;
       }
 
-.btn_header:hover {
+.btn_header:hover, .btn_back:hover {
         background-color: #858585;
       }
 
@@ -117,6 +120,41 @@ footer {
 
 .btn_channel_on_air:hover {
         background-color: #e64343;
+      }
+
+.table_header_buttons, .table_footer_buttons {
+    text-align:center;
+    margin-left:auto;
+    margin-right:auto;
+    border-collapse: collapse;
+}
+
+.td_header_buttons {
+    border-right: solid 0px #000;
+    border-left: solid 0px #000;
+}
+
+.link_footer {
+    color: #606060;
+}
+
+.link_footer:hover {
+        display: inline-block;
+        /*background-color: #505050;*/
+        /*border-radius: 20px;*/
+        /*border: 4px double #cccccc;*/
+        color: #cccccc;
+        /*text-align: center;*/
+        /*font-size: 28px;*/
+        /*padding: 10px;*/
+        /*width: 100px;*/
+        -webkit-transition: all 0.5s;
+        -moz-transition: all 0.5s;
+        -o-transition: all 0.5s;
+        transition: all 0.5s;
+        cursor: pointer;
+        /*margin: 5px;*/
+        /*transform: translateY(30px);*/
       }
 
 /*.btn_channel_default:after {*/

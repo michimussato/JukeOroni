@@ -624,6 +624,48 @@ class AlbumView(View):
 
         context['bg_color'] = bg_color
 
+        context['buttons'] = list()
+        context['buttons'].append(
+            {
+                'class': 'btn_back',
+                'column_width': COLUMN_WIDTH,
+                'padding': padding,
+
+                'button_title': 'Back',
+                'onclick': 'window.location.href = \'/jukeoroni\'',
+                'img_width': int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR),
+                'img_height': int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR),
+                'img_src': f'/jukeoroni/buttons_overlay/{os.path.basename(Settings.BUTTONS_ICONS["Back"])}',
+
+                'button_height': BUTTON_HEIGHT,
+
+            }
+        )
+
+        for i in range(3):
+            context['buttons'].append(
+                {
+                    # 'class': 'btn_back',
+                    'column_width': COLUMN_WIDTH,
+                    'padding': padding,
+
+                    'button_title': '',
+                    'onclick': '',
+                    'img_width': None,
+                    'img_height': None,
+                    'img_src': f'',
+
+                    'button_height': BUTTON_HEIGHT,
+
+                }
+            )
+
+        # context['button_back_height'] = BUTTON_HEIGHT
+        # context['button_back_padding'] = padding
+        # context['img_width'] = int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR)
+        # context['img_height'] = int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR)
+        # context['img_src'] = f'/jukeoroni/buttons_overlay/{os.path.basename(Settings.BUTTONS_ICONS["Back"])}'
+
         img = box.layout.get_layout(labels=jukeoroni.LABELS, buttons=False)
         context['encoded_img_data'] = encoded_screen(img)
         context['encoded_img_data_class'] = 'box_image'

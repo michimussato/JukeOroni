@@ -76,6 +76,7 @@ class Settings:
         'Pause': os.path.join(BUTTONS_OVERLAY, 'icon_pause.png'),
         'Next': os.path.join(BUTTONS_OVERLAY, 'icon_next.png'),
         'Menu': os.path.join(BUTTONS_OVERLAY, 'icon_menu.png'),
+        'Back': os.path.join(BUTTONS_OVERLAY, 'icon_back.png'),
     }
 
     INVERT_BUTTONS = True
