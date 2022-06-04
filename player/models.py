@@ -20,6 +20,9 @@ LOG = logging.getLogger(__name__)
 LOG.setLevel(Settings.GLOBAL_LOGGING_LEVEL)
 
 
+ImageFile.LOAD_TRUNCATED_IMAGES = True
+
+
 # # Create singleton OMXPlayer
 # class JukeOroniOMX(OMXPlayer):
 #     _instance = None
