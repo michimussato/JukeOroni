@@ -17,7 +17,9 @@
         <link rel="stylesheet" href="{% static 'custom.css' %}" type="text/css">
 {#        <script src="{% static 'shrink_navbar.js' %}" type="application/javascript"></script>#}
         <meta charset="UTF-8">
-        <meta http-equiv="refresh" content="10">
+        {% block refresh %}
+            <meta http-equiv="refresh" content="10">
+        {% endblock refresh %}
         <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
         <title>Home</title>
     {% endblock head %}

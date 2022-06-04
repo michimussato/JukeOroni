@@ -1,5 +1,5 @@
 from django.urls import path
-from player.views import JukeOroniView, BoxView, BoxViewRadio
+from player.views import JukeOroniView, BoxView, BoxViewRadio, AlbumView
 
 
 urlpatterns = [
@@ -51,13 +51,13 @@ urlpatterns = [
     path('podcastbox/switch_mode/', JukeOroniView.switch_mode, name='player_switch_mode'),
     # path('audiobookbox/switch_mode/', JukeOroniView.switch_mode, name='player_switch_mode'),
 
-    path('jukebox/albums/<int:album_id>/', JukeOroniView.play_album, name='player_play_album'),
-    path('meditationbox/albums/<int:album_id>/', JukeOroniView.play_album, name='player_play_album'),
-    path('podcastbox/albums/<int:album_id>/', JukeOroniView.play_album, name='player_play_album'),
+    path('jukebox/albums/<int:album_id>/', AlbumView.play_album, name='player_play_album'),
+    path('meditationbox/albums/<int:album_id>/', AlbumView.play_album, name='player_play_album'),
+    # path('podcastbox/albums/<int:album_id>/', JukeOroniView.play_album, name='player_play_album'),
     # path('audiobookbox/albums/<int:album_id>/', JukeOroniView.play_album, name='player_play_album'),
-    path('jukebox/albums/', JukeOroniView.albums, name='player_albums'),
-    path('meditationbox/albums/', JukeOroniView.albums, name='player_albums'),
-    path('podcastbox/albums/', JukeOroniView.albums, name='player_albums'),
+    path('jukebox/albums/', AlbumView.as_view(), name='player_albums'),
+    path('meditationbox/albums/', AlbumView.as_view(), name='player_albums'),
+    # path('podcastbox/albums/', JukeOroniView.albums, name='player_albums'),
     # path('audiobookbox/albums/', JukeOroniView.albums, name='player_albums'),
 
     # path('jukebox/tracks/play_track/<int:track_id>/', JukeOroniView.play_track, name='player_play_track'),
