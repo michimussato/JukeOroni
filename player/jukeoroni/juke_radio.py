@@ -1,13 +1,13 @@
-import io
+# import io
 import random
 import logging
 import threading
 import time
-import urllib.request
-from PIL import ImageFile, Image
+# import urllib.request
+from PIL import ImageFile  # , Image
 from pydub.utils import mediainfo
 from player.jukeoroni.displays import Radio as RadioLayout
-from player.jukeoroni.is_string_url import is_string_url
+# from player.jukeoroni.is_string_url import is_string_url
 from player.jukeoroni.key_from_nested_dict import find_by_key
 from player.models import Channel
 from player.jukeoroni.images import Resource
@@ -86,35 +86,18 @@ class Radio(object):
 
     @property
     def cover(self):
-        cover = None
+
+        if self.is_on_air is None:
+            return Resource().RADIO_ICON_IMAGE_SQUARE
+
         if isinstance(self.is_on_air, Channel):
-            cover = self.is_on_air.url_logo
-            if cover is None:
-                cover = Resource().squareify(Resource().RADIO_ON_AIR_DEFAULT_IMAGE)
-            elif is_string_url(cover):
-                try:
-                    hdr = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64)'}
-                    req = urllib.request.Request(cover, headers=hdr)
-                    response = urllib.request.urlopen(req)
-                    if response.status == 200:
-                        cover = io.BytesIO(response.read())
-                        cover = Image.open(cover)
-                except Exception:
-                    LOG.exception(f'Could not get online cover:')
-                    cover = Resource().ON_AIR_DEFAULT_IMAGE_SQUARE
 
+            channel = Channel.objects.get(id=self.is_on_air.id)
+
+            if channel.cover is None:
+                return Resource().RADIO_ICON_IMAGE_SQUARE
             else:
-                cover = Image.open(cover).resize((448, 448))
-        elif self.is_on_air is None:
-            cover = Resource().RADIO_ICON_IMAGE_SQUARE
-
-        if cover is None:
-            raise TypeError('Channel cover is None')
-
-        if cover.mode != 'RGBA':
-            cover = cover.convert('RGBA')
-
-        return cover
+                return channel.cover
 
     @property
     def channels(self):

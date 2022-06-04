@@ -1,5 +1,7 @@
-import time
-
+# import time
+import io
+import urllib.request
+from PIL import ImageFile, Image
 from django.db import models
 from pathlib import Path
 import threading
@@ -8,6 +10,8 @@ from omxplayer.player import OMXPlayer
 
 from player.models_mixins import JukeOroniMediumAbstract
 from jukeoroni.settings import Settings
+from player.jukeoroni.images import Resource
+from player.jukeoroni.is_string_url import is_string_url
 # from jukeoroni.settings
 # from player.jukeoroni.settings import LOG
 
@@ -115,6 +119,34 @@ class Channel(models.Model):
 
     def __repr__(self):
         return self.display_name_short
+
+    @property
+    def cover(self):
+
+        if self.url_logo is None:
+            cover_image = Resource().squareify(Resource().RADIO_ON_AIR_DEFAULT_IMAGE)
+        elif is_string_url(self.url_logo):
+            try:
+                hdr = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64)'}
+                req = urllib.request.Request(self.url_logo, headers=hdr)
+                response = urllib.request.urlopen(req)
+                if response.status == 200:
+                    cover_io = io.BytesIO(response.read())
+                    cover_image = Image.open(cover_io)
+            except Exception:
+                LOG.exception(f'Could not get online cover:')
+                cover_image = Resource().ON_AIR_DEFAULT_IMAGE_SQUARE
+
+        else:
+            cover_image = Image.open(self.url_logo).resize((448, 448))
+
+        if cover_image is None:
+            return cover_image
+
+        if cover_image.mode != 'RGBA':
+            cover_image = cover_image.convert('RGBA')
+
+        return cover_image
 
 
 class Podcast(models.Model):

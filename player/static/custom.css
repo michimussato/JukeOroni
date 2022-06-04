@@ -10,7 +10,27 @@ body {
   background:  linear-gradient(#000000AA 40px, #00000000 120px);
   z-index: 1;
   color: #ffffff;
+  transition: 400ms;
 }
+
+
+/*https://stackoverflow.com/questions/61225253/bootstrap-navbar-shrink-on-scroll*/
+/*.navbar{*/
+/*  transition: 400ms;*/
+/*}*/
+/*nav.navbar.shrink {*/
+/*    width: 100%;*/
+/*    height: 35px;*/
+/*    background-color: #111;*/
+/*    box-shadow: 0 1px 0 0 #dadada;*/
+/*    position: fixed;*/
+/*    left: 0px;*/
+/*    transition: all 1.5s ease;*/
+/*}*/
+/*.tiny{*/
+/*  width: 30px;*/
+/*  height: 30px;*/
+/*}*/
 
 
 footer {
