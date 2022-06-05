@@ -55,7 +55,7 @@ footer {
         border: 4px double #cccccc;
 }
 
-.btn_header, .btn_back {
+.btn_header, .btn_back, .btn_albums {
         display: inline-block;
         background-color: #505050;
         border-radius: 20px;
@@ -110,7 +110,7 @@ footer {
         margin: 5px;
       }
 
-.btn_header:hover, .btn_back:hover {
+.btn_header:hover, .btn_back:hover, .btn_albums:hover {
         background-color: #858585;
       }
 
@@ -122,14 +122,14 @@ footer {
         background-color: #e64343;
       }
 
-.table_header_buttons, .table_footer_buttons {
+.table_header_buttons, .table_footer_buttons, .table_albums_button {
     text-align:center;
     margin-left:auto;
     margin-right:auto;
     border-collapse: collapse;
 }
 
-.td_header_buttons {
+.td_header_buttons, .td_albums_buttons {
     border-right: solid 0px #000;
     border-left: solid 0px #000;
 }

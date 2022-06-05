@@ -74,33 +74,12 @@ def mean_color(img):
     im = img
     im = im.resize((50, 50))  # optional, to reduce time
 
-    """
-May  1 17:26:15 jukeoroni gunicorn[6132]: Exception in thread State Watcher Thread:
-May  1 17:26:15 jukeoroni gunicorn[6132]: Traceback (most recent call last):
-May  1 17:26:15 jukeoroni gunicorn[6132]:   File "/usr/lib/python3.7/threading.py", line 917, in _bootstrap_inner
-May  1 17:26:15 jukeoroni gunicorn[6132]:     self.run()
-May  1 17:26:15 jukeoroni gunicorn[6132]:   File "/usr/lib/python3.7/threading.py", line 865, in run
-May  1 17:26:15 jukeoroni gunicorn[6132]:     self._target(*self._args, **self._kwargs)
-May  1 17:26:15 jukeoroni gunicorn[6132]:   File "/data/django/jukeoroni/player/jukeoroni/jukeoroni.py", line 475, in state_watcher_task
-May  1 17:26:15 jukeoroni gunicorn[6132]:     self.play_jukebox()
-May  1 17:26:15 jukeoroni gunicorn[6132]:   File "/data/django/jukeoroni/player/jukeoroni/jukeoroni.py", line 695, in play_jukebox
-May  1 17:26:15 jukeoroni gunicorn[6132]:     self.set_display_jukebox()
-May  1 17:26:15 jukeoroni gunicorn[6132]:   File "/data/django/jukeoroni/player/jukeoroni/jukeoroni.py", line 220, in set_display_jukebox
-May  1 17:26:15 jukeoroni gunicorn[6132]:     artist=self.inserted_media.cover_artist)
-May  1 17:26:15 jukeoroni gunicorn[6132]:   File "/data/django/jukeoroni/player/jukeoroni/displays.py", line 284, in get_layout
-May  1 17:26:15 jukeoroni gunicorn[6132]:     mc = mean_color(cover)
-May  1 17:26:15 jukeoroni gunicorn[6132]:   File "/data/django/jukeoroni/player/jukeoroni/displays.py", line 72, in mean_color
-May  1 17:26:15 jukeoroni gunicorn[6132]:     im = im.resize((50, 50))  # optional, to reduce time
-May  1 17:26:15 jukeoroni gunicorn[6132]:   File "/data/venv/lib/python3.7/site-packages/PIL/Image.py", line 1982, in resize
-May  1 17:26:15 jukeoroni gunicorn[6132]:     self.load()
-May  1 17:26:15 jukeoroni gunicorn[6132]:   File "/data/venv/lib/python3.7/site-packages/PIL/ImageFile.py", line 250, in load
-May  1 17:26:15 jukeoroni gunicorn[6132]:     "image file is truncated "
-May  1 17:26:15 jukeoroni gunicorn[6132]: OSError: image file is truncated (21 bytes not processed)
-    """
-
     ar = np.asarray(im)
     shape = ar.shape
-    ar = ar.reshape(np.product(shape[:2]), shape[2]).astype(float)
+    try:
+        ar = ar.reshape(np.product(shape[:2]), shape[2]).astype(float)
+    except (IndexError, ):
+        return (255, 255, 255)
 
     codes, dist = scipy.cluster.vq.kmeans(ar, NUM_CLUSTERS)
 

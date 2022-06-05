@@ -3,6 +3,7 @@ import os
 import random
 import time
 import io
+from PIL import Image
 from django.shortcuts import render
 from django.db.models.functions import Lower
 from django.http import HttpResponseRedirect, HttpResponse
@@ -10,6 +11,7 @@ from django.views import View
 from player.jukeoroni.jukeoroni import JukeOroni
 from player.models import Album, Channel, Station, Artist, Track, Video
 from player.jukeoroni.settings import Settings
+from player.jukeoroni.images import Resource
 
 
 jukeoroni = None
@@ -56,6 +58,13 @@ def get_bg_color(rgb):
     return '606060'  # TODO: constant until solution to avoid black text on black bg
 
 
+def encode_image(img):
+    data = io.BytesIO()
+    img.save(data, "PNG")
+    encoded_img_data = base64.b64encode(data.getvalue())
+    return encoded_img_data.decode('ascii')
+
+
 def encoded_screen(img):
     data = io.BytesIO()
     # img = jukeoroni.layout_radio.get_layout(labels=jukeoroni.LABELS, cover=jukeoroni.radio.cover,
@@ -63,7 +72,7 @@ def encoded_screen(img):
     img = img.rotate(270, expand=True)
     img.save(data, "PNG")
     encoded_img_data = base64.b64encode(data.getvalue())
-    return encoded_img_data
+    return encoded_img_data.decode('ascii')
 
 
 def get_active_box(_jukeoroni):
@@ -680,22 +689,64 @@ class AlbumView(View):
 
         if bool(random_albums):
             for random_album in random_albums:
+                if Settings.COVER_ONLINE_PREFERENCE:
+                    if random_album.cover_online is not None:
+                        cover_url = cover = random_album.cover_online
+                        # cover =
+                    elif random_album.cover is not None:
+                        cover_url = os.path.join(Settings.MEDIA_ROOT, random_album.album_type, random_album.cover)
+                        cover = f'data:image/jpeg;base64,{encode_image(Resource().round_resize(image=Image.open(cover_url), corner=5, fixed=100))}'
+                    else:
+                        cover = f'data:image/jpeg;base64,{encode_image(Resource().round_resize(image=Resource().DEFAULT_ALBUM_COVER, corner=5, fixed=100))}'
+                        # cover = Resource().DEFAULT_ALBUM_COVER
+                else:
+                    if random_album.cover is not None:
+                        cover_url = os.path.join(Settings.MEDIA_ROOT, random_album.album_type, random_album.cover)
+                        cover = f'data:image/jpeg;base64,{encode_image(Resource().round_resize(image=Image.open(cover_url), corner=5, fixed=100))}'
+                    elif random_album.cover_online is not None:
+                        cover_url = cover = random_album.cover_online
+                    else:
+                        cover = f'data:image/jpeg;base64,{encode_image(Resource().round_resize(image=Resource().DEFAULT_ALBUM_COVER, corner=5, fixed=100))}'
+
                 context['random_albums'].append(
                                 {
                                     'class': 'btn_album_default',
                                     'artist': f'{random_album.artist.name}',
                                     'year': f'{random_album.year}',
                                     'button_title': f'{random_album.album_title}',
+                                    'cover_album': f'{cover}',
                                     'onclick': f'window.location.href = \'{random_album.id}\'',
                                 }
                             )
 
+        all_albums = list()
+
         for artist in artists:
             albums = Album.objects.filter(artist=artist, album_type=box.album_type).order_by('year', 'album_title')
+
+            all_albums += albums
+
             if not bool(albums):
                 continue
 
             for album in albums:
+                if Settings.COVER_ONLINE_PREFERENCE:
+                    if album.cover_online is not None:
+                        cover_url = cover = album.cover_online
+                        # cover =
+                    elif album.cover is not None:
+                        cover_url = os.path.join(Settings.MEDIA_ROOT, album.album_type, album.cover)
+                        cover = f'data:image/jpeg;base64,{encode_image(Resource().round_resize(image=Image.open(cover_url), corner=5, fixed=100))}'
+                    else:
+                        cover = f'data:image/jpeg;base64,{encode_image(Resource().round_resize(image=Resource().DEFAULT_ALBUM_COVER, corner=5, fixed=100))}'
+                else:
+                    if album.cover is not None:
+                        cover_url = os.path.join(Settings.MEDIA_ROOT, album.album_type, album.cover)
+                        cover = f'data:image/jpeg;base64,{encode_image(Resource().round_resize(image=Image.open(cover_url), corner=5, fixed=100))}'
+                    elif album.cover_online is not None:
+                        cover_url = cover = album.cover_online
+                    else:
+                        cover = f'data:image/jpeg;base64,{encode_image(Resource().round_resize(image=Resource().DEFAULT_ALBUM_COVER, corner=5, fixed=100))}'
 
                 context['albums'].append(
                     {
@@ -703,6 +754,7 @@ class AlbumView(View):
                         'artist': f'{album.artist.name}',
                         'year': f'{album.year}',
                         'button_title': f'{album.album_title}',
+                        'cover_album': f'{cover}',
                         'onclick': f'window.location.href = \'{album.id}\'',
                     }
                 )
@@ -1001,6 +1053,25 @@ class BoxView(View):
             encoded_img_data = encoded_screen(img)
             context['encoded_img_data'] = encoded_img_data
             context['encoded_img_data_class'] = 'box_image'
+
+
+        context['albums_buttons'] = list()
+
+        context['albums_buttons'].append(
+            {
+                    'class': 'btn_albums',
+                    'column_width': COLUMN_WIDTH,
+                    'padding': padding,
+
+                    'button_title': 'Albums',
+                    'onclick': f'window.location.href = \'/jukeoroni/{box.box_type}/albums\'',
+                    'img_width': int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR),
+                    'img_height': int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR),
+                    'img_src': f'/jukeoroni/buttons_overlay/{os.path.basename(Settings.BUTTONS_ICONS["Album"])}',
+
+                    'button_height': BUTTON_HEIGHT,
+                }
+        )
 
         return render(request=request, template_name='player/box_base.html', context=context)
 

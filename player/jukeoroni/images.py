@@ -25,7 +25,7 @@ class Resource(object):
     @property
     def DEFAULT_ALBUM_COVER(self):
         # TODO: add default album cover image
-        return Image.open(Settings._OFF_IMAGE)
+        return Image.open(Settings.DEFAULT_ALBUM_IMAGE)
 
     @property
     def RADIO_ICON_IMAGE(self):
@@ -51,11 +51,9 @@ class Resource(object):
     def MEDITATION_ICON_IMAGE(self):
         return Image.open(Settings._MEDITATION_ICON_IMAGE)
 
-
     @property
     def PODCAST_ICON_IMAGE(self):
         return Image.open(Settings._PODCAST_ICON_IMAGE)
-
 
     @property
     def VIDEO_ICON_IMAGE(self):

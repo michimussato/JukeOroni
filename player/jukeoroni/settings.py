@@ -52,6 +52,7 @@ class Settings:
 
     # jukeoroni
     _OFF_IMAGE = os.path.join(BASE_DIR, 'player', 'static', 'zzz.jpg')
+    DEFAULT_ALBUM_IMAGE = os.path.join(BASE_DIR, 'player', 'static', 'default_album.png')
     DRAW_HOST_INFO = True
     PIMORONI_WATCHER_UPDATE_INTERVAL = 1
     SMALL_WIDGET_SIZE = 160
@@ -70,6 +71,7 @@ class Settings:
         'Video': os.path.join(BUTTONS_OVERLAY, 'icon_video.png'),
         'Random -> Album': os.path.join(BUTTONS_OVERLAY, 'icon_random.png'),
         'Album -> Random': os.path.join(BUTTONS_OVERLAY, 'icon_album.png'),
+        'Album': os.path.join(BUTTONS_OVERLAY, 'icon_album.png'),
         'N//A': '',  # use os.path.join(BUTTONS_OVERLAY, 'icon_na.png'), for debug purposes
         'Stop': os.path.join(BUTTONS_OVERLAY, 'icon_stop.png'),
         'Play': os.path.join(BUTTONS_OVERLAY, 'icon_play.png'),

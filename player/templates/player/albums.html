@@ -12,15 +12,18 @@
     <div class="container">
         <h1>Suggestions</h1>
         {% for random_album in random_albums %}
-            <button class="{{ random_album.class }}" title="{{ random_album.button_title }}" onclick="{{ random_album.onclick|safe }};">{{ random_album.artist }} ({{ random_album.year }}) {{ random_album.button_title }}</button>
+{#            <button class="{{ random_album.class }}" title="{{ random_album.button_title }}" onclick="{{ random_album.onclick|safe }};">{{ random_album.artist }} ({{ random_album.year }}) {{ random_album.button_title }}</button>#}
+            <button class="{{ random_album.class }}" title="{{ random_album.artist }} ({{ random_album.year }}) {{ random_album.button_title }}" onclick="{{ random_album.onclick|safe }};"><img width="100px" height="100px" src="{{ random_album.cover_album }}"></button>
         {% endfor %}
     <hr>
-    </div>
-    <div class="container">
-        <h1>Albums</h1>
-        {% for album in albums %}
-            <button class="{{ album.class }}" title="{{ album.button_title }}" onclick="{{ album.onclick|safe }};">{{ album.artist }} ({{ album.year }}) {{ album.button_title }}</button>
-        {% endfor %}
+{#    <div class="pagination">#}
+        <div class="container">
+            <h1>Albums</h1>
+            {% for album in albums %}
+    {#            <button class="{{ album.class }}" title="{{ album.button_title }}" onclick="{{ album.onclick|safe }};">{{ album.artist }} ({{ album.year }}) {{ album.button_title }}</button>#}
+                <button class="{{ album.class }}" title="{{ album.artist }} ({{ album.year }}) {{ album.button_title }}" onclick="{{ album.onclick|safe }};"><img width="100px" height="100px" src="{{ album.cover_album }}"></button>
+            {% endfor %}
+        </div>
     </div>
     </center>
 {% endblock channel_list %}
