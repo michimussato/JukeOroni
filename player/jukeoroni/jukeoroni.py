@@ -881,7 +881,7 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
                     self.set_display_jukebox()
                     self._loading_display_activated = True
             else:
-                self.LOG.warning('Not loading!!!')
+                self.LOG.warning(f'Not loading. Track Loader disabled: {Settings.DISABLE_TRACK_LOADER}')
             # print('no tracks ready')
             return
 

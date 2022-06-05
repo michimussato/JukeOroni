@@ -605,7 +605,7 @@ class Settings:
     CACHE_TRACKS = [True, False][1] if DATA_SOURCE == DATA_SOURCES[0] else [True, False][0]
     CACHE_COVERS = [True, False][0]
     MAX_CACHED_FILES = 3
-    COVER_ONLINE_PREFERENCE = [True, False][1]
+    COVER_ONLINE_PREFERENCE = [True, False][0]  # can increase picture encoding for album view drasically if True
     _JUKEBOX_ICON_IMAGE = os.path.join(BASE_DIR, 'player', 'static', 'jukebox.png')
     _JUKEBOX_LOADING_IMAGE = os.path.join(BASE_DIR, 'player', 'static', 'loading.jpg')
     _JUKEBOX_ON_AIR_DEFAULT_IMAGE = os.path.join(BASE_DIR, 'player', 'static', 'jukebox_on_air_default.jpg')

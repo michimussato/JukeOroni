@@ -5,6 +5,7 @@ import time
 import io
 from PIL import Image
 from django.shortcuts import render
+from django.core.paginator import Paginator
 from django.db.models.functions import Lower
 from django.http import HttpResponseRedirect, HttpResponse
 from django.views import View
@@ -41,11 +42,11 @@ COLUMN_WIDTH = 101
 #  sudo systemctl stop nginx.service
 jukeoroni = JukeOroni(test=False)
 jukeoroni.turn_on(disable_track_loader=Settings.DISABLE_TRACK_LOADER)
-# jukeoroni.jukebox.set_auto_update_tracklist_on()
-# jukeoroni.meditationbox.set_auto_update_tracklist_on()
-# # jukeoroni.episodicbox.set_auto_update_tracklist_on()
-# # jukeoroni.jukebox.track_list_generator_thread()
-# ######################################
+jukeoroni.jukebox.set_auto_update_tracklist_on()
+jukeoroni.meditationbox.set_auto_update_tracklist_on()
+# jukeoroni.episodicbox.set_auto_update_tracklist_on()
+# jukeoroni.jukebox.track_list_generator_thread()
+######################################
 
 
 def get_bg_color(rgb):
@@ -629,6 +630,10 @@ class AlbumView(View):
 
         context = dict()
 
+        # paginator = Paginator(contact_list, 25)
+
+        # pagination_dict_list = list()
+
         bg_color = get_bg_color(box.layout.bg_color)
 
         context['bg_color'] = bg_color
@@ -710,6 +715,7 @@ class AlbumView(View):
 
                 context['random_albums'].append(
                                 {
+                                    'id': random_album.id,
                                     'class': 'btn_album_default',
                                     'artist': f'{random_album.artist.name}',
                                     'year': f'{random_album.year}',
@@ -750,6 +756,7 @@ class AlbumView(View):
 
                 context['albums'].append(
                     {
+                        'id': album.id,
                         'class': 'btn_album_default',
                         'artist': f'{album.artist.name}',
                         'year': f'{album.year}',
@@ -758,6 +765,14 @@ class AlbumView(View):
                         'onclick': f'window.location.href = \'{album.id}\'',
                     }
                 )
+
+        paginator = Paginator(context['albums'], 25)
+        page_number = request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
+
+        context['page_obj'] = page_obj
+
+        context['page_range'] = paginator.page_range
 
         return render(request=request, template_name='player/albums.html', context=context)
 

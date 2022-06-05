@@ -16,10 +16,74 @@
             <button class="{{ random_album.class }}" title="{{ random_album.artist }} ({{ random_album.year }}) {{ random_album.button_title }}" onclick="{{ random_album.onclick|safe }};"><img width="100px" height="100px" src="{{ random_album.cover_album }}"></button>
         {% endfor %}
     <hr>
-{#    <div class="pagination">#}
         <div class="container">
             <h1>Albums</h1>
-            {% for album in albums %}
+    <div class="container">
+            <!-- Pagination -->
+{#            {% if is_paginated %}#}
+            <nav>
+                <ul class="pagination justify-content-center" style="margin:20px 0">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                    <a class="page-link" href="?page=1">
+                        <span>First</span>
+                    </a>
+                    </li>
+
+                    <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}">
+                        <span>Prev</span>
+                    </a>
+                    </li>
+                {% else %}
+                    <li class="disabled page-item">
+                    <a class="page-link" href="#">
+                        <span>First</span>
+                    </a>
+                    </li>
+                    <li class="disabled page-item">
+                    <a class="page-link" href="#">
+                        <span>Prev</span>
+                    </a>
+                    </li>
+                {% endif %}
+
+                {% for page in page_range %}
+{#                    {{ page }}#}
+                    <li {% if page == page_obj.number %} class="active page-item" {% endif %}>
+                    <a class="page-link" href="?page={{ page }}">{{ page }}</a>
+                    </li>
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}">
+                        <span>Next</span>
+                    </a>
+                    </li>
+                    <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">
+                        <span>Last</span>
+                    </a>
+                    </li>
+                {% else %}
+                    <li {% if not page_obj.has_next %}class="disabled page-item"{% endif %}>
+                    <a class="page-link" href="#">
+                        <span>Next</span>
+                    </a>
+                    </li>
+                    <li {% if not page_obj.has_next %}class="disabled page-item"{% endif %}>
+                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">
+                        <span>Last</span>
+                    </a>
+                    </li>
+                {% endif %}
+                </ul>
+            </nav>
+{#            {% endif %}#}
+    </div>
+
+            {% for album in page_obj %}
     {#            <button class="{{ album.class }}" title="{{ album.button_title }}" onclick="{{ album.onclick|safe }};">{{ album.artist }} ({{ album.year }}) {{ album.button_title }}</button>#}
                 <button class="{{ album.class }}" title="{{ album.artist }} ({{ album.year }}) {{ album.button_title }}" onclick="{{ album.onclick|safe }};"><img width="100px" height="100px" src="{{ album.cover_album }}"></button>
             {% endfor %}
