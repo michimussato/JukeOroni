@@ -218,11 +218,14 @@ class Video(models.Model):
 
     # def play(self, jukeoroni=None):
     def play(self):
-        # self._omxplayer_thread = threading.Thread(target=self._play, kwargs={'jukeoroni': jukeoroni})
-        self._omxplayer_thread = threading.Thread(target=self._play)
-        self._omxplayer_thread.name = f'OMXPlayer Playback Thread ({self.video_title})'
-        self._omxplayer_thread.daemon = False
-        self._omxplayer_thread.start()
+        if isinstance(self.omxplayer, OMXPlayer):
+            self.play_pause()
+        else:
+            # self._omxplayer_thread = threading.Thread(target=self._play, kwargs={'jukeoroni': jukeoroni})
+            self._omxplayer_thread = threading.Thread(target=self._play)
+            self._omxplayer_thread.name = f'OMXPlayer Playback Thread ({self.video_title})'
+            self._omxplayer_thread.daemon = False
+            self._omxplayer_thread.start()
 
     # def _play(self, **kwargs):
     def _play(self):
@@ -236,12 +239,16 @@ class Video(models.Model):
     def stop(self):
         """Stop the playback; will quit the Player"""
         if isinstance(self.omxplayer, OMXPlayer):
-            if self.omxplayer.is_playing():
-                self.omxplayer.stop()
-                self.omxplayer = None
+            # if self.omxplayer.is_playing():
+            self.omxplayer.stop()
+            self.omxplayer = None
 
     def play_pause(self):
         if isinstance(self.omxplayer, OMXPlayer):
+            if self.omxplayer.is_playing():
+                LOG.info(f'Pausing {self.video_title}...')
+            else:
+                LOG.info(f'Resuming {self.video_title}...')
             self.omxplayer.play_pause()
 
     @property

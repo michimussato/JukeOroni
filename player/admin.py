@@ -132,7 +132,10 @@ class VideoAdmin(DjangoObjectActions, admin.ModelAdmin):
             # self.video.play(jukeoroni)
             self.video.play()
         else:
-            LOG.warning(f'{obj.video_title} is currently playing.')
+            self.video.play()
+            # LOG.warning(f'{obj.video_title} is currently playing.')
+            # obj.play()
+            # LOG.warning(f'{obj.video_title} is currently playing.')
 
         LOG.warning('done')
         # else:
