@@ -630,10 +630,6 @@ class AlbumView(View):
 
         context = dict()
 
-        # paginator = Paginator(contact_list, 25)
-
-        # pagination_dict_list = list()
-
         bg_color = get_bg_color(box.layout.bg_color)
 
         context['bg_color'] = bg_color
@@ -674,99 +670,15 @@ class AlbumView(View):
                 }
             )
 
-        # context['button_back_height'] = BUTTON_HEIGHT
-        # context['button_back_padding'] = padding
-        # context['img_width'] = int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR)
-        # context['img_height'] = int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR)
-        # context['img_src'] = f'/jukeoroni/buttons_overlay/{os.path.basename(Settings.BUTTONS_ICONS["Back"])}'
-
         img = box.layout.get_layout(labels=jukeoroni.LABELS, buttons=False)
         context['encoded_img_data'] = encoded_screen(img)
         context['encoded_img_data_class'] = 'box_image'
 
-        context['random_albums'] = list()
-        context['albums'] = list()
+        context['random_albums'] = random.sample(list(Album.objects.filter(album_type=box.album_type)), Settings.RANDOM_ALBUMS)
 
-        artists = Artist.objects.all().annotate(lower_name=Lower('name')).order_by('lower_name')
+        albums = Album.objects.filter(album_type=box.album_type).order_by('album_title')
 
-        # if box is jukeoroni.jukebox:
-        random_albums = random.sample(list(Album.objects.filter(album_type=box.album_type)), Settings.RANDOM_ALBUMS)
-
-        if bool(random_albums):
-            for random_album in random_albums:
-                if Settings.COVER_ONLINE_PREFERENCE:
-                    if random_album.cover_online is not None:
-                        cover_url = cover = random_album.cover_online
-                        # cover =
-                    elif random_album.cover is not None:
-                        cover_url = os.path.join(Settings.MEDIA_ROOT, random_album.album_type, random_album.cover)
-                        cover = f'data:image/jpeg;base64,{encode_image(Resource().round_resize(image=Image.open(cover_url), corner=5, fixed=100))}'
-                    else:
-                        cover = f'data:image/jpeg;base64,{encode_image(Resource().round_resize(image=Resource().DEFAULT_ALBUM_COVER, corner=5, fixed=100))}'
-                        # cover = Resource().DEFAULT_ALBUM_COVER
-                else:
-                    if random_album.cover is not None:
-                        cover_url = os.path.join(Settings.MEDIA_ROOT, random_album.album_type, random_album.cover)
-                        cover = f'data:image/jpeg;base64,{encode_image(Resource().round_resize(image=Image.open(cover_url), corner=5, fixed=100))}'
-                    elif random_album.cover_online is not None:
-                        cover_url = cover = random_album.cover_online
-                    else:
-                        cover = f'data:image/jpeg;base64,{encode_image(Resource().round_resize(image=Resource().DEFAULT_ALBUM_COVER, corner=5, fixed=100))}'
-
-                context['random_albums'].append(
-                                {
-                                    'id': random_album.id,
-                                    'class': 'btn_album_default',
-                                    'artist': f'{random_album.artist.name}',
-                                    'year': f'{random_album.year}',
-                                    'button_title': f'{random_album.album_title}',
-                                    'cover_album': f'{cover}',
-                                    'onclick': f'window.location.href = \'{random_album.id}\'',
-                                }
-                            )
-
-        all_albums = list()
-
-        for artist in artists:
-            albums = Album.objects.filter(artist=artist, album_type=box.album_type).order_by('year', 'album_title')
-
-            all_albums += albums
-
-            if not bool(albums):
-                continue
-
-            for album in albums:
-                if Settings.COVER_ONLINE_PREFERENCE:
-                    if album.cover_online is not None:
-                        cover_url = cover = album.cover_online
-                        # cover =
-                    elif album.cover is not None:
-                        cover_url = os.path.join(Settings.MEDIA_ROOT, album.album_type, album.cover)
-                        cover = f'data:image/jpeg;base64,{encode_image(Resource().round_resize(image=Image.open(cover_url), corner=5, fixed=100))}'
-                    else:
-                        cover = f'data:image/jpeg;base64,{encode_image(Resource().round_resize(image=Resource().DEFAULT_ALBUM_COVER, corner=5, fixed=100))}'
-                else:
-                    if album.cover is not None:
-                        cover_url = os.path.join(Settings.MEDIA_ROOT, album.album_type, album.cover)
-                        cover = f'data:image/jpeg;base64,{encode_image(Resource().round_resize(image=Image.open(cover_url), corner=5, fixed=100))}'
-                    elif album.cover_online is not None:
-                        cover_url = cover = album.cover_online
-                    else:
-                        cover = f'data:image/jpeg;base64,{encode_image(Resource().round_resize(image=Resource().DEFAULT_ALBUM_COVER, corner=5, fixed=100))}'
-
-                context['albums'].append(
-                    {
-                        'id': album.id,
-                        'class': 'btn_album_default',
-                        'artist': f'{album.artist.name}',
-                        'year': f'{album.year}',
-                        'button_title': f'{album.album_title}',
-                        'cover_album': f'{cover}',
-                        'onclick': f'window.location.href = \'{album.id}\'',
-                    }
-                )
-
-        paginator = Paginator(context['albums'], 25)
+        paginator = Paginator(albums, 25)
         page_number = request.GET.get('page')
         page_obj = paginator.get_page(page_number)
 

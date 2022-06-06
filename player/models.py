@@ -1,4 +1,6 @@
 # import time
+import base64
+import os
 import io
 import urllib.request
 from PIL import ImageFile, Image
@@ -21,6 +23,13 @@ LOG.setLevel(Settings.GLOBAL_LOGGING_LEVEL)
 
 
 ImageFile.LOAD_TRUNCATED_IMAGES = True
+
+
+def encode_image(img):
+    data = io.BytesIO()
+    img.save(data, "PNG")
+    encoded_img_data = base64.b64encode(data.getvalue())
+    return encoded_img_data.decode('ascii')
 
 
 # # Create singleton OMXPlayer
@@ -79,6 +88,23 @@ class Album(models.Model):
 
     def __repr__(self):
         return f'{self.album_title}'
+
+    def album_cover(self):
+        """used in the view to encode images directly from here"""
+        if Settings.COVER_ONLINE_PREFERENCE:
+            if self.cover_online is not None:
+                return self.cover_online
+            elif self.cover is not None:
+                _path = os.path.join(Settings.MEDIA_ROOT, self.album_type, self.cover)
+                return f'data:image/jpeg;base64,{encode_image(Resource().round_resize(image=Image.open(_path), corner=5, fixed=100))}'
+        else:
+            if self.cover is not None:
+                _path = os.path.join(Settings.MEDIA_ROOT, self.album_type, self.cover)
+                return f'data:image/jpeg;base64,{encode_image(Resource().round_resize(image=Image.open(_path), corner=5, fixed=100))}'
+            elif self.cover_online is not None:
+                return self.cover_online
+
+        return f'data:image/jpeg;base64,{encode_image(Resource().round_resize(image=Resource().DEFAULT_ALBUM_COVER, corner=5, fixed=100))}'
 
 
 class Track(models.Model):
