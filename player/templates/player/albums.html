@@ -22,7 +22,8 @@
             <!-- Pagination -->
 {#            {% if is_paginated %}#}
             <nav>
-                <ul class="pagination justify-content-center" style="margin:20px 0">
+{#                <ul id="nav" class="pagination justify-content-center" style="margin:20px 0">#}
+                <ul id="nav" class="pagination" style="margin:10px 0">
                 {% if page_obj.has_previous %}
                     <li class="page-item">
                     <a class="page-link" href="?page=1{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">
@@ -49,10 +50,14 @@
                 {% endif %}
 
                 {% for page in page_range %}
-                    <li {% if page == page_obj.number %} class="active page-item" {% endif %}>
-                    <a class="page-link" href="?page={{ page }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">{{ page }}</a>
-                    </li>
+{#                    {% if page|add:-5 <= page_obj.number or page|add:5 >= page_obj.number %}#}
+                        <li {% if page == page_obj.number %} class="active page-item" {% endif %}>
+                        <a class="page-link" href="?page={{ page }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">{{ page }}</a>
+                        </li>
+{#                    {% endif %}#}
                 {% endfor %}
+
+{#                {{ page_obj.number }}#}
 
                 {% if page_obj.has_next %}
                     <li class="page-item">
@@ -86,6 +91,7 @@
                 <button class="btn_album_default" title="{{ album.artist }} ({{ album.year }}) {{ album.album_title }}" onclick="window.location.href='/jukeoroni/{{ box_type }}/albums/{{ album.id }}';"><img width="100px" height="100px" src="{{ album.album_cover }}"></button>
             {% endfor %}
         </div>
+{#    <br>#}
     </div>
     </center>
 {% endblock channel_list %}

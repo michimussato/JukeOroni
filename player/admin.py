@@ -1,4 +1,6 @@
 import logging
+import time
+
 from django.contrib import admin
 from django_object_actions import DjangoObjectActions
 from jukeoroni.settings import Settings
@@ -131,6 +133,8 @@ class VideoAdmin(DjangoObjectActions, admin.ModelAdmin):
             self.video = obj
             # self.video.play(jukeoroni)
             self.video.play()
+            while self.video.omxplayer is None:
+                time.sleep(0.1)
             self.video.omxplayer.stopEvent += lambda _: self.reset_mode()
         else:
             self.video.play()

@@ -55,6 +55,12 @@ footer {
         border: 4px double #cccccc;
 }
 
+#nav {
+    overflow: scroll;
+    overflow-y: hidden;
+    overflow-x: auto;
+}
+
 .btn_header, .btn_back, .btn_albums {
         display: inline-block;
         background-color: #505050;
