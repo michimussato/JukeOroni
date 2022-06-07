@@ -631,6 +631,8 @@ class AlbumView(View):
 
         context = dict()
 
+        context['box_type'] = box.box_type
+
         bg_color = get_bg_color(box.layout.bg_color)
 
         context['bg_color'] = bg_color
@@ -677,10 +679,12 @@ class AlbumView(View):
 
         context['random_albums'] = random.sample(list(Album.objects.filter(album_type=box.album_type)), Settings.RANDOM_ALBUMS)
 
+        albums = Album.objects.filter(album_type=box.album_type).order_by('album_title')
+
         if query:
-            albums = Album.objects.filter(Q(album_title__icontains=query) | Q(artist__name__icontains=query)).order_by('album_title')
-        else:
-            albums = Album.objects.filter(album_type=box.album_type).order_by('album_title').distinct()
+            albums = albums.filter(Q(album_title__icontains=query) | Q(artist__name__icontains=query)).order_by('album_title')
+        # else:
+            # albums = Album.objects.filter(album_type=box.album_type).order_by('album_title').distinct()
 
         paginator = Paginator(albums, 25)
         page_number = request.GET.get('page')
