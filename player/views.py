@@ -3,16 +3,14 @@ import os
 import random
 import time
 import io
-from PIL import Image
 from django.shortcuts import render
 from django.core.paginator import Paginator
-from django.db.models.functions import Lower
+from django.db.models import Q
 from django.http import HttpResponseRedirect, HttpResponse
 from django.views import View
 from player.jukeoroni.jukeoroni import JukeOroni
 from player.models import Album, Channel, Station, Artist, Track, Video
 from player.jukeoroni.settings import Settings
-from player.jukeoroni.images import Resource
 
 
 jukeoroni = None
@@ -621,6 +619,9 @@ class JukeOroniView(View):
 
 class AlbumView(View):
     def get(self, request):
+
+        query = self.request.GET.get("q", None)
+
         global jukeoroni
         box = get_active_box(jukeoroni)
 
@@ -676,7 +677,10 @@ class AlbumView(View):
 
         context['random_albums'] = random.sample(list(Album.objects.filter(album_type=box.album_type)), Settings.RANDOM_ALBUMS)
 
-        albums = Album.objects.filter(album_type=box.album_type).order_by('album_title')
+        if query:
+            albums = Album.objects.filter(Q(album_title__icontains=query) | Q(artist__name__icontains=query)).order_by('album_title')
+        else:
+            albums = Album.objects.filter(album_type=box.album_type).order_by('album_title').distinct()
 
         paginator = Paginator(albums, 25)
         page_number = request.GET.get('page')

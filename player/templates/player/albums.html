@@ -15,20 +15,23 @@
     <hr>
         <div class="container">
             <h1>Albums</h1>
+        <form action="{% url 'search_albums' %}" method="get">
+          <input name="q" type="text" placeholder="Search...">
+        </form>
     <div class="container">
             <!-- Pagination -->
-            {% if is_paginated %}
+{#            {% if is_paginated %}#}
             <nav>
                 <ul class="pagination justify-content-center" style="margin:20px 0">
                 {% if page_obj.has_previous %}
                     <li class="page-item">
-                    <a class="page-link" href="?page=1">
+                    <a class="page-link" href="?page=1{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">
                         <span>First</span>
                     </a>
                     </li>
 
                     <li class="page-item">
-                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">
                         <span>Prev</span>
                     </a>
                     </li>
@@ -47,18 +50,18 @@
 
                 {% for page in page_range %}
                     <li {% if page == page_obj.number %} class="active page-item" {% endif %}>
-                    <a class="page-link" href="?page={{ page }}">{{ page }}</a>
+                    <a class="page-link" href="?page={{ page }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">{{ page }}</a>
                     </li>
                 {% endfor %}
 
                 {% if page_obj.has_next %}
                     <li class="page-item">
-                    <a class="page-link" href="?page={{ page_obj.next_page_number }}">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">
                         <span>Next</span>
                     </a>
                     </li>
                     <li class="page-item">
-                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">
+                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">
                         <span>Last</span>
                     </a>
                     </li>
@@ -76,7 +79,7 @@
                 {% endif %}
                 </ul>
             </nav>
-            {% endif %}
+{#            {% endif %}#}
     </div>
 
             {% for album in page_obj %}

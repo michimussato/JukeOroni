@@ -131,6 +131,7 @@ class VideoAdmin(DjangoObjectActions, admin.ModelAdmin):
             self.video = obj
             # self.video.play(jukeoroni)
             self.video.play()
+            self.video.omxplayer.stopEvent += lambda _: self.reset_mode()
         else:
             self.video.play()
             # LOG.warning(f'{obj.video_title} is currently playing.')
@@ -230,12 +231,16 @@ May 25 12:00:44 jukeoroni gunicorn[7649]: [05-25-2022 12:00:44] [WARNING ] [Main
                 LOG.exception('Bullshit Error')
             finally:
                 LOG.warning(f'{self.video.video_title} stopped.')
-                jukeoroni.mode = Settings.MODES['jukeoroni']['standby']  # [jukeoroni.jukebox.loader_mode]
+                self.reset_mode()
+                # jukeoroni.mode = Settings.MODES['jukeoroni']['standby']  # [jukeoroni.jukebox.loader_mode]
             # LOG.warning(f'{obj.video_title} stopped.')
             # LOG.warning(f'{self.video.video_title} stopped.')
             self.video = None
         else:
             LOG.warning('Nothing is currently playing.')
+
+    def reset_mode(self):
+        jukeoroni.mode = Settings.MODES['jukeoroni']['standby']  # [jukeoroni.jukebox.loader_mode]
 
     play_pause.label = 'Play/Pause'
     # play_pause.short_description = 'Desc'
