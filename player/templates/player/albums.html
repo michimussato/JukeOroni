@@ -12,7 +12,9 @@
         {% for random_album in random_albums %}
             <button class="btn_album_default" title="{{ random_album.artist.name }} ({{ random_album.year }}) {{ random_album.album_title }}" onclick="window.location.href='/jukeoroni/{{ box_type }}/albums/{{ random_album.id }}';"><img width="100px" height="100px" src="{{ random_album.album_cover }}"></button>
         {% endfor %}
+    </div>
     <hr>
+    <div>
         <div class="container">
             <h1>Albums</h1>
         <form action="{% url 'search_albums' %}" method="get">
@@ -21,9 +23,10 @@
     <div class="container">
             <!-- Pagination -->
 {#            {% if is_paginated %}#}
+{#    <center>#}
             <nav>
 {#                <ul id="nav" class="pagination justify-content-center" style="margin:20px 0">#}
-                <ul id="nav" class="pagination" style="margin:10px 0">
+                <ul id="nav" class="pagination">
                 {% if page_obj.has_previous %}
                     <li class="page-item">
                     <a class="page-link" href="?page=1{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">
@@ -84,6 +87,7 @@
                 {% endif %}
                 </ul>
             </nav>
+{#    </center>#}
 {#            {% endif %}#}
     </div>
 
