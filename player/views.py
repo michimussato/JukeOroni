@@ -1,4 +1,5 @@
 import base64
+import sys
 import os
 import random
 import time
@@ -11,9 +12,6 @@ from django.views import View
 from player.jukeoroni.jukeoroni import JukeOroni
 from player.models import Album, Channel, Station, Artist, Track, Video
 from player.jukeoroni.settings import Settings
-
-
-jukeoroni = None
 
 
 PIMORONI_SATURATION = 1.0
@@ -34,17 +32,20 @@ COLUMN_WIDTH = 101
 #  <img width="{int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR)}" height="{int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR)}" src="{Settings.BUTTON_ICONS[n]}" />
 
 
-######################################
-# Comment this block to do DB migrations
-#  as well as:
-#  sudo systemctl stop nginx.service
-jukeoroni = JukeOroni(test=False)
-jukeoroni.turn_on(disable_track_loader=Settings.DISABLE_TRACK_LOADER)
-jukeoroni.jukebox.set_auto_update_tracklist_on()
-jukeoroni.meditationbox.set_auto_update_tracklist_on()
-# jukeoroni.episodicbox.set_auto_update_tracklist_on()
-# jukeoroni.jukebox.track_list_generator_thread()
-######################################
+if 'runserver' in sys.argv:
+    ######################################
+    # Comment this block to do DB migrations
+    #  as well as:
+    #  sudo systemctl stop nginx.service
+    jukeoroni = JukeOroni(test=False)
+    jukeoroni.turn_on(disable_track_loader=Settings.DISABLE_TRACK_LOADER)
+    jukeoroni.jukebox.set_auto_update_tracklist_on()
+    jukeoroni.meditationbox.set_auto_update_tracklist_on()
+    # jukeoroni.episodicbox.set_auto_update_tracklist_on()
+    # jukeoroni.jukebox.track_list_generator_thread()
+    ######################################
+else:
+    jukeoroni = None
 
 
 def get_bg_color(rgb):
