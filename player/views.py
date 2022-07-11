@@ -32,7 +32,7 @@ COLUMN_WIDTH = 101
 #  <img width="{int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR)}" height="{int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR)}" src="{Settings.BUTTON_ICONS[n]}" />
 
 
-if 'runserver' in sys.argv:
+if '/data/venv/bin/gunicorn' in sys.argv:
     ######################################
     # Comment this block to do DB migrations
     #  as well as:
