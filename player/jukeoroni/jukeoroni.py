@@ -8,7 +8,8 @@ import urllib.request
 import urllib.error
 import RPi.GPIO as GPIO
 from django.utils.timezone import localtime, now
-from inky.inky_uc8159 import Inky  # , BLACK
+from inky.inky_uc8159 import Inky
+import inky
 
 import player.models
 from player.jukeoroni.juke_radio import Radio
@@ -1378,6 +1379,7 @@ May 25 15:35:31 jukeoroni systemd[1]: Starting Disable Blinking Cursor Service..
             else:
                 bg = self.layout_standby.get_layout(labels=self.LABELS)
             # self.pimoroni.set_image(image=bg, saturation=PIMORONI_SATURATION)
+            self.pimoroni.set_border(inky.BLACK)
             self.pimoroni.set_image(image=bg)
             try:
                 self.pimoroni.show(busy_wait=True)
