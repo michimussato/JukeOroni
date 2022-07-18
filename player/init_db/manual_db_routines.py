@@ -9,11 +9,6 @@
 # tuple[7]: show_rds
 
 
-# usage
-# from player.init_db.manual_db_routines import channels_dump_table
-# channels_dump_table()
-
-
 # radio bob streams:
 # https://bob.hoerradar.de/radiobob-80srock-aac-mq
 
@@ -182,8 +177,7 @@ from player.init_db.manual_db_routines import channels_write_table
 channels_write_table()
 """
 
-    from player.models import Channel
-    from player.models import Station
+    from player.models import Channel, Station
     for channel in channel_list:
         display_name = channel[0]
         display_name_short = channel[1]
@@ -251,8 +245,7 @@ from player.init_db.manual_db_routines import remove_channels
 remove_channels()
 """
 
-    from player.models import Channel
-    from player.models import Station
+    from player.models import Channel, Station
     Channel.objects.all().delete()
     if remove_stations:
         Station.objects.all().delete()
