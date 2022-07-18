@@ -1162,8 +1162,9 @@ class BoxViewRadio(View):
                             station_dict[str(station.display_name)].append(
                                 {
                                     'class': 'btn_channel_on_air',
-                                    'button_title': f'{channel.display_name}',
+                                    'channel': channel,
                                     'onclick': f'window.location.href = \'stop\'',
+
                                     # 'style': '\"width:100%; background-color:green; \"',
                                 }
                             )
@@ -1173,7 +1174,7 @@ class BoxViewRadio(View):
                             station_dict[str(station.display_name)].append(
                                 {
                                     'class': 'btn_channel_default',
-                                    'button_title': f'{channel.display_name}',
+                                    'channel': channel,
                                     'onclick': f'window.location.href = \'{channel.display_name_short}/play\'',
                                     # 'style': '\"width:100%\"',
                                 }
@@ -1193,7 +1194,7 @@ class BoxViewRadio(View):
                     context['channels_unstationed'].append(
                         {
                             'class': 'btn_channel_on_air',
-                            'button_title': f'{channel_unstationed.display_name}',
+                            'channel_unstationed': channel_unstationed,
                             'onclick': f'window.location.href = \'stop\'',
                             # 'style': '\"width:100%; background-color:green; \"',
                         }
@@ -1204,7 +1205,7 @@ class BoxViewRadio(View):
                     context['channels_unstationed'].append(
                         {
                             'class': 'btn_channel_default',
-                            'button_title': f'{channel_unstationed.display_name}',
+                            'channel_unstationed': channel_unstationed,
                             'onclick': f'window.location.href = \'{channel_unstationed.display_name_short}/play\'',
                         }
                     )
