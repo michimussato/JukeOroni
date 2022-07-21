@@ -17,6 +17,10 @@
 
 # swiss streams
 # https://www.linker.ch/eigenlink/radiosender.htm
+
+# get stream url
+# https://addons.mozilla.org/en-US/firefox/addon/video-downloadhelper/
+
 import player.models
 
 channel_list = [
