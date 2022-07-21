@@ -65,12 +65,16 @@ class ChannelAdmin(admin.ModelAdmin):
                  ('URL\'s', {'fields': ['url', 'url_logo']}),
                  ('Options', {'fields': ['is_enabled', 'show_rds']}),
                  ('Auto Playback', {'fields': ['last_played']})]
-    list_display = ('display_name', 'station_display_name', 'show_rds', 'is_enabled')
+    list_display = ('display_name', 'station_display_name', 'station_image', 'show_rds', 'is_enabled')
     search_fields = ['display_name', 'station__display_name']
     # autocomplete_fields = ['display_name']
 
     def station_display_name(self, obj):
         return None if obj.station is None else obj.station.display_name
+
+    def station_image(self, obj):
+        return bool(obj.url_logo)
+    station_image.boolean = True
 
     station_display_name.short_description = 'Station'
 
