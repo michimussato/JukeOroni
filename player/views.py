@@ -1003,7 +1003,7 @@ class BoxView(View):
                     'onclick': f'window.location.href = \'/jukeoroni/{box.box_type}/albums\'',
                     'img_width': int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR),
                     'img_height': int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR),
-                    'img_src': f'/jukeoroni/buttons_overlay/{os.path.basename(Settings.BUTTONS_ICONS["Album"])}',
+                    'img_src': f'/jukeoroni/buttons_overlay/{os.path.basename(Settings.BUTTONS_ICONS["Library"])}',
 
                     'button_height': BUTTON_HEIGHT,
                 }

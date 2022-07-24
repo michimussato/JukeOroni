@@ -72,6 +72,7 @@ class Settings:
         'Random -> Album': os.path.join(BUTTONS_OVERLAY, 'icon_random.png'),
         'Album -> Random': os.path.join(BUTTONS_OVERLAY, 'icon_album.png'),
         'Album': os.path.join(BUTTONS_OVERLAY, 'icon_album.png'),
+        'Library': os.path.join(BUTTONS_OVERLAY, 'icon_library.png'),
         'N//A': '',  # use os.path.join(BUTTONS_OVERLAY, 'icon_na.png'), for debug purposes
         'Stop': os.path.join(BUTTONS_OVERLAY, 'icon_stop.png'),
         'Play': os.path.join(BUTTONS_OVERLAY, 'icon_play.png'),
