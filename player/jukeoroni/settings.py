@@ -57,7 +57,7 @@ class Settings:
     PIMORONI_WATCHER_UPDATE_INTERVAL = 1
     SMALL_WIDGET_SIZE = 160
     FFPLAY_CMD = 'ffplay -hide_banner -autoexit -vn -nodisp -loglevel error'.split(' ')
-    DISABLE_TRACK_LOADER = True
+    DISABLE_TRACK_LOADER = False
 
     BUTTONS_HEIGHT = 32
     BORDER = 10
