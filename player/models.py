@@ -267,7 +267,7 @@ class Video(models.Model):
         if isinstance(self.omxplayer, OMXPlayer):
             # if self.omxplayer.is_playing():
             self.omxplayer.stop()
-            self.omxplayer = None
+            # self.omxplayer = None
 
     def play_pause(self):
         if isinstance(self.omxplayer, OMXPlayer):

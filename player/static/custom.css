@@ -92,16 +92,17 @@ footer {
         /*transform: translateY(30px);*/
       }
 
+/*RADIO BUTTONS*/
 .btn_channel_default, .btn_album_default {
         display: inline-block;
-        background-color: #3a0b73;
+        background-color: #505050;
         border-radius: 20px;
         border: 4px double #cccccc;
         color: #eeeeee;
         text-align: center;
         font-size: 28px;
-        padding: 20px;
-        width: 200px;
+        padding: 10px;
+        width: 130px;
         -webkit-transition: all 0.5s;
         -moz-transition: all 0.5s;
         -o-transition: all 0.5s;
@@ -132,8 +133,9 @@ footer {
         background-color: #858585;
       }
 
+/*RADIO BUTTONS*/
 .btn_channel_default:hover, .btn_album_default:hover {
-        background-color: #7417e6;
+        background-color: #858585;
       }
 
 .btn_channel_on_air:hover {

@@ -139,7 +139,8 @@ class VideoAdmin(DjangoObjectActions, admin.ModelAdmin):
             self.video.play()
             while self.video.omxplayer is None:
                 time.sleep(0.1)
-            self.video.omxplayer.stopEvent += lambda _: self.reset_mode()
+            self.video.omxplayer.stopEvent += lambda _player: self.event_stop()
+            self.video.omxplayer.exitEvent += lambda _player, _exit_status: self.event_exit()
         else:
             self.video.play()
             # LOG.warning(f'{obj.video_title} is currently playing.')
@@ -155,8 +156,9 @@ class VideoAdmin(DjangoObjectActions, admin.ModelAdmin):
         self.video = None
 
     def stop(self, request, obj):
-        LOG.warning(f'Trying to stop {self.video.video_title}...')
+
         if self.video is not None:
+            LOG.warning(f'Trying to stop {self.video.video_title}...')
             LOG.warning(f'Stopping {self.video.video_title}...')
             obj.stop()
             try:
@@ -234,20 +236,34 @@ May 25 12:00:44 jukeoroni gunicorn[7649]: [05-25-2022 12:00:44] [WARNING ] [Main
 May 25 12:00:44 jukeoroni gunicorn[7649]: [05-25-2022 12:00:44] [WARNING ] [MainThread|3069315792], File "/data/django/jukeoroni/player/admin.py", line 126, in play_pause:    Starting playback of The Matrix now...
 May 25 12:00:44 jukeoroni gunicorn[7649]: [05-25-2022 12:00:44] [WARNING ] [MainThread|3069315792], File "/data/django/jukeoroni/player/admin.py", line 132, in play_pause:    done
                 """
+                # _video_title = self.video.video_title
                 self.video.stop()
             except Exception:
                 LOG.exception('Bullshit Error')
+                _video_title = 'Bullshit Error Here!!!!'
             finally:
                 LOG.warning(f'{self.video.video_title} stopped.')
-                self.reset_mode()
+                # self.reset_mode()
                 # jukeoroni.mode = Settings.MODES['jukeoroni']['standby']  # [jukeoroni.jukebox.loader_mode]
             # LOG.warning(f'{obj.video_title} stopped.')
             # LOG.warning(f'{self.video.video_title} stopped.')
-            self.video = None
+            # self.video = None
         else:
             LOG.warning('Nothing is currently playing.')
 
+    def event_stop(self):
+        LOG.info(f'eventStop: {self.video.video_title} stopped.')
+        # eventStop() quits the player, hence: it calls eventExit()
+        # afterwards. No reset_mode needed here
+        # self.reset_mode()
+
+    def event_exit(self):
+        LOG.info(f'eventExit: {self.video.video_title} finished.')
+        self.reset_mode()
+
     def reset_mode(self):
+        self.video = None
+        LOG.info('Resetting JukeOroni mode to jukeoroni standby')
         jukeoroni.mode = Settings.MODES['jukeoroni']['standby']  # [jukeoroni.jukebox.loader_mode]
 
     play_pause.label = 'Play/Pause'
