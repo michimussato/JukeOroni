@@ -27,7 +27,7 @@
                     <div>
                         <h1>{{ station }}</h1>
                         {% for channel in channels %}
-                            <button class="{{ channel.class }}" onclick="{{ channel.onclick }}"><img width="100px" height="100px" src="{{ channel.channel.url_logo }}" alt="{{ channel.channel.display_name }}"></button>
+                            <button class="{{ channel.class }}" onclick="{{ channel.onclick }}"><img width="100px" height="100px" src="{{ channel.channel.url_logo }}" style="border-radius: 10%" alt="{{ channel.channel.display_name }}"></button>
                         {% endfor %}
                     </div>
                 {% endfor %}
@@ -39,7 +39,7 @@
         </center>
         <center>
             {% for channel_unstationed in channels_unstationed %}
-                <button class="{{ channel_unstationed.class }}" onclick="{{ channel_unstationed.onclick }}"><img width="100px" height="100px" src="{{ channel_unstationed.channel_unstationed.url_logo }}" alt="{{ channel_unstationed.channel_unstationed.display_name }}"></button>
+                <button class="{{ channel_unstationed.class }}" onclick="{{ channel_unstationed.onclick }}"><img width="100px" height="100px" src="{{ channel_unstationed.channel_unstationed.url_logo }}" style="border-radius: 10%" alt="{{ channel_unstationed.channel_unstationed.display_name }}"></button>
             {% endfor %}
         </center>
     {% endblock channel_list %}

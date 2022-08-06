@@ -186,3 +186,30 @@ footer {
 /*        right: -20px;*/
 /*        transition: 0.5s;*/
 /*      }*/
+
+/*BOOTSTRAP OVERRIDES*/
+.page-item.active .page-link {
+    color: #ffffff;
+    z-index: 0;
+    background-color: #858585;
+    border-color: #505050;
+}
+
+.page-item.disabled .page-link {
+    color: #858585;
+    z-index: 0;
+    background-color: #505050;
+    border-color: #505050;
+}
+
+.page-link {
+    color: #ffffff;
+    z-index: 0;
+    background-color: #505050;
+    border-color: #505050;
+}
+
+.page-link:hover {
+    color: #505050;
+}
+/*BOOTSTRAP OVERRIDES*/

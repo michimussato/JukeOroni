@@ -10,7 +10,7 @@
     <div class="container">
         <h1>Suggestions</h1>
         {% for random_album in random_albums %}
-            <button class="btn_album_default" title="{{ random_album.artist.name }} ({{ random_album.year }}) {{ random_album.album_title }}" onclick="window.location.href='/jukeoroni/{{ box_type }}/albums/{{ random_album.id }}';"><img width="100px" height="100px" src="{{ random_album.album_cover }}"></button>
+            <button class="btn_album_default" title="{{ random_album.artist.name }} ({{ random_album.year }}) {{ random_album.album_title }}" onclick="window.location.href='/jukeoroni/{{ box_type }}/albums/{{ random_album.id }}';"><img width="100px" height="100px" style="border-radius: 10%" src="{{ random_album.album_cover }}"></button>
         {% endfor %}
     </div>
     <hr>
@@ -92,7 +92,7 @@
     </div>
 
             {% for album in page_obj %}
-                <button class="btn_album_default" title="{{ album.artist }} ({{ album.year }}) {{ album.album_title }}" onclick="window.location.href='/jukeoroni/{{ box_type }}/albums/{{ album.id }}';"><img width="100px" height="100px" src="{{ album.album_cover }}"></button>
+                <button class="btn_album_default" title="{{ album.artist }} ({{ album.year }}) {{ album.album_title }}" onclick="window.location.href='/jukeoroni/{{ box_type }}/albums/{{ album.id }}';"><img width="100px" height="100px" style="border-radius: 10%" src="{{ album.album_cover }}"></button>
             {% endfor %}
         </div>
 {#    <br>#}

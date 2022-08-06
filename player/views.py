@@ -999,7 +999,7 @@ class BoxView(View):
                     'column_width': COLUMN_WIDTH,
                     'padding': padding,
 
-                    'button_title': 'Albums',
+                    'button_title': 'Library/Albums',
                     'onclick': f'window.location.href = \'/jukeoroni/{box.box_type}/albums\'',
                     'img_width': int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR),
                     'img_height': int(Settings.BUTTONS_HEIGHT * BUTTON_ICON_SIZE_FACTOR),
