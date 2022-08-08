@@ -990,6 +990,59 @@ class BoxView(View):
             context['encoded_img_data'] = encoded_img_data
             context['encoded_img_data_class'] = 'box_image'
 
+        context['inserted_media'] = jukeoroni.inserted_media
+        context['loading_track'] = box.loading_track
+        context['queue'] = box.tracks
+
+        #     ret += '<center><div>Inserted/Playing</div></center>'
+    #     if jukeoroni.inserted_media is not None:
+    #         ret += f'<div style="text-align: center;">{str(jukeoroni.inserted_media.artist)}</div>'
+    #         ret += f'<div style="text-align: center;">{str(jukeoroni.inserted_media.album)}</div>'
+    #         ret += f'<div style="text-align: center;">{str(jukeoroni.inserted_media.track_title)}</div>'
+    #         ret += f'<div style="text-align: center;">(ID: {str(jukeoroni.inserted_media.django_track.id)})</div>'
+    #     else:
+    #         ret += '<div style="text-align: center;">None</div>'
+    #
+    #     if box.loading_track is not None:
+    #         ret += '<hr>'
+    #         ret += '<center><div>Loading</div></center>'
+    #         ret += '<center><div>{0}</div></center>'.format(f'{box.loading_track.artist} - {box.loading_track.album} ({box.loading_track.year}) - {box.loading_track.track_title} ({str(round(box.loading_track.size_cached / (1024.0 * 1024.0), 1))} of {str(round(box.loading_track.size / (1024.0 * 1024.0), 1))} MB)')
+    #     ret += '<hr>'
+    #     ret += '<center><div>Queue</div></center>'
+    #
+    #     ret += '<ol>'
+    #     ret += '<center><table border="0" cellspacing="0">'
+    #     for track in box.tracks:
+    #         ret += '<tr>'
+    #         ret += '<td>'
+    #         ret += '<li>&nbsp;</li>'
+    #         ret += '</td>'
+    #         ret += '<td>{0} (ID: {1})</td>'.format(track, track.django_track.id)
+    #         if box.tracks.index(track) == 0:
+    #             ret += '<td><button onclick=\"window.location.href = \'/jukeoroni/{1}/{0}/as_first\';\" disabled>Set 1st</button></td>'.format(str(box.tracks.index(track)), str(box.box_type))
+    #         else:
+    #             ret += '<td><button onclick=\"window.location.href = \'/jukeoroni/{1}/{0}/as_first\';\">Set 1st</button></td>'.format(str(box.tracks.index(track)), str(box.box_type))
+    #         ret += '<td><button onclick=\"window.location.href = \'/jukeoroni/{1}/{0}/pop\';\">Remove from Queue</button></td>'.format(str(box.tracks.index(track)), str(box.box_type))
+    #         ret += f'</tr>'
+    #     ret += f'</table></center>'
+    #     ret += f'</ol>'
+    #     ret += f'<hr>'
+    #
+    #     if box.track_list_updater_running:
+    #         ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/{0}/update_track_list\';\"  disabled>Update Track List</button>\n'.format(str(box.box_type))
+    #     else:
+    #         ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/{0}/update_track_list\';\">Update Track List</button>\n'.format(str(box.box_type))
+    #
+    #     if jukeoroni.paused:
+    #         ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/resume\';\">Resume</button>\n'
+    #     else:
+    #         if jukeoroni.mode == Settings.MODES[box.box_type]['on_air'][box.loader_mode]:
+    #             ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/pause\';\">Pause</button>\n'
+    #         else:
+    #             ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/pause\';\" disabled>Pause</button>\n'
+    #
+    #     ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/{0}/albums\';\">Albums</button>\n'.format(str(box.box_type))
+    #     # ret += '<button style=\"width:100%\" onclick=\"window.location.href = \'/jukeoroni/{0}/tracks\';\">Tracks</button>\n'.format(str(box.box_type))
 
         context['albums_buttons'] = list()
 

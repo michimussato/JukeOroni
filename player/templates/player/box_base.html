@@ -22,9 +22,49 @@
 
 {% block box_navigation %}
     <hr>
+    {% if inserted_media %}
+        <div style="text-align: center;">
+            <h1 align="center">Playing</h1>
+
+            <b>{{ inserted_media.track_title }}</b> by <b>{{ inserted_media.artist }}</b> ({{ inserted_media.album }})
+        </div>
+    <hr>
+    {% endif %}
+
+    {% if loading_track %}
+        <div style="text-align: center;">
+            <h1>Loading</h1>
+
+            <b>{{ loading_track.track_title }}</b> by <b>{{ loading_track.artist }}</b> ({{ loading_track.album }})
+        </div>
+    <hr>
+    {% endif %}
+
+    {% if queue %}
+        <div class="container" style="text-align: center;">
+        <h1>Next up</h1>
+
+        <table style="border:0px solid black;margin-left:auto;margin-right:auto;">
+            <tr>
+                <td>
+                    <ol>
+                        {% for track in queue %}
+
+                            <li>{{ track }}</li>
+
+                        {% endfor %}
+                    </ol>
+                </td>
+            </tr>
+        </table>
+        </div>
+        <hr>
+    {% endif %}
+
     <div class="container">
         <table class="table_albums_button" border="0" cellspacing="0">
             <tr style="border: none;">
+
             {% for albums_button in albums_buttons %}
                 <td class="td_albums_buttons" width="{{ button.column_width }}" style="padding: {{ button.padding }};">
                 {% if albums_button.button_title != '' %}
