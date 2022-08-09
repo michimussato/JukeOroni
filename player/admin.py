@@ -131,7 +131,10 @@ class VideoAdmin(DjangoObjectActions, admin.ModelAdmin):
             # self.video = None
 
         if self.video is None:
-            # modifiy the jukeoroni mode directly
+            if jukeoroni.mode != Settings.MODES['jukeoroni']['standby']:
+                LOG.warning('Get JukeOroni into Standby mode before playing a video.')
+                return
+                # modifiy the jukeoroni mode directly
             jukeoroni.mode = Settings.MODES['videobox']['on_air']['random']
             LOG.warning(f'Starting playback of {obj.video_title} now...')
             self.video = obj

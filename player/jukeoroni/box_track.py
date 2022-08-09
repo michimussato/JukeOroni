@@ -228,6 +228,12 @@ class JukeboxTrack(object):
             return 0
 
     @property
+    def percent_cached(self):
+        #{{({str(round(box.loading_track.size_cached / (1024.0 * 1024.0), 1))}
+        #      of {str(round(box.loading_track.size / (1024.0 * 1024.0), 1))} MB)}}
+        return f'{str(round(self.size_cached / (1024.0 * 1024.0), 1))} of {str(round(self.size / (1024.0 * 1024.0), 1))} MB)'
+
+    @property
     def playing_from(self):
         return self.cache_tmp if self.cached else self.path
 
