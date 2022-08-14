@@ -24,8 +24,8 @@
 import player.models
 
 channel_list = [
-    ("BOBs 100", "100", "radio_bob", True, "http://bob.hoerradar.de/radiobob-100-mp3-hq", None, False, True),
-    ("BOBs 101", "101", "radio_bob", True, "http://bob.hoerradar.de/radiobob-101-mp3-hq", None, False, True),
+    ("BOBs 100", "100", "radio_bob", False, "http://bob.hoerradar.de/radiobob-100-mp3-hq", None, False, True),
+    ("BOBs 101", "101", "radio_bob", False, "http://bob.hoerradar.de/radiobob-101-mp3-hq", None, False, True),
     ("BOBs Blues", "blues", "radio_bob", True, "http://bob.hoerradar.de/radiobob-blues-mp3-hq", "http://aggregatorservice.loverad.io/wp-content/uploads/2021/03/bob_2000er-rock_600x600.png", False, True),
     ("BOBs 80s Rock", "bob-80srock", "radio_bob", True, "http://bob.hoerradar.de/radiobob-80srock-mp3-hq", "http://aggregatorservice.loverad.io/wp-content/uploads/2021/01/bob_80er-rock_600x600.png", False, True),
     ("BOBs 90s Rock", "bob-90srock", "radio_bob", True, "http://bob.hoerradar.de/radiobob-90srock-mp3-hq", "http://aggregatorservice.loverad.io/wp-content/uploads/2021/01/bob_90er-rock_600x600.png", False, True),
@@ -69,9 +69,9 @@ channel_list = [
     ("SRF 3", "srf_3", "srf", True, "http://stream.srg-ssr.ch/m/drs3/aacp_96", "https://mytuner.global.ssl.fastly.net/media/tvos_radios/8S4qGytr8f.png", False, True),
     ("SRF 2 Kultur", "srf_2", "srf", True, "http://stream.srg-ssr.ch/m/drs2/aacp_96", "https://mytuner.global.ssl.fastly.net/media/tvos_radios/XphWMbkRsU.png", False, True),
     ("SRF 1", "srf_1", "srf", True, "http://stream.srg-ssr.ch/m/drs1/aacp_96", "https://www.liveradio.ie/files/images/105819/resized/180x172c/radioooo.png", False, True),
-    ("SRF 4 News", "srf_4", "srf", True, "http://stream.srg-ssr.ch/m/drs4news/aacp_96", "https://seeklogo.com/images/R/radio-srf-4-news-logo-D17966CFE5-seeklogo.com.png", False, True),
+    ("SRF 4 News", "srf_4", "srf", True, "http://stream.srg-ssr.ch/m/drs4news/aacp_96", "https://seeklogo.com/images/R/radio-srf-4-news-logo-D17966CFE5-seeklogo.com.png", False, False),
     ("SRF Virus", "srf_virus", "srf", True, "http://stream.srg-ssr.ch/m/drsvirus/aacp_96", "https://static.mytuner.mobi/media/tvos_radios/3dEg2QhxNP.png", False, True),
-    ("SRF Swiss Classic", "srf_swiss_classic", "srf", True, "http://stream.srg-ssr.ch/m/rsc_de/aacp_96", "https://i1.sndcdn.com/artworks-000575528372-2khk7a-t500x500.jpg", False, True),
+    ("SRF Swiss Classic", "srf_swiss_classic", "srf", True, "http://stream.srg-ssr.ch/m/rsc_de/aacp_96", "https://upload.wikimedia.org/wikipedia/commons/a/a4/Radio_Swiss_Classic_Logo_2018.svg", False, True),
     ("SRF Swiss Jazz", "srf_swiss_jazz", "srf", True, "http://stream.srg-ssr.ch/m/rsj/aacp_96", "https://upload.wikimedia.org/wikipedia/commons/9/9e/Radio_Swiss_Jazz_logo.png", False, True),
     ("SRF Swiss Pop", "srf_swiss_pop", "srf", True, "http://stream.srg-ssr.ch/m/rsp/aacp_96", "https://mx3.ch/pictures/mx3/file/0033/0569/original/radioswisspop_1_rgb.jpg?1429621701", False, True),
     ("SRF Couleur 3", "couleur_3", "srf", True, "http://stream.srg-ssr.ch/m/couleur3/aacp_96", "https://d3kle7qwymxpcy.cloudfront.net/images/broadcasts/1b/af/1489/5/c175.png", False, True),
@@ -100,10 +100,10 @@ channel_list = [
     ("Positively Classical", "positively_classical", "positivity_radio", True, "https://streaming.positivity.radio/pr/posiclassical/icecast.audio", "https://manager.uber.radio/static/uploads/station/8c38964f-93ad-42e1-aca9-fb3f47c72b5a.png", False, True),
     ("Positively Energy", "positively_energy", "positivity_radio", True, "https://streaming.positivity.radio/pr/energy/icecast.audio", "https://manager.uber.radio/static/uploads/station/15980f15-72e1-404f-9d8e-00b9958fe090.png", False, True),
     ("Positively Instrumental", "positively_instrumental", "positivity_radio", True, "https://streaming.positivity.radio/pr/soothinginstrumental/icecast.audio", "https://manager.uber.radio/static/uploads/station/22ec010b-ecbd-469f-aa21-4b678bce7dbc.png", False, True),
-    ("Positively Jazz", "positively_jazz", "positivity_radio", True, "https://streaming.positivity.radio/pr/jazz/icecast.audio", "https://manager.uber.radio/static/uploads/station/79e27798-d2f6-47db-ad46-f727a2405229.png", True, True),
+    ("Positively Jazz", "positively_jazz", "positivity_radio", True, "https://streaming.positivity.radio/pr/jazz/icecast.audio", "https://manager.uber.radio/static/uploads/station/79e27798-d2f6-47db-ad46-f727a2405229.png", False, True),
     ("Positively Meditation", "positively_meditation", "positivity_radio", True, "https://streaming.positivity.radio/pr/posimeditation/icecast.audio", "https://manager.uber.radio/static/uploads/station/061eccde-746b-49d4-aad5-dc636e8ea3fb.png", False, True),
     ("Positively Piano", "positively_piano", "positivity_radio", True, "https://streaming.positivity.radio/pr/piano/icecast.audio", "https://manager.uber.radio/static/uploads/station/eeb48846-f78d-4ba7-9f5f-4f08f1ca32ea.png", False, True),
-    ("Positively Relaxation", "positively_relaxation", "positivity_radio", True, "https://streaming.positivity.radio/pr/relaxation/icecast.audio", "https://manager.uber.radio/static/uploads/station/534c865c-0c2e-4b93-87b9-1ec54e445739.png", False, True),
+    ("Positively Relaxation", "positively_relaxation", "positivity_radio", True, "https://streaming.positivity.radio/pr/relaxation/icecast.audio", "https://manager.uber.radio/static/uploads/station/534c865c-0c2e-4b93-87b9-1ec54e445739.png", True, False),
     ("Positively Relaxing Workout", "positively_relaxing_workout", "positivity_radio", True, "https://streaming.positivity.radio/pr/workoutrelax/icecast.audio", "https://manager.uber.radio/static/uploads/station/d349ba0c-d80b-48fb-ba6b-9b1f52bbae55.png", False, True),
     ("Positively Sleep Classical", "positively_sleep_classical", "positivity_radio", True, "https://streaming.positivity.radio/pr/sleepclassical/icecast.audio", "https://manager.uber.radio/static/uploads/station/ab52c7d3-5a7a-4478-979b-f2086cc06e16.png", False, True),
     ("Positively Sleep Tones", "positively_sleep_tones", "positivity_radio", True, "https://streaming.positivity.radio/pr/sleeptones/icecast.audio", "https://manager.uber.radio/static/uploads/station/7aeae7c1-85ea-4350-b2fb-402a71d300b1.png", False, True),
@@ -114,6 +114,7 @@ channel_list = [
     ("Positively Spa", "positively_spa", "positivity_radio", True, "https://streaming.positivity.radio/pr/spa/icecast.audio", "https://manager.uber.radio/static/uploads/station/ee834240-15b7-441f-9036-1fdad871aa3b.png", False, True),
     ("Positively Stress Relief", "positively_stress_relief", "positivity_radio", True, "https://streaming.positivity.radio/pr/stressrelief/icecast.audio", "https://manager.uber.radio/static/uploads/station/46e28c0d-4d0c-49d0-93b0-7742548d67ec.png", False, True),
     ("Positively Tai Chi", "positively_tai_chi", "positivity_radio", True, "https://streaming.positivity.radio/pr/taichi/icecast.audio", "https://manager.uber.radio/static/uploads/station/6f72f6c0-0d4f-4b1e-b737-98f3758cffa0.png", False, True),
+    ("Drift.FM", "drift-fm", "None", True, "https://s4.radio.co/s5729f2e59/listen?=&&___cb=292499116560050", "https://www.drift.fm/hintergrund.jpg", False, False),
 ]
 
 
