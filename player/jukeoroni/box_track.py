@@ -55,6 +55,10 @@ class JukeboxTrack(object):
         return self.django_track.track_title
 
     @property
+    def id(self):
+        return self.django_track.id
+
+    @property
     def album_tracks(self):
         # list of tracks within an album, sorted by the file name
         # (indexes might not be incremental)

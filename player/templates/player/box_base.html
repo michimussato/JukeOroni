@@ -26,7 +26,8 @@
         <div style="text-align: center;">
             <h1 align="center">Playing ({{ box.loader_mode }} mode)</h1>
 
-            <b>{{ inserted_media.track_title }}</b> by <b>{{ inserted_media.artist }}</b> ({{ inserted_media.album }})
+{#            TODO: /player/track should not be hardcoded#}
+            <a class="link_track"  href="/admin/player/track/{{ inserted_media.id }}" target="_blank"><b>{{ inserted_media.track_title }}</b> by <b>{{ inserted_media.artist }}</b> ({{ inserted_media.album }})</a>
         </div>
     <hr>
     {% endif %}
@@ -51,7 +52,7 @@
                     <ol>
                         {% for track in queue %}
 
-                            <li>{{ track }}</li>
+                            <li><a class="link_track"  href="/admin/player/track/{{ track.id }}" target="_blank">{{ track }}</a></li>
 
                         {% endfor %}
                     </ol>
