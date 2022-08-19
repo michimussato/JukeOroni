@@ -109,48 +109,48 @@ def get_active_box(_jukeoroni):
     return box
 
 
-def get_header(bg_color, refresh=True):
-    # bg_color = get_bg_color(jukeoroni.layout_standby.bg_color)
+# def get_header(bg_color, refresh=True):
+#     # bg_color = get_bg_color(jukeoroni.layout_standby.bg_color)
+#
+#     ret = '<html>\n'
+#     ret += '<head>\n'
+#     if refresh:
+#         ret += '<meta http-equiv="refresh" content="10" >\n'
+#     ret += '<link rel="icon" type="image/x-icon" href="/jukeoroni/favicon.ico">\n'
+#     ret += '</head>\n'
+#     ret += '<body style="background-color:#{0};">\n'.format(bg_color)
+#
+#     return ret
 
-    ret = '<html>\n'
-    ret += '<head>\n'
-    if refresh:
-        ret += '<meta http-equiv="refresh" content="10" >\n'
-    ret += '<link rel="icon" type="image/x-icon" href="/jukeoroni/favicon.ico">\n'
-    ret += '</head>\n'
-    ret += '<body style="background-color:#{0};">\n'.format(bg_color)
 
-    return ret
-
-
-def get_footer(ret):
-    ret += '<hr>\n'
-    ret += '<center>'
-    ret += '<table border="0" cellspacing="0" style="text-align:center;margin-left:auto;margin-right:auto;border-collapse: collapse;">'
-    ret += '<tr style="border: none;">'
-
-    # if back is not None:
-    #     ret += '<td style="border-right: solid 1px #000;border-left: solid 1px #000;padding: 5px 10px;">'
-    #     ret += f'<a href="{back}" target="_self">Back</a>'
-    #     ret += '</td>'
-
-    ret += '<td style="border-right: solid 1px #000;border-left: solid 1px #000;padding: 5px 10px;">'
-    ret += '<a href="/admin" target="_blank">Admin</a>'
-    ret += '</td>'
-
-    ret += '<td style="border-right: solid 1px #000;border-left: solid 1px #000;padding: 5px 10px;">'  # border-right: solid 1px #f00; border-left: solid 1px #f00;
-    ret += '<a href="/transmission" target="_blank">Transmission</a>'
-    ret += '</td>'
-
-    ret += '<td style="border-right: solid 1px #000;border-left: solid 1px #000;padding: 5px 10px;">'
-    ret += '<a href="/webmin" target="_blank">Webmin</a>'
-    ret += '</td>'
-
-    ret += '</tr>'
-    ret += '</table>'
-    ret += '</center>'
-
-    return ret
+# def get_footer(ret):
+#     ret += '<hr>\n'
+#     ret += '<center>'
+#     ret += '<table border="0" cellspacing="0" style="text-align:center;margin-left:auto;margin-right:auto;border-collapse: collapse;">'
+#     ret += '<tr style="border: none;">'
+#
+#     # if back is not None:
+#     #     ret += '<td style="border-right: solid 1px #000;border-left: solid 1px #000;padding: 5px 10px;">'
+#     #     ret += f'<a href="{back}" target="_self">Back</a>'
+#     #     ret += '</td>'
+#
+#     ret += '<td style="border-right: solid 1px #000;border-left: solid 1px #000;padding: 5px 10px;">'
+#     ret += '<a href="/admin" target="_blank">Admin</a>'
+#     ret += '</td>'
+#
+#     ret += '<td style="border-right: solid 1px #000;border-left: solid 1px #000;padding: 5px 10px;">'  # border-right: solid 1px #f00; border-left: solid 1px #f00;
+#     ret += '<a href="/transmission" target="_blank">Transmission</a>'
+#     ret += '</td>'
+#
+#     ret += '<td style="border-right: solid 1px #000;border-left: solid 1px #000;padding: 5px 10px;">'
+#     ret += '<a href="/webmin" target="_blank">Webmin</a>'
+#     ret += '</td>'
+#
+#     ret += '</tr>'
+#     ret += '</table>'
+#     ret += '</center>'
+#
+#     return ret
 
 
 # Create your views here.
@@ -749,6 +749,8 @@ class BoxView(View):
             return HttpResponseRedirect('/jukeoroni')
 
         box = get_active_box(jukeoroni)
+
+        context['box'] = box
 
         bg_color = get_bg_color(box.layout.bg_color)
 
