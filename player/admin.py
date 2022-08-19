@@ -281,7 +281,7 @@ May 25 12:00:44 jukeoroni gunicorn[7649]: [05-25-2022 12:00:44] [WARNING ] [Main
 
 admin.site.register(Artist, AristAdmin)
 admin.site.register(Album, AlbumAdmin)
-admin.site.register(Track, TrackAdmin)
+admin.site.register(Track, TrackAdmin, readonly_fields=('played', 'audio_source'))
 admin.site.register(Station, StationAdmin)
 admin.site.register(Channel, ChannelAdmin)
 admin.site.register(Video, VideoAdmin)
