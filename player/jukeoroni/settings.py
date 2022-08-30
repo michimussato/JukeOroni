@@ -21,7 +21,7 @@ class Settings:
     #  rsync --dry-run -rltv8DW --delete-before --progress --info=progress2 --exclude "*DS_Store" --delete-excluded "/data/googledrive/media/audio/meditation/" "/data/usb_hdd/media/audio/meditation" > /data/usb_hdd/rsync_meditation.txt &
     # Icon?
     #  find . -name 'Icon?' -exec rm {} \;
-    DATA_SOURCE = DATA_SOURCES[0]  # https://raspberrytips.com/mount-usb-drive-raspberry-pi/
+    DATA_SOURCE = DATA_SOURCES[1]  # https://raspberrytips.com/mount-usb-drive-raspberry-pi/
     DATA_SOURCE_RCLONE = DATA_SOURCES[1]
     MEDIA_ROOT = f'/data/{DATA_SOURCE}/media/audio/'
     LOG_ROOT = f'/data/jukeoroni_logs/'
@@ -605,6 +605,8 @@ class Settings:
     # box
     CACHE_TRACKS = [True, False][1] if DATA_SOURCE == DATA_SOURCES[0] else [True, False][0]
     CACHE_COVERS = [True, False][0]
+    DB_SAVE_ATTEMPTS = 5
+    DB_SAVE_WAIT_BETWEEN_ATTEMPTS = 10  # Seconds
     MAX_CACHED_FILES = 3
     COVER_ONLINE_PREFERENCE = [True, False][1]  # can increase picture encoding for album view drasically if True
     _JUKEBOX_ICON_IMAGE = os.path.join(BASE_DIR, 'player', 'static', 'jukebox.png')

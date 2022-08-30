@@ -1,6 +1,9 @@
 import os
 import logging
+import time
+
 from django.db.models.deletion import ProtectedError
+from django.db.utils import OperationalError
 from player.jukeoroni.discogs import get_client, get_artist, get_album
 from player.models import Artist, Album, Track as DjangoTrack
 from player.jukeoroni.settings import Settings
@@ -46,7 +49,7 @@ def create_update_track_list(box, directory, album_type, file_filter):
             continue
 
         # COVER ARTIST
-        # Artist can participate in Music and Meditation
+        # Artist can participate in any box library
         cover_online = None
         # TODO: if str(artist).lower() != 'soundtrack':  # Soundtracks have different artists, so no need to add artist cover
         query_artist = Artist.objects.filter(name__exact=artist)
@@ -105,12 +108,62 @@ def create_update_track_list(box, directory, album_type, file_filter):
             model_album = Album(artist=model_artist, album_title=title, year=year, cover=img_path, cover_online=cover_online, album_type=album_type)
             LOG.info(f'Album {model_album} not found in DB.')
 
-        try:
-            model_album.save()
-            _albums.append(album)
-            LOG.info(f'Album {model_album} correctly saved in DB.')
-        except Exception:
-            LOG.exception(f'Cannot save album model {title} by {artist}:')
+        attempts = 0
+        while attempts < Settings.DB_SAVE_ATTEMPTS:
+            try:
+                model_album.save()
+                _albums.append(album)
+                LOG.info(f'Album {model_album} correctly saved in DB.')
+                break
+            except OperationalError:
+                attempts += 1
+                LOG.exception(f'Cannot save album model {title} by {artist} (attempt {attempts} of {Settings.DB_SAVE_ATTEMPTS}):')
+                time.sleep(Settings.DB_SAVE_WAIT_BETWEEN_ATTEMPTS)
+                """
+    [08-30-2022 09:43:10] [ERROR   ] [Track List Generator Thread (meditationbox)|2916086880], File "/data/django/jukeoroni/player/jukeoroni/create_update_track_list.py", line 113, in create_update_track_list:    Cannot save album model Sea of Dreams (Philippe De Canck) [FLAC][16][44.1] by Sounds of Nature (Serenity Series):
+    Traceback (most recent call last):
+      File "/data/venv/lib/python3.7/site-packages/django/db/backends/utils.py", line 84, in _execute
+        return self.cursor.execute(sql, params)
+      File "/data/venv/lib/python3.7/site-packages/django/db/backends/sqlite3/base.py", line 423, in execute
+        return Database.Cursor.execute(self, query, params)
+    sqlite3.OperationalError: database is locked
+    
+    The above exception was the direct cause of the following exception:
+    
+    Traceback (most recent call last):
+      File "/data/django/jukeoroni/player/jukeoroni/create_update_track_list.py", line 109, in create_update_track_list
+        model_album.save()
+      File "/data/venv/lib/python3.7/site-packages/django/db/models/base.py", line 727, in save
+        force_update=force_update, update_fields=update_fields)
+      File "/data/venv/lib/python3.7/site-packages/django/db/models/base.py", line 765, in save_base
+        force_update, using, update_fields,
+      File "/data/venv/lib/python3.7/site-packages/django/db/models/base.py", line 846, in _save_table
+        forced_update)
+      File "/data/venv/lib/python3.7/site-packages/django/db/models/base.py", line 899, in _do_update
+        return filtered._update(values) > 0
+      File "/data/venv/lib/python3.7/site-packages/django/db/models/query.py", line 802, in _update
+        return query.get_compiler(self.db).execute_sql(CURSOR)
+      File "/data/venv/lib/python3.7/site-packages/django/db/models/sql/compiler.py", line 1559, in execute_sql
+        cursor = super().execute_sql(result_type)
+      File "/data/venv/lib/python3.7/site-packages/django/db/models/sql/compiler.py", line 1175, in execute_sql
+        cursor.execute(sql, params)
+      File "/data/venv/lib/python3.7/site-packages/django/db/backends/utils.py", line 98, in execute
+        return super().execute(sql, params)
+      File "/data/venv/lib/python3.7/site-packages/django/db/backends/utils.py", line 66, in execute
+        return self._execute_with_wrappers(sql, params, many=False, executor=self._execute)
+      File "/data/venv/lib/python3.7/site-packages/django/db/backends/utils.py", line 75, in _execute_with_wrappers
+        return executor(sql, params, many, context)
+      File "/data/venv/lib/python3.7/site-packages/django/db/backends/utils.py", line 84, in _execute
+        return self.cursor.execute(sql, params)
+      File "/data/venv/lib/python3.7/site-packages/django/db/utils.py", line 90, in __exit__
+        raise dj_exc_value.with_traceback(traceback) from exc_value
+      File "/data/venv/lib/python3.7/site-packages/django/db/backends/utils.py", line 84, in _execute
+        return self.cursor.execute(sql, params)
+      File "/data/venv/lib/python3.7/site-packages/django/db/backends/sqlite3/base.py", line 423, in execute
+        return Database.Cursor.execute(self, query, params)
+    django.db.utils.OperationalError: database is locked
+                """
+
         # COVER ALBUM
 
         for _file in files:
@@ -165,7 +218,7 @@ def create_update_track_list(box, directory, album_type, file_filter):
             django_artist.delete()
             LOG.info(f'Artist removed from DB: {django_artist}')
         except ProtectedError:
-            LOG.debug(f'Artist {django_artist} is still connected. Ignored...')
+            LOG.debug(f'Artist {django_artist} is still connected (in use). Ignored...')
 
     LOG.info(f'Finished: {album_type} track list generated successfully: {len(_files)} tracks, {len(_albums)} albums and {len(_artists)} artists found')
 ############################################
