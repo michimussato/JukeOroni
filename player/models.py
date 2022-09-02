@@ -63,6 +63,10 @@ def encode_image(img):
 
 # Create your models here.
 class Artist(models.Model):
+
+    # TODO:
+    # class Meta:
+    #     ordering = ['name',]
     name = models.CharField(max_length=200, unique=True, blank=False, null=False)
     cover_online = models.CharField(max_length=200, unique=False, blank=True, null=True)
 
@@ -74,6 +78,9 @@ class Artist(models.Model):
 
 
 class Album(models.Model):
+    class Meta:
+        ordering = ['year', 'album_title']
+
     artist = models.ForeignKey(Artist, on_delete=models.PROTECT)
     album_title = models.CharField(max_length=200, unique=False, blank=False)
     album_type = models.CharField(max_length=200, unique=False, blank=False, null=True, default=None)

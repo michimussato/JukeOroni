@@ -680,10 +680,10 @@ class AlbumView(View):
 
         context['random_albums'] = random.sample(list(Album.objects.filter(album_type=box.album_type)), Settings.RANDOM_ALBUMS)
 
-        albums = Album.objects.filter(album_type=box.album_type).order_by('album_title')
+        albums = Album.objects.filter(album_type=box.album_type)  # .order_by('album_title')
 
         if query:
-            albums = albums.filter(Q(album_title__icontains=query) | Q(artist__name__icontains=query)).order_by('album_title')
+            albums = albums.filter(Q(album_title__icontains=query) | Q(artist__name__icontains=query))  # .order_by('album_title')
         # else:
             # albums = Album.objects.filter(album_type=box.album_type).order_by('album_title').distinct()
 

@@ -45,7 +45,7 @@ def create_update_track_list(box, directory, album_type, file_filter):
         try:
             artist, year, title = album.split(DELIMITER)
         except ValueError:
-            LOG.exception(f'Not a valid album path: {album}:')
+            LOG.exception(f'Not a valid album path: {album}: Skipping.')
             continue
 
         # COVER ARTIST
@@ -212,7 +212,7 @@ def create_update_track_list(box, directory, album_type, file_filter):
 
     # no special logic required. if artist is still connected, it
     # cannot be deleted
-    django_artists = Artist.objects.all()
+    django_artists = Artist.objects.all(order_by='name')
     for django_artist in django_artists:
         try:
             django_artist.delete()

@@ -24,41 +24,44 @@
             <!-- Pagination -->
 {#            {% if is_paginated %}#}
 {#    <center>#}
-            <nav>
-{#                <ul id="nav" class="pagination justify-content-center" style="margin:20px 0">#}
-                <ul id="nav" class="pagination">
+            <ul id="nav" class="pagination">
+
                 {% if page_obj.has_previous %}
-                    <li class="page-item">
+{#                    <li class="page-item">#}
                     <a class="page-link" href="?page=1{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">
                         <span>First</span>
                     </a>
-                    </li>
+{#                    </li>#}
 
-                    <li class="page-item">
+{#                    <li class="page-item">#}
                     <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">
                         <span>Prev</span>
                     </a>
-                    </li>
+{#                    </li>#}
                 {% else %}
-                    <li class="disabled page-item">
+{#                    <li class="disabled page-item">#}
                     <a class="page-link" href="#">
                         <span>First</span>
                     </a>
-                    </li>
-                    <li class="disabled page-item">
+{#                    </li>#}
+{#                    <li class="disabled page-item">#}
                     <a class="page-link" href="#">
                         <span>Prev</span>
                     </a>
-                    </li>
+{#                    </li>#}
                 {% endif %}
 
-                {% for page in page_range %}
-{#                    {% if page|add:-5 <= page_obj.number or page|add:5 >= page_obj.number %}#}
-                        <li {% if page == page_obj.number %} class="active page-item" {% endif %}>
-                        <a class="page-link" href="?page={{ page }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">{{ page }}</a>
-                        </li>
-{#                    {% endif %}#}
-                {% endfor %}
+                <nav id="nav" >
+{#                <ul id="nav" class="pagination justify-content-center" style="margin:20px 0">#}
+
+                    {% for page in page_range %}
+    {#                    {% if page|add:-5 <= page_obj.number or page|add:5 >= page_obj.number %}#}
+                            <li {% if page == page_obj.number %} class="active page-item" {% endif %}>
+                            <a class="page-link" href="?page={{ page }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">{{ page }}</a>
+                            </li>
+    {#                    {% endif %}#}
+                    {% endfor %}
+                </nav>
 
 {#                {{ page_obj.number }}#}
 
@@ -86,7 +89,6 @@
                     </li>
                 {% endif %}
                 </ul>
-            </nav>
 {#    </center>#}
 {#            {% endif %}#}
     </div>
