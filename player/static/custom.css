@@ -68,7 +68,7 @@ footer {
     overflow: scroll;
     overflow-y: hidden;
     overflow-x: auto;
-    margin: 10px 0;
+    margin: auto;
     display: block ruby;
     /*display: -webkit-box;*/
 }
@@ -135,7 +135,7 @@ footer {
 
 /*RADIO BUTTONS*/
 .btn_channel_default:hover, .btn_album_default:hover {
-        background-color: #1db700;
+        background-color: #cccccc;
       }
 
 .btn_channel_on_air:hover {
@@ -212,26 +212,63 @@ footer {
 /*        transition: 0.5s;*/
 /*      }*/
 
+.center {
+    /*margin: auto;*/
+    display: initial;
+    /*display: flex;*/
+    /*justify-content: center;*/
+}
+
 /*BOOTSTRAP OVERRIDES*/
 .page-item.active .page-link {
     color: #ffffff;
     z-index: 0;
+    /*height: 40px;*/
     background-color: #858585;
     border-color: #505050;
+    -webkit-transition: all 0.5s;
+    -moz-transition: all 0.5s;
+    -o-transition: all 0.5s;
+    transition: all 0.5s;
 }
 
 .page-item.disabled .page-link {
     color: #858585;
     z-index: 0;
+    /*height: 100px;*/
     background-color: #505050;
     border-color: #505050;
+    -webkit-transition: all 0.5s;
+    -moz-transition: all 0.5s;
+    -o-transition: all 0.5s;
+    transition: all 0.5s;
 }
+
+/*.nav-page-item .disabled {*/
+/*    color: #858585;*/
+/*    z-index: 0;*/
+/*    height: 100px;*/
+/*    background-color: #505050;*/
+/*    border-color: #505050;*/
+/*}*/
+
+/*.nav-page-item .active {*/
+/*    color: #ffffff;*/
+/*    z-index: 0;*/
+/*    height: 150px;*/
+/*    background-color: #858585;*/
+/*    border-color: #505050;*/
+/*}*/
 
 .page-link {
     color: #ffffff;
     z-index: 0;
     background-color: #505050;
     border-color: #505050;
+    -webkit-transition: all 0.5s;
+    -moz-transition: all 0.5s;
+    -o-transition: all 0.5s;
+    transition: all 0.5s;
 }
 
 .page-link:hover {

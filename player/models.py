@@ -78,8 +78,8 @@ class Artist(models.Model):
 
 
 class Album(models.Model):
-    class Meta:
-        ordering = ['year', 'album_title']
+    # class Meta:
+    #     ordering = ['year', 'album_title']
 
     artist = models.ForeignKey(Artist, on_delete=models.PROTECT)
     album_title = models.CharField(max_length=200, unique=False, blank=False)

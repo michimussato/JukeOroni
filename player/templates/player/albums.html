@@ -20,35 +20,36 @@
         <form action="{% url 'search_albums' %}" method="get">
           <input name="q" type="text" placeholder="Search...">
         </form>
-    <div class="container">
+
+    <div class="container center">
             <!-- Pagination -->
 {#            {% if is_paginated %}#}
 {#    <center>#}
-            <ul id="nav" class="pagination">
+            <ul class="pagination">
 
                 {% if page_obj.has_previous %}
-{#                    <li class="page-item">#}
+                    <li class="page-item">
                     <a class="page-link" href="?page=1{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">
                         <span>First</span>
                     </a>
-{#                    </li>#}
+                    </li>
 
-{#                    <li class="page-item">#}
+                    <li class="page-item">
                     <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">
                         <span>Prev</span>
                     </a>
-{#                    </li>#}
+                    </li>
                 {% else %}
-{#                    <li class="disabled page-item">#}
+                    <li class="disabled page-item">
                     <a class="page-link" href="#">
                         <span>First</span>
                     </a>
-{#                    </li>#}
-{#                    <li class="disabled page-item">#}
+                    </li>
+                    <li class="disabled page-item">
                     <a class="page-link" href="#">
                         <span>Prev</span>
                     </a>
-{#                    </li>#}
+                    </li>
                 {% endif %}
 
                 <nav id="nav" >
