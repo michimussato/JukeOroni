@@ -127,20 +127,4 @@ if ! shopt -oq posix; then
   fi
 fi
 
-
-alias speedo='speedometer -r wlan0 -t wlan0'
-alias activate_venv='source /data/venv/bin/activate'
-#alias nginx_restart_and_log='source /data/venv/bin/activate && cd /data/django/jukeoroni/ && git pull && sudo systemctl restart nginx.service && tail -f /var/log/daemon.log'
-alias nginx_restart_and_log='activate_venv && cd /data/django/jukeoroni/ && sudo systemctl restart nginx.service && tail -f /var/log/daemon.log'
-#alias nginx_stop='source /data/venv/bin/activate && cd /data/django/jukeoroni/ && git pull && sudo systemctl stop nginx.service'
-alias nginx_stop='activate_venv && cd /data/django/jukeoroni/ && sudo systemctl stop nginx.service'
-alias nginx_start='activate_venv && cd /data/django/jukeoroni/ && sudo systemctl restart nginx.service'
-alias nginx_restart=nginx_start
-alias nginx_error_log='tail -f /var/log/daemon.log'
-#alias django_shell='source /data/venv/bin/activate && cd /data/django/jukeoroni && git pull && python manage.py shell'
-alias django_shell='activate_venv && cd /data/django/jukeoroni && python manage.py shell'
-#alias django_test='source /data/venv/bin/activate && cd /data/django/jukeoroni && git pull && python manage.py test'
-alias django_test='activate_venv && cd /data/django/jukeoroni  && python manage.py test'
-alias git_pull_jukeoroni='activate_venv && cd /data/django/jukeoroni && git pull'
-alias checkout_f_develop='cd /data/django/jukeoroni && git checkout -f develop'
-alias checkout_f_develop_old='cd /data/django/jukeoroni && git checkout -f develop_old'
+source /data/django/jukeoroni/static/aliases
