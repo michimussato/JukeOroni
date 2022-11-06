@@ -14,7 +14,7 @@ from player.models_mixins import JukeOroniMediumAbstract
 from jukeoroni.settings import Settings
 from player.jukeoroni.images import Resource
 from player.jukeoroni.is_string_url import is_string_url
-# from jukeoroni.settings
+# from settings import DATABASES
 # from player.jukeoroni.settings import LOG
 
 
@@ -23,6 +23,9 @@ LOG.setLevel(Settings.GLOBAL_LOGGING_LEVEL)
 
 
 ImageFile.LOAD_TRUNCATED_IMAGES = True
+
+
+max_length = Settings.MAX_CHARFIELD_LENGTH
 
 
 def encode_image(img):
@@ -67,8 +70,8 @@ class Artist(models.Model):
     # TODO:
     # class Meta:
     #     ordering = ['name',]
-    name = models.CharField(max_length=200, unique=True, blank=False, null=False)
-    cover_online = models.CharField(max_length=200, unique=False, blank=True, null=True)
+    name = models.CharField(max_length=max_length, unique=True, blank=False, null=False)
+    cover_online = models.CharField(max_length=max_length, unique=False, blank=True, null=True)
 
     def __str__(self):
         return self.name
@@ -82,12 +85,12 @@ class Album(models.Model):
     #     ordering = ['year', 'album_title']
 
     artist = models.ForeignKey(Artist, on_delete=models.PROTECT)
-    album_title = models.CharField(max_length=200, unique=False, blank=False)
-    album_type = models.CharField(max_length=200, unique=False, blank=False, null=True, default=None)
-    year = models.CharField(max_length=200, unique=False, blank=True, null=False)
-    cover = models.CharField(max_length=200, unique=False, blank=True, null=True)
+    album_title = models.CharField(max_length=max_length, unique=False, blank=False)
+    album_type = models.CharField(max_length=max_length, unique=False, blank=False, null=True, default=None)
+    year = models.CharField(max_length=max_length, unique=False, blank=True, null=False)
+    cover = models.CharField(max_length=max_length, unique=False, blank=True, null=True)
 
-    cover_online = models.CharField(max_length=200, unique=False, blank=True, null=True)
+    cover_online = models.CharField(max_length=max_length, unique=False, blank=True, null=True)
     # disable_artist_cover = models.BooleanField(default=False)
 
     def __str__(self):
@@ -115,9 +118,9 @@ class Album(models.Model):
 
 
 class Track(models.Model):
-    track_title = models.CharField(max_length=200, unique=False, blank=True, null=True)
+    track_title = models.CharField(max_length=max_length, unique=False, blank=True, null=True)
     album = models.ForeignKey(Album, on_delete=models.PROTECT, null=True)
-    audio_source = models.CharField(max_length=200, unique=True, blank=False, null=False)
+    audio_source = models.CharField(max_length=max_length, unique=True, blank=False, null=False)
     played = models.IntegerField(default=0, unique=False)
 
     def __str__(self):
@@ -128,8 +131,8 @@ class Track(models.Model):
 
 
 class Station(models.Model):
-    display_name = models.CharField(max_length=200, unique=True, null=False, blank=False)
-    display_name_short = models.CharField(max_length=200, unique=True, null=False, blank=False)
+    display_name = models.CharField(max_length=max_length, unique=True, null=False, blank=False)
+    display_name_short = models.CharField(max_length=max_length, unique=True, null=False, blank=False)
 
     def __str__(self):
         return self.display_name_short
@@ -138,10 +141,10 @@ class Station(models.Model):
 class Channel(models.Model):
     station = models.ForeignKey(Station, on_delete=models.PROTECT, null=True, blank=True)
     # station_display_name = None if station is None else station.display_name
-    display_name = models.CharField(max_length=200, unique=True, null=False, blank=False)
-    display_name_short = models.CharField(max_length=200, unique=True, null=False, blank=False)
-    url = models.URLField(max_length=200, unique=True, null=False, blank=False)
-    url_logo = models.URLField(max_length=200, unique=False, null=True, blank=True)
+    display_name = models.CharField(max_length=max_length, unique=True, null=False, blank=False)
+    display_name_short = models.CharField(max_length=max_length, unique=True, null=False, blank=False)
+    url = models.URLField(max_length=max_length, unique=True, null=False, blank=False)
+    url_logo = models.URLField(max_length=max_length, unique=False, null=True, blank=True)
     is_enabled = models.BooleanField(default=True)
     last_played = models.BooleanField(default=False)
     show_rds = models.BooleanField(default=True)
@@ -186,9 +189,9 @@ class Channel(models.Model):
 
 
 class Podcast(models.Model):
-    title_channel = models.CharField(max_length=200, editable=True, unique=False, null=False, blank=False)
-    image_url = models.URLField(max_length=200, editable=True, unique=False, null=False, blank=False)
-    author_channel = models.CharField(max_length=200, editable=True, unique=False, null=False, blank=False)
+    title_channel = models.CharField(max_length=max_length, editable=True, unique=False, null=False, blank=False)
+    image_url = models.URLField(max_length=max_length, editable=True, unique=False, null=False, blank=False)
+    author_channel = models.CharField(max_length=max_length, editable=True, unique=False, null=False, blank=False)
     # channel = models.CharField(max_length=200, unique=True, null=False, blank=False)
     # station = models.ForeignKey(Station, on_delete=models.PROTECT, null=True, blank=True)
     # display_name = models.CharField(max_length=200, editable=True, unique=False, null=False, blank=False)
@@ -205,15 +208,15 @@ class Podcast(models.Model):
 
 class Episode(models.Model):
     podcast = models.ForeignKey(Podcast, on_delete=models.CASCADE, null=False, blank=False)
-    title_episode = models.CharField(default=None, max_length=200, unique=False, null=True, blank=True)
-    author_episode = models.CharField(default=None, max_length=200, unique=False, null=True, blank=True)
-    duration = models.CharField(default=None, max_length=200, unique=False, null=True, blank=True)
+    title_episode = models.CharField(default=None, max_length=max_length, unique=False, null=True, blank=True)
+    author_episode = models.CharField(default=None, max_length=max_length, unique=False, null=True, blank=True)
+    duration = models.CharField(default=None, max_length=max_length, unique=False, null=True, blank=True)
     pub_date = models.DateTimeField(default=None, blank=True, unique=False, null=True)
     # attrib =
     # guid = models.UUIDField(default=None, editable=False, blank=False, null=True)
     guid = models.CharField(max_length=200, default=None, unique=True, editable=True, blank=False, null=True)
-    meta_type = models.CharField(default=None, max_length=200, unique=False, null=True, blank=True)
-    length = models.CharField(default=None, max_length=200, unique=False, null=True, blank=True)
+    meta_type = models.CharField(default=None, max_length=max_length, unique=False, null=True, blank=True)
+    length = models.CharField(default=None, max_length=max_length, unique=False, null=True, blank=True)
     url = models.URLField(default=None, unique=True, null=False, blank=False)
     # played = models.BooleanField(default=False)
     progress = models.FloatField(default=0.0, null=False, blank=False)
@@ -234,8 +237,8 @@ class Episode(models.Model):
 
 
 class Video(models.Model):
-    video_source = models.CharField(max_length=200, unique=True, blank=False, null=False)
-    video_title = models.CharField(max_length=200, unique=True, blank=False, null=False)
+    video_source = models.CharField(max_length=max_length, unique=True, blank=False, null=False)
+    video_title = models.CharField(max_length=max_length, unique=True, blank=False, null=False)
     is_playing = models.BooleanField(default=False)
 
     """

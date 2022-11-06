@@ -7,6 +7,8 @@ import os
 
 
 class Settings:
+    MAX_CHARFIELD_LENGTH = 2000
+
     BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
     GLOBAL_LOGGING_LEVEL = logging.DEBUG

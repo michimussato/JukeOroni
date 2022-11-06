@@ -4,6 +4,12 @@
 - name: JukeOroni Postgres install
   # https://pimylifeup.com/raspberry-pi-postgresql/
   hosts: jukeoroni
+  vars:
+  - db_admin: pi
+  - db_login_user: postgres
+  - db_name: jukeoroni_db
+  - db_user: jukeoroni
+  - db_password: 1234
   become: yes
 
   tasks:
@@ -20,9 +26,9 @@
   - name: Create admin user with SCRAM-hashed password
     community.postgresql.postgresql_user:
 #      name: pi
-      name: {{ db_admin }}
+      name: "{{ db_admin }}"
 #      password: "1234"
-      password: {{ db_password }}
+      password: "{{ db_password }}"
       role_attr_flags: SUPERUSER
     environment:
       PGOPTIONS: "-c password_encryption=scram-sha-256"
@@ -60,18 +66,18 @@
   - name: create jukeoroni db
     community.postgresql.postgresql_db:
 #      name: jukeoroni_db
-      name: {{ db_name }}
+      name: "{{ db_name }}"
       encoding: UTF-8
 #      login_user: postgres
-      login_user: {{ db_login_user }}
+      login_user: "{{ db_login_user }}"
 #      owner: pi
-      owner: {{ db_admin }}
+      owner: "{{ db_admin }}"
 
   - name: Create db user user with SCRAM-hashed password
     community.postgresql.postgresql_user:
 #      name: jukeoroni
-      name: {{ db_user }}
+      name: "{{ db_user }}"
 #      password: "1234"
-      password: {{ db_password }}
+      password: "{{ db_password }}"
     environment:
       PGOPTIONS: "-c password_encryption=scram-sha-256"

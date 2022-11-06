@@ -14,8 +14,8 @@ jukeoroni.local
 ansible_user=pi
 ansible_password=pi
 
-db_admin=pi
-db_login_user=postgres
-db_name=jukeoroni_db
-db_user=jukeoroni
-db_password=1234
+#db_admin=pi
+#db_login_user=postgres
+#db_name=jukeoroni_db
+#db_user=jukeoroni
+#db_password=1234

@@ -3,3 +3,7 @@ sudo su
 passwd
 
 Trackloader thread crashes!!
+
+delete table contents:
+restart postgresql
+dropdb jukeoroni_db

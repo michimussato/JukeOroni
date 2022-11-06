@@ -135,12 +135,12 @@ LOGGING = {
             'level': 'WARNING',
         },
         'player.jukeoroni': {
-            'handlers': ['console', 'file'],
+            'handlers': ['console'],
             # 'propagate': True,
             'level': 'INFO',
         },
         'player.jukeoroni.clock': {
-            'handlers': ['console', 'file'],
+            'handlers': ['file'],
             # 'propagate': True,
             'level': 'INFO',
         },
@@ -172,7 +172,7 @@ LOGGING = {
     },
     'root': {
         'level': 'DEBUG',
-        'handlers': ['console', 'file']
+        'handlers': ['file']
     }
 }
 

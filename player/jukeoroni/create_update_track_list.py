@@ -7,6 +7,7 @@ from django.db.utils import OperationalError
 from player.jukeoroni.discogs import get_client, get_artist, get_album
 from player.models import Artist, Album, Track as DjangoTrack
 from player.jukeoroni.settings import Settings
+# from settings import DATABASES
 
 
 LOG = logging.getLogger(__name__)
@@ -31,7 +32,8 @@ def create_update_track_list(box, directory, album_type, file_filter):
     """
 
     # TODO: filter image files, m3u etc.
-    box.LOG.info(f'Generating updated track list for {box.box_type} ({directory})...')
+    box.LOG.info(f'{Settings.DATA_SOURCE}: Generating updated track list for {box.box_type} ({directory})...')
+    LOG.info(f'{Settings.DATA_SOURCE}: Generating updated track list for {box.box_type} ({directory})...')
     discogs_client = get_client()
     _files = []
     _albums = []
@@ -55,7 +57,7 @@ def create_update_track_list(box, directory, album_type, file_filter):
         query_artist = Artist.objects.filter(name__exact=artist)
         # TODO: maybe objects.get() is better because artist name is unique
         if bool(query_artist):
-            LOG.info(f'Artist {query_artist} found in db...')
+            LOG.info(f'{Settings.DATA_SOURCE}: Artist {query_artist} found in db...')
             model_artist = query_artist[0]  # name is unique, so index 0 is the correct model
             # if str(model_artist.name).lower() != 'soundtrack':
             if model_artist.cover_online is None:
@@ -65,7 +67,7 @@ def create_update_track_list(box, directory, album_type, file_filter):
                     model_artist.cover_online = cover_online
                     model_artist.save()
         else:
-            LOG.info(f'Artist {artist} not found in db; creating new entry...')
+            LOG.info(f'{Settings.DATA_SOURCE}: Artist {artist} not found in db; creating new entry...')
             cover_online = get_artist(discogs_client, artist)
             model_artist = Artist(name=artist, cover_online=cover_online)
             model_artist.save()
@@ -93,7 +95,7 @@ def create_update_track_list(box, directory, album_type, file_filter):
         # COVER ALBUM
         if bool(query_album):
             model_album = query_album[0]
-            LOG.info(f'Album {model_album} found in DB.')
+            LOG.info(f'{Settings.DATA_SOURCE}: Album {model_album} found in DB.')
             model_album.cover = img_path
             if model_album.cover_online is None:
                 LOG.info(f'No online cover for album {model_album} defined. Trying to get one...')
@@ -106,18 +108,18 @@ def create_update_track_list(box, directory, album_type, file_filter):
         else:
             cover_online = get_album(discogs_client, artist, title_stripped)
             model_album = Album(artist=model_artist, album_title=title, year=year, cover=img_path, cover_online=cover_online, album_type=album_type)
-            LOG.info(f'Album {model_album} not found in DB.')
+            LOG.info(f'{Settings.DATA_SOURCE}: Album {model_album} not found in DB.')
 
         attempts = 0
         while attempts < Settings.DB_SAVE_ATTEMPTS:
             try:
                 model_album.save()
                 _albums.append(album)
-                LOG.info(f'Album {model_album} correctly saved in DB.')
+                LOG.info(f'{Settings.DATA_SOURCE}: Album {model_album} correctly saved in DB.')
                 break
             except OperationalError:
                 attempts += 1
-                LOG.exception(f'Cannot save album model {title} by {artist} (attempt {attempts} of {Settings.DB_SAVE_ATTEMPTS}):')
+                LOG.exception(f'{Settings.DATA_SOURCE}: Cannot save album model {title} by {artist} (attempt {attempts} of {Settings.DB_SAVE_ATTEMPTS}):')
                 time.sleep(Settings.DB_SAVE_WAIT_BETWEEN_ATTEMPTS)
                 """
     [08-30-2022 09:43:10] [ERROR   ] [Track List Generator Thread (meditationbox)|2916086880], File "/data/django/jukeoroni/player/jukeoroni/create_update_track_list.py", line 113, in create_update_track_list:    Cannot save album model Sea of Dreams (Philippe De Canck) [FLAC][16][44.1] by Sounds of Nature (Serenity Series):
@@ -169,25 +171,28 @@ def create_update_track_list(box, directory, album_type, file_filter):
         for _file in files:
             if os.path.splitext(_file)[1] in file_filter:
                 file_path = os.path.join(_path, _file)
+                if len(file_path) > Settings.MAX_CHARFIELD_LENGTH:
+                    LOG.error(f'Skipped: audio_source string longer than 200 characters: {len(file_path)} ({file_path})')
+                    continue
                 query_track = DjangoTrack.objects.filter(audio_source__exact=file_path)
                 if len(query_track) > 1:
-                    LOG.warning(f'Track in DB multiple times: {file_path}')
+                    LOG.warning(f'{Settings.DATA_SOURCE}: Track in DB multiple times: {file_path}')
                     for track in query_track:
                         track.delete()
-                        LOG.warning(f'Track deleted: {track}')
+                        LOG.warning(f'{Settings.DATA_SOURCE}: Track deleted: {track}')
                     query_track = []
                 if len(query_track) == 1:
-                    LOG.info(f'Track found in DB: {query_track}')
+                    LOG.info(f'{Settings.DATA_SOURCE}: Track already in DB: {query_track}')
                     _edit = False
                     if not query_track[0].album == model_album:
                         query_track.update(album=model_album)
-                        LOG.info('Track album updated in DB: {0}'.format(query_track[0]))
+                        LOG.info(f'{Settings.DATA_SOURCE}: Track album updated in DB: {query_track[0]}')
                     if not query_track[0].track_title == _file:
                         query_track.update(track_title=_file)
-                        LOG.info('Track track_title updated in DB: {0}'.format(query_track[0]))
+                        LOG.info(f'{Settings.DATA_SOURCE}: Track track_title updated in DB: {query_track[0]}')
                 else:
                     model_track = DjangoTrack.objects.create(album=model_album, audio_source=file_path, track_title=_file)
-                    LOG.info('Track created in DB: {0}'.format(model_track))
+                    LOG.info(f'{Settings.DATA_SOURCE}: Track created in DB: {model_track}')
 
                 _files.append(file_path)
 
@@ -199,26 +204,26 @@ def create_update_track_list(box, directory, album_type, file_filter):
     django_tracks = DjangoTrack.objects.filter(album__album_title=album_type)
     for django_track in django_tracks:
         if django_track.audio_source not in _files:  # and django_track.album.album_type == album_type:
-            LOG.info(f'Removing track from DB: {django_track}')
+            LOG.info(f'{Settings.DATA_SOURCE}: Removing track from DB: {django_track}')
             django_track.delete()
-            LOG.info(f'Track removed from DB: {django_track}')
+            LOG.info(f'{Settings.DATA_SOURCE}: Track removed from DB: {django_track}')
 
     django_albums = Album.objects.filter(album_type=album_type)
     for django_album in django_albums:
         if DELIMITER.join([django_album.artist.name, django_album.year, django_album.album_title]) not in _albums:
-            LOG.info(f'Removing album from DB: {DELIMITER.join([django_album.artist.name, django_album.year, django_album.album_title])}')
+            LOG.info(f'{Settings.DATA_SOURCE}: Removing album from DB: {DELIMITER.join([django_album.artist.name, django_album.year, django_album.album_path])}')
             django_album.delete()
-            LOG.info(f'Album removed from DB: {django_album}')
+            LOG.info(f'{Settings.DATA_SOURCE}: Album removed from DB: {django_album}')
 
     # no special logic required. if artist is still connected, it
     # cannot be deleted
-    django_artists = Artist.objects.all(order_by='name')
+    django_artists = Artist.objects.all().order_by('name')
     for django_artist in django_artists:
         try:
             django_artist.delete()
-            LOG.info(f'Artist removed from DB: {django_artist}')
+            LOG.info(f'{Settings.DATA_SOURCE}: Artist removed from DB: {django_artist}')
         except ProtectedError:
-            LOG.debug(f'Artist {django_artist} is still connected (in use). Ignored...')
+            LOG.debug(f'{Settings.DATA_SOURCE}: Artist {django_artist} is still connected (in use). Ignored...')
 
     LOG.info(f'Finished: {album_type} track list generated successfully: {len(_files)} tracks, {len(_albums)} albums and {len(_artists)} artists found')
 ############################################
