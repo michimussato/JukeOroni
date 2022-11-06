@@ -35,7 +35,6 @@ class JukeboxTrack(object):
         self._cover_artist = None
 
         self._size = None
-        self.cache_tmp = None
         self._cache_task_thread = None
         self._cache_online_covers_task_thread = None
 
@@ -232,10 +231,18 @@ class JukeboxTrack(object):
             return 0
 
     @property
-    def percent_cached(self):
+    def progress(self):
         #{{({str(round(box.loading_track.size_cached / (1024.0 * 1024.0), 1))}
         #      of {str(round(box.loading_track.size / (1024.0 * 1024.0), 1))} MB)}}
-        return f'{str(round(self.size_cached / (1024.0 * 1024.0), 1))} of {str(round(self.size / (1024.0 * 1024.0), 1))} MB)'
+        # rel = round(box.loading_track.size_cached / box.loading_track.size, 1)
+        return f'{str(round(self.size_cached / (1024.0 * 1024.0), 1))} of {str(round(self.size / (1024.0 * 1024.0), 1))} MB'
+
+    @property
+    def percent_cached(self):
+        # {{({str(round(box.loading_track.size_cached / (1024.0 * 1024.0), 1))}
+        #      of {str(round(box.loading_track.size / (1024.0 * 1024.0), 1))} MB)}}
+        rel = round(self.size_cached / self.size * 100, 1)
+        return f'{str(rel)} %'
 
     @property
     def playing_from(self):

@@ -113,7 +113,7 @@ footer {
 
 .btn_channel_on_air {
         display: inline-block;
-        background-color: #147100;
+        background-color: #43E646FF;
         border-radius: 20px;
         border: 4px double #cccccc;
         color: #eeeeee;
@@ -139,7 +139,7 @@ footer {
       }
 
 .btn_channel_on_air:hover {
-        background-color: #e64343;
+        background-color: #e64343FF;
       }
 
 .table_header_buttons, .table_footer_buttons, .table_albums_button {

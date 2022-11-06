@@ -34,10 +34,10 @@
 
     {% if loading_track %}
         <div style="text-align: center;">
-            <h1>Loading</h1>
+            <h1>Caching...</h1>
 
-            <b>{{ loading_track.track_title }}</b> by <b>{{ loading_track.artist }}</b> ({{ loading_track.album }})
-            <b>{{ loading_track.percent_cached }}</b>
+            <a class="link_track"  href="/admin/player/track/{{ loading_track.id }}" target="_blank"><b>{{ loading_track.track_title }}</b> by <b>{{ loading_track.artist }}</b> ({{ loading_track.album }})</a>
+            <p>{{ loading_track.progress }} ({{ loading_track.percent_cached }})</p>
         </div>
     <hr>
     {% endif %}
