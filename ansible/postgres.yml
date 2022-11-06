@@ -5,12 +5,6 @@
   # https://pimylifeup.com/raspberry-pi-postgresql/
   hosts: jukeoroni
   become: yes
-#  environment:
-##    # Only needed during set up
-##    DB_HOST: 127.0.0.1
-#    DB_NAME: jukeoroni_db
-#    DB_USER: jukeoroni
-##    DB_PASS: 1234
 
   tasks:
 
@@ -22,54 +16,6 @@
       update_cache: yes
       name:
         - postgresql
-
-#  - name: Create Postgres base directory
-#    file:
-#      path: /data/postgres
-#      state: directory
-#      owner: pi
-#      group: pi
-#      mode: '0755'
-##    become: yes
-
-#  - name: Create Postgres data directory
-#    file:
-#      path: /data/postgres/data
-#      state: directory
-#      owner: pi
-#      group: pi
-#      mode: '0755'
-##    become: yes
-
-#  - name: Replace a localhost entry searching for a literal string to avoid escaping
-#    ansible.builtin.lineinfile:
-#      path: /usr/lib/systemd/system/postgresql.service
-#      search_string: 'Environment=PGROOT=/var/lib/postgres'
-#      line: 'Environment=PGROOT=/data/postgres'
-##    become: yes
-#
-##  - name: Reload services
-##    # deadlinercs fails if connectiontype is Remote, so set it to Direct initially and change it afterwards for now
-##    shell: |
-##      systemctl daemon-reload
-###    become: yes
-##
-##  - name: Start Postgres Service
-##    ansible.builtin.service:
-##      name: postgresql.service
-###      enabled: yes
-##      state: restarted
-###    become: yes
-
-
-
-
-
-#  - name: create admin user
-#    shell:
-#      su - postgres -c "createuser -s pi"
-#    ignore_errors: yes  # when already existing
-##    become: yes
 
   - name: Create admin user with SCRAM-hashed password
     community.postgresql.postgresql_user:
@@ -88,42 +34,30 @@
 
 # systemctl restart postgresql
 
+  - name: modify trust
+    shell: mv /etc/postgresql/11/main/pg_hba.conf /etc/postgresql/11/main/pg_hba.conf.backup
 
+  - name: Creating a file with content
+    copy:
+      dest: /etc/postgresql/11/main/pg_hba.conf
+      content: |
+        local all all trust
+        host all all 127.0.0.1/32 trust
+        host all all ::1/128 trust
+      owner: postgres
+      group: postgres
+      mode: '0640'
 
-##  - name: modify trust
-##    shell: mv /data/postgres/data/pg_hba.conf /data/postgres/data/pg_hba.conf.backup
-###    become: yes
-#
-#  - name: Creating a file with content
-#    copy:
-#      dest: /data/postgres/data/pg_hba.conf
-#      content: |
-#        local all all trust
-#        host all all 127.0.0.1/32 trust
-#        host all all ::1/128 trust
-#      owner: pi
-#      group: pi
-#      mode: '0600'
+  - name: Reload services
+    shell: |
+      systemctl daemon-reload
 
-#  - name: Reload services
-#    # deadlinercs fails if connectiontype is Remote, so set it to Direct initially and change it afterwards for now
-#    shell: |
-#      systemctl daemon-reload
-##    become: yes
-#
-#  - name: Start Postgres Service
-#    ansible.builtin.service:
-#      name: postgresql.service
-##      enabled: yes
-#      state: restarted
-##    become: yes
-
-
-
+  - name: Start Postgres Service
+    ansible.builtin.service:
+      name: postgresql.service
+      state: restarted
 
   - name: create jukeoroni db
-#    shell:
-#      su - postgres -c "createdb -U pi $DB_NAME"
     community.postgresql.postgresql_db:
 #      name: jukeoroni_db
       name: {{ db_name }}
@@ -133,10 +67,7 @@
 #      owner: pi
       owner: {{ db_admin }}
 
-
-
-
-  - name: Create appclient user with SCRAM-hashed password
+  - name: Create db user user with SCRAM-hashed password
     community.postgresql.postgresql_user:
 #      name: jukeoroni
       name: {{ db_user }}
@@ -144,32 +75,3 @@
       password: {{ db_password }}
     environment:
       PGOPTIONS: "-c password_encryption=scram-sha-256"
-
-#  - name: Alter default privileges
-#    shell:
-#      su - postgres -c "psql -c \"ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL PRIVILEGES ON TABLES TO $DB_USER\" $DB_NAME"
-##    become: yes
-
-
-
-#    become: yes
-
-#  - name: init db
-#    shell:
-#      su - postgres -c "initdb --locale en_US.UTF-8 -D '/data/postgres/data'"
-#    become: yes
-#
-#  - name: modify trust
-#    shell: mv /data/postgres/data/pg_hba.conf /data/postgres/data/pg_hba.conf.backup
-#    become: yes
-#
-#  - name: Creating a file with content
-#    copy:
-#      dest: /data/postgres/data/pg_hba.conf
-#      content: |
-#        local all all trust
-#        host all all 127.0.0.1/32 trust
-#        host all all ::1/128 trust
-#      owner: postgres
-#      group: postgres
-#      mode: '0600'
