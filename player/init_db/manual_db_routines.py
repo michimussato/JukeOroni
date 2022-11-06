@@ -147,8 +147,6 @@ channels_write_table()
                 )
                 _station.save()
 
-        print(_station)
-
         c = Channel(
             display_name=display_name,
             display_name_short=display_name_short,
@@ -160,6 +158,8 @@ channels_write_table()
             show_rds=show_rds,
         )
         c.save()
+
+        print(f'{_station}:{c} added')
 
 
 def channels_dump_table():
