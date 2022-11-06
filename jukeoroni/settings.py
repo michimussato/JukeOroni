@@ -232,15 +232,26 @@ WSGI_APPLICATION = 'jukeoroni.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#         # 'NAME': BASE_DIR / '..' / 'db.sqlite3',
+#     }
+# }
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-        # 'NAME': BASE_DIR / '..' / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'jukeoroni_db',
+        'USER': 'pi',
+        'PASSWORD': '1234',
+        'HOST': 'localhost',
+        'PORT': '',
     }
 }
 
-LOG.critical(f'USING DB {str(os.path.abspath(DATABASES["default"]["NAME"]))}')
+LOG.critical(f'USING DB {str(os.path.abspath(DATABASES["default"]["NAME"]))} (engine: {str(os.path.abspath(DATABASES["default"]["ENGINE"]))})')
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators

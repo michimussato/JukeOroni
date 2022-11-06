@@ -1,0 +1,21 @@
+#db02.intranet.mydomain.net
+#10.25.1.56
+#10.25.1.57
+
+# Here's another example of host ranges, this time there are no
+# leading 0s:
+
+#db-[99:101]-node.example.com
+
+[jukeoroni]
+jukeoroni.local
+
+[jukeoroni:vars]
+ansible_user=pi
+ansible_password=pi
+
+db_admin=pi
+db_login_user=postgres
+db_name=jukeoroni_db
+db_user=jukeoroni
+db_password=1234
