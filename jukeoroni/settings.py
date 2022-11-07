@@ -97,6 +97,16 @@ LOGGING = {
             'filename': os.path.join(Settings.LOG_ROOT, 'create_update_track_list_error.log'),
             'formatter': 'simple',
         },
+        'file_track_loader': {
+            'level': 'DEBUG',
+            # 'class': 'logging.FileHandler',
+            'class': 'logging.handlers.TimedRotatingFileHandler',
+            'when': 'midnight',
+            'interval': 1,
+            'backupCount': 7,
+            'filename': os.path.join(Settings.LOG_ROOT, 'track_loader_error.log'),
+            'formatter': 'simple',
+        },
     },
     'loggers': {
         'django.request': {
@@ -166,6 +176,11 @@ LOGGING = {
         },
         'player.jukeoroni.create_update_track_list': {
             'handlers': ['file_create_update_track_list'],
+            # 'propagate': True,
+            'level': 'DEBUG',
+        },
+        'player.jukeoroni.track_loader': {
+            'handlers': ['file_track_loader'],
             # 'propagate': True,
             'level': 'DEBUG',
         },

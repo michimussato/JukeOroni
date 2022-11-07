@@ -11,6 +11,7 @@ from player.jukeoroni.box_track import JukeboxTrack
 from player.jukeoroni.create_update_track_list import create_update_track_list
 from player.jukeoroni.settings import Settings
 from player.models import Album
+from player.jukeoroni.track_loader import _track_loader_task
 
 
 class BaseBox(object):
@@ -199,47 +200,10 @@ box.turn_off()
     # track loader
     def track_loader_thread(self):
         assert self.on, f'{self.box_type} must be on'
-        self._track_loader_thread = threading.Thread(target=self._track_loader_task)
+        self._track_loader_thread = threading.Thread(target=_track_loader_task, kwargs={'box': self, })
         self._track_loader_thread.name = 'Track Loader Thread'
         self._track_loader_thread.daemon = False
         self._track_loader_thread.start()
-
-    def _track_loader_task(self):
-        while self.on:
-            self.LOG.debug(f'{len(self.tracks)} of {Settings.MAX_CACHED_FILES} tracks cached. Queue: {self.tracks}')
-
-            # This is to check that the source files did not disappear in the meantime
-            # Remove them if they did
-            self.tracks = [track for track in self.tracks if os.path.isfile(track.path)]
-
-            if len(self.tracks) < Settings.MAX_CACHED_FILES:
-                loading_track = self.get_next_track()
-
-                if loading_track is None:
-                    self.LOG.warning('Got "None" track. Retrying...')
-                    time.sleep(1.0)
-                    continue
-                if not os.path.isfile(os.path.join(self.audio_dir, loading_track.audio_source)):
-                    self.LOG.warning(f'Track audio_source ({os.path.join(self.audio_dir, loading_track.audio_source)}) does not exist on filesystem. Retrying...')
-                    time.sleep(1.0)
-                    continue
-
-                self.LOG.info(f'Next track OK: {loading_track}')
-
-                self.loading_track = JukeboxTrack(django_track=loading_track, cached=Settings.CACHE_TRACKS)
-                self.loading_track.cache()
-                self.loading_track.cache_online_covers()
-
-                if self.loading_track is not None:
-                    if not self.loading_track.killed:
-                        loading_track_copy = self.loading_track
-                        self.tracks.append(loading_track_copy)
-                        # TODO: make sure not to add tracks that are
-                        #  already in the queue
-                        # self.tracks = list(set(self.tracks))  # buggy!! Fucks up order somehow
-                    self.loading_track = None
-
-            time.sleep(1.0)
 
     @property
     def track_list(self):
