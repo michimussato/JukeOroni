@@ -114,6 +114,8 @@ footer {
 .text_elements_box {
         display:block;
         margin-left:auto;
+        margin-top: 10px;
+        margin-bottom: 5px;
         margin-right:auto;
         border-radius: 20px;
         border: 4px double #cccccc;
