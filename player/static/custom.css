@@ -111,6 +111,15 @@ footer {
         margin: 5px;
       }
 
+.text_elements_box {
+        display:block;
+        margin-left:auto;
+        margin-right:auto;
+        border-radius: 20px;
+        border: 4px double #cccccc;
+        background-color: #505050;
+}
+
 .btn_channel_on_air {
         display: inline-block;
         background-color: #43E646FF;

@@ -21,29 +21,51 @@
     {% endblock header %}
 
 {% block box_navigation %}
-    <hr>
-    {% if inserted_media %}
-        <div style="text-align: center;">
-            <h1 align="center">Playing ({{ box.loader_mode }} mode)</h1>
 
-{#            TODO: /player/track should not be hardcoded#}
-            <a class="link_track"  href="/admin/player/track/{{ inserted_media.id }}" target="_blank"><b>{{ inserted_media.track_title }}</b> by <b>{{ inserted_media.artist }}</b> ({{ inserted_media.album }})</a>
-        </div>
-    <hr>
+    {% if inserted_media %}
+        <br>
+        <div class="text_elements_box container" style="text-align: center;">
+            <h1 align="center">Playing ({{ box.loader_mode }} mode)</h1>
+        <table style="border:0px solid black;margin-left:auto;margin-right:auto;">
+        <tr>
+            <td>
+                <ol>
+
+
+        {#          TODO: /player/track should not be hardcoded#}
+                    <a class="link_track"  href="/admin/player/track/{{ inserted_media.id }}" target="_blank"><b>{{ inserted_media.track_title }}</b> by <b>{{ inserted_media.artist }}</b> ({{ inserted_media.album }})</a>
+
+                </ol>
+            </td>
+        </tr>
+        </table>
+                </div>
+
     {% endif %}
 
     {% if loading_track %}
-        <div style="text-align: center;">
+
+        <br>
+        <div class="text_elements_box container" style="text-align: center;">
             <h1>Caching...</h1>
+
+        <table style="border:0px solid black;margin-left:auto;margin-right:auto;">
+        <tr>
+            <td>
+                <ol>
 
             <a class="link_track"  href="/admin/player/track/{{ loading_track.id }}" target="_blank"><b>{{ loading_track.track_title }}</b> by <b>{{ loading_track.artist }}</b> ({{ loading_track.album }})</a>
             <p>{{ loading_track.progress }} ({{ loading_track.percent_cached }})</p>
+            </ol>
+            </td>
+        </tr>
+        </table>
         </div>
-    <hr>
     {% endif %}
 
     {% if queue %}
-        <div class="container" style="text-align: center;">
+        <br>
+        <div class="text_elements_box container" style="text-align: center;">
         <h1>Next up</h1>
 
         <table style="border:0px solid black;margin-left:auto;margin-right:auto;">
@@ -60,8 +82,8 @@
             </tr>
         </table>
         </div>
-        <hr>
     {% endif %}
+{#    </div>#}
 
     <div class="container">
         <table class="table_albums_button" border="0" cellspacing="0">
