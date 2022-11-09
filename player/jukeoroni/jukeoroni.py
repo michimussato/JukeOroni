@@ -982,6 +982,30 @@ May  5 15:06:28 jukeoroni gunicorn[812]:     self.jukeoroni_playback_thread()
 May  5 15:06:28 jukeoroni gunicorn[812]:   File "/data/django/jukeoroni/player/jukeoroni/jukeoroni.py", line 756, in jukeoroni_playback_thread
 May  5 15:06:28 jukeoroni gunicorn[812]:     assert isinstance(self.inserted_media, JukeboxTrack)
 May  5 15:06:28 jukeoroni gunicorn[812]: AssertionError
+
+
+
+Nov  7 23:44:11 jukeoroni gunicorn[7477]: [11-07-2022 23:44:11] [INFO    ] [JukeOroni Playback Thread|2795492448], File "/data/django/jukeoroni/player/jukeoroni/box_track.py", line 275, in play:    playback finished: "/data/googledrive/media/audio/music/on_device/Santana - 2016 - Abraxas [FLAC][16][44.1]/01 Sing$
+Nov  7 23:44:11 jukeoroni gunicorn[7477]: [11-07-2022 23:44:11] [INFO    ] [JukeOroni Playback Thread|2795492448], File "/data/django/jukeoroni/player/jukeoroni/jukeoroni.py", line 999, in _playback_task:    playback finished
+Nov  7 23:44:11 jukeoroni gunicorn[7477]: [11-07-2022 23:44:11] [DEBUG   ] [State Watcher Thread|2960127072], File "/data/django/jukeoroni/player/jukeoroni/jukeoroni.py", line 896, in play_jukebox:    Starting new playback thread
+Nov  7 23:44:11 jukeoroni gunicorn[7477]: [11-07-2022 23:44:11] [DEBUG   ] [Track Loader Thread|2918184032], File "/data/django/jukeoroni/player/jukeoroni/track_loader.py", line 16, in _track_loader_task:    jukebox           : 3 of 3 tracks cached. Queue: [Santana - Abraxas [FLAC][16][44.1] - 02 Black Magic Wom$
+Nov  7 23:44:11 jukeoroni gunicorn[7477]: [11-07-2022 23:44:11] [DEBUG   ] [MainThread|3069184720], File "/data/django/jukeoroni/player/jukeoroni/displays.py", line 89, in mean_color:    Color counts: [714 538 190 287 771]
+Nov  7 23:44:11 jukeoroni gunicorn[7477]: [11-07-2022 23:44:11] [DEBUG   ] [MainThread|3069184720], File "/data/django/jukeoroni/player/jukeoroni/displays.py", line 93, in mean_color:    Color max count: 4 (771)
+Nov  7 23:44:11 jukeoroni gunicorn[7477]: [11-07-2022 23:44:11] [INFO    ] [MainThread|3069184720], File "/data/django/jukeoroni/player/jukeoroni/displays.py", line 97, in mean_color:    Dominant color out of 5 is (124, 88, 75) (7c584bff)
+Nov  7 23:44:11 jukeoroni gunicorn[7477]: Exception in thread State Watcher Thread:
+Nov  7 23:44:11 jukeoroni gunicorn[7477]: Traceback (most recent call last):
+Nov  7 23:44:11 jukeoroni gunicorn[7477]:   File "/usr/lib/python3.7/threading.py", line 917, in _bootstrap_inner
+Nov  7 23:44:11 jukeoroni gunicorn[7477]:     self.run()
+Nov  7 23:44:11 jukeoroni gunicorn[7477]:   File "/usr/lib/python3.7/threading.py", line 865, in run
+Nov  7 23:44:11 jukeoroni gunicorn[7477]:     self._target(*self._args, **self._kwargs)
+Nov  7 23:44:11 jukeoroni gunicorn[7477]:   File "/data/django/jukeoroni/player/jukeoroni/jukeoroni.py", line 540, in state_watcher_task
+Nov  7 23:44:11 jukeoroni gunicorn[7477]:     self.play_jukebox()
+Nov  7 23:44:11 jukeoroni gunicorn[7477]:   File "/data/django/jukeoroni/player/jukeoroni/jukeoroni.py", line 897, in play_jukebox
+Nov  7 23:44:11 jukeoroni gunicorn[7477]:     self.jukeoroni_playback_thread()
+Nov  7 23:44:11 jukeoroni gunicorn[7477]:   File "/data/django/jukeoroni/player/jukeoroni/jukeoroni.py", line 963, in jukeoroni_playback_thread
+Nov  7 23:44:11 jukeoroni gunicorn[7477]:     assert isinstance(self.inserted_media, JukeboxTrack)
+Nov  7 23:44:11 jukeoroni gunicorn[7477]: AssertionError
+
         """
 
         self._playback_thread = threading.Thread(target=self._playback_task)
