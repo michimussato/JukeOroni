@@ -32,20 +32,27 @@ def _track_loader_task(box):
                         time.sleep(1.0)
                         continue
 
-                    LOG.info(f'{box.box_type:<18}: Next track OK: {loading_track}')
+                    try:
 
-                    box.loading_track = JukeboxTrack(django_track=loading_track, cached=Settings.CACHE_TRACKS)
-                    box.loading_track.cache()
-                    box.loading_track.cache_online_covers()
+                        LOG.info(f'{box.box_type:<18}: Next track OK: {loading_track}')
 
-                    if box.loading_track is not None:
-                        if not box.loading_track.killed:
-                            loading_track_copy = box.loading_track
-                            box.tracks.append(loading_track_copy)
-                            # TODO: make sure not to add tracks that are
-                            #  already in the queue
-                            # self.tracks = list(set(self.tracks))  # buggy!! Fucks up order somehow
-                        box.loading_track = None
+                        box.loading_track = JukeboxTrack(django_track=loading_track, cached=Settings.CACHE_TRACKS)
+                        box.loading_track.cache()
+                        box.loading_track.cache_online_covers()
+
+                    except AttributeError as error:
+                        LOG.exception(error)
+
+                    finally:
+
+                        if box.loading_track is not None:
+                            if not box.loading_track.killed:
+                                loading_track_copy = box.loading_track
+                                box.tracks.append(loading_track_copy)
+                                # TODO: make sure not to add tracks that are
+                                #  already in the queue
+                                # self.tracks = list(set(self.tracks))  # buggy!! Fucks up order somehow
+                            box.loading_track = None
 
                 time.sleep(1.0)
             except Exception as e:
@@ -54,3 +61,39 @@ def _track_loader_task(box):
     except Exception as e:
         LOG.exception(f'{box.box_type:<18}: {e}')
         raise e
+
+"""
+[11-10-2022 21:44:49] [DEBUG   ] [Track Loader Thread|2898261088], File "/data/django/jukeoroni/player/jukeoroni/track_loader.py", line 16, in _track_loader_task:    meditationbox     : 3 of 3 tracks cached. Queue: [The Sounds Of Nature - Sparkling Springtime [FLAC][16][44.1] - 10 Sunset At Water's Edge.flac, Osho - Dynamic Meditation of Osho [FLAC][16][44.1] - 01 - First Stage_ 10 Minutes Music.flac, Osho - Dynamic Meditation of Osho [FLAC][16][44.1] - 02 - Second Stage_ 10 Minutes Music.flac]
+[11-10-2022 21:44:49] [DEBUG   ] [Track Loader Thread|2919232608], File "/data/django/jukeoroni/player/jukeoroni/track_loader.py", line 16, in _track_loader_task:    jukebox           : 3 of 3 tracks cached. Queue: [Brothers of Metal - Emblas Saga (Japanese Edition) [FLAC][16][44.1] - 01 Brood Of The Trickster.flac, Parkway Drive - Viva The Underdogs [FLAC][16][44.1] - 05 Idols and Anchors (Live At Wacken).flac, Marilyn Manson - Eat Me, Drink Me [FLAC][16][44.1] - 03 The Red Carpet Grave.flac]
+[11-10-2022 21:44:50] [DEBUG   ] [Track Loader Thread|2898261088], File "/data/django/jukeoroni/player/jukeoroni/track_loader.py", line 16, in _track_loader_task:    meditationbox     : 3 of 3 tracks cached. Queue: [The Sounds Of Nature - Sparkling Springtime [FLAC][16][44.1] - 10 Sunset At Water's Edge.flac, Osho - Dynamic Meditation of Osho [FLAC][16][44.1] - 01 - First Stage_ 10 Minutes Music.flac, Osho - Dynamic Meditation of Osho [FLAC][16][44.1] - 02 - Second Stage_ 10 Minutes Music.flac]
+[11-10-2022 21:44:50] [DEBUG   ] [Track Loader Thread|2919232608], File "/data/django/jukeoroni/player/jukeoroni/track_loader.py", line 16, in _track_loader_task:    jukebox           : 3 of 3 tracks cached. Queue: [Brothers of Metal - Emblas Saga (Japanese Edition) [FLAC][16][44.1] - 01 Brood Of The Trickster.flac, Parkway Drive - Viva The Underdogs [FLAC][16][44.1] - 05 Idols and Anchors (Live At Wacken).flac, Marilyn Manson - Eat Me, Drink Me [FLAC][16][44.1] - 03 The Red Carpet Grave.flac]
+[11-10-2022 21:44:51] [DEBUG   ] [Track Loader Thread|2898261088], File "/data/django/jukeoroni/player/jukeoroni/track_loader.py", line 16, in _track_loader_task:    meditationbox     : 3 of 3 tracks cached. Queue: [The Sounds Of Nature - Sparkling Springtime [FLAC][16][44.1] - 10 Sunset At Water's Edge.flac, Osho - Dynamic Meditation of Osho [FLAC][16][44.1] - 01 - First Stage_ 10 Minutes Music.flac, Osho - Dynamic Meditation of Osho [FLAC][16][44.1] - 02 - Second Stage_ 10 Minutes Music.flac]
+[11-10-2022 21:44:51] [DEBUG   ] [Track Loader Thread|2919232608], File "/data/django/jukeoroni/player/jukeoroni/track_loader.py", line 16, in _track_loader_task:    jukebox           : 3 of 3 tracks cached. Queue: [Brothers of Metal - Emblas Saga (Japanese Edition) [FLAC][16][44.1] - 01 Brood Of The Trickster.flac, Parkway Drive - Viva The Underdogs [FLAC][16][44.1] - 05 Idols and Anchors (Live At Wacken).flac, Marilyn Manson - Eat Me, Drink Me [FLAC][16][44.1] - 03 The Red Carpet Grave.flac]
+[11-10-2022 21:44:52] [DEBUG   ] [Track Loader Thread|2898261088], File "/data/django/jukeoroni/player/jukeoroni/track_loader.py", line 16, in _track_loader_task:    meditationbox     : 3 of 3 tracks cached. Queue: [The Sounds Of Nature - Sparkling Springtime [FLAC][16][44.1] - 10 Sunset At Water's Edge.flac, Osho - Dynamic Meditation of Osho [FLAC][16][44.1] - 01 - First Stage_ 10 Minutes Music.flac, Osho - Dynamic Meditation of Osho [FLAC][16][44.1] - 02 - Second Stage_ 10 Minutes Music.flac]
+[11-10-2022 21:44:52] [DEBUG   ] [Track Loader Thread|2919232608], File "/data/django/jukeoroni/player/jukeoroni/track_loader.py", line 16, in _track_loader_task:    jukebox           : 3 of 3 tracks cached. Queue: [Brothers of Metal - Emblas Saga (Japanese Edition) [FLAC][16][44.1] - 01 Brood Of The Trickster.flac, Parkway Drive - Viva The Underdogs [FLAC][16][44.1] - 05 Idols and Anchors (Live At Wacken).flac, Marilyn Manson - Eat Me, Drink Me [FLAC][16][44.1] - 03 The Red Carpet Grave.flac]
+[11-10-2022 21:44:53] [DEBUG   ] [Track Loader Thread|2898261088], File "/data/django/jukeoroni/player/jukeoroni/track_loader.py", line 16, in _track_loader_task:    meditationbox     : 3 of 3 tracks cached. Queue: [The Sounds Of Nature - Sparkling Springtime [FLAC][16][44.1] - 10 Sunset At Water's Edge.flac, Osho - Dynamic Meditation of Osho [FLAC][16][44.1] - 01 - First Stage_ 10 Minutes Music.flac, Osho - Dynamic Meditation of Osho [FLAC][16][44.1] - 02 - Second Stage_ 10 Minutes Music.flac]
+[11-10-2022 21:44:53] [DEBUG   ] [Track Loader Thread|2919232608], File "/data/django/jukeoroni/player/jukeoroni/track_loader.py", line 16, in _track_loader_task:    jukebox           : 3 of 3 tracks cached. Queue: [Brothers of Metal - Emblas Saga (Japanese Edition) [FLAC][16][44.1] - 01 Brood Of The Trickster.flac, Parkway Drive - Viva The Underdogs [FLAC][16][44.1] - 05 Idols and Anchors (Live At Wacken).flac, Marilyn Manson - Eat Me, Drink Me [FLAC][16][44.1] - 03 The Red Carpet Grave.flac]
+[11-10-2022 21:44:54] [DEBUG   ] [Track Loader Thread|2898261088], File "/data/django/jukeoroni/player/jukeoroni/track_loader.py", line 16, in _track_loader_task:    meditationbox     : 3 of 3 tracks cached. Queue: [The Sounds Of Nature - Sparkling Springtime [FLAC][16][44.1] - 10 Sunset At Water's Edge.flac, Osho - Dynamic Meditation of Osho [FLAC][16][44.1] - 01 - First Stage_ 10 Minutes Music.flac, Osho - Dynamic Meditation of Osho [FLAC][16][44.1] - 02 - Second Stage_ 10 Minutes Music.flac]
+[11-10-2022 21:44:54] [DEBUG   ] [Track Loader Thread|2919232608], File "/data/django/jukeoroni/player/jukeoroni/track_loader.py", line 16, in _track_loader_task:    jukebox           : 2 of 3 tracks cached. Queue: [Parkway Drive - Viva The Underdogs [FLAC][16][44.1] - 05 Idols and Anchors (Live At Wacken).flac, Marilyn Manson - Eat Me, Drink Me [FLAC][16][44.1] - 03 The Red Carpet Grave.flac]
+[11-10-2022 21:44:55] [DEBUG   ] [Track Loader Thread|2898261088], File "/data/django/jukeoroni/player/jukeoroni/track_loader.py", line 16, in _track_loader_task:    meditationbox     : 3 of 3 tracks cached. Queue: [The Sounds Of Nature - Sparkling Springtime [FLAC][16][44.1] - 10 Sunset At Water's Edge.flac, Osho - Dynamic Meditation of Osho [FLAC][16][44.1] - 01 - First Stage_ 10 Minutes Music.flac, Osho - Dynamic Meditation of Osho [FLAC][16][44.1] - 02 - Second Stage_ 10 Minutes Music.flac]
+[11-10-2022 21:44:55] [INFO    ] [Track Loader Thread|2919232608], File "/data/django/jukeoroni/player/jukeoroni/track_loader.py", line 35, in _track_loader_task:    jukebox           : Next track OK: on_device/Volbeat - 2005 - The Strength The Sound The Songs [FLAC][16][44.1]/03 Something Else Or....flac
+[11-10-2022 21:44:56] [DEBUG   ] [Track Loader Thread|2898261088], File "/data/django/jukeoroni/player/jukeoroni/track_loader.py", line 16, in _track_loader_task:    meditationbox     : 3 of 3 tracks cached. Queue: [The Sounds Of Nature - Sparkling Springtime [FLAC][16][44.1] - 10 Sunset At Water's Edge.flac, Osho - Dynamic Meditation of Osho [FLAC][16][44.1] - 01 - First Stage_ 10 Minutes Music.flac, Osho - Dynamic Meditation of Osho [FLAC][16][44.1] - 02 - Second Stage_ 10 Minutes Music.flac]
+[11-10-2022 21:44:57] [DEBUG   ] [Track Loader Thread|2898261088], File "/data/django/jukeoroni/player/jukeoroni/track_loader.py", line 16, in _track_loader_task:    meditationbox     : 3 of 3 tracks cached. Queue: [The Sounds Of Nature - Sparkling Springtime [FLAC][16][44.1] - 10 Sunset At Water's Edge.flac, Osho - Dynamic Meditation of Osho [FLAC][16][44.1] - 01 - First Stage_ 10 Minutes Music.flac, Osho - Dynamic Meditation of Osho [FLAC][16][44.1] - 02 - Second Stage_ 10 Minutes Music.flac]
+[11-10-2022 21:44:58] [DEBUG   ] [Track Loader Thread|2898261088], File "/data/django/jukeoroni/player/jukeoroni/track_loader.py", line 16, in _track_loader_task:    meditationbox     : 3 of 3 tracks cached. Queue: [The Sounds Of Nature - Sparkling Springtime [FLAC][16][44.1] - 10 Sunset At Water's Edge.flac, Osho - Dynamic Meditation of Osho [FLAC][16][44.1] - 01 - First Stage_ 10 Minutes Music.flac, Osho - Dynamic Meditation of Osho [FLAC][16][44.1] - 02 - Second Stage_ 10 Minutes Music.flac]
+[11-10-2022 21:44:59] [DEBUG   ] [Track Loader Thread|2898261088], File "/data/django/jukeoroni/player/jukeoroni/track_loader.py", line 16, in _track_loader_task:    meditationbox     : 3 of 3 tracks cached. Queue: [The Sounds Of Nature - Sparkling Springtime [FLAC][16][44.1] - 10 Sunset At Water's Edge.flac, Osho - Dynamic Meditation of Osho [FLAC][16][44.1] - 01 - First Stage_ 10 Minutes Music.flac, Osho - Dynamic Meditation of Osho [FLAC][16][44.1] - 02 - Second Stage_ 10 Minutes Music.flac]
+[11-10-2022 21:45:00] [DEBUG   ] [Track Loader Thread|2898261088], File "/data/django/jukeoroni/player/jukeoroni/track_loader.py", line 16, in _track_loader_task:    meditationbox     : 3 of 3 tracks cached. Queue: [The Sounds Of Nature - Sparkling Springtime [FLAC][16][44.1] - 10 Sunset At Water's Edge.flac, Osho - Dynamic Meditation of Osho [FLAC][16][44.1] - 01 - First Stage_ 10 Minutes Music.flac, Osho - Dynamic Meditation of Osho [FLAC][16][44.1] - 02 - Second Stage_ 10 Minutes Music.flac]
+[11-10-2022 21:45:01] [DEBUG   ] [Track Loader Thread|2898261088], File "/data/django/jukeoroni/player/jukeoroni/track_loader.py", line 16, in _track_loader_task:    meditationbox     : 3 of 3 tracks cached. Queue: [The Sounds Of Nature - Sparkling Springtime [FLAC][16][44.1] - 10 Sunset At Water's Edge.flac, Osho - Dynamic Meditation of Osho [FLAC][16][44.1] - 01 - First Stage_ 10 Minutes Music.flac, Osho - Dynamic Meditation of Osho [FLAC][16][44.1] - 02 - Second Stage_ 10 Minutes Music.flac]
+[11-10-2022 21:45:01] [ERROR   ] [Track Loader Thread|2919232608], File "/data/django/jukeoroni/player/jukeoroni/track_loader.py", line 52, in _track_loader_task:    jukebox           : 'NoneType' object has no attribute 'cache_online_covers'
+Traceback (most recent call last):
+  File "/data/django/jukeoroni/player/jukeoroni/track_loader.py", line 39, in _track_loader_task
+    box.loading_track.cache_online_covers()
+AttributeError: 'NoneType' object has no attribute 'cache_online_covers'
+[11-10-2022 21:45:01] [ERROR   ] [Track Loader Thread|2919232608], File "/data/django/jukeoroni/player/jukeoroni/track_loader.py", line 55, in _track_loader_task:    jukebox           : 'NoneType' object has no attribute 'cache_online_covers'
+Traceback (most recent call last):
+  File "/data/django/jukeoroni/player/jukeoroni/track_loader.py", line 53, in _track_loader_task
+    raise e
+  File "/data/django/jukeoroni/player/jukeoroni/track_loader.py", line 39, in _track_loader_task
+    box.loading_track.cache_online_covers()
+AttributeError: 'NoneType' object has no attribute 'cache_online_covers'
+
+"""
