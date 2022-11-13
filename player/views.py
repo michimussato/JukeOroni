@@ -961,6 +961,29 @@ class BoxView(View):
 
         _success = False
 
+        # context['vol'] = list()
+        #
+        # context['vol'].append(
+        #     {
+        #         'button_title': 'vol_dow',
+        #         'onclick': f'window.location.href = \'/jukeoroni/vol_down\'',
+        #     }
+        # )
+        #
+        # context['vol'].append(
+        #     {
+        #         'button_title': 'vol_reset',
+        #         'onclick': f'window.location.href = \'/jukeoroni/vol_reset\'',
+        #     }
+        # )
+        #
+        # context['vol'].append(
+        #     {
+        #         'button_title': 'vol_up',
+        #         'onclick': f'window.location.href = \'/jukeoroni/vol_up\'',
+        #     }
+        # )
+
         img = None
 
         # if hasattr(jukeoroni, 'videobox'):
@@ -1309,3 +1332,74 @@ class BoxViewRadio(View):
             # time_out -= 0.1
 
         return HttpResponseRedirect('/jukeoroni')
+
+
+def vol_up(self):
+    import alsaaudio
+
+    m = alsaaudio.Mixer('Digital')
+
+    vol = m.getvolume()[0]
+    m.setvolume(vol + 1)
+
+    # subprocess.run(["/usr/bin/amixer", "-D", "default", "set", "Digital", "95%"])
+
+    return HttpResponseRedirect('/jukeoroni')
+
+
+def vol_reset(self):
+    import alsaaudio
+
+    m = alsaaudio.Mixer('Digital')
+
+    # vol = m.getvolume()[0]
+    m.setvolume(90)
+
+    return HttpResponseRedirect('/jukeoroni')
+
+
+def vol_down(self):
+    import alsaaudio
+
+    m = alsaaudio.Mixer('Digital')
+
+    vol = m.getvolume()[0]
+    m.setvolume(vol - 1)
+
+    return HttpResponseRedirect('/jukeoroni')
+
+
+def up_2khz(self):
+    import alsaaudio
+
+    m = alsaaudio.mixers(device='equal')
+
+    vol = m.getvolume()[0]
+    m.setvolume(vol + 1)
+
+    # subprocess.run(["/usr/bin/amixer", "-D", "default", "set", "Digital", "95%"])
+
+    return HttpResponseRedirect('/jukeoroni')
+
+
+def reset_2khz(self):
+    import alsaaudio
+
+    m = alsaaudio.Mixer('06. 2 kHz', device='equal')
+    # m = alsaaudio.mixers(device='equal')
+
+    # vol = m.getvolume()[0]
+    m.setvolume(90)
+
+    return HttpResponseRedirect('/jukeoroni')
+
+
+def down_2khz(self):
+    import alsaaudio
+
+    m = alsaaudio.Mixer('06. 2 kHz', device='equal')
+
+    vol = m.getvolume()[0]
+    m.setvolume(vol - 1)
+
+    return HttpResponseRedirect('/jukeoroni')

@@ -24,6 +24,7 @@ pathlib2==2.3.7.post1
 Pillow==8.3.1
 pkg-resources==0.0.0
 psycopg2==2.9.5
+pyalsaaudio==0.9.2
 pydub==0.25.1
 pyotp==2.6.0
 python-dateutil==2.8.2

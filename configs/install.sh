@@ -237,3 +237,6 @@ printf "hello"
 
 # sudo apt-get install imagemagick
 
+
+alsa
+pip install pyalsaaudio

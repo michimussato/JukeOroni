@@ -1,5 +1,5 @@
 from django.urls import path
-from player.views import JukeOroniView, BoxView, BoxViewRadio, AlbumView
+from player.views import JukeOroniView, BoxView, BoxViewRadio, AlbumView, vol_down, vol_reset, vol_up
 
 
 urlpatterns = [
@@ -69,6 +69,10 @@ urlpatterns = [
     # Radio
     path('radio/<str:display_name_short>/play/', BoxViewRadio.radio_play, name='radio_play'),
     path('radio/stop/', BoxViewRadio.radio_stop, name='radio_stop'),
+
+    path('vol_down/', vol_down, name='vol_down'),
+    path('vol_reset/', vol_reset, name='vol_reset'),
+    path('vol_up/', vol_up, name='vol_up'),
 
     # path('', index_redirect, name='index_redirect'),
 ]
