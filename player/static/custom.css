@@ -73,7 +73,7 @@ footer {
     /*display: -webkit-box;*/
 }
 
-.btn_header, .btn_back, .btn_albums {
+.btn_header, .btn_back, .btn_albums, .btn_vol {
         display: inline-block;
         background-color: #505050;
         border-radius: 20px;
@@ -140,7 +140,7 @@ footer {
         margin: 5px;
       }
 
-.btn_header:hover, .btn_back:hover, .btn_albums:hover {
+.btn_header:hover, .btn_back:hover, .btn_albums:hover, .btn_vol:hover {
         background-color: #858585;
       }
 
@@ -153,14 +153,14 @@ footer {
         background-color: #e64343FF;
       }
 
-.table_header_buttons, .table_footer_buttons, .table_albums_button {
+.table_header_buttons, .table_footer_buttons, .table_albums_button, .table_vol_buttons {
     text-align:center;
     margin-left:auto;
     margin-right:auto;
     border-collapse: collapse;
 }
 
-.td_header_buttons, .td_albums_buttons {
+.td_header_buttons, .td_albums_buttons, .td_vol_buttons {
     border-right: solid 0px #000;
     border-left: solid 0px #000;
 }

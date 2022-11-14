@@ -7,7 +7,7 @@ import io
 from django.shortcuts import render
 from django.core.paginator import Paginator
 from django.db.models import Q
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, HttpResponseNotModified, JsonResponse
 from django.views import View
 from player.jukeoroni.jukeoroni import JukeOroni
 from player.models import Album, Channel, Station, Artist, Track, Video
@@ -1344,7 +1344,8 @@ def vol_up(self):
 
     # subprocess.run(["/usr/bin/amixer", "-D", "default", "set", "Digital", "95%"])
 
-    return HttpResponseRedirect('/jukeoroni')
+    # return HttpResponseRedirect('/jukeoroni')
+    return JsonResponse({})
 
 
 def vol_reset(self):
@@ -1355,7 +1356,8 @@ def vol_reset(self):
     # vol = m.getvolume()[0]
     m.setvolume(90)
 
-    return HttpResponseRedirect('/jukeoroni')
+    # return HttpResponseRedirect('/jukeoroni')
+    return JsonResponse({})
 
 
 def vol_down(self):
@@ -1366,7 +1368,8 @@ def vol_down(self):
     vol = m.getvolume()[0]
     m.setvolume(vol - 1)
 
-    return HttpResponseRedirect('/jukeoroni')
+    # return HttpResponseRedirect('/jukeoroni')
+    return JsonResponse({})
 
 
 def up_2khz(self):
@@ -1379,7 +1382,8 @@ def up_2khz(self):
 
     # subprocess.run(["/usr/bin/amixer", "-D", "default", "set", "Digital", "95%"])
 
-    return HttpResponseRedirect('/jukeoroni')
+    # return HttpResponseRedirect('/jukeoroni')
+    return HttpResponseNotModified()
 
 
 def reset_2khz(self):
@@ -1389,9 +1393,10 @@ def reset_2khz(self):
     # m = alsaaudio.mixers(device='equal')
 
     # vol = m.getvolume()[0]
-    m.setvolume(90)
+    m.setvolume(66)
 
-    return HttpResponseRedirect('/jukeoroni')
+    # return HttpResponseRedirect('/jukeoroni')
+    return HttpResponseNotModified()
 
 
 def down_2khz(self):
@@ -1402,4 +1407,5 @@ def down_2khz(self):
     vol = m.getvolume()[0]
     m.setvolume(vol - 1)
 
-    return HttpResponseRedirect('/jukeoroni')
+    # return HttpResponseRedirect('/jukeoroni')
+    return HttpResponseNotModified()

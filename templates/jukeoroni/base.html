@@ -34,9 +34,105 @@
     {% endblock body %}
 
     {% block vol %}
-        <button title="vol_down" onclick="window.location.href='/jukeoroni/vol_down';">vol_down</button>
-        <button title="vol_reset" onclick="window.location.href='/jukeoroni/vol_reset';">vol_reset</button>
-        <button title="vol_up" onclick="window.location.href='/jukeoroni/vol_up';">vol_up</button>
+{#        <form method="post" id="task-form">#}
+            {% csrf_token %}
+    {#        <input type="text" placeholder="Enter Task" name="task" id="task" required>#}
+    {#        <button type="submit">vol_up</button>#}
+    {#        <button type="submit">vol_reset</button>#}
+    {#        <button type="submit">vol_down</button>#}
+{#        </form>#}
+        <div class="container">
+        <table class="table_vol_buttons" border="0" cellspacing="0">
+            <tr style="border: none;">
+{#                <td class="td_header_buttons" width="{{ button.column_width }}" style="padding: {{ button.padding }};">#}
+                <td class="td_vol_buttons" style="padding:5px;">
+{#                    <button class="btn_vol" id="vol_down"><img width="{{ button.img_width }}" height="{{ button.img_height }}" src="{{ button.img_src }}"></button>#}
+                    <button class="btn_vol" id="vol_down"><img width="64px" height="64px" src="https://cdn2.iconfinder.com/data/icons/media-player-ui/512/Media-Icon-5-512.png"></button>
+                    <button class="btn_vol" id="vol_reset">vol_reset</button>
+{#                    <button class="btn_vol" id="vol_up">vol_up</button>#}
+                    <button class="btn_vol" id="vol_up"><img width="64px" height="64px" src="https://cdn2.iconfinder.com/data/icons/media-player-ui/512/Media-Icon-6-512.png"></button>
+                </td>
+            </tr>
+        </table>
+        </div>
+
+{#        <div id=”range”>#}
+{#            <span id="currentVal">40</span>#}
+{#        </div>#}
+
+
+        <script src="https://code.jquery.com/jquery-3.5.1.js"
+              integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc="
+                crossorigin="anonymous"></script>
+
+        <script type="text/javascript">
+        {#$("#range").slider#}
+        {#  range: "min"#}
+        {#  max: 100#}
+        {#  value: 10#}
+        {#  slide: (e, ui) ->#}
+        {#    $("#currentVal").html ui.value#}
+        {#    return#}
+
+        {#$( "#range" ).slider({#}
+        {#    change: function( event, ui ) {}#}
+        {# });#}
+
+        {#$( "#range" ).on(#}
+        {#    "slidechange",#}
+        {#    function( event, ui ) {}#}
+        {#);#}
+
+        $('#vol_up').click(function(e){
+            e.preventDefault();
+            $.ajax({
+                type:'POST',
+                url:'{% url "vol_up" %}',
+                data:
+                {
+                    task:$("#task").val(),
+                    csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+                },
+                success:function(){
+                      {#alert('vol_up');#}
+                        }
+                })
+            });
+
+        $('#vol_reset').click(function(e){
+            e.preventDefault();
+            $.ajax({
+                type:'POST',
+                url:'{% url "vol_reset" %}',
+                data:
+                {
+                    task:$("#task").val(),
+                    csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+                },
+                success:function(){
+                      alert('debug: vol_reset');
+                        }
+                })
+            });
+
+        $('#vol_down').click(function(e){
+            e.preventDefault();
+            $.ajax({
+                type:'POST',
+                url:'{% url "vol_down" %}',
+                data:
+                {
+                    task:$("#task").val(),
+                    csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+                },
+                success:function(){
+                      {#alert('vol_down');#}
+                        }
+                })
+            });
+
+        </script>
+
     {% endblock vol %}
 
 {#    {% block equalizer %}#}
