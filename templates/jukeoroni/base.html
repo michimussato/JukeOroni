@@ -61,32 +61,32 @@
             <table class="table_eq_buttons" border="0" cellspacing="0">
                 <tr style="border: none;">
 {#                    <td class="td_eq_buttons" style="padding:5px;">+</td>#}
-                    <td class="td_eq_buttons"><button class="btn_eq" id="31hz_up">+</button></td>
-                    <td class="td_eq_buttons"><button class="btn_eq" id="63hz_up">+</button></td>
-                    <td class="td_eq_buttons"><button class="btn_eq" id="125hz_up">+</button></td>
-                    <td class="td_eq_buttons"><button class="btn_eq" id="250hz_up">+</button></td>
-                    <td class="td_eq_buttons"><button class="btn_eq" id="500hz_up">+</button></td>
-                    <td class="td_eq_buttons"><button class="btn_eq" id="1khz_up">+</button></td>
-                    <td class="td_eq_buttons"><button class="btn_eq" id="2khz_up">+</button></td>
-                    <td class="td_eq_buttons"><button class="btn_eq" id="4khz_up">+</button></td>
-                    <td class="td_eq_buttons"><button class="btn_eq" id="8khz_up">+</button></td>
-                    <td class="td_eq_buttons"><button class="btn_eq" id="16khz_up">+</button></td>
+                    <td class="td_eq_buttons"><button class="btn_eq" id="31hz_up" disabled>+</button></td>
+                    <td class="td_eq_buttons"><button class="btn_eq" id="63hz_up" disabled>+</button></td>
+                    <td class="td_eq_buttons"><button class="btn_eq" id="125hz_up" disabled>+</button></td>
+                    <td class="td_eq_buttons"><button class="btn_eq" id="250hz_up" disabled>+</button></td>
+                    <td class="td_eq_buttons"><button class="btn_eq" id="500hz_up" disabled>+</button></td>
+                    <td class="td_eq_buttons"><button class="btn_eq" id="1khz_up" disabled>+</button></td>
+                    <td class="td_eq_buttons"><button class="btn_eq" id="2khz_up" disabled>+</button></td>
+                    <td class="td_eq_buttons"><button class="btn_eq" id="4khz_up" disabled>+</button></td>
+                    <td class="td_eq_buttons"><button class="btn_eq" id="8khz_up" disabled>+</button></td>
+                    <td class="td_eq_buttons"><button class="btn_eq" id="16khz_up" disabled>+</button></td>
                 </tr>
                 <tr style="border: none;">
 {#                    <td class="td_eq_buttons" style="padding:5px;">reset</td>#}
                 </tr>
                 <tr style="border: none;">
 {#                    <td class="td_eq_buttons" style="padding:5px;">-</td>#}
-                    <td class="td_eq_buttons"><button class="btn_eq" id="31hz_down">-</button></td>
-                    <td class="td_eq_buttons"><button class="btn_eq" id="63hz_down">-</button></td>
-                    <td class="td_eq_buttons"><button class="btn_eq" id="125hz_down">-</button></td>
-                    <td class="td_eq_buttons"><button class="btn_eq" id="250hz_down">-</button></td>
-                    <td class="td_eq_buttons"><button class="btn_eq" id="500hz_down">-</button></td>
-                    <td class="td_eq_buttons"><button class="btn_eq" id="1khz_down">-</button></td>
-                    <td class="td_eq_buttons"><button class="btn_eq" id="2khz_down">-</button></td>
-                    <td class="td_eq_buttons"><button class="btn_eq" id="4khz_down">-</button></td>
-                    <td class="td_eq_buttons"><button class="btn_eq" id="8khz_down">-</button></td>
-                    <td class="td_eq_buttons"><button class="btn_eq" id="16khz_down">-</button></td>
+                    <td class="td_eq_buttons"><button class="btn_eq" id="31hz_down" disabled>-</button></td>
+                    <td class="td_eq_buttons"><button class="btn_eq" id="63hz_down" disabled>-</button></td>
+                    <td class="td_eq_buttons"><button class="btn_eq" id="125hz_down" disabled>-</button></td>
+                    <td class="td_eq_buttons"><button class="btn_eq" id="250hz_down" disabled>-</button></td>
+                    <td class="td_eq_buttons"><button class="btn_eq" id="500hz_down" disabled>-</button></td>
+                    <td class="td_eq_buttons"><button class="btn_eq" id="1khz_down" disabled>-</button></td>
+                    <td class="td_eq_buttons"><button class="btn_eq" id="2khz_down" disabled>-</button></td>
+                    <td class="td_eq_buttons"><button class="btn_eq" id="4khz_down" disabled>-</button></td>
+                    <td class="td_eq_buttons"><button class="btn_eq" id="8khz_down" disabled>-</button></td>
+                    <td class="td_eq_buttons"><button class="btn_eq" id="16khz_down" disabled>-</button></td>
                 </tr>
                 <tr style="border: none;">
 {#                    <td class="td_eq_buttons" style="padding:5px;"></td>#}
@@ -158,7 +158,7 @@
                     csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
                 },
                 success:function(){
-                      alert('debug: vol_reset');
+                      {#alert('debug: vol_reset');#}
                         }
                 })
             });
