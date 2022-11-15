@@ -41,7 +41,7 @@
             <tr style="border: none;">
                 <td class="td_vol_buttons" style="padding:5px;">
                     <button class="btn_vol" id="vol_down"><img width="20px" height="20px" src="https://cdn2.iconfinder.com/data/icons/media-player-ui/512/Media-Icon-5-512.png"></button>
-                    <button class="btn_vol" id="vol_reset">{{ volume }}</button>
+                    <button class="btn_vol" id="vol_reset" style="background-color:{{ volume.color }}"><b>{{ volume.vol }}</b></button>
                     <button class="btn_vol" id="vol_up"><img width="20px" height="20px" src="https://cdn2.iconfinder.com/data/icons/media-player-ui/512/Media-Icon-6-512.png"></button>
                 </td>
             </tr>
@@ -63,16 +63,16 @@
                     <td class="td_eq_buttons"><button class="btn_eq" id="up_16khz">+</button></td>
                 </tr>
                 <tr style="border: none;">
-                    <td id="display_eq_31hz"><button class="btn_eq" id="reset_31hz">{{ eq_31hz }}</button></td>
-                    <td id="display_eq_63hz"><button class="btn_eq" id="reset_63hz">{{ eq_63hz }}</button></td>
-                    <td id="display_eq_125hz"><button class="btn_eq" id="reset_125hz">{{ eq_125hz }}</button></td>
-                    <td id="display_eq_250hz"><button class="btn_eq" id="reset_250hz">{{ eq_250hz }}</button></td>
-                    <td id="display_eq_500hz"><button class="btn_eq" id="reset_500hz">{{ eq_500hz }}</button></td>
-                    <td id="display_eq_1khz"><button class="btn_eq" id="reset_1khz">{{ eq_1khz }}</button></td>
-                    <td id="display_eq_2khz"><button class="btn_eq" id="reset_2khz">{{ eq_2khz }}</button></td>
-                    <td id="display_eq_4khz"><button class="btn_eq" id="reset_4khz">{{ eq_4khz }}</button></td>
-                    <td id="display_eq_8khz"><button class="btn_eq" id="reset_8khz">{{ eq_8khz }}</button></td>
-                    <td id="display_eq_16khz"><button class="btn_eq" id="reset_16khz">{{ eq_16khz }}</button></td>
+                    <td id="display_eq_31hz"><button class="btn_eq" id="reset_31hz" style="background-color:{{ eq.eq_31hz.color }}"><b>{{ eq.eq_31hz.vol }}</b></button></td>
+                    <td id="display_eq_63hz"><button class="btn_eq" id="reset_63hz" style="background-color:{{ eq.eq_63hz.color }}"><b>{{ eq.eq_63hz.vol }}</b></button></td>
+                    <td id="display_eq_125hz"><button class="btn_eq" id="reset_125hz" style="background-color:{{ eq.eq_125hz.color }}"><b>{{ eq.eq_125hz.vol }}</b></button></td>
+                    <td id="display_eq_250hz"><button class="btn_eq" id="reset_250hz" style="background-color:{{ eq.eq_250hz.color }}"><b>{{ eq.eq_250hz.vol }}</b></button></td>
+                    <td id="display_eq_500hz"><button class="btn_eq" id="reset_500hz" style="background-color:{{ eq.eq_500hz.color }}"><b>{{ eq.eq_500hz.vol }}</b></button></td>
+                    <td id="display_eq_1khz"><button class="btn_eq" id="reset_1khz" style="background-color:{{ eq.eq_1khz.color }}"><b>{{ eq.eq_1khz.vol }}</b></button></td>
+                    <td id="display_eq_2khz"><button class="btn_eq" id="reset_2khz" style="background-color:{{ eq.eq_2khz.color }}"><b>{{ eq.eq_2khz.vol }}</b></button></td>
+                    <td id="display_eq_4khz"><button class="btn_eq" id="reset_4khz" style="background-color:{{ eq.eq_4khz.color }}"><b>{{ eq.eq_4khz.vol }}</b></button></td>
+                    <td id="display_eq_8khz"><button class="btn_eq" id="reset_8khz" style="background-color:{{ eq.eq_8khz.color }}"><b>{{ eq.eq_8khz.vol }}</b></button></td>
+                    <td id="display_eq_16khz"><button class="btn_eq" id="reset_16khz" style="background-color:{{ eq.eq_16khz.color }}"><b>{{ eq.eq_16khz.vol }}</b></button></td>
                 </tr>
                 <tr style="border: none;">
                     <td class="td_eq_buttons"><button class="btn_eq" id="down_31hz">-</button></td>
@@ -88,16 +88,16 @@
                 </tr>
                 <tr style="border: none;">
 {#                    <td class="td_eq_buttons" style="padding:5px;"></td>#}
-                    <td class="td_eq_buttons" style="padding:5px;">31 Hz</td>
-                    <td class="td_eq_buttons" style="padding:5px;">63 Hz</td>
-                    <td class="td_eq_buttons" style="padding:5px;">125 Hz</td>
-                    <td class="td_eq_buttons" style="padding:5px;">250 Hz</td>
-                    <td class="td_eq_buttons" style="padding:5px;">500 Hz</td>
-                    <td class="td_eq_buttons" style="padding:5px;">1 kHz</td>
-                    <td class="td_eq_buttons" style="padding:5px;">2 kHz</td>
-                    <td class="td_eq_buttons" style="padding:5px;">4 kHz</td>
-                    <td class="td_eq_buttons" style="padding:5px;">8 kHz</td>
-                    <td class="td_eq_buttons" style="padding:5px;">16 kHz</td>
+                    <td class="td_eq_buttons" style="padding:5px;"><b>31 Hz</b></td>
+                    <td class="td_eq_buttons" style="padding:5px;"><b>63 Hz</b></td>
+                    <td class="td_eq_buttons" style="padding:5px;"><b>125 Hz</b></td>
+                    <td class="td_eq_buttons" style="padding:5px;"><b>250 Hz</b></td>
+                    <td class="td_eq_buttons" style="padding:5px;"><b>500 Hz</b></td>
+                    <td class="td_eq_buttons" style="padding:5px;"><b>1 kHz</b></td>
+                    <td class="td_eq_buttons" style="padding:5px;"><b>2 kHz</b></td>
+                    <td class="td_eq_buttons" style="padding:5px;"><b>4 kHz</b></td>
+                    <td class="td_eq_buttons" style="padding:5px;"><b>8 kHz</b></td>
+                    <td class="td_eq_buttons" style="padding:5px;"><b>16 kHz</b></td>
                 </tr>
             </table>
         </div>

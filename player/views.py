@@ -59,6 +59,13 @@ def get_bg_color(rgb):
     return '606060'  # TODO: constant until solution to avoid black text on black bg
 
 
+def get_eq_btn_color(vol_equal):
+    percent = float(vol_equal) / 100.0
+    max = 255.0
+    _hex = '#%02x%02x%02x' % (round(max * percent), round(max * percent), round(max * percent))
+    return _hex
+
+
 def encode_image(img):
     data = io.BytesIO()
     img.save(data, "PNG")
@@ -363,13 +370,13 @@ class JukeOroniView(View):
             context['encoded_img_data'] = encoded_img_data
             context['encoded_img_data_class'] = 'box_image'
 
-            import alsaaudio
+            # import alsaaudio
 
             m = alsaaudio.Mixer('Digital')
 
             vol = m.getvolume()[0]
 
-            context['volume'] = vol
+            context['volume'] = {'vol': vol, 'color': get_eq_btn_color(vol)}
 
             _m = alsaaudio.mixers(device='equal')
             # ['00. 31 Hz', '01. 63 Hz', '02. 125 Hz', '03. 250 Hz', '04. 500 Hz', '05. 1 kHz', '06. 2 kHz', '07. 4 kHz',
@@ -397,16 +404,18 @@ class JukeOroniView(View):
             vol_equal_8khz = m_equal_8khz.getvolume()[0]
             vol_equal_16khz = m_equal_16khz.getvolume()[0]
 
-            context['eq_31hz'] = vol_equal_31hz
-            context['eq_63hz'] = vol_equal_63hz
-            context['eq_125hz'] = vol_equal_125hz
-            context['eq_250hz'] = vol_equal_250hz
-            context['eq_500hz'] = vol_equal_500hz
-            context['eq_1khz'] = vol_equal_1khz
-            context['eq_2khz'] = vol_equal_2khz
-            context['eq_4khz'] = vol_equal_4khz
-            context['eq_8khz'] = vol_equal_8khz
-            context['eq_16khz'] = vol_equal_16khz
+            context['eq'] = dict()
+
+            context['eq']['eq_31hz'] = {'vol': vol_equal_31hz, 'color': get_eq_btn_color(vol_equal_31hz) }
+            context['eq']['eq_63hz'] = {'vol': vol_equal_63hz, 'color': get_eq_btn_color(vol_equal_63hz) }
+            context['eq']['eq_125hz'] = {'vol': vol_equal_125hz, 'color': get_eq_btn_color(vol_equal_125hz) }
+            context['eq']['eq_250hz'] = {'vol': vol_equal_250hz, 'color': get_eq_btn_color(vol_equal_250hz) }
+            context['eq']['eq_500hz'] = {'vol': vol_equal_500hz, 'color': get_eq_btn_color(vol_equal_500hz) }
+            context['eq']['eq_1khz'] = {'vol': vol_equal_1khz, 'color': get_eq_btn_color(vol_equal_1khz) }
+            context['eq']['eq_2khz'] = {'vol': vol_equal_2khz, 'color': get_eq_btn_color(vol_equal_2khz) }
+            context['eq']['eq_4khz'] = {'vol': vol_equal_4khz, 'color': get_eq_btn_color(vol_equal_4khz) }
+            context['eq']['eq_8khz'] = {'vol': vol_equal_8khz, 'color': get_eq_btn_color(vol_equal_8khz) }
+            context['eq']['eq_16khz'] = {'vol': vol_equal_16khz, 'color': get_eq_btn_color(vol_equal_16khz) }
 
             return render(request=request, template_name='player/box_base.html', context=context)
 
@@ -1139,7 +1148,8 @@ class BoxView(View):
 
         vol = m.getvolume()[0]
 
-        context['volume'] = vol
+        context['volume'] = {'vol': vol, 'color': get_eq_btn_color(vol)}
+
 
         _m = alsaaudio.mixers(device='equal')
         # ['00. 31 Hz', '01. 63 Hz', '02. 125 Hz', '03. 250 Hz', '04. 500 Hz', '05. 1 kHz', '06. 2 kHz', '07. 4 kHz',
@@ -1167,16 +1177,19 @@ class BoxView(View):
         vol_equal_8khz = m_equal_8khz.getvolume()[0]
         vol_equal_16khz = m_equal_16khz.getvolume()[0]
 
-        context['eq_31hz'] = vol_equal_31hz
-        context['eq_63hz'] = vol_equal_63hz
-        context['eq_125hz'] = vol_equal_125hz
-        context['eq_250hz'] = vol_equal_250hz
-        context['eq_500hz'] = vol_equal_500hz
-        context['eq_1khz'] = vol_equal_1khz
-        context['eq_2khz'] = vol_equal_2khz
-        context['eq_4khz'] = vol_equal_4khz
-        context['eq_8khz'] = vol_equal_8khz
-        context['eq_16khz'] = vol_equal_16khz
+        context['eq'] = dict()
+
+        context['eq']['eq_31hz'] = {'vol': vol_equal_31hz, 'color': get_eq_btn_color(vol_equal_31hz) }
+        context['eq']['eq_63hz'] = {'vol': vol_equal_63hz, 'color': get_eq_btn_color(vol_equal_63hz) }
+        context['eq']['eq_125hz'] = {'vol': vol_equal_125hz, 'color': get_eq_btn_color(vol_equal_125hz) }
+        context['eq']['eq_250hz'] = {'vol': vol_equal_250hz, 'color': get_eq_btn_color(vol_equal_250hz) }
+        context['eq']['eq_500hz'] = {'vol': vol_equal_500hz, 'color': get_eq_btn_color(vol_equal_500hz) }
+        context['eq']['eq_1khz'] = {'vol': vol_equal_1khz, 'color': get_eq_btn_color(vol_equal_1khz) }
+        context['eq']['eq_2khz'] = {'vol': vol_equal_2khz, 'color': get_eq_btn_color(vol_equal_2khz) }
+        context['eq']['eq_4khz'] = {'vol': vol_equal_4khz, 'color': get_eq_btn_color(vol_equal_4khz) }
+        context['eq']['eq_8khz'] = {'vol': vol_equal_8khz, 'color': get_eq_btn_color(vol_equal_8khz) }
+        context['eq']['eq_16khz'] = {'vol': vol_equal_16khz, 'color': get_eq_btn_color(vol_equal_16khz) }
+
 
         return render(request=request, template_name='player/box_base.html', context=context)
 
