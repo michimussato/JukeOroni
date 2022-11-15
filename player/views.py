@@ -4,6 +4,7 @@ import os
 import random
 import time
 import io
+import alsaaudio
 from django.shortcuts import render
 from django.core.paginator import Paginator
 from django.db.models import Q
@@ -361,6 +362,51 @@ class JukeOroniView(View):
             encoded_img_data = encoded_screen(img)
             context['encoded_img_data'] = encoded_img_data
             context['encoded_img_data_class'] = 'box_image'
+
+            import alsaaudio
+
+            m = alsaaudio.Mixer('Digital')
+
+            vol = m.getvolume()[0]
+
+            context['volume'] = vol
+
+            _m = alsaaudio.mixers(device='equal')
+            # ['00. 31 Hz', '01. 63 Hz', '02. 125 Hz', '03. 250 Hz', '04. 500 Hz', '05. 1 kHz', '06. 2 kHz', '07. 4 kHz',
+            #  '08. 8 kHz', '09. 16 kHz']
+
+            m_equal_31hz = alsaaudio.Mixer(_m[0], device='equal')
+            m_equal_63hz = alsaaudio.Mixer(_m[1], device='equal')
+            m_equal_125hz = alsaaudio.Mixer(_m[2], device='equal')
+            m_equal_250hz = alsaaudio.Mixer(_m[3], device='equal')
+            m_equal_500hz = alsaaudio.Mixer(_m[4], device='equal')
+            m_equal_1khz = alsaaudio.Mixer(_m[5], device='equal')
+            m_equal_2khz = alsaaudio.Mixer(_m[6], device='equal')
+            m_equal_4khz = alsaaudio.Mixer(_m[7], device='equal')
+            m_equal_8khz = alsaaudio.Mixer(_m[8], device='equal')
+            m_equal_16khz = alsaaudio.Mixer(_m[9], device='equal')
+
+            vol_equal_31hz = m_equal_31hz.getvolume()[0]
+            vol_equal_63hz = m_equal_63hz.getvolume()[0]
+            vol_equal_125hz = m_equal_125hz.getvolume()[0]
+            vol_equal_250hz = m_equal_250hz.getvolume()[0]
+            vol_equal_500hz = m_equal_500hz.getvolume()[0]
+            vol_equal_1khz = m_equal_1khz.getvolume()[0]
+            vol_equal_2khz = m_equal_2khz.getvolume()[0]
+            vol_equal_4khz = m_equal_4khz.getvolume()[0]
+            vol_equal_8khz = m_equal_8khz.getvolume()[0]
+            vol_equal_16khz = m_equal_16khz.getvolume()[0]
+
+            context['eq_31hz'] = vol_equal_31hz
+            context['eq_63hz'] = vol_equal_63hz
+            context['eq_125hz'] = vol_equal_125hz
+            context['eq_250hz'] = vol_equal_250hz
+            context['eq_500hz'] = vol_equal_500hz
+            context['eq_1khz'] = vol_equal_1khz
+            context['eq_2khz'] = vol_equal_2khz
+            context['eq_4khz'] = vol_equal_4khz
+            context['eq_8khz'] = vol_equal_8khz
+            context['eq_16khz'] = vol_equal_16khz
 
             return render(request=request, template_name='player/box_base.html', context=context)
 
@@ -1087,6 +1133,51 @@ class BoxView(View):
                 }
         )
 
+        # import alsaaudio
+
+        m = alsaaudio.Mixer('Digital')
+
+        vol = m.getvolume()[0]
+
+        context['volume'] = vol
+
+        _m = alsaaudio.mixers(device='equal')
+        # ['00. 31 Hz', '01. 63 Hz', '02. 125 Hz', '03. 250 Hz', '04. 500 Hz', '05. 1 kHz', '06. 2 kHz', '07. 4 kHz',
+        #  '08. 8 kHz', '09. 16 kHz']
+
+        m_equal_31hz = alsaaudio.Mixer(_m[0], device='equal')
+        m_equal_63hz = alsaaudio.Mixer(_m[1], device='equal')
+        m_equal_125hz = alsaaudio.Mixer(_m[2], device='equal')
+        m_equal_250hz = alsaaudio.Mixer(_m[3], device='equal')
+        m_equal_500hz = alsaaudio.Mixer(_m[4], device='equal')
+        m_equal_1khz = alsaaudio.Mixer(_m[5], device='equal')
+        m_equal_2khz = alsaaudio.Mixer(_m[6], device='equal')
+        m_equal_4khz = alsaaudio.Mixer(_m[7], device='equal')
+        m_equal_8khz = alsaaudio.Mixer(_m[8], device='equal')
+        m_equal_16khz = alsaaudio.Mixer(_m[9], device='equal')
+
+        vol_equal_31hz = m_equal_31hz.getvolume()[0]
+        vol_equal_63hz = m_equal_63hz.getvolume()[0]
+        vol_equal_125hz = m_equal_125hz.getvolume()[0]
+        vol_equal_250hz = m_equal_250hz.getvolume()[0]
+        vol_equal_500hz = m_equal_500hz.getvolume()[0]
+        vol_equal_1khz = m_equal_1khz.getvolume()[0]
+        vol_equal_2khz = m_equal_2khz.getvolume()[0]
+        vol_equal_4khz = m_equal_4khz.getvolume()[0]
+        vol_equal_8khz = m_equal_8khz.getvolume()[0]
+        vol_equal_16khz = m_equal_16khz.getvolume()[0]
+
+        context['eq_31hz'] = vol_equal_31hz
+        context['eq_63hz'] = vol_equal_63hz
+        context['eq_125hz'] = vol_equal_125hz
+        context['eq_250hz'] = vol_equal_250hz
+        context['eq_500hz'] = vol_equal_500hz
+        context['eq_1khz'] = vol_equal_1khz
+        context['eq_2khz'] = vol_equal_2khz
+        context['eq_4khz'] = vol_equal_4khz
+        context['eq_8khz'] = vol_equal_8khz
+        context['eq_16khz'] = vol_equal_16khz
+
         return render(request=request, template_name='player/box_base.html', context=context)
 
 
@@ -1334,78 +1425,334 @@ class BoxViewRadio(View):
         return HttpResponseRedirect('/jukeoroni')
 
 
-def vol_up(self):
-    import alsaaudio
-
+def vol_up(request):
     m = alsaaudio.Mixer('Digital')
 
     vol = m.getvolume()[0]
     m.setvolume(vol + 1)
 
-    # subprocess.run(["/usr/bin/amixer", "-D", "default", "set", "Digital", "95%"])
+    new_vol = m.getvolume()[0]
 
-    # return HttpResponseRedirect('/jukeoroni')
-    return JsonResponse({})
+    response = {'new_vol': new_vol}
+
+    return JsonResponse(response, status=200)
 
 
-def vol_reset(self):
-    import alsaaudio
-
+def vol_reset(request):
     m = alsaaudio.Mixer('Digital')
 
-    # vol = m.getvolume()[0]
     m.setvolume(90)
 
-    # return HttpResponseRedirect('/jukeoroni')
-    return JsonResponse({})
+    new_vol = m.getvolume()[0]
+
+    response = {'new_vol': new_vol}
+
+    return JsonResponse(response, status=200)
 
 
-def vol_down(self):
-    import alsaaudio
-
+def vol_down(request):
     m = alsaaudio.Mixer('Digital')
 
     vol = m.getvolume()[0]
     m.setvolume(vol - 1)
 
-    # return HttpResponseRedirect('/jukeoroni')
-    return JsonResponse({})
+    new_vol = m.getvolume()[0]
+
+    response = {'new_vol': new_vol}
+
+    return JsonResponse(response, status=200)
 
 
-def up_2khz(self):
-    import alsaaudio
+# ['00. 31 Hz', '01. 63 Hz', '02. 125 Hz', '03. 250 Hz', '04. 500 Hz', '05. 1 kHz', '06. 2 kHz', '07. 4 kHz', '08. 8 kHz', '09. 16 kHz']
 
-    m = alsaaudio.mixers(device='equal')
+# 31 Hz
+def up_31hz(request):
+    _m = alsaaudio.mixers(device='equal')
+    m = alsaaudio.Mixer(_m[0], device='equal')
+    vol = max(m.getvolume())
+    m.setvolume(min([vol + 3, 100]))
+    new_vol = max(m.getvolume())
+    response = {'new_vol': new_vol}
+    return JsonResponse(response, status=200)
 
-    vol = m.getvolume()[0]
-    m.setvolume(vol + 1)
 
-    # subprocess.run(["/usr/bin/amixer", "-D", "default", "set", "Digital", "95%"])
-
-    # return HttpResponseRedirect('/jukeoroni')
-    return HttpResponseNotModified()
-
-
-def reset_2khz(self):
-    import alsaaudio
-
-    m = alsaaudio.Mixer('06. 2 kHz', device='equal')
-    # m = alsaaudio.mixers(device='equal')
-
-    # vol = m.getvolume()[0]
+def reset_31hz(request):
+    _m = alsaaudio.mixers(device='equal')
+    m = alsaaudio.Mixer(_m[0], device='equal')
+    # m = alsaaudio.Mixer('06. 2 kHz', device='equal')
     m.setvolume(66)
+    new_vol = max(m.getvolume())
+    response = {'new_vol': new_vol}
+    return JsonResponse(response, status=200)
 
-    # return HttpResponseRedirect('/jukeoroni')
-    return HttpResponseNotModified()
+
+def down_31hz(request):
+    _m = alsaaudio.mixers(device='equal')
+    m = alsaaudio.Mixer(_m[0], device='equal')
+    vol = min(m.getvolume())
+    m.setvolume(max([vol - 3, 0]))
+    new_vol = min(m.getvolume())
+    response = {'new_vol': new_vol}
+    return JsonResponse(response, status=200)
+# 63 Hz
+def up_63hz(request):
+    _m = alsaaudio.mixers(device='equal')
+    m = alsaaudio.Mixer(_m[1], device='equal')
+    vol = max(m.getvolume())
+    m.setvolume(min([vol + 3, 100]))
+    new_vol = max(m.getvolume())
+    response = {'new_vol': new_vol}
+    return JsonResponse(response, status=200)
 
 
-def down_2khz(self):
-    import alsaaudio
+def reset_63hz(request):
+    _m = alsaaudio.mixers(device='equal')
+    m = alsaaudio.Mixer(_m[1], device='equal')
+    # m = alsaaudio.Mixer('06. 2 kHz', device='equal')
+    m.setvolume(66)
+    new_vol = max(m.getvolume())
+    response = {'new_vol': new_vol}
+    return JsonResponse(response, status=200)
 
-    m = alsaaudio.Mixer('06. 2 kHz', device='equal')
 
-    vol = m.getvolume()[0]
-    m.setvolume(vol - 1)
+def down_63hz(request):
+    _m = alsaaudio.mixers(device='equal')
+    m = alsaaudio.Mixer(_m[1], device='equal')
+    vol = min(m.getvolume())
+    m.setvolume(max([vol - 3, 0]))
+    new_vol = min(m.getvolume())
+    response = {'new_vol': new_vol}
+    return JsonResponse(response, status=200)
+# 125 Hz
+def up_125hz(request):
+    _m = alsaaudio.mixers(device='equal')
+    m = alsaaudio.Mixer(_m[2], device='equal')
+    vol = max(m.getvolume())
+    m.setvolume(min([vol + 3, 100]))
+    new_vol = max(m.getvolume())
+    response = {'new_vol': new_vol}
+    return JsonResponse(response, status=200)
 
-    # return HttpResponseRedirect('/jukeoroni')
-    return HttpResponseNotModified()
+
+def reset_125hz(request):
+    _m = alsaaudio.mixers(device='equal')
+    m = alsaaudio.Mixer(_m[2], device='equal')
+    # m = alsaaudio.Mixer('06. 2 kHz', device='equal')
+    m.setvolume(66)
+    new_vol = max(m.getvolume())
+    response = {'new_vol': new_vol}
+    return JsonResponse(response, status=200)
+
+
+def down_125hz(request):
+    _m = alsaaudio.mixers(device='equal')
+    m = alsaaudio.Mixer(_m[2], device='equal')
+    vol = min(m.getvolume())
+    m.setvolume(max([vol - 3, 0]))
+    new_vol = min(m.getvolume())
+    response = {'new_vol': new_vol}
+    return JsonResponse(response, status=200)
+# 250 Hz
+def up_250hz(request):
+    _m = alsaaudio.mixers(device='equal')
+    m = alsaaudio.Mixer(_m[3], device='equal')
+    vol = max(m.getvolume())
+    m.setvolume(min([vol + 3, 100]))
+    new_vol = max(m.getvolume())
+    response = {'new_vol': new_vol}
+    return JsonResponse(response, status=200)
+
+
+def reset_250hz(request):
+    _m = alsaaudio.mixers(device='equal')
+    m = alsaaudio.Mixer(_m[3], device='equal')
+    # m = alsaaudio.Mixer('06. 2 kHz', device='equal')
+    m.setvolume(66)
+    new_vol = max(m.getvolume())
+    response = {'new_vol': new_vol}
+    return JsonResponse(response, status=200)
+
+
+def down_250hz(request):
+    _m = alsaaudio.mixers(device='equal')
+    m = alsaaudio.Mixer(_m[3], device='equal')
+    vol = min(m.getvolume())
+    m.setvolume(max([vol - 3, 0]))
+    new_vol = min(m.getvolume())
+    response = {'new_vol': new_vol}
+    return JsonResponse(response, status=200)
+# 500 Hz
+def up_500hz(request):
+    _m = alsaaudio.mixers(device='equal')
+    m = alsaaudio.Mixer(_m[4], device='equal')
+    vol = max(m.getvolume())
+    m.setvolume(min([vol + 3, 100]))
+    new_vol = max(m.getvolume())
+    response = {'new_vol': new_vol}
+    return JsonResponse(response, status=200)
+
+
+def reset_500hz(request):
+    _m = alsaaudio.mixers(device='equal')
+    m = alsaaudio.Mixer(_m[4], device='equal')
+    # m = alsaaudio.Mixer('06. 2 kHz', device='equal')
+    m.setvolume(66)
+    new_vol = max(m.getvolume())
+    response = {'new_vol': new_vol}
+    return JsonResponse(response, status=200)
+
+
+def down_500hz(request):
+    _m = alsaaudio.mixers(device='equal')
+    m = alsaaudio.Mixer(_m[4], device='equal')
+    vol = min(m.getvolume())
+    m.setvolume(max([vol - 3, 0]))
+    new_vol = min(m.getvolume())
+    response = {'new_vol': new_vol}
+    return JsonResponse(response, status=200)
+# 1 kHz
+def up_1khz(request):
+    _m = alsaaudio.mixers(device='equal')
+    m = alsaaudio.Mixer(_m[5], device='equal')
+    vol = max(m.getvolume())
+    m.setvolume(min([vol + 3, 100]))
+    new_vol = max(m.getvolume())
+    response = {'new_vol': new_vol}
+    return JsonResponse(response, status=200)
+
+
+def reset_1khz(request):
+    _m = alsaaudio.mixers(device='equal')
+    m = alsaaudio.Mixer(_m[5], device='equal')
+    # m = alsaaudio.Mixer('06. 2 kHz', device='equal')
+    m.setvolume(66)
+    new_vol = max(m.getvolume())
+    response = {'new_vol': new_vol}
+    return JsonResponse(response, status=200)
+
+
+def down_1khz(request):
+    _m = alsaaudio.mixers(device='equal')
+    m = alsaaudio.Mixer(_m[5], device='equal')
+    vol = min(m.getvolume())
+    m.setvolume(max([vol - 3, 0]))
+    new_vol = min(m.getvolume())
+    response = {'new_vol': new_vol}
+    return JsonResponse(response, status=200)
+# 2 kHz
+def up_2khz(request):
+    _m = alsaaudio.mixers(device='equal')
+    m = alsaaudio.Mixer(_m[6], device='equal')
+    vol = max(m.getvolume())
+    m.setvolume(min([vol + 3, 100]))
+    new_vol = max(m.getvolume())
+    response = {'new_vol': new_vol}
+    return JsonResponse(response, status=200)
+
+
+def reset_2khz(request):
+    _m = alsaaudio.mixers(device='equal')
+    m = alsaaudio.Mixer(_m[6], device='equal')
+    # m = alsaaudio.Mixer('06. 2 kHz', device='equal')
+    m.setvolume(66)
+    new_vol = max(m.getvolume())
+    response = {'new_vol': new_vol}
+    return JsonResponse(response, status=200)
+
+
+def down_2khz(request):
+    _m = alsaaudio.mixers(device='equal')
+    m = alsaaudio.Mixer(_m[6], device='equal')
+    vol = min(m.getvolume())
+    m.setvolume(max([vol - 3, 0]))
+    new_vol = min(m.getvolume())
+    response = {'new_vol': new_vol}
+    return JsonResponse(response, status=200)
+
+# 4 kHz
+def up_4khz(request):
+    _m = alsaaudio.mixers(device='equal')
+    m = alsaaudio.Mixer(_m[7], device='equal')
+    vol = max(m.getvolume())
+    m.setvolume(min([vol + 3, 100]))
+    new_vol = max(m.getvolume())
+    response = {'new_vol': new_vol}
+    return JsonResponse(response, status=200)
+
+
+def reset_4khz(request):
+    _m = alsaaudio.mixers(device='equal')
+    m = alsaaudio.Mixer(_m[7], device='equal')
+    # m = alsaaudio.Mixer('06. 2 kHz', device='equal')
+    m.setvolume(66)
+    new_vol = max(m.getvolume())
+    response = {'new_vol': new_vol}
+    return JsonResponse(response, status=200)
+
+
+def down_4khz(request):
+    _m = alsaaudio.mixers(device='equal')
+    m = alsaaudio.Mixer(_m[7], device='equal')
+    vol = min(m.getvolume())
+    m.setvolume(max([vol - 3, 0]))
+    new_vol = min(m.getvolume())
+    response = {'new_vol': new_vol}
+    return JsonResponse(response, status=200)
+# 8 kHz
+def up_8khz(request):
+    _m = alsaaudio.mixers(device='equal')
+    m = alsaaudio.Mixer(_m[8], device='equal')
+    vol = max(m.getvolume())
+    m.setvolume(min([vol + 3, 100]))
+    new_vol = max(m.getvolume())
+    response = {'new_vol': new_vol}
+    return JsonResponse(response, status=200)
+
+
+def reset_8khz(request):
+    _m = alsaaudio.mixers(device='equal')
+    m = alsaaudio.Mixer(_m[8], device='equal')
+    # m = alsaaudio.Mixer('06. 2 kHz', device='equal')
+    m.setvolume(66)
+    new_vol = max(m.getvolume())
+    response = {'new_vol': new_vol}
+    return JsonResponse(response, status=200)
+
+
+def down_8khz(request):
+    _m = alsaaudio.mixers(device='equal')
+    m = alsaaudio.Mixer(_m[8], device='equal')
+    vol = min(m.getvolume())
+    m.setvolume(max([vol - 3, 0]))
+    new_vol = min(m.getvolume())
+    response = {'new_vol': new_vol}
+    return JsonResponse(response, status=200)
+# 16 kHz
+def up_16khz(request):
+    _m = alsaaudio.mixers(device='equal')
+    m = alsaaudio.Mixer(_m[9], device='equal')
+    vol = max(m.getvolume())
+    m.setvolume(min([vol + 3, 100]))
+    new_vol = max(m.getvolume())
+    response = {'new_vol': new_vol}
+    return JsonResponse(response, status=200)
+
+
+def reset_16khz(request):
+    _m = alsaaudio.mixers(device='equal')
+    m = alsaaudio.Mixer(_m[9], device='equal')
+    # m = alsaaudio.Mixer('06. 2 kHz', device='equal')
+    m.setvolume(66)
+    new_vol = max(m.getvolume())
+    response = {'new_vol': new_vol}
+    return JsonResponse(response, status=200)
+
+
+def down_16khz(request):
+    _m = alsaaudio.mixers(device='equal')
+    m = alsaaudio.Mixer(_m[9], device='equal')
+    vol = min(m.getvolume())
+    m.setvolume(max([vol - 3, 0]))
+    new_vol = min(m.getvolume())
+    response = {'new_vol': new_vol}
+    return JsonResponse(response, status=200)

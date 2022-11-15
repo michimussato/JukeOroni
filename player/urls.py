@@ -1,5 +1,43 @@
 from django.urls import path
-from player.views import JukeOroniView, BoxView, BoxViewRadio, AlbumView, vol_down, vol_reset, vol_up
+from player.views import (
+    JukeOroniView,
+    BoxView,
+    BoxViewRadio,
+    AlbumView,
+    vol_down,
+    vol_reset,
+    vol_up,
+    up_31hz,
+    reset_31hz,
+    down_31hz,
+    up_63hz,
+    reset_63hz,
+    down_63hz,
+    up_125hz,
+    reset_125hz,
+    down_125hz,
+    up_250hz,
+    reset_250hz,
+    down_250hz,
+    up_500hz,
+    reset_500hz,
+    down_500hz,
+    up_1khz,
+    reset_1khz,
+    down_1khz,
+    up_2khz,
+    reset_2khz,
+    down_2khz,
+    up_4khz,
+    reset_4khz,
+    down_4khz,
+    up_8khz,
+    reset_8khz,
+    down_8khz,
+    up_16khz,
+    reset_16khz,
+    down_16khz,
+)
 
 
 urlpatterns = [
@@ -73,6 +111,46 @@ urlpatterns = [
     path('vol_down/', vol_down, name='vol_down'),
     path('vol_reset/', vol_reset, name='vol_reset'),
     path('vol_up/', vol_up, name='vol_up'),
+
+    path('up_31hz/', up_31hz, name='up_31hz'),
+    path('reset_31hz/', reset_31hz, name='reset_31hz'),
+    path('down_31hz/', down_31hz, name='down_31hz'),
+
+    path('up_63hz/', up_63hz, name='up_63hz'),
+    path('reset_63hz/', reset_63hz, name='reset_63hz'),
+    path('down_63hz/', down_63hz, name='down_63hz'),
+
+    path('up_125hz/', up_125hz, name='up_125hz'),
+    path('reset_125hz/', reset_125hz, name='reset_125hz'),
+    path('down_125hz/', down_125hz, name='down_125hz'),
+
+    path('up_250hz/', up_250hz, name='up_250hz'),
+    path('reset_250hz/', reset_250hz, name='reset_250hz'),
+    path('down_250hz/', down_250hz, name='down_250hz'),
+
+    path('up_500hz/', up_500hz, name='up_500hz'),
+    path('reset_500hz/', reset_500hz, name='reset_500hz'),
+    path('down_500hz/', down_500hz, name='down_500hz'),
+
+    path('up_1khz/', up_1khz, name='up_1khz'),
+    path('reset_1khz/', reset_1khz, name='reset_1khz'),
+    path('down_1khz/', down_1khz, name='down_1khz'),
+
+    path('up_2khz/', up_2khz, name='up_2khz'),
+    path('reset_2khz/', reset_2khz, name='reset_2khz'),
+    path('down_2khz/', down_2khz, name='down_2khz'),
+
+    path('up_4khz/', up_4khz, name='up_4khz'),
+    path('reset_4khz/', reset_4khz, name='reset_4khz'),
+    path('down_4khz/', down_4khz, name='down_4khz'),
+
+    path('up_8khz/', up_8khz, name='up_8khz'),
+    path('reset_8khz/', reset_8khz, name='reset_8khz'),
+    path('down_8khz/', down_8khz, name='down_8khz'),
+
+    path('up_16khz/', up_16khz, name='up_16khz'),
+    path('reset_16khz/', reset_16khz, name='reset_16khz'),
+    path('down_16khz/', down_16khz, name='down_16khz'),
 
     # path('', index_redirect, name='index_redirect'),
 ]

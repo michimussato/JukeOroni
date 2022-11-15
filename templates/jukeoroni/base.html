@@ -34,59 +34,57 @@
     {% endblock body %}
 
     {% block vol %}
-{#        <form method="post" id="task-form">#}
-            {% csrf_token %}
-    {#        <input type="text" placeholder="Enter Task" name="task" id="task" required>#}
-    {#        <button type="submit">vol_up</button>#}
-    {#        <button type="submit">vol_reset</button>#}
-    {#        <button type="submit">vol_down</button>#}
-{#        </form>#}
-        <div class="container">
+        {% csrf_token %}
+
+        <div class="text_elements_box container" style="text-align: center;">
         <table class="table_vol_buttons" border="0" cellspacing="0">
             <tr style="border: none;">
-{#                <td class="td_header_buttons" width="{{ button.column_width }}" style="padding: {{ button.padding }};">#}
                 <td class="td_vol_buttons" style="padding:5px;">
-{#                    <button class="btn_vol" id="vol_down"><img width="{{ button.img_width }}" height="{{ button.img_height }}" src="{{ button.img_src }}"></button>#}
                     <button class="btn_vol" id="vol_down"><img width="20px" height="20px" src="https://cdn2.iconfinder.com/data/icons/media-player-ui/512/Media-Icon-5-512.png"></button>
-                    <button class="btn_vol" id="vol_reset"><img width="20px" height="20px" src="http://getdrawings.com/free-icon-bw/reset-icon-png-4.png"></button>
-{#                    <button class="btn_vol" id="vol_reset">vol_reset</button>#}
-{#                    <button class="btn_vol" id="vol_up">vol_up</button>#}
+                    <button class="btn_vol" id="vol_reset">{{ volume }}</button>
                     <button class="btn_vol" id="vol_up"><img width="20px" height="20px" src="https://cdn2.iconfinder.com/data/icons/media-player-ui/512/Media-Icon-6-512.png"></button>
                 </td>
             </tr>
         </table>
         </div>
 
-        <div class="container">
+        <div class="text_elements_box container" style="text-align: center;">
             <table class="table_eq_buttons" border="0" cellspacing="0">
                 <tr style="border: none;">
-{#                    <td class="td_eq_buttons" style="padding:5px;">+</td>#}
-                    <td class="td_eq_buttons"><button class="btn_eq" id="31hz_up" disabled>+</button></td>
-                    <td class="td_eq_buttons"><button class="btn_eq" id="63hz_up" disabled>+</button></td>
-                    <td class="td_eq_buttons"><button class="btn_eq" id="125hz_up" disabled>+</button></td>
-                    <td class="td_eq_buttons"><button class="btn_eq" id="250hz_up" disabled>+</button></td>
-                    <td class="td_eq_buttons"><button class="btn_eq" id="500hz_up" disabled>+</button></td>
-                    <td class="td_eq_buttons"><button class="btn_eq" id="1khz_up" disabled>+</button></td>
-                    <td class="td_eq_buttons"><button class="btn_eq" id="2khz_up" disabled>+</button></td>
-                    <td class="td_eq_buttons"><button class="btn_eq" id="4khz_up" disabled>+</button></td>
-                    <td class="td_eq_buttons"><button class="btn_eq" id="8khz_up" disabled>+</button></td>
-                    <td class="td_eq_buttons"><button class="btn_eq" id="16khz_up" disabled>+</button></td>
+                    <td class="td_eq_buttons"><button class="btn_eq" id="up_31hz">+</button></td>
+                    <td class="td_eq_buttons"><button class="btn_eq" id="up_63hz">+</button></td>
+                    <td class="td_eq_buttons"><button class="btn_eq" id="up_125hz">+</button></td>
+                    <td class="td_eq_buttons"><button class="btn_eq" id="up_250hz">+</button></td>
+                    <td class="td_eq_buttons"><button class="btn_eq" id="up_500hz">+</button></td>
+                    <td class="td_eq_buttons"><button class="btn_eq" id="up_1khz">+</button></td>
+                    <td class="td_eq_buttons"><button class="btn_eq" id="up_2khz">+</button></td>
+                    <td class="td_eq_buttons"><button class="btn_eq" id="up_4khz">+</button></td>
+                    <td class="td_eq_buttons"><button class="btn_eq" id="up_8khz">+</button></td>
+                    <td class="td_eq_buttons"><button class="btn_eq" id="up_16khz">+</button></td>
                 </tr>
                 <tr style="border: none;">
-{#                    <td class="td_eq_buttons" style="padding:5px;">reset</td>#}
+                    <td id="display_eq_31hz"><button class="btn_eq" id="reset_31hz">{{ eq_31hz }}</button></td>
+                    <td id="display_eq_63hz"><button class="btn_eq" id="reset_63hz">{{ eq_63hz }}</button></td>
+                    <td id="display_eq_125hz"><button class="btn_eq" id="reset_125hz">{{ eq_125hz }}</button></td>
+                    <td id="display_eq_250hz"><button class="btn_eq" id="reset_250hz">{{ eq_250hz }}</button></td>
+                    <td id="display_eq_500hz"><button class="btn_eq" id="reset_500hz">{{ eq_500hz }}</button></td>
+                    <td id="display_eq_1khz"><button class="btn_eq" id="reset_1khz">{{ eq_1khz }}</button></td>
+                    <td id="display_eq_2khz"><button class="btn_eq" id="reset_2khz">{{ eq_2khz }}</button></td>
+                    <td id="display_eq_4khz"><button class="btn_eq" id="reset_4khz">{{ eq_4khz }}</button></td>
+                    <td id="display_eq_8khz"><button class="btn_eq" id="reset_8khz">{{ eq_8khz }}</button></td>
+                    <td id="display_eq_16khz"><button class="btn_eq" id="reset_16khz">{{ eq_16khz }}</button></td>
                 </tr>
                 <tr style="border: none;">
-{#                    <td class="td_eq_buttons" style="padding:5px;">-</td>#}
-                    <td class="td_eq_buttons"><button class="btn_eq" id="31hz_down" disabled>-</button></td>
-                    <td class="td_eq_buttons"><button class="btn_eq" id="63hz_down" disabled>-</button></td>
-                    <td class="td_eq_buttons"><button class="btn_eq" id="125hz_down" disabled>-</button></td>
-                    <td class="td_eq_buttons"><button class="btn_eq" id="250hz_down" disabled>-</button></td>
-                    <td class="td_eq_buttons"><button class="btn_eq" id="500hz_down" disabled>-</button></td>
-                    <td class="td_eq_buttons"><button class="btn_eq" id="1khz_down" disabled>-</button></td>
-                    <td class="td_eq_buttons"><button class="btn_eq" id="2khz_down" disabled>-</button></td>
-                    <td class="td_eq_buttons"><button class="btn_eq" id="4khz_down" disabled>-</button></td>
-                    <td class="td_eq_buttons"><button class="btn_eq" id="8khz_down" disabled>-</button></td>
-                    <td class="td_eq_buttons"><button class="btn_eq" id="16khz_down" disabled>-</button></td>
+                    <td class="td_eq_buttons"><button class="btn_eq" id="down_31hz">-</button></td>
+                    <td class="td_eq_buttons"><button class="btn_eq" id="down_63hz">-</button></td>
+                    <td class="td_eq_buttons"><button class="btn_eq" id="down_125hz">-</button></td>
+                    <td class="td_eq_buttons"><button class="btn_eq" id="down_250hz">-</button></td>
+                    <td class="td_eq_buttons"><button class="btn_eq" id="down_500hz">-</button></td>
+                    <td class="td_eq_buttons"><button class="btn_eq" id="down_1khz">-</button></td>
+                    <td class="td_eq_buttons"><button class="btn_eq" id="down_2khz">-</button></td>
+                    <td class="td_eq_buttons"><button class="btn_eq" id="down_4khz">-</button></td>
+                    <td class="td_eq_buttons"><button class="btn_eq" id="down_8khz">-</button></td>
+                    <td class="td_eq_buttons"><button class="btn_eq" id="down_16khz">-</button></td>
                 </tr>
                 <tr style="border: none;">
 {#                    <td class="td_eq_buttons" style="padding:5px;"></td>#}
@@ -104,32 +102,11 @@
             </table>
         </div>
 
-{#        <div id=”range”>#}
-{#            <span id="currentVal">40</span>#}
-{#        </div>#}
-
-
         <script src="https://code.jquery.com/jquery-3.5.1.js"
               integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc="
                 crossorigin="anonymous"></script>
 
         <script type="text/javascript">
-        {#$("#range").slider#}
-        {#  range: "min"#}
-        {#  max: 100#}
-        {#  value: 10#}
-        {#  slide: (e, ui) ->#}
-        {#    $("#currentVal").html ui.value#}
-        {#    return#}
-
-        {#$( "#range" ).slider({#}
-        {#    change: function( event, ui ) {}#}
-        {# });#}
-
-        {#$( "#range" ).on(#}
-        {#    "slidechange",#}
-        {#    function( event, ui ) {}#}
-        {#);#}
 
         $('#vol_up').click(function(e){
             e.preventDefault();
@@ -138,11 +115,10 @@
                 url:'{% url "vol_up" %}',
                 data:
                 {
-                    task:$("#task").val(),
-                    csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+                    csrfmiddlewaretoken: "{{ csrf_token }}"
                 },
-                success:function(){
-                      {#alert('vol_up');#}
+                success:function(response){
+                      $('#vol_reset').html(response.new_vol);
                         }
                 })
             });
@@ -154,11 +130,10 @@
                 url:'{% url "vol_reset" %}',
                 data:
                 {
-                    task:$("#task").val(),
-                    csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+                    csrfmiddlewaretoken: "{{ csrf_token }}"
                 },
-                success:function(){
-                      {#alert('debug: vol_reset');#}
+                success:function(response){
+                      $('#vol_reset').html(response.new_vol);
                         }
                 })
             });
@@ -170,14 +145,509 @@
                 url:'{% url "vol_down" %}',
                 data:
                 {
-                    task:$("#task").val(),
-                    csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+                    csrfmiddlewaretoken: "{{ csrf_token }}"
                 },
-                success:function(){
-                      {#alert('vol_down');#}
+                success:function(response){
+                      $('#vol_reset').html(response.new_vol);
                         }
                 })
             });
+
+
+
+
+
+        $('#up_31hz').click(function(e){
+            e.preventDefault();
+            $.ajax({
+                type:'POST',
+                url:'{% url "up_31hz" %}',
+                data:
+                {
+                    csrfmiddlewaretoken: "{{ csrf_token }}"
+                },
+                success:function(response){
+                      $('#reset_31hz').html(response.new_vol);
+                        }
+                })
+            });
+
+        $('#reset_31hz').click(function(e){
+            e.preventDefault();
+            $.ajax({
+                type:'POST',
+                url:'{% url "reset_31hz" %}',
+                data:
+                {
+                    csrfmiddlewaretoken: "{{ csrf_token }}"
+                },
+                success:function(response){
+                      $('#reset_31hz').html(response.new_vol);
+                        }
+                })
+            });
+
+        $('#down_31hz').click(function(e){
+            e.preventDefault();
+            $.ajax({
+                type:'POST',
+                url:'{% url "down_31hz" %}',
+                data:
+                {
+                    csrfmiddlewaretoken: "{{ csrf_token }}"
+                },
+                success:function(response){
+                      $('#reset_31hz').html(response.new_vol);
+                        }
+                })
+            });
+
+
+
+
+
+        $('#up_63hz').click(function(e){
+            e.preventDefault();
+            $.ajax({
+                type:'POST',
+                url:'{% url "up_63hz" %}',
+                data:
+                {
+                    csrfmiddlewaretoken: "{{ csrf_token }}"
+                },
+                success:function(response){
+                      $('#reset_63hz').html(response.new_vol);
+                        }
+                })
+            });
+
+        $('#reset_63hz').click(function(e){
+            e.preventDefault();
+            $.ajax({
+                type:'POST',
+                url:'{% url "reset_63hz" %}',
+                data:
+                {
+                    csrfmiddlewaretoken: "{{ csrf_token }}"
+                },
+                success:function(response){
+                      $('#reset_63hz').html(response.new_vol);
+                        }
+                })
+            });
+
+        $('#down_63hz').click(function(e){
+            e.preventDefault();
+            $.ajax({
+                type:'POST',
+                url:'{% url "down_63hz" %}',
+                data:
+                {
+                    csrfmiddlewaretoken: "{{ csrf_token }}"
+                },
+                success:function(response){
+                      $('#reset_63hz').html(response.new_vol);
+                        }
+                })
+            });
+
+
+
+
+
+        $('#up_125hz').click(function(e){
+            e.preventDefault();
+            $.ajax({
+                type:'POST',
+                url:'{% url "up_125hz" %}',
+                data:
+                {
+                    csrfmiddlewaretoken: "{{ csrf_token }}"
+                },
+                success:function(response){
+                      $('#reset_125hz').html(response.new_vol);
+                        }
+                })
+            });
+
+        $('#reset_125hz').click(function(e){
+            e.preventDefault();
+            $.ajax({
+                type:'POST',
+                url:'{% url "reset_125hz" %}',
+                data:
+                {
+                    csrfmiddlewaretoken: "{{ csrf_token }}"
+                },
+                success:function(response){
+                      $('#reset_125hz').html(response.new_vol);
+                        }
+                })
+            });
+
+        $('#down_125hz').click(function(e){
+            e.preventDefault();
+            $.ajax({
+                type:'POST',
+                url:'{% url "down_125hz" %}',
+                data:
+                {
+                    csrfmiddlewaretoken: "{{ csrf_token }}"
+                },
+                success:function(response){
+                      $('#reset_125hz').html(response.new_vol);
+                        }
+                })
+            });
+
+
+
+
+
+        $('#up_250hz').click(function(e){
+            e.preventDefault();
+            $.ajax({
+                type:'POST',
+                url:'{% url "up_250hz" %}',
+                data:
+                {
+                    csrfmiddlewaretoken: "{{ csrf_token }}"
+                },
+                success:function(response){
+                      $('#reset_250hz').html(response.new_vol);
+                        }
+                })
+            });
+
+        $('#reset_250hz').click(function(e){
+            e.preventDefault();
+            $.ajax({
+                type:'POST',
+                url:'{% url "reset_250hz" %}',
+                data:
+                {
+                    csrfmiddlewaretoken: "{{ csrf_token }}"
+                },
+                success:function(response){
+                      $('#reset_250hz').html(response.new_vol);
+                        }
+                })
+            });
+
+        $('#down_250hz').click(function(e){
+            e.preventDefault();
+            $.ajax({
+                type:'POST',
+                url:'{% url "down_250hz" %}',
+                data:
+                {
+                    csrfmiddlewaretoken: "{{ csrf_token }}"
+                },
+                success:function(response){
+                      $('#reset_250hz').html(response.new_vol);
+                        }
+                })
+            });
+
+
+
+
+
+        $('#up_500hz').click(function(e){
+            e.preventDefault();
+            $.ajax({
+                type:'POST',
+                url:'{% url "up_500hz" %}',
+                data:
+                {
+                    csrfmiddlewaretoken: "{{ csrf_token }}"
+                },
+                success:function(response){
+                      $('#reset_500hz').html(response.new_vol);
+                        }
+                })
+            });
+
+        $('#reset_500hz').click(function(e){
+            e.preventDefault();
+            $.ajax({
+                type:'POST',
+                url:'{% url "reset_500hz" %}',
+                data:
+                {
+                    csrfmiddlewaretoken: "{{ csrf_token }}"
+                },
+                success:function(response){
+                      $('#reset_500hz').html(response.new_vol);
+                        }
+                })
+            });
+
+        $('#down_500hz').click(function(e){
+            e.preventDefault();
+            $.ajax({
+                type:'POST',
+                url:'{% url "down_500hz" %}',
+                data:
+                {
+                    csrfmiddlewaretoken: "{{ csrf_token }}"
+                },
+                success:function(response){
+                      $('#reset_500hz').html(response.new_vol);
+                        }
+                })
+            });
+
+
+
+
+
+        $('#up_1khz').click(function(e){
+            e.preventDefault();
+            $.ajax({
+                type:'POST',
+                url:'{% url "up_1khz" %}',
+                data:
+                {
+                    csrfmiddlewaretoken: "{{ csrf_token }}"
+                },
+                success:function(response){
+                      $('#reset_1khz').html(response.new_vol);
+                        }
+                })
+            });
+
+        $('#reset_1khz').click(function(e){
+            e.preventDefault();
+            $.ajax({
+                type:'POST',
+                url:'{% url "reset_1khz" %}',
+                data:
+                {
+                    csrfmiddlewaretoken: "{{ csrf_token }}"
+                },
+                success:function(response){
+                      $('#reset_1khz').html(response.new_vol);
+                        }
+                })
+            });
+
+        $('#down_1khz').click(function(e){
+            e.preventDefault();
+            $.ajax({
+                type:'POST',
+                url:'{% url "down_1khz" %}',
+                data:
+                {
+                    csrfmiddlewaretoken: "{{ csrf_token }}"
+                },
+                success:function(response){
+                      $('#reset_1khz').html(response.new_vol);
+                        }
+                })
+            });
+
+
+
+
+
+        $('#up_2khz').click(function(e){
+            e.preventDefault();
+            $.ajax({
+                type:'POST',
+                url:'{% url "up_2khz" %}',
+                data:
+                {
+                    csrfmiddlewaretoken: "{{ csrf_token }}"
+                },
+                success:function(response){
+                      $('#reset_2khz').html(response.new_vol);
+                        }
+                })
+            });
+
+        $('#reset_2khz').click(function(e){
+            e.preventDefault();
+            $.ajax({
+                type:'POST',
+                url:'{% url "reset_2khz" %}',
+                data:
+                {
+                    csrfmiddlewaretoken: "{{ csrf_token }}"
+                },
+                success:function(response){
+                      $('#reset_2khz').html(response.new_vol);
+                        }
+                })
+            });
+
+        $('#down_2khz').click(function(e){
+            e.preventDefault();
+            $.ajax({
+                type:'POST',
+                url:'{% url "down_2khz" %}',
+                data:
+                {
+                    csrfmiddlewaretoken: "{{ csrf_token }}"
+                },
+                success:function(response){
+                      $('#reset_2khz').html(response.new_vol);
+                        }
+                })
+            });
+
+
+
+
+
+        $('#up_4khz').click(function(e){
+            e.preventDefault();
+            $.ajax({
+                type:'POST',
+                url:'{% url "up_4khz" %}',
+                data:
+                {
+                    csrfmiddlewaretoken: "{{ csrf_token }}"
+                },
+                success:function(response){
+                      $('#reset_4khz').html(response.new_vol);
+                        }
+                })
+            });
+
+        $('#reset_4khz').click(function(e){
+            e.preventDefault();
+            $.ajax({
+                type:'POST',
+                url:'{% url "reset_4khz" %}',
+                data:
+                {
+                    csrfmiddlewaretoken: "{{ csrf_token }}"
+                },
+                success:function(response){
+                      $('#reset_4khz').html(response.new_vol);
+                        }
+                })
+            });
+
+        $('#down_4khz').click(function(e){
+            e.preventDefault();
+            $.ajax({
+                type:'POST',
+                url:'{% url "down_4khz" %}',
+                data:
+                {
+                    csrfmiddlewaretoken: "{{ csrf_token }}"
+                },
+                success:function(response){
+                      $('#reset_4khz').html(response.new_vol);
+                        }
+                })
+            });
+
+
+
+
+
+        $('#up_8khz').click(function(e){
+            e.preventDefault();
+            $.ajax({
+                type:'POST',
+                url:'{% url "up_8khz" %}',
+                data:
+                {
+                    csrfmiddlewaretoken: "{{ csrf_token }}"
+                },
+                success:function(response){
+                      $('#reset_8khz').html(response.new_vol);
+                        }
+                })
+            });
+
+        $('#reset_8khz').click(function(e){
+            e.preventDefault();
+            $.ajax({
+                type:'POST',
+                url:'{% url "reset_8khz" %}',
+                data:
+                {
+                    csrfmiddlewaretoken: "{{ csrf_token }}"
+                },
+                success:function(response){
+                      $('#reset_8khz').html(response.new_vol);
+                        }
+                })
+            });
+
+        $('#down_8khz').click(function(e){
+            e.preventDefault();
+            $.ajax({
+                type:'POST',
+                url:'{% url "down_8khz" %}',
+                data:
+                {
+                    csrfmiddlewaretoken: "{{ csrf_token }}"
+                },
+                success:function(response){
+                      $('#reset_8khz').html(response.new_vol);
+                        }
+                })
+            });
+
+
+
+
+
+        $('#up_16khz').click(function(e){
+            e.preventDefault();
+            $.ajax({
+                type:'POST',
+                url:'{% url "up_16khz" %}',
+                data:
+                {
+                    csrfmiddlewaretoken: "{{ csrf_token }}"
+                },
+                success:function(response){
+                      $('#reset_16khz').html(response.new_vol);
+                        }
+                })
+            });
+
+        $('#reset_16khz').click(function(e){
+            e.preventDefault();
+            $.ajax({
+                type:'POST',
+                url:'{% url "reset_16khz" %}',
+                data:
+                {
+                    csrfmiddlewaretoken: "{{ csrf_token }}"
+                },
+                success:function(response){
+                      $('#reset_16khz').html(response.new_vol);
+                        }
+                })
+            });
+
+        $('#down_16khz').click(function(e){
+            e.preventDefault();
+            $.ajax({
+                type:'POST',
+                url:'{% url "down_16khz" %}',
+                data:
+                {
+                    csrfmiddlewaretoken: "{{ csrf_token }}"
+                },
+                success:function(response){
+                      $('#reset_16khz').html(response.new_vol);
+                        }
+                })
+            });
+
+
+
+
+
+        {#https://djangocentral.com/django-ajax-with-jquery/#}
 
         </script>
 

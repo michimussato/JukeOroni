@@ -74,6 +74,7 @@ set (Master) Volume :
 amixer -D default set 'Digital' 90%
 
 set Equalizer
+amixer -D equal get '06. 2 kHz'
 amixer -D equal set '06. 2 kHz' 66%
 
 
