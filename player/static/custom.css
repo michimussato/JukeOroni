@@ -185,7 +185,7 @@ footer {
     border-left: solid 0px #000;
 }
 
-.link_track {
+.link_track, .link_album, .link_artist {
     color: #202020;
     text-decoration: none;
     -webkit-transition: all 0.5s;
@@ -194,7 +194,7 @@ footer {
     transition: all 0.5s;
 }
 
-.link_track:hover {
+.link_track:hover, .link_album:hover, .link_artist:hover {
         display: inline-block;
         /*background-color: #505050;*/
         /*border-radius: 20px;*/

@@ -25,8 +25,9 @@
     {% if inserted_media %}
         <div class="text_elements_box container" style="text-align: center;">
         {% if box.loader_mode == 'album' %}
-            <h1 align="center">Playing <b>{{ inserted_media.album }}</b></h1>
-            <h5>by <b>{{ inserted_media.artist }}</b> ({{ inserted_media.album.year }})</h5>
+            <h1 align="center">Playing</h1>
+            <h2><b><a class="link_album" href="/admin/player/album/{{ inserted_media.album.id }}" target="_blank">{{ inserted_media.album }}</a></b></h2>
+            <h5>by <b><a class="link_artist" href="/admin/player/artist/{{ inserted_media.artist.id }}" target="_blank">{{ inserted_media.artist }}</a></b> ({{ inserted_media.album.year }})</h5>
         {% elif box.loader_mode == 'random' %}
             <h1 align="center">Playing {{ box.loader_mode }}</h1>
         {% endif %}
