@@ -25,6 +25,7 @@
     {% if inserted_media %}
         <div class="text_elements_box container" style="text-align: center;">
         {% if box.loader_mode == 'album' %}
+{#            <h1 align="center">Playing  <a class="link_track"  href="/admin/player/track/{{ inserted_media.id }}" target="_blank"><b>{{ inserted_media.track_title }}</b></a></h1>#}
             <h1 align="center">Playing</h1>
             <h2><b><a class="link_album" href="/admin/player/album/{{ inserted_media.album.id }}" target="_blank">{{ inserted_media.album }}</a></b></h2>
             <h5>by <b><a class="link_artist" href="/admin/player/artist/{{ inserted_media.artist.id }}" target="_blank">{{ inserted_media.artist }}</a></b> ({{ inserted_media.album.year }})</h5>
@@ -36,7 +37,12 @@
             <td>
                 <ol>
         {#          TODO: /player/track should not be hardcoded#}
-                    <a class="link_track"  href="/admin/player/track/{{ inserted_media.id }}" target="_blank"><b>{{ inserted_media.track_title }}</b> by <b>{{ inserted_media.artist }}</b> ({{ inserted_media.album }})</a>
+                    {% if box.loader_mode == 'album' %}
+                        <p>Track <a class="link_track"  href="/admin/player/track/{{ inserted_media.id }}" target="_blank"><b>{{ inserted_media.track_title }}</b></a></p>
+                    {% elif box.loader_mode == 'random' %}
+                        <p><a class="link_track"  href="/admin/player/track/{{ inserted_media.id }}" target="_blank"><b>{{ inserted_media.track_title }}</b> by <b>{{ inserted_media.artist }}</b> ({{ inserted_media.album }})</a></p>
+                    {% endif %}
+
 
                 </ol>
             </td>
