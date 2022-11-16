@@ -264,6 +264,7 @@ class JukeboxTrack(object):
 
     def play(self, jukeoroni):
         try:
+            # TODO while jukeoroni.repeat_track:
             LOG.info(f'starting playback: \"{self.path}\" from: \"{self.playing_from}\"')
             self.django_track.played += 1
             self.django_track.save()
