@@ -5,6 +5,7 @@ import random
 import time
 import io
 import alsaaudio
+import logging
 from django.shortcuts import render
 from django.core.paginator import Paginator
 from django.db.models import Q
@@ -27,6 +28,10 @@ padding = '2px 5px'
 BUTTON_HEIGHT = '100px'
 BUTTON_ICON_SIZE_FACTOR = 2.0
 COLUMN_WIDTH = 101
+
+
+LOG = logging.getLogger(__name__)
+LOG.setLevel(Settings.GLOBAL_LOGGING_LEVEL)
 
 
 # TODO:
@@ -90,7 +95,7 @@ def get_active_box(_jukeoroni):
             or _jukeoroni.mode == Settings.MODES['jukebox']['on_air']['album']:
         box = _jukeoroni.jukebox
     elif _jukeoroni.mode == Settings.MODES['radio']['standby']['random'] \
-             or _jukeoroni.mode == Settings.MODES['radio']['on_air']['random']:
+            or _jukeoroni.mode == Settings.MODES['radio']['on_air']['random']:
         box = _jukeoroni.radio
     elif _jukeoroni.mode == Settings.MODES['meditationbox']['standby']['random'] \
             or _jukeoroni.mode == Settings.MODES['meditationbox']['standby']['album'] \
@@ -112,8 +117,8 @@ def get_active_box(_jukeoroni):
             or _jukeoroni.mode == Settings.MODES['videobox']['on_air']['random']:
         box = _jukeoroni.videobox
     else:
-        # LOG.error(_jukeoroni.mode)
-        raise NotImplementedError('No Box determined!!!')
+        LOG.error('No Box determined, setting to box = None')
+        box = None
     return box
 
 
@@ -681,7 +686,8 @@ class AlbumView(View):
         global jukeoroni
         box = get_active_box(jukeoroni)
 
-        if box is not jukeoroni.jukebox \
+        if box is None \
+                or box is not jukeoroni.jukebox \
                 and box is not jukeoroni.meditationbox:
             return HttpResponseRedirect('/jukeoroni')
 

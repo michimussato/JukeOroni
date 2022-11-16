@@ -24,13 +24,16 @@
 
     {% if inserted_media %}
         <div class="text_elements_box container" style="text-align: center;">
-            <h1 align="center">Playing ({{ box.loader_mode }} mode)</h1>
+        {% if box.loader_mode == 'album' %}
+            <h1 align="center">Playing <b>{{ inserted_media.album }}</b></h1>
+            <h5>by <b>{{ inserted_media.artist }}</b> ({{ inserted_media.album.year }})</h5>
+        {% elif box.loader_mode == 'random' %}
+            <h1 align="center">Playing {{ box.loader_mode }}</h1>
+        {% endif %}
         <table style="border:0px solid black;margin-left:auto;margin-right:auto;">
         <tr>
             <td>
                 <ol>
-
-
         {#          TODO: /player/track should not be hardcoded#}
                     <a class="link_track"  href="/admin/player/track/{{ inserted_media.id }}" target="_blank"><b>{{ inserted_media.track_title }}</b> by <b>{{ inserted_media.artist }}</b> ({{ inserted_media.album }})</a>
 
@@ -51,12 +54,7 @@
                 <td>
                     <ol type="I">
                         {% for track in queue %}
-
                             <li> <a title="Remove from queue" href="/jukeoroni/{{ box.box_type }}/{{ forloop.counter0 }}/pop"> <img width="15px" height="15px" src="/jukeoroni/buttons_overlay/web/cross.png"></a> {% if forloop.counter0 != 0 %} <a title="Move to first position" href="/jukeoroni/{{ box.box_type }}/{{ forloop.counter0 }}/as_first"><img width="15px" height="15px" src="/jukeoroni/buttons_overlay/web/top.png"></a> {% endif %} <a class="link_track"  href="/admin/player/track/{{ track.id }}" target="_blank">{{ track }}</a></li>
-{#                            <li> {% if forloop.counter0 == 0 %} <a href="#"><img width="15px" height="15px" src="/jukeoroni/buttons_overlay/web/top.png"></a>  {% else %} <a href="/jukeoroni/{{ box.box_type }}/{{ forloop.counter0 }}/as_first"><img width="15px" height="15px" src="/jukeoroni/buttons_overlay/web/top.png"></a> {% endif %} <a href="/jukeoroni/{{ box.box_type }}/{{ forloop.counter0 }}/pop"> <img width="15px" height="15px" src="/jukeoroni/buttons_overlay/web/cross.png"></a> <a class="link_track"  href="/admin/player/track/{{ track.id }}" target="_blank">{{ track }}</a></li>#}
-{#                            <li><a class="link_track"  href="/admin/player/track/{{ track.id }}" target="_blank">{{ track }}</a><a href="/jukeoroni/{{ box.box_type }}/{{ box.tracks.index.forloop.counter }}/pop">X</a></li>#}
-{#                            ret += '<td><button onclick=\"window.location.href = \'/jukeoroni/{1}/{0}/pop\';\">Remove from Queue</button></td>'.format(str(box.tracks.index(track)), str(box.box_type))#}
-
                         {% endfor %}
                     </ol>
                 </td>
