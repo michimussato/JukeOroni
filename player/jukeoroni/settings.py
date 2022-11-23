@@ -43,7 +43,7 @@ class Settings:
     EPISODIC_DIR = os.path.join(MEDIA_ROOT, ALBUM_TYPE_EPISODIC)
     FAULTY_ALBUMS = os.path.join(MEDIA_ROOT, 'faulty_albums_test.txt')
     # MISSING_COVERS_FILE = os.path.join(MEDIA_ROOT, 'missing_covers_test.txt')
-    MISSING_COVERS_FILE = os.path.join(['data', 'usb_hdd', 'missing_covers_test.txt'])
+    MISSING_COVERS_FILE = r'/data/usb_hdd/missing_covers_test.txt'
     AUDIO_FILES = ['.dsf', '.flac', '.wav', '.dff']
     MEDITATION_FILTER = ['.dsf', '.flac', '.wav', '.dff']
     VIDEO_FILTER = ['.mp4']
