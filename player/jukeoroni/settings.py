@@ -42,7 +42,8 @@ class Settings:
     VIDEO_DIR = r'/data/usb_hdd/media/'
     EPISODIC_DIR = os.path.join(MEDIA_ROOT, ALBUM_TYPE_EPISODIC)
     FAULTY_ALBUMS = os.path.join(MEDIA_ROOT, 'faulty_albums_test.txt')
-    MISSING_COVERS_FILE = os.path.join(MEDIA_ROOT, 'missing_covers_test.txt')
+    # MISSING_COVERS_FILE = os.path.join(MEDIA_ROOT, 'missing_covers_test.txt')
+    MISSING_COVERS_FILE = os.path.join(['data', 'usb_hdd', 'missing_covers_test.txt'])
     AUDIO_FILES = ['.dsf', '.flac', '.wav', '.dff']
     MEDITATION_FILTER = ['.dsf', '.flac', '.wav', '.dff']
     VIDEO_FILTER = ['.mp4']
@@ -614,6 +615,7 @@ class Settings:
     _JUKEBOX_ICON_IMAGE = os.path.join(BASE_DIR, 'player', 'static', 'jukebox.png')
     _JUKEBOX_LOADING_IMAGE = os.path.join(BASE_DIR, 'player', 'static', 'loading.jpg')
     _JUKEBOX_ON_AIR_DEFAULT_IMAGE = os.path.join(BASE_DIR, 'player', 'static', 'jukebox_on_air_default.jpg')
+    IGNORE_ARTIST_COVER = ['Soundtrack']
 
     # meditation
     _MEDITATION_ICON_IMAGE = os.path.join(BASE_DIR, 'player', 'static', 'meditation_box.jpg')
@@ -639,7 +641,7 @@ class Settings:
     ANTIALIAS = 4  # Warning: can slow down calculation drastically
     ARIAL = os.path.join(BASE_DIR, 'player', 'static', 'arial_narrow.ttf')
     CALLIGRAPHIC = os.path.join(BASE_DIR, 'player', 'static', 'calligraphia-one.ttf')
-    CLOCK_UPDATE_INTERVAL = 10  # in minutes
+    CLOCK_UPDATE_INTERVAL = 15  # in minutes
     CLOCK_UPDATE_INTERVAL_TV = 5  # in minutes
     CLOCK_SQUARE_OPACITY = 160
     _MOON_TEXUTRE = os.path.join(BASE_DIR, 'player', 'static', 'moon_texture_small.png')

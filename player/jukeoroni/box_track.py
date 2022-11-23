@@ -160,6 +160,8 @@ class JukeboxTrack(object):
         # TODO: query Discogs image here on the fly?
         #  downside: we cannot specify the actual image
         #  on the database if path is not stored beforehand
+        if str(self.artist).lower() in [str(i).lower for i in Settings.IGNORE_ARTIST_COVER]:
+            return None
         if self._cover_artist is not None:
             return Resource().squareify(self._cover_artist)
         else:
@@ -258,6 +260,38 @@ class JukeboxTrack(object):
             if self.cache_tmp is not None:
                 try:
                     os.remove(self.cache_tmp)
+                    '''
+Nov 21 10:54:28 jukeoroni gunicorn[811]: [11-21-2022 10:54:28] [ERROR   ] [Track Loader Thread|2917135456], File "/data/django/jukeoroni/player/jukeoroni/box_track.py", line 263, in __del__:    Cached track could not be deleted:
+Nov 21 10:54:28 jukeoroni gunicorn[811]: Traceback (most recent call last):
+Nov 21 10:54:28 jukeoroni gunicorn[811]:   File "/data/django/jukeoroni/player/jukeoroni/box_track.py", line 260, in __del__
+Nov 21 10:54:28 jukeoroni gunicorn[811]:     os.remove(self.cache_tmp)
+Nov 21 10:54:28 jukeoroni gunicorn[811]: FileNotFoundError: [Errno 2] No such file or directory: '/tmp/tmpx_rgtmrx'
+
+
+root@jukeoroni:/tmp/systemd-private-6e23ef15fc82489f84b9537aeddc83ac-gunicorn.service-avetgQ/tmp# ls -al
+total 1349520
+drwxrwxrwt  4 root root      4096 Nov 21 10:58 .
+drwx------  3 root root      4096 Nov 20 19:13 ..
+-rw-r--r--  1 pi   pi       19769 Nov 21 10:55 geckodriver.log
+drwx------  2 pi   pi        4096 Nov 21 10:51 pulse-PKdhtXMmr18n
+drwxr-xr-x 14 pi   pi        4096 Nov 21 10:29 rust_mozprofileNt8AIc
+-rw-r--r--  1 pi   pi    95282591 Nov 21 10:20 tmp2scrb925
+-rw-r--r--  1 pi   pi   166276107 Nov 21 10:21 tmp5nnnq4n4
+-rw-r--r--  1 pi   pi   284690286 Nov 21 10:58 tmpfifgf0b9
+-rw-r--r--  1 pi   pi    49005418 Nov 21 10:19 tmp_soks1s_
+-rw-r--r--  1 pi   pi   227433496 Nov 21 10:54 tmptmwn3mg0
+-rw-r--r--  1 pi   pi   185632821 Nov 21 10:56 tmpuu8qickw
+-rw-r--r--  1 pi   pi   373515396 Nov 21 10:55 tmpznph7hoq
+
+
+Nov 21 11:15:27 jukeoroni gunicorn[811]: [11-21-2022 11:15:27] [INFO    ] [JukeOroni Playback Thread|2878280800], File "/data/django/jukeoroni/player/jukeoroni/box_track.py", line 276, in play:    playback finished: "/data/googledrive/media/audio/music/on_device/Dire Straits - 1985 - Brothers in Arms [FLAC][24][192]/03 Walk Of Life.flac"
+Nov 21 11:15:27 jukeoroni gunicorn[811]: [11-21-2022 11:15:27] [INFO    ] [JukeOroni Playback Thread|2878280800], File "/data/django/jukeoroni/player/jukeoroni/jukeoroni.py", line 1027, in _playback_task:    playback finished
+Nov 21 11:15:27 jukeoroni gunicorn[811]: [11-21-2022 11:15:27] [INFO    ] [State Watcher Thread|2959078496], File "/data/django/jukeoroni/player/jukeoroni/jukeoroni.py", line 1043, in insert:    Media inserted: Dire Straits - Brothers in Arms [FLAC][24][192] - 04 Your Latest Trick.flac (type <class 'player.jukeoroni.box_track.JukeboxTrack'>)
+Nov 21 11:15:27 jukeoroni gunicorn[811]: [11-21-2022 11:15:27] [DEBUG   ] [State Watcher Thread|2959078496], File "/data/django/jukeoroni/player/jukeoroni/jukeoroni.py", line 900, in play_jukebox:    Starting new playback thread
+Nov 21 11:15:27 jukeoroni gunicorn[811]: [11-21-2022 11:15:27] [INFO    ] [JukeOroni Playback Thread|2878280800], File "/data/django/jukeoroni/player/jukeoroni/jukeoroni.py", line 1017, in _playback_task:    starting playback thread: for /data/googledrive/media/audio/music/on_device/Dire Straits - 1985 - Brothers in Arms [FLAC][24][192]/04 Your Latest Trick.flac from /tmp/tmpfifgf0b9
+Nov 21 11:15:27 jukeoroni gunicorn[811]: [11-21-2022 11:15:27] [INFO    ] [JukeOroni Playback Thread|2878280800], File "/data/django/jukeoroni/player/jukeoroni/box_track.py", line 268, in play:    starting playback: "/data/googledrive/media/audio/music/on_device/Dire Straits - 1985 - Brothers in Arms [FLAC][24][192]/04 Your Latest Trick.flac" from: "/tmp/tmpfifgf0b9"
+Nov 21 11:15:27 jukeoroni nice[1199]: ERROR : media/audio/music/on_device/Dire Straits - 1985 - Brothers in Arms [FLAC][24][192]/cover.jpg: ReadFileHandle.Read error: low level retry 1/10: read tcp 192.168.0.16:47930->142.250.203.106:443: i/o timeout
+'''
                     LOG.info(f'removed from local filesystem: \"{self.cache_tmp}\"')
                 except (OSError, TypeError):
                     LOG.exception('Cached track could not be deleted:')

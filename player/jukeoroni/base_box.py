@@ -316,6 +316,41 @@ box.turn_off()
 
                     first_album_track = self.playing_track.first_album_track
 
+                    '''
+[11-20-2022 02:32:59] [DEBUG   ] [Track Loader Thread|2896163936], File "/data/django/jukeoroni/player/jukeoroni/track_loader.py", line 16, in _track_loader_task:    meditationbox     : 3 of 3 tracks cached. Queue: [Aqen - Meditation Astrale [FLAC][24][44.1] - 01 - L'oubli.flac, Aqen - Meditation Astrale [FLAC][24][44.1] - 02 - Sinistre Cauchemar.flac, Aqen - Meditation Astrale [FLAC][24][44.1] - 03 - Terreur Interieure.flac]
+[11-20-2022 02:33:00] [DEBUG   ] [Track Loader Thread|2896163936], File "/data/django/jukeoroni/player/jukeoroni/track_loader.py", line 16, in _track_loader_task:    meditationbox     : 3 of 3 tracks cached. Queue: [Aqen - Meditation Astrale [FLAC][24][44.1] - 01 - L'oubli.flac, Aqen - Meditation Astrale [FLAC][24][44.1] - 02 - Sinistre Cauchemar.flac, Aqen - Meditation Astrale [FLAC][24][44.1] - 03 - Terreur Interieure.flac]
+[11-20-2022 02:33:01] [DEBUG   ] [Track Loader Thread|2896163936], File "/data/django/jukeoroni/player/jukeoroni/track_loader.py", line 16, in _track_loader_task:    meditationbox     : 3 of 3 tracks cached. Queue: [Aqen - Meditation Astrale [FLAC][24][44.1] - 01 - L'oubli.flac, Aqen - Meditation Astrale [FLAC][24][44.1] - 02 - Sinistre Cauchemar.flac, Aqen - Meditation Astrale [FLAC][24][44.1] - 03 - Terreur Interieure.flac]
+[11-20-2022 02:33:02] [DEBUG   ] [Track Loader Thread|2896163936], File "/data/django/jukeoroni/player/jukeoroni/track_loader.py", line 16, in _track_loader_task:    meditationbox     : 3 of 3 tracks cached. Queue: [Aqen - Meditation Astrale [FLAC][24][44.1] - 01 - L'oubli.flac, Aqen - Meditation Astrale [FLAC][24][44.1] - 02 - Sinistre Cauchemar.flac, Aqen - Meditation Astrale [FLAC][24][44.1] - 03 - Terreur Interieure.flac]
+[11-20-2022 02:33:03] [DEBUG   ] [Track Loader Thread|2896163936], File "/data/django/jukeoroni/player/jukeoroni/track_loader.py", line 16, in _track_loader_task:    meditationbox     : 0 of 3 tracks cached. Queue: []
+[11-20-2022 02:33:03] [INFO    ] [Track Loader Thread|2896163936], File "/data/django/jukeoroni/player/jukeoroni/track_loader.py", line 37, in _track_loader_task:    meditationbox     : Next track OK: off_device/Sounds of Nature (Serenity Series) - 1995 - Ocean Surf (Philippe De Canck) [FLAC][16][44.1]/01 - Ocean Surf.flac
+...
+[11-20-2022 02:33:59] [DEBUG   ] [Track Loader Thread|2896163936], File "/data/django/jukeoroni/player/jukeoroni/track_loader.py", line 16, in _track_loader_task:    meditationbox     : 0 of 3 tracks cached. Queue: []
+[11-20-2022 02:33:59] [WARNING ] [Track Loader Thread|2896163936], File "/data/django/jukeoroni/player/jukeoroni/track_loader.py", line 26, in _track_loader_task:    meditationbox     : Got "None" track. Retrying...
+[11-20-2022 02:34:00] [DEBUG   ] [Track Loader Thread|2896163936], File "/data/django/jukeoroni/player/jukeoroni/track_loader.py", line 16, in _track_loader_task:    meditationbox     : 0 of 3 tracks cached. Queue: []
+[11-20-2022 02:34:00] [WARNING ] [Track Loader Thread|2896163936], File "/data/django/jukeoroni/player/jukeoroni/track_loader.py", line 26, in _track_loader_task:    meditationbox     : Got "None" track. Retrying...
+[11-20-2022 02:34:01] [DEBUG   ] [Track Loader Thread|2896163936], File "/data/django/jukeoroni/player/jukeoroni/track_loader.py", line 16, in _track_loader_task:    meditationbox     : 0 of 3 tracks cached. Queue: []
+[11-20-2022 02:34:01] [WARNING ] [Track Loader Thread|2896163936], File "/data/django/jukeoroni/player/jukeoroni/track_loader.py", line 26, in _track_loader_task:    meditationbox     : Got "None" track. Retrying...
+...
+[11-20-2022 03:32:48] [DEBUG   ] [Track Loader Thread|2896163936], File "/data/django/jukeoroni/player/jukeoroni/track_loader.py", line 16, in _track_loader_task:    meditationbox     : 0 of 3 tracks cached. Queue: []
+[11-20-2022 03:32:48] [ERROR   ] [Track Loader Thread|2896163936], File "/data/django/jukeoroni/player/jukeoroni/track_loader.py", line 59, in _track_loader_task:    meditationbox     : 'NoneType' object has no attribute 'first_album_track'
+Traceback (most recent call last):
+  File "/data/django/jukeoroni/player/jukeoroni/track_loader.py", line 23, in _track_loader_task
+    loading_track = box.get_next_track()
+  File "/data/django/jukeoroni/player/jukeoroni/base_box.py", line 317, in get_next_track
+    first_album_track = self.playing_track.first_album_track
+AttributeError: 'NoneType' object has no attribute 'first_album_track'
+[11-20-2022 03:32:48] [ERROR   ] [Track Loader Thread|2896163936], File "/data/django/jukeoroni/player/jukeoroni/track_loader.py", line 62, in _track_loader_task:    meditationbox     : 'NoneType' object has no attribute 'first_album_track'
+Traceback (most recent call last):
+  File "/data/django/jukeoroni/player/jukeoroni/track_loader.py", line 60, in _track_loader_task
+    raise e
+  File "/data/django/jukeoroni/player/jukeoroni/track_loader.py", line 23, in _track_loader_task
+    loading_track = box.get_next_track()
+  File "/data/django/jukeoroni/player/jukeoroni/base_box.py", line 317, in get_next_track
+    first_album_track = self.playing_track.first_album_track
+AttributeError: 'NoneType' object has no attribute 'first_album_track'
+...
+                    '''
+
                     self.LOG.info(f'First album track of playing album track is: {first_album_track}')
 
                     if self.playing_track.django_track == first_album_track:

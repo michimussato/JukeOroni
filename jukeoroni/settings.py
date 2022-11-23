@@ -97,6 +97,16 @@ LOGGING = {
             'filename': os.path.join(Settings.LOG_ROOT, 'create_update_track_list_error.log'),
             'formatter': 'simple',
         },
+        'file_create_update_track_list_missing_cover': {
+            'level': 'ERROR',
+            # 'class': 'logging.FileHandler',
+            'class': 'logging.handlers.TimedRotatingFileHandler',
+            'when': 'midnight',
+            'interval': 1,
+            'backupCount': 7,
+            'filename': Settings.MISSING_COVERS_FILE,
+            'formatter': 'simple',
+        },
         'file_track_loader': {
             'level': 'DEBUG',
             # 'class': 'logging.FileHandler',
@@ -175,7 +185,7 @@ LOGGING = {
             'level': 'DEBUG',
         },
         'player.jukeoroni.create_update_track_list': {
-            'handlers': ['file_create_update_track_list'],
+            'handlers': ['file_create_update_track_list', 'file_create_update_track_list_missing_cover'],
             # 'propagate': True,
             'level': 'DEBUG',
         },

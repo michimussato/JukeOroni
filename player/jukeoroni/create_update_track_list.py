@@ -85,6 +85,7 @@ def create_update_track_list(box, directory, album_type, file_filter):
             img_path = png_path
         else:
             LOG.error(f'Missing cover: cover is None for album {album}')
+
             img_path = None
 
         # need to add artist too
