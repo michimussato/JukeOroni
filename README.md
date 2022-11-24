@@ -51,16 +51,16 @@ clock that also displays sun rise/sun set (yellow) and moon rise/moon set (blue)
 Beneath the clock, there is a rain radar. The clock as well as the rain radar
 get updated at specified intervals. Time and sun/moon phases are based on
 geo location ([set manually](https://github.com/michimussato/jukeoroni/blob/582f4d8ecdd4ece50bcb7508c921551890bdd728/player/jukeoroni/settings.py#L639)).
-![Home](./readme/Screenshot 2022-11-24 at 19-24-09 JukeOroni.png)
+![Home](readme/Screenshot 2022-11-24 at 19-24-09 JukeOroni.png)
 
 ### JukeBox Albums
-![JukeBox Albums](./readme/Screenshot 2022-11-24 at 19-19-33 JukeOroni.png)
+![JukeBox Albums](readme/Screenshot 2022-11-24 at 19-19-33 JukeOroni.png)
 
 ### RadioBox
-![RadioBox](./readme/Screenshot 2022-11-24 at 19-20-35 JukeOroni.png)
+![RadioBox](readme/Screenshot 2022-11-24 at 19-20-35 JukeOroni.png)
 
 ### MeditationBox
-![MeditationBox](./readme/Screenshot 2022-11-24 at 19-21-50 JukeOroni.png)
+![MeditationBox](readme/Screenshot 2022-11-24 at 19-21-50 JukeOroni.png)
 
 ### Django Admin
-![Django Admin](./readme/Screenshot 2022-11-24 at 19-38-53 Select album to change Django site admin.png)
+![Django Admin](readme/Screenshot 2022-11-24 at 19-38-53 Select album to change Django site admin.png)
