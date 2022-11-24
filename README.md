@@ -54,13 +54,13 @@ geo location ([set manually](https://github.com/michimussato/jukeoroni/blob/582f
 ![Home](readme/Screenshot2022-11-24at19-24-09JukeOroni.png)
 
 ### JukeBox Albums
-![JukeBox Albums](readme/Screenshot 2022-11-24 at 19-19-33 JukeOroni.png)
+![JukeBox Albums](readme/Screenshot2022-11-24at19-19-33JukeOroni.png)
 
 ### RadioBox
-![RadioBox](readme/Screenshot 2022-11-24 at 19-20-35 JukeOroni.png)
+![RadioBox](readme/Screenshot2022-11-24at19-20-35JukeOroni.png)
 
 ### MeditationBox
-![MeditationBox](readme/Screenshot 2022-11-24 at 19-21-50 JukeOroni.png)
+![MeditationBox](readme/Screenshot2022-11-24at19-21-50JukeOroni.png)
 
 ### Django Admin
-![Django Admin](readme/Screenshot 2022-11-24 at 19-38-53 Select album to change Django site admin.png)
+![Django Admin](readme/Screenshot2022-11-24at19-38-53SelectalbumtochangeDjangositeadmin.png)
