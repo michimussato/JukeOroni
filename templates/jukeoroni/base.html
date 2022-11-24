@@ -33,7 +33,10 @@
         <img id="picture" class="{{ encoded_img_data_class }}" src="data:image/jpeg;base64,{{ encoded_img_data }}">
     {% endblock body %}
 
-    {% block vol %}
+    {% if enable_volume %}
+        {% block vol %}
+
+
         {% csrf_token %}
 
         <div class="text_elements_box container" style="text-align: center;">
@@ -651,7 +654,8 @@
 
         </script>
 
-    {% endblock vol %}
+        {% endblock vol %}
+    {% endif %}
 
 {#    {% block equalizer %}#}
 {#        <div class="slidecontainer">#}

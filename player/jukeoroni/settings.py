@@ -653,3 +653,5 @@ class Settings:
 
     # web
     RANDOM_ALBUMS = 3
+    ENABLE_VOLUME = False
+    # ENABLE_EQUALIZER = False  # combined with Volume for now
