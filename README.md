@@ -11,7 +11,7 @@ radio stations and is a good companion for meditation sounds library as well.
 JukeOroni also playes video files through the integrated
 HDMI port so you can watch movies on your TV.
 
-## Requirements
+## Requires
 
 JukeOroni runs on the following hardware:
 - Raspberry Pi OS Lite (32-bit)
@@ -43,7 +43,7 @@ can be added as well to the discovery engine.
 - FLAC
 - WAV
 
-## Screenshots
+## Looks like
 
 ### Home
 The home screen shows a clock with moon phase. The clock is a 24 hours
