@@ -51,10 +51,15 @@ clock that also displays sun rise/sun set (yellow) and moon rise/moon set (blue)
 Beneath the clock, there is a rain radar. The clock as well as the rain radar
 get updated at specified intervals. Time and sun/moon phases are based on
 geo location ([set manually](https://github.com/michimussato/jukeoroni/blob/582f4d8ecdd4ece50bcb7508c921551890bdd728/player/jukeoroni/settings.py#L639)).
+The JukeOroni Pimoroni screen displays the exact same content with the addition of
+the button icons.
 ![Home](readme/Screenshot2022-11-24at19-24-09JukeOroni.png)
 
 ### JukeBox Albums
 ![JukeBox Albums](readme/Screenshot2022-11-24at19-19-33JukeOroni.png)
+
+### Caching a specified amount of online Tracks for playback
+![Caching Tracks](readme/Screenshot2022-11-25at00-58-56JukeOroni.png)
 
 ### RadioBox
 ![RadioBox](readme/Screenshot2022-11-24at19-20-35JukeOroni.png)

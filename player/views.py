@@ -725,6 +725,7 @@ class AlbumView(View):
         )
 
         for i in range(3):
+            # empty, invisible buttons
             context['buttons'].append(
                 {
                     # 'class': 'btn_back',
@@ -751,7 +752,7 @@ class AlbumView(View):
         albums = Album.objects.filter(album_type=box.album_type).order_by('album_title')
 
         if query:
-            albums = albums.filter(Q(album_title__icontains=query) | Q(artist__name__icontains=query)).order_by('year', 'album_title')
+            albums = albums.filter(Q(album_title__icontains=query) | Q(artist__name__icontains=query) | Q(track__track_title__icontains=query)).order_by('year', 'album_title')
         # else:
             # albums = Album.objects.filter(album_type=box.album_type).order_by('album_title').distinct()
 

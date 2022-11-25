@@ -99,6 +99,14 @@ class Album(models.Model):
     def __repr__(self):
         return f'{self.album_title}'
 
+    @property
+    def _tracks_list(self):
+        return [track.track_title for track in Track.objects.filter(album=self).order_by('track_title')]
+
+    def tracks_list_web(self):
+        # return r' &#013;'.join(self.tracks_list)
+        return '&#013;'.join(self._tracks_list)
+
     def album_cover(self):
         """used in the view to encode images directly from here"""
         if Settings.COVER_ONLINE_PREFERENCE:
