@@ -52,8 +52,12 @@ Beneath the clock, there is a rain radar. The clock as well as the rain radar
 get updated at specified intervals. Time and sun/moon phases are based on
 geo location ([set manually](https://github.com/michimussato/jukeoroni/blob/582f4d8ecdd4ece50bcb7508c921551890bdd728/player/jukeoroni/settings.py#L639)).
 The JukeOroni Pimoroni screen displays the exact same content with the addition of
-the button icons.
+the button icons, whereas the TV connected to JukeOroni shows the clock only.
 ![Home](readme/Screenshot2022-11-24at19-24-09JukeOroni.png)
+
+
+### Pimoroni buttons
+... are context based and change based on what mode JukeOroni is running.
 
 ### Playback modes
 
