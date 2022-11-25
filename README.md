@@ -55,10 +55,18 @@ The JukeOroni Pimoroni screen displays the exact same content with the addition 
 the button icons.
 ![Home](readme/Screenshot2022-11-24at19-24-09JukeOroni.png)
 
+### Playback modes
+
+Each Box has two playback modes:
+- Random (default for JukeBox)
+- Album (default for MeditationBox)
+
+However, they can be changed by the press of a button.
+
 ### JukeBox Albums
 ![JukeBox Albums](readme/Screenshot2022-11-24at19-19-33JukeOroni.png)
 
-### Caching a specified amount of online Tracks for playback
+### Background caches a specified amount of online Tracks for playback
 ![Caching Tracks](readme/Screenshot2022-11-25at00-58-56JukeOroni.png)
 
 ### RadioBox
