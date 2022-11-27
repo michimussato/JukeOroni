@@ -211,6 +211,16 @@ j.turn_off()
     #         self.LOG.info(f'Not setting OFF_IMAGE. Test mode.')
     #     GPIO.cleanup()
 
+    # def set_display_error(self):
+    #     """
+    #     j.set_display_radio()
+    #     """
+    #     if not self.test:
+    #         bg = self.layout_standby.get_layout(labels=self.LABELS)
+    #
+    #         bg = self.set_display_jukebox().get_layout(labels=self.LABELS, cover=self.radio.cover, title=self.radio.stream_title)
+    #         self.set_image(image=bg)
+
     def set_display_radio(self):
         """
         j.set_display_radio()
@@ -926,6 +936,7 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
         # TODO implement Play/Next combo
         if isinstance(self.inserted_media, JukeboxTrack):
             self.LOG.debug('Starting new playback thread')
+            self.LOG.debug(f'TODO 1 - AssertionError: {self.inserted_media}')
             self.jukeoroni_playback_thread()
             self.set_display_meditation()
 
@@ -964,9 +975,12 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
     #     # pass
 
     def jukeoroni_playback_thread(self):
-        assert isinstance(self.inserted_media, JukeboxTrack)
+        # self.LOG.debug(f'TODO 1 - AssertionError: {self.inserted_media}')
+        assert isinstance(self.inserted_media, JukeboxTrack), self.LOG.debug(f'TODO 1 - AssertionError: {self.inserted_media}')
 
-        """ TODO
+        # TODO 1 - AssertionError
+
+        """
 May  5 15:06:28 jukeoroni gunicorn[812]: [05-05-2022 15:06:28] [INFO] [JukeOroni Playback Thread|2837697632] [player.jukeoroni.jukeoroni]: playback finished
 May  5 15:06:28 jukeoroni gunicorn[812]: [05-05-2022 15:06:28] [DEBUG] [State Watcher Thread|2971661408] [player.jukeoroni.jukeoroni]: Starting new playback thread
 May  5 15:06:28 jukeoroni gunicorn[812]: Exception in thread State Watcher Thread:

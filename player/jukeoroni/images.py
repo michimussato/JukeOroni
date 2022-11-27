@@ -71,6 +71,10 @@ class Resource(object):
     def MOON_TEXUTRE(self):
         return Image.open(Settings._MOON_TEXUTRE)
 
+    # @property
+    # def ERROR_IMAGE(self):
+    #     return Image.open(Settings._ERROR_IMAGE)
+
     @property
     def PLACEHOLDER_SQUARE(self):
         """
@@ -85,6 +89,10 @@ class Resource(object):
     @property
     def MOON_TEXTURE_SQUARE(self):
         return self.squareify(self.MOON_TEXUTRE).resize((448, 448))
+
+    # @property
+    # def ERROR_IMAGE_SQUARE(self):
+    #     return self.squareify(self.ERROR_IMAGE).resize((448, 448))
 
     @property
     def RADIO_ICON_IMAGE_SQUARE(self):

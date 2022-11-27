@@ -689,6 +689,7 @@ class AlbumView(View):
     def get(self, request):
 
         query = self.request.GET.get("q", None)
+        search_for = self.request.GET.get("type", None)
 
         global jukeoroni
         box = get_active_box(jukeoroni)
@@ -749,12 +750,27 @@ class AlbumView(View):
 
         context['random_albums'] = random.sample(list(Album.objects.filter(album_type=box.album_type)), Settings.RANDOM_ALBUMS)
 
+        # TODO 2 - optimize performance
         albums = Album.objects.filter(album_type=box.album_type).order_by('album_title')
 
         if query:
-            albums = albums.filter(Q(album_title__icontains=query) | Q(artist__name__icontains=query) | Q(track__track_title__icontains=query)).order_by('year', 'album_title')
+            # albums = albums.filter(Q(album_title__icontains=query) | Q(artist__name__icontains=query) | Q(track__track_title__icontains=query)).order_by('year', 'album_title')
+
+            if search_for == "albums":
+                albums = albums.filter(Q(album_title__icontains=query)).order_by('year', 'album_title').distinct()
+
+            elif search_for == "artists":
+                albums = albums.filter(Q(artist__name__icontains=query)).order_by('year', 'album_title').distinct()
+
+            elif search_for == "tracks":
+                albums = albums.filter(Q(track__track_title__icontains=query)).order_by('year', 'album_title').distinct()
+
+            elif search_for is None or search_for == "everything":
+                albums = albums.filter(Q(album_title__icontains=query) | Q(artist__name__icontains=query) | Q(track__track_title__icontains=query)).order_by('year', 'album_title').distinct()
         # else:
             # albums = Album.objects.filter(album_type=box.album_type).order_by('album_title').distinct()
+
+        context['query'] = {'query': query, 'search_for': search_for}
 
         paginator = Paginator(albums, 25)
         page_number = request.GET.get('page')

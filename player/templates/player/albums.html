@@ -19,10 +19,54 @@
     <hr>
     <div>
         <div class="container">
-            <form action="{% url 'search_albums' %}" method="get">
-                <input name="q" type="text" placeholder="Search Albums, Artists, Tracks...">
+        {% if box_type == 'jukebox' %}
+            <form action="{% url 'search_albums_jukebox' %}" method="get">
+        {% elif box_type == 'meditationbox' %}
+            <form action="{% url 'search_albums_meditationbox' %}" method="get">
+            {% endif %}
+                <div>
+                    {% if query.query %}
+{#                        <input name="q" type="text" placeholder="{{ query.query }}">#}
+                        <input name="q" type="text" value="{{ query.query }}" placeholder="Search Albums, Artists, Tracks...">
+                    {% else %}
+                        <input name="q" type="text" placeholder="Search Albums, Artists, Tracks...">
+                    {% endif %}
+{#                <label for="">#}
+                    </div>
+                <div>
+{#                <label>#}
+{#                    https://www.tutorialstonight.com/html-radio-button#}
+
+                    {% if query.search_for is None or query.search_for == "everything" %}
+                        <input id="everything" type="radio" name="type" value="everything" checked="checked">
+                    {% else %}
+                        <input id="everything" type="radio" name="type" value="everything">
+                    {% endif %}
+                    <label for="everything">Everything</label>
+
+                    {% if query.search_for == "albums" %}
+                        <input id="albums" type="radio" name="type" value="albums" checked="checked">
+                    {% else %}
+                        <input id="albums" type="radio" name="type" value="albums">
+                    {% endif %}
+                    <label for="albums">Albums</label>
+
+                    {% if query.search_for == "artists" %}
+                        <input id="artists" type="radio" name="type" value="artists" checked="checked">
+                    {% else %}
+                        <input id="artists" type="radio" name="type" value="artists">
+                    {% endif %}
+                    <label for="artists">Artists</label>
+
+                    {% if query.search_for == "tracks" %}
+                        <input id="tracks" type="radio" name="type" value="tracks" checked="checked">
+                    {% else %}
+                        <input id="tracks" type="radio" name="type" value="tracks">
+                    {% endif %}
+                    <label for="tracks">Tracks</label>
+            </div>
             </form>
-            <h1>Albums</h1>
+            <h1>Results</h1>
 
 
     <div class="container center">
