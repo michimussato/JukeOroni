@@ -13,6 +13,7 @@ from django.http import HttpResponseRedirect, HttpResponse, HttpResponseNotModif
 from django.views import View
 from player.jukeoroni.jukeoroni import JukeOroni
 from player.models import Album, Channel, Station, Artist, Track, Video
+from player.jukeoroni.lyric_genius import get_lyrics
 from player.jukeoroni.settings import Settings
 
 
@@ -1178,6 +1179,13 @@ class BoxView(View):
 
             context = get_volume_values(context=context)
 
+        # if jukeoroni.inserted_media is not None:
+        #
+        #     context['lyrics'] = jukeoroni.inserted_media.lyrics
+        #
+        # else:
+        #     context['lyrics'] = ''
+
         return render(request=request, template_name='player/box_base.html', context=context)
 
 
@@ -1756,3 +1764,9 @@ def down_16khz(request):
     new_vol = min(m.getvolume())
     response = {'new_vol': new_vol}
     return JsonResponse(response, status=200)
+
+
+def display_lyrics(request):
+
+
+    return

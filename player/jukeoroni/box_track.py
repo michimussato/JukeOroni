@@ -10,6 +10,7 @@ from PIL import ImageFile, Image
 from pydub.utils import mediainfo
 from player.jukeoroni.images import Resource
 from player.models import Track as DjangoTrack
+from player.jukeoroni.lyric_genius import get_lyrics
 
 from player.jukeoroni.settings import Settings
 
@@ -38,6 +39,8 @@ class JukeboxTrack(object):
         self._cache_task_thread = None
         self._cache_online_covers_task_thread = None
 
+        self._lyrics = None
+
     def __hash__(self):
         # we need this to remove duplicate tracks from track list (self.tracks)
         # https://stackoverflow.com/a/4173307/2207196
@@ -52,6 +55,14 @@ class JukeboxTrack(object):
     @property
     def track_title(self):
         return self.django_track.track_title
+
+
+    @property
+    def lyrics(self):
+        if self._lyrics is None:
+            self._lyrics = get_lyrics(artist=self.artist, track=self.track_title)
+        # else:
+        return self._lyrics
 
     @property
     def id(self):
