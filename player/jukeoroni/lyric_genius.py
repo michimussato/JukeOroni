@@ -26,8 +26,8 @@ def get_lyrics(artist, track):
         lyrics = lyrics.replace('Lyrics[', '<br>Lyrics<br>[')
         lyrics = lyrics.replace('[', '<b>[')
         lyrics = lyrics.replace(']', ']</b>')
-        # lyrics = lyrics.replace('You might also like', '')
-        # lyrics = lyrics.replace('Embed', '')
+        lyrics = lyrics.replace('You might also like', '')
+        lyrics = lyrics.replace('Embed', '')
 
         LOG.debug(f'LyricsGenius search result: {artist.name} ({_artist.id}) - {track} - {song.id} - {lyrics}')
 
