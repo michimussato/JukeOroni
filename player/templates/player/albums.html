@@ -13,11 +13,11 @@
     <div class="container">
         <h1>Suggestions</h1>
         {% for random_album in random_albums %}
-            <button class="btn_album_default" title="{{ random_album.artist.name }} ({{ random_album.year }}) {{ random_album.album_title }}{% autoescape off %}&#013;{{ album.tracks_list_web }}{% endautoescape %}" onclick="window.location.href='/jukeoroni/{{ box_type }}/albums/{{ random_album.id }}';"><img width="100px" height="100px" style="border-radius: 10%" src="{{ random_album.album_cover }}"></button>
+            <button class="btn_album_default" title="{{ random_album.artist.name }} ({{ random_album.year }}) {{ random_album.album_title }}{% autoescape off %}&#013;{{ random_album.tracks_list_web }}{% endautoescape %}" onclick="window.location.href='/jukeoroni/{{ box_type }}/albums/{{ random_album.id }}';"><img width="100px" height="100px" style="border-radius: 10%" src="{{ random_album.album_cover }}"></button>
         {% endfor %}
     </div>
     <hr>
-    <div>
+    <div class="text_elements_box">
         <div class="container">
         {% if box_type == 'jukebox' %}
             <form action="{% url 'search_albums_jukebox' %}" method="get">
@@ -25,7 +25,8 @@
             <form action="{% url 'search_albums_meditationbox' %}" method="get">
         {% endif %}
         <div>
-                <select name="type" id="language">
+{#        https://www.freecodecamp.org/news/html-drop-down-menu-how-to-add-a-drop-down-list-with-the-select-element/#}
+            <select name="type" id="language">
             {% if query.search_for is None or query.search_for == "everything" %}
             <option value="everything" selected>Everything</option>
             {% else %}
@@ -45,11 +46,17 @@
                     {% endif %}
 
             {% if query.search_for == "tracks" %}
-            <option value="Tracks" selected>Java</option>
+            <option value="tracks" selected>Tracks</option>
             {% else %}
-            <option value="Tracks">Tracks</option>
-                    {% endif %}
+            <option value="tracks">Tracks</option>
+            {% endif %}
+
         </select>
+{#        <select name="type" id="language">#}
+{#            {% for tag in tags %}#}
+{#            <option value="tag">tag</option>#}
+{#            {% endfor %}#}
+{#        </select>#}
 
             {% if query.query %}
 {#                        <input name="q" type="text" placeholder="{{ query.query }}">#}
@@ -93,7 +100,46 @@
 {#                    {% endif %}#}
 {#                    <label for="tracks">Tracks</label>#}
             </div>
+
+        <div class="checkboxes">
+            <fieldset>
+                {% for tag in tags %}
+
+            <div class="checkbox-label">
+                <label for="{{ tag }}">{{ tag }}</label>
+                <div class="checkbox-container">
+                <input id="{{ tag }}" type="checkbox" name="type" value="{{ tag }}">
+                </div>
+            </div>
+                {% endfor %}
+
+{#                <legend>What is Your Favorite Pet?</legend>      #}
+{#            <div>#}
+{#                {% for tag in tags %}#}
+{#                    <label for="{{ tag }}">{{ tag }}</label>#}
+{##}
+{#                    <div class="checkbox-container">#}
+{#                        <input id="{{ tag }}" type="checkbox" name="type" value="{{ tag }}">#}
+{##}
+{#                    </div>#}
+{#                {% endfor %}#}
+{##}
+{#            </div>#}
+{#                <input type="checkbox" name="favorite_pet" value="Dogs">Dogs<br>      #}
+{#                <input type="checkbox" name="favorite_pet" value="Birds">Birds<br>      #}
+{#                <br>      #}
+{#                <input type="submit" value="Submit now" />      #}
+                    </fieldset>
+                </div>
             </form>
+
+    </div>
+    </div>
+
+        {% if not page_obj %}
+            <h1>No Results</h1>
+        {% else %}
+
             <h1>Results</h1>
 
 
@@ -174,9 +220,11 @@
 {#                <button class="btn_album_default" title="{{ album.artist }} ({{ album.year }}) {{ album.album_title }}" onclick="window.location.href='/jukeoroni/{{ box_type }}/albums/{{ album.id }}';"><img width="100px" height="100px" style="border-radius: 10%" src="{{ album.album_cover }}"><span class="tooltip">{{ album.tracks_list_web }}</span></button>#}
 {#                <button class="btn_album_default tooltip" title="{{ album.artist }} ({{ album.year }}) {{ album.album_title }}&#013;{{ album.tracks_list_web }}" onclick="window.location.href='/jukeoroni/{{ box_type }}/albums/{{ album.id }}';"><img width="100px" height="100px" style="border-radius: 10%" src="{{ album.album_cover }}"></button>#}
                 <button class="btn_album_default" title="{{ album.artist }} ({{ album.year }}) {{ album.album_title }}{% autoescape off %}&#013;{{ album.tracks_list_web }}{% endautoescape %}" onclick="window.location.href='/jukeoroni/{{ box_type }}/albums/{{ album.id }}';"><img width="100px" height="100px" style="border-radius: 10%" src="{{ album.album_cover }}"></button>
+
             {% endfor %}
 
         </div>
+    {% endif %}
 {#    <br>#}
     </div>
     </center>

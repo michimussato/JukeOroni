@@ -1,5 +1,6 @@
 import base64
 import sys
+import re
 import os
 import random
 import time
@@ -772,6 +773,13 @@ class AlbumView(View):
             # albums = Album.objects.filter(album_type=box.album_type).order_by('album_title').distinct()
 
         context['query'] = {'query': query, 'search_for': search_for}
+
+        context['tags'] = list()
+        for album in albums:
+            res = re.findall(r'\[.*?\]', album.album_title)
+            context['tags'] += res
+
+        context['tags'] = list(set(context['tags']))
 
         paginator = Paginator(albums, 25)
         page_number = request.GET.get('page')
