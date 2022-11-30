@@ -849,7 +849,7 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
                 time.sleep(Settings.STATE_WATCHER_CADENCE)
         except Exception as e:
             self.LOG.exception(f'{e}')
-            raise
+            # raise
 
     # def play_box(self):
     #
@@ -976,7 +976,7 @@ Nov  1 19:46:25 jukeoroni gunicorn[1374]: urllib.error.URLError: <urlopen error 
 
     def jukeoroni_playback_thread(self):
         # self.LOG.debug(f'TODO 1 - AssertionError: {self.inserted_media}')
-        assert isinstance(self.inserted_media, JukeboxTrack), self.LOG.debug(f'TODO 1 - AssertionError: {self.inserted_media}')
+        assert isinstance(self.inserted_media, JukeboxTrack), self.LOG.error('TODO 1 - AssertionError: %s' % self.inserted_media)
 
         # TODO 1 - AssertionError
 
