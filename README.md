@@ -54,6 +54,7 @@ geo location ([set manually](https://github.com/michimussato/jukeoroni/blob/582f
 The JukeOroni Pimoroni screen displays the exact same content with the addition of
 the button icons, whereas the TV connected to JukeOroni shows the clock only.
 ![Home](readme/Screenshot2022-11-24at19-24-09JukeOroni.png)
+![Home](readme/Screenshot2022-11-29at09-35-24JukeOroni.png)
 
 
 ### Pimoroni buttons

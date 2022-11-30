@@ -226,5 +226,6 @@ def create_update_track_list(box, directory, album_type, file_filter):
         except ProtectedError:
             LOG.debug(f'{Settings.DATA_SOURCE}: Artist {django_artist} is still connected (in use). Ignored...')
 
+    box.LOG.info(f'Finished: {album_type} track list generated successfully: {len(_files)} tracks, {len(_albums)} albums and {len(_artists)} artists found')
     LOG.info(f'Finished: {album_type} track list generated successfully: {len(_files)} tracks, {len(_albums)} albums and {len(_artists)} artists found')
 ############################################

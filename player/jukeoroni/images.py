@@ -211,6 +211,39 @@ May 26 11:30:10 jukeoroni gunicorn[14587]:     "image file is truncated "
 May 26 11:30:10 jukeoroni gunicorn[14587]: OSError: image file is truncated (64 bytes not processed)
         """
 
+        """
+Traceback (most recent call last):
+  File "/data/venv/lib/python3.7/site-packages/PIL/PngImagePlugin.py", line 942, in load_end
+    self.png.call(cid, pos, length)
+
+During handling of the above exception ('NoneType' object has no attribute 'call'), another exception occurred:
+  File "/data/venv/lib/python3.7/site-packages/django/core/handlers/exception.py", line 47, in inner
+    response = get_response(request)
+  File "/data/venv/lib/python3.7/site-packages/django/core/handlers/base.py", line 181, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/data/venv/lib/python3.7/site-packages/django/views/generic/base.py", line 70, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/data/venv/lib/python3.7/site-packages/django/views/generic/base.py", line 98, in dispatch
+    return handler(request, *args, **kwargs)
+  File "/data/django/jukeoroni/player/views.py", line 1094, in get
+    img = box.layout.get_layout(labels=jukeoroni.LABELS, cover=jukeoroni.inserted_media.cover_album,
+  File "/data/django/jukeoroni/player/jukeoroni/box_track.py", line 167, in cover_album
+    return Resource().squareify(self._cover_album)
+  File "/data/django/jukeoroni/player/jukeoroni/images.py", line 184, in squareify
+    image = image.crop((left, top, right, bottom))
+  File "/data/venv/lib/python3.7/site-packages/PIL/Image.py", line 1171, in crop
+    self.load()
+  File "/data/venv/lib/python3.7/site-packages/PIL/ImageFile.py", line 266, in load
+    self.load_end()
+  File "/data/venv/lib/python3.7/site-packages/PIL/PngImagePlugin.py", line 951, in load_end
+    s = ImageFile._safe_read(self.fp, length)
+  File "/data/venv/lib/python3.7/site-packages/PIL/ImageFile.py", line 560, in _safe_read
+    data = fp.read(size)
+
+Exception Type: ValueError at /jukeoroni/jukebox/
+Exception Value: read of closed file
+        """
+
         return image
 
     @staticmethod
