@@ -18,19 +18,20 @@ class Settings:
     _ONE_HOUR = 3600
     DEFAULT_TRACKLIST_REGEN_INTERVAL = _ONE_HOUR * 6  # in hours
     DATA_SOURCES = ['usb_hdd', 'googledrive']
+    DATA_SOURCES_INDEX_ACTIVE = 1
     # rsync
     #  rsync --dry-run -rltv8DW --delete-before --progress --info=progress2 --exclude "*DS_Store" --delete-excluded "/data/googledrive/media/audio/music/" "/data/usb_hdd/media/audio/music" > /data/usb_hdd/rsync_music.txt &
     #  rsync --dry-run -rltv8DW --delete-before --progress --info=progress2 --exclude "*DS_Store" --delete-excluded "/data/googledrive/media/audio/meditation/" "/data/usb_hdd/media/audio/meditation" > /data/usb_hdd/rsync_meditation.txt &
     # Icon?
     #  find . -name 'Icon?' -exec rm {} \;
-    DATA_SOURCE = DATA_SOURCES[1]  # https://raspberrytips.com/mount-usb-drive-raspberry-pi/
-    DATA_SOURCE_RCLONE = DATA_SOURCES[1]
+    DATA_SOURCE = DATA_SOURCES[DATA_SOURCES_INDEX_ACTIVE]  # https://raspberrytips.com/mount-usb-drive-raspberry-pi/
+    DATA_SOURCE_RCLONE = DATA_SOURCES[DATA_SOURCES_INDEX_ACTIVE]
     MEDIA_ROOT = f'/data/{DATA_SOURCE}/media/audio/'
     LOG_ROOT = f'/data/jukeoroni_logs/'
     MEDIA_ROOT_RCLONE = f'/data/{DATA_SOURCE_RCLONE}/media/audio/'
     # LOG_ROOT = os.path.join(MEDIA_ROOT, 'jukeoroni_logs')
     # if not os.path.exists(MEDIA_ROOT):
-    #     DATA_SOURCE = DATA_SOURCES[1]  # Fallback to google drive if usb drive is not available
+    #     DATA_SOURCE = DATA_SOURCES[DATA_SOURCES_INDEX_ACTIVE]  # Fallback to google drive if usb drive is not available
     #     MEDIA_ROOT = f'/data/{DATA_SOURCE}/media/audio/'
     ALBUM_TYPES = ['music', 'meditation', 'episodic', 'podcast']
     ALBUM_TYPE_MUSIC = ALBUM_TYPES[0]  # 'music'
@@ -606,7 +607,7 @@ class Settings:
     }
 
     # box
-    CACHE_TRACKS = [True, False][1] if DATA_SOURCE == DATA_SOURCES[0] else [True, False][0]
+    CACHE_TRACKS = [True, False][1] if DATA_SOURCE == 'usb_hdd' else [True, False][0]
     CACHE_COVERS = [True, False][0]
     DB_SAVE_ATTEMPTS = 5
     DB_SAVE_WAIT_BETWEEN_ATTEMPTS = 10  # Seconds

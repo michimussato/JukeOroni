@@ -14,3 +14,5 @@ alias django_test='activate_venv && cd /data/django/jukeoroni  && python manage.
 alias git_pull_jukeoroni='activate_venv && cd /data/django/jukeoroni && git pull'
 alias checkout_f_develop='cd /data/django/jukeoroni && git checkout -f develop'
 alias checkout_f_develop_old='cd /data/django/jukeoroni && git checkout -f develop_old'
+
+alias check_logs_size="sudo du -ch -d 1 /var/log/"

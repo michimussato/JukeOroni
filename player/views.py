@@ -789,6 +789,72 @@ class AlbumView(View):
 
         context['page_range'] = paginator.page_range
 
+        """
+  File "/data/django/jukeoroni/player/views.py", line 792, in get
+    return render(request=request, template_name='player/albums.html', context=context)
+  File "/data/venv/lib/python3.7/site-packages/django/shortcuts.py", line 19, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/data/venv/lib/python3.7/site-packages/django/template/loader.py", line 62, in render_to_string
+    return template.render(context, request)
+  File "/data/venv/lib/python3.7/site-packages/django/template/backends/django.py", line 61, in render
+    return self.template.render(context)
+  File "/data/venv/lib/python3.7/site-packages/django/template/base.py", line 170, in render
+    return self._render(context)
+  File "/data/venv/lib/python3.7/site-packages/django/template/base.py", line 162, in _render
+    return self.nodelist.render(context)
+  File "/data/venv/lib/python3.7/site-packages/django/template/base.py", line 938, in render
+    bit = node.render_annotated(context)
+  File "/data/venv/lib/python3.7/site-packages/django/template/base.py", line 905, in render_annotated
+    return self.render(context)
+  File "/data/venv/lib/python3.7/site-packages/django/template/loader_tags.py", line 150, in render
+    return compiled_parent._render(context)
+  File "/data/venv/lib/python3.7/site-packages/django/template/base.py", line 162, in _render
+    return self.nodelist.render(context)
+  File "/data/venv/lib/python3.7/site-packages/django/template/base.py", line 938, in render
+    bit = node.render_annotated(context)
+  File "/data/venv/lib/python3.7/site-packages/django/template/base.py", line 905, in render_annotated
+    return self.render(context)
+  File "/data/venv/lib/python3.7/site-packages/django/template/loader_tags.py", line 150, in render
+    return compiled_parent._render(context)
+  File "/data/venv/lib/python3.7/site-packages/django/template/base.py", line 162, in _render
+    return self.nodelist.render(context)
+  File "/data/venv/lib/python3.7/site-packages/django/template/base.py", line 938, in render
+    bit = node.render_annotated(context)
+  File "/data/venv/lib/python3.7/site-packages/django/template/base.py", line 905, in render_annotated
+    return self.render(context)
+  File "/data/venv/lib/python3.7/site-packages/django/template/loader_tags.py", line 62, in render
+    result = block.nodelist.render(context)
+  File "/data/venv/lib/python3.7/site-packages/django/template/base.py", line 938, in render
+    bit = node.render_annotated(context)
+  File "/data/venv/lib/python3.7/site-packages/django/template/base.py", line 905, in render_annotated
+    return self.render(context)
+  File "/data/venv/lib/python3.7/site-packages/django/template/defaulttags.py", line 312, in render
+    return nodelist.render(context)
+  File "/data/venv/lib/python3.7/site-packages/django/template/base.py", line 938, in render
+    bit = node.render_annotated(context)
+  File "/data/venv/lib/python3.7/site-packages/django/template/base.py", line 905, in render_annotated
+    return self.render(context)
+  File "/data/venv/lib/python3.7/site-packages/django/template/defaulttags.py", line 211, in render
+    nodelist.append(node.render_annotated(context))
+  File "/data/venv/lib/python3.7/site-packages/django/template/base.py", line 905, in render_annotated
+    return self.render(context)
+  File "/data/venv/lib/python3.7/site-packages/django/template/base.py", line 988, in render
+    output = self.filter_expression.resolve(context)
+  File "/data/venv/lib/python3.7/site-packages/django/template/base.py", line 671, in resolve
+    obj = self.var.resolve(context)
+  File "/data/venv/lib/python3.7/site-packages/django/template/base.py", line 796, in resolve
+    value = self._resolve_lookup(context)
+  File "/data/venv/lib/python3.7/site-packages/django/template/base.py", line 858, in _resolve_lookup
+    current = current()
+  File "/data/django/jukeoroni/player/models.py", line 121, in album_cover
+    return f'data:image/jpeg;base64,{encode_image(Resource().round_resize(image=Image.open(_path), corner=5, fixed=100))}'
+  File "/data/venv/lib/python3.7/site-packages/PIL/Image.py", line 2968, in open
+    fp = builtins.open(filename, "rb")
+
+Exception Type: FileNotFoundError at /jukeoroni/jukebox/albums/search/
+Exception Value: [Errno 2] No such file or directory: '/data/googledrive/media/audio/music/new/Robert Plant - 1985 - Shaken N Stirred [DSD][64]/cover.jpg'
+"""
+
         return render(request=request, template_name='player/albums.html', context=context)
 
     def play_album(self, album_id):
@@ -1774,7 +1840,7 @@ def down_16khz(request):
     return JsonResponse(response, status=200)
 
 
-def display_lyrics(request):
-
-
-    return
+# def display_lyrics(request):
+#
+#
+#     return
